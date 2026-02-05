@@ -3,6 +3,7 @@ import '../game_state.dart';
 import '../screens/quiz_screen.dart';
 import '../screens/career_screen.dart';
 import '../screens/assets_screen.dart';
+import '../screens/liabilities_screen.dart';
 
 class MoneyTab extends StatelessWidget {
   final int currentKp;
@@ -12,6 +13,10 @@ class MoneyTab extends StatelessWidget {
   final AssetInventory assets;
   final void Function(CareerState) onCareerChange;
   final void Function(AssetType, int) onBuyAsset;
+  final RentType? rent;
+  final FoodType? food;
+  final TransportType? transport;
+  final void Function(RentType?, FoodType?, TransportType?) onLiabilitiesChange;
 
   const MoneyTab({
     super.key,
@@ -22,6 +27,10 @@ class MoneyTab extends StatelessWidget {
     required this.assets,
     required this.onCareerChange,
     required this.onBuyAsset,
+    required this.rent,
+    required this.food,
+    required this.transport,
+    required this.onLiabilitiesChange,
   });
 
   @override
@@ -80,6 +89,20 @@ class MoneyTab extends StatelessWidget {
                       assets: assets,
                       gems: gems,
                       onBuyAsset: (type) => onBuyAsset(type, 1),
+                    ),
+                  ),
+                );
+              }
+              if (item.title == "Liabilities") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => LiabilitiesScreen(
+                      career: career,
+                      currentRent: rent,
+                      currentFood: food,
+                      currentTransport: transport,
+                      onSelectionChanged: onLiabilitiesChange,
                     ),
                   ),
                 );

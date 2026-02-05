@@ -90,7 +90,7 @@ class _CareerHeroCard extends StatelessWidget {
       case CareerTrack.student:
         return const CareerLevelInfo(
           name: "Student",
-          dailyIncome: 2,
+          dailyIncome: 20,
           unlockedBuildings: [],
         );
     }

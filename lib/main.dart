@@ -40,6 +40,10 @@ class _MainScreenState extends State<MainScreen> {
   late AssetInventory assets;
   List<PlacedBuilding> cityLayout = [];
 
+  RentType? rentChoice;
+  FoodType? foodChoice;
+  TransportType? transportChoice;
+
   bool _loaded = false;
 
   @override
@@ -56,6 +60,9 @@ class _MainScreenState extends State<MainScreen> {
       savedIncomeTime,
       savedLayout,
       savedAssets,
+      savedRent,
+      savedFood,
+      savedTransport,
     ) = await loadGameState();
 
     setState(() {
@@ -65,8 +72,13 @@ class _MainScreenState extends State<MainScreen> {
       lastIncomeTime = savedIncomeTime;
       cityLayout = savedLayout;
       assets = savedAssets;
+      rentChoice = savedRent;
+      foodChoice = savedFood;
+      transportChoice = savedTransport;
       _loaded = true;
     });
+
+    _checkDailyCycle();
   }
 
   void _save() {
@@ -77,6 +89,87 @@ class _MainScreenState extends State<MainScreen> {
       lastIncomeTime: lastIncomeTime,
       layout: cityLayout,
       assets: assets,
+      rent: rentChoice,
+      food: foodChoice,
+      transport: transportChoice,
+    );
+  }
+
+  void _checkDailyCycle() {
+    final now = DateTime.now();
+    final difference = now.difference(lastIncomeTime);
+
+    if (difference.inHours >= 24) {
+      final cycles = difference.inHours ~/ 24;
+      _applyCycles(cycles);
+    }
+  }
+
+  void _applyCycles(int cycles) {
+    int totalKpChange = 0;
+    int totalGemChange = 0;
+
+    final income = dailyIncome(career.track, career.level);
+
+    for (int i = 0; i < cycles; i++) {
+      totalGemChange += income;
+
+      // Liabilities
+      int rCost = rentChoice != null
+          ? getRentCost(career.track, career.level, rentChoice!)
+          : 0;
+      int fCost = foodChoice != null
+          ? getFoodCost(career.track, career.level, foodChoice!)
+          : 0;
+      int tCost = transportChoice != null
+          ? getTransportCost(career.track, career.level, transportChoice!)
+          : 0;
+
+      totalKpChange +=
+          (rentChoice != null ? rentData[rentChoice!]!.kp : 0) +
+          (foodChoice != null ? foodData[foodChoice!]!.kp : 0) +
+          (transportChoice != null ? transportData[transportChoice!]!.kp : 0);
+
+      totalGemChange -= (rCost + fCost + tCost);
+    }
+
+    setState(() {
+      kp += totalKpChange;
+      gems += totalGemChange;
+      lastIncomeTime = DateTime.now();
+    });
+    _save();
+
+    if (totalKpChange != 0 || totalGemChange != 0) {
+      _showCyclePopup(totalKpChange, totalGemChange, cycles);
+    }
+  }
+
+  void _showCyclePopup(int kpDelta, int gemDelta, int cycles) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("$cycles Day Cycle Summary"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("KP Change: ${kpDelta > 0 ? '+' : ''}$kpDelta"),
+            Text("Gems Change: ${gemDelta > 0 ? '+' : ''}$gemDelta"),
+            const SizedBox(height: 8),
+            const Text(
+              "Based on your current lifestyle choices in Liabilities.",
+              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
     );
   }
 
@@ -90,7 +183,7 @@ class _MainScreenState extends State<MainScreen> {
           onDebugAdd: () {
             setState(() {
               kp += 1000;
-              gems += 10;
+              gems += 100;
             });
             _save();
           },
@@ -98,6 +191,9 @@ class _MainScreenState extends State<MainScreen> {
             setState(() {
               career = const CareerState(track: CareerTrack.student, level: 1);
               cityLayout = [];
+              rentChoice = null;
+              foodChoice = null;
+              transportChoice = null;
             });
             _save();
           },
@@ -109,14 +205,7 @@ class _MainScreenState extends State<MainScreen> {
           assets: assets,
           cityLayout: cityLayout,
           onBuyAsset: (AssetType type, int amount) {
-            final cost = assetCost(type) * amount;
-            if (gems < cost) return;
-
-            setState(() {
-              gems -= cost;
-              assets = assets.add(type, amount);
-            });
-            _save();
+            _handleBuyAsset(type, amount);
           },
           onPlaceBuilding: (building) {
             setState(() {
@@ -131,20 +220,42 @@ class _MainScreenState extends State<MainScreen> {
           career: career,
           gems: gems,
           assets: assets,
+          rent: rentChoice,
+          food: foodChoice,
+          transport: transportChoice,
           onKpChange: (delta) {
             setState(() => kp += delta);
             _save();
           },
           onCareerChange: (newCareer) {
-            setState(() => career = newCareer);
+            setState(() {
+              if (newCareer.level > career.level) {
+                // Reset liabilities on level up
+                rentChoice = null;
+                foodChoice = null;
+                transportChoice = null;
+                debugPrint("🚀 Level up! Liabilities reset to defaults.");
+              }
+              career = newCareer;
+            });
             _save();
           },
           onBuyAsset: (type, amount) {
-            final cost = assetCost(type) * amount;
-            if (gems < cost) return;
+            _handleBuyAsset(type, amount);
+          },
+          onLiabilitiesChange: (r, f, t) {
             setState(() {
-              gems -= cost;
-              assets = assets.add(type, amount);
+              // Calculate immediate KP change for moving from 'None' to a selection
+              int kpDelta = 0;
+              if (rentChoice == null && r != null) kpDelta += rentData[r]!.kp;
+              if (foodChoice == null && f != null) kpDelta += foodData[f]!.kp;
+              if (transportChoice == null && t != null)
+                kpDelta += transportData[t]!.kp;
+
+              rentChoice = r;
+              foodChoice = f;
+              transportChoice = t;
+              kp += kpDelta;
             });
             _save();
           },
@@ -154,6 +265,48 @@ class _MainScreenState extends State<MainScreen> {
       default:
         return const SizedBox.shrink();
     }
+  }
+
+  void _handleBuyAsset(AssetType type, int amount) {
+    final cost = assetCost(type) * amount;
+    if (gems < cost) return;
+
+    int kpBonus = 10 * amount;
+    String message = "Purchasing necessary assets: +$kpBonus KP";
+
+    final currentAssetsOfThisType = assets.count(type);
+    final maxAllowedForThisType = getMaxRequirementForType(
+      career.track,
+      career.level,
+      type,
+    );
+
+    if (currentAssetsOfThisType + amount > maxAllowedForThisType) {
+      kpBonus -= 100;
+      message =
+          "Over-purchasing ${assetLabel(type)} for your level is a bad decision: -100 KP (Total: $kpBonus)";
+    }
+
+    setState(() {
+      gems -= cost;
+      assets = assets.add(type, amount);
+      kp += kpBonus;
+    });
+    _save();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Asset Purchased"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Great!"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

@@ -6,18 +6,24 @@ enum CareerTrack { student, job, business }
 
 enum AssetType { land, realEstate, machinery, vehicles, officeEquipment }
 
+enum RentType { sharedStudio, smallApartment, luxuryHouse }
+
+enum FoodType { cheap, balanced, buffet }
+
+enum TransportType { public, cycle, car }
+
 int assetCost(AssetType type) {
   switch (type) {
-    case AssetType.realEstate:
-      return 20;
     case AssetType.land:
-      return 30;
+      return 100;
+    case AssetType.realEstate:
+      return 500;
     case AssetType.machinery:
-      return 40;
+      return 200;
     case AssetType.vehicles:
-      return 35;
+      return 300;
     case AssetType.officeEquipment:
-      return 25;
+      return 150;
   }
 }
 
@@ -164,6 +170,9 @@ const _careerLevelKey = 'careerLevel';
 const _lastIncomeTimeKey = 'lastIncomeTime';
 const _cityLayoutKey = 'cityLayout';
 const _assetsKey = 'assets';
+const _rentChoiceKey = 'rentChoice';
+const _foodChoiceKey = 'foodChoice';
+const _transportChoiceKey = 'transportChoice';
 
 class PlacedBuilding {
   final String name;
@@ -190,17 +199,9 @@ String trackLabel(CareerTrack track) {
 }
 
 int dailyIncome(CareerTrack track, int level) {
-  if (track == CareerTrack.student) return 2;
-
-  if (track == CareerTrack.business) {
-    return [0, 4, 8, 15, 30][level];
-  }
-
-  if (track == CareerTrack.job) {
-    return [0, 4, 7, 12, 20][level];
-  }
-
-  return 0;
+  if (level == 1) return 20; // Student base income (2 * 10)
+  final info = getCareerLevelInfo(CareerState(track: track, level: level));
+  return info?.dailyIncome ?? 0;
 }
 
 int requiredKpFor(CareerTrack track, int nextLevel) {
@@ -238,6 +239,9 @@ Future<void> saveGameState({
   required DateTime lastIncomeTime,
   required List<PlacedBuilding> layout,
   required AssetInventory assets,
+  required RentType? rent,
+  required FoodType? food,
+  required TransportType? transport,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   debugPrint("💾 SAVING GAME");
@@ -255,9 +259,34 @@ Future<void> saveGameState({
 
   final assetsJson = jsonEncode(assets.toJson());
   await prefs.setString(_assetsKey, assetsJson);
+
+  if (rent != null)
+    await prefs.setString(_rentChoiceKey, rent.name);
+  else
+    await prefs.remove(_rentChoiceKey);
+  if (food != null)
+    await prefs.setString(_foodChoiceKey, food.name);
+  else
+    await prefs.remove(_foodChoiceKey);
+  if (transport != null)
+    await prefs.setString(_transportChoiceKey, transport.name);
+  else
+    await prefs.remove(_transportChoiceKey);
 }
 
-Future<(int, int, CareerState, DateTime, List<PlacedBuilding>, AssetInventory)>
+Future<
+  (
+    int,
+    int,
+    CareerState,
+    DateTime,
+    List<PlacedBuilding>,
+    AssetInventory,
+    RentType?,
+    FoodType?,
+    TransportType?,
+  )
+>
 loadGameState() async {
   final prefs = await SharedPreferences.getInstance();
   final kp = prefs.getInt(_kpKey) ?? 0;
@@ -287,6 +316,21 @@ loadGameState() async {
     assets = AssetInventory.fromJson(jsonDecode(assetsJson));
   }
 
+  final rentName = prefs.getString(_rentChoiceKey);
+  final rent = rentName != null
+      ? RentType.values.firstWhere((e) => e.name == rentName)
+      : null;
+
+  final foodName = prefs.getString(_foodChoiceKey);
+  final food = foodName != null
+      ? FoodType.values.firstWhere((e) => e.name == foodName)
+      : null;
+
+  final transportName = prefs.getString(_transportChoiceKey);
+  final transport = transportName != null
+      ? TransportType.values.firstWhere((e) => e.name == transportName)
+      : null;
+
   debugPrint("Loaded KP: $kp");
   debugPrint("Loaded Gems: $gems");
   debugPrint("Loaded Track: ${track.name}");
@@ -301,6 +345,9 @@ loadGameState() async {
     DateTime.fromMillisecondsSinceEpoch(lastIncomeMillis),
     layout,
     assets,
+    rent,
+    food,
+    transport,
   );
 }
 
@@ -354,22 +401,22 @@ CareerLevelInfo? getCareerLevelInfo(CareerState career) {
 const Map<int, CareerLevelInfo> businessCareerInfo = {
   2: CareerLevelInfo(
     name: "Idea",
-    dailyIncome: 5,
+    dailyIncome: 50,
     unlockedBuildings: ["💡 Idea Hub"],
   ),
   3: CareerLevelInfo(
     name: "Bootstrap",
-    dailyIncome: 10,
+    dailyIncome: 100,
     unlockedBuildings: ["🏭 Small Workshop", "📦 Storage Unit"],
   ),
   4: CareerLevelInfo(
     name: "Funded",
-    dailyIncome: 25,
+    dailyIncome: 250,
     unlockedBuildings: ["🏢 Office Building", "📊 Analytics Center"],
   ),
   5: CareerLevelInfo(
     name: "Unicorn",
-    dailyIncome: 60,
+    dailyIncome: 600,
     unlockedBuildings: ["🏙️ HQ Tower", "🌐 Global Operations"],
   ),
 };
@@ -377,22 +424,22 @@ const Map<int, CareerLevelInfo> businessCareerInfo = {
 const Map<int, CareerLevelInfo> jobCareerInfo = {
   2: CareerLevelInfo(
     name: "Employee",
-    dailyIncome: 4,
+    dailyIncome: 40,
     unlockedBuildings: ["🏢 Office Desk"],
   ),
   3: CareerLevelInfo(
     name: "Supervisor",
-    dailyIncome: 8,
+    dailyIncome: 80,
     unlockedBuildings: ["👥 Team Office"],
   ),
   4: CareerLevelInfo(
     name: "Manager",
-    dailyIncome: 16,
+    dailyIncome: 160,
     unlockedBuildings: ["🏬 Department Office"],
   ),
   5: CareerLevelInfo(
     name: "CEO",
-    dailyIncome: 40,
+    dailyIncome: 400,
     unlockedBuildings: ["🏙️ Corporate HQ"],
   ),
 };
@@ -403,4 +450,220 @@ int getNextCareerLevel(CareerState career) {
     return career.level + 1;
   }
   return career.level;
+}
+
+// Liability Data
+class LiabilityInfo {
+  final int kp;
+  final double incomePercent;
+  final String label;
+  final String description;
+
+  const LiabilityInfo({
+    required this.kp,
+    required this.incomePercent,
+    required this.label,
+    required this.description,
+  });
+}
+
+Map<RentType, LiabilityInfo> rentData = {
+  RentType.sharedStudio: const LiabilityInfo(
+    kp: 50,
+    incomePercent: 0.3,
+    label: "Shared Studio",
+    description: "Affordable shared living. Great for saving!",
+  ),
+  RentType.smallApartment: const LiabilityInfo(
+    kp: 20,
+    incomePercent: 0.5,
+    label: "Small Apartment",
+    description: "A private cozy space. Balanced lifestyle.",
+  ),
+  RentType.luxuryHouse: const LiabilityInfo(
+    kp: -150,
+    incomePercent: 0.9,
+    label: "Luxury House",
+    description: "Extravagant living. Heavily affects your finances.",
+  ),
+};
+
+Map<FoodType, LiabilityInfo> foodData = {
+  FoodType.cheap: const LiabilityInfo(
+    kp: -20,
+    incomePercent: 0.1,
+    label: "Cheap Food",
+    description: "Lowest cost, but affects your health negatively.",
+  ),
+  FoodType.balanced: const LiabilityInfo(
+    kp: 30,
+    incomePercent: 0.25,
+    label: "Balanced Diet",
+    description: "Good nutrition for a steady mind and body.",
+  ),
+  FoodType.buffet: const LiabilityInfo(
+    kp: -50,
+    incomePercent: 0.5,
+    label: "Buffet",
+    description: "Rich and heavy. Expensive and not ideal for health.",
+  ),
+};
+
+Map<TransportType, LiabilityInfo> transportData = {
+  TransportType.public: const LiabilityInfo(
+    kp: 30,
+    incomePercent: 0.1,
+    label: "Public Transport",
+    description: "Efficient and eco-friendly common travel.",
+  ),
+  TransportType.cycle: const LiabilityInfo(
+    kp: 10,
+    incomePercent: 0.0,
+    label: "Cycle",
+    description: "Zero cost! But slower and takes more energy.",
+  ),
+  TransportType.car: const LiabilityInfo(
+    kp: -80,
+    incomePercent: 0.4, // Estimated 40% for maintenance/fuel
+    label: "Own Car",
+    description: "Convenient but very high recurring maintenance costs.",
+  ),
+};
+
+int getMaxRequirementForType(CareerTrack track, int level, AssetType type) {
+  // Return a small allowance for Level 1 (Student)
+  if (level == 1) {
+    switch (type) {
+      case AssetType.land:
+        return 2;
+      case AssetType.realEstate:
+        return 2;
+      case AssetType.machinery:
+        return 2;
+      case AssetType.vehicles:
+        return 2;
+      case AssetType.officeEquipment:
+        return 2;
+    }
+  }
+
+  // Find buildings for this level and track
+  final levelBuildings = buildings.where(
+    (b) => b.track == track && b.requiredLevel == level,
+  );
+  if (levelBuildings.isEmpty) return 0;
+
+  int maxRequirement = 0;
+  for (var b in levelBuildings) {
+    final req = b.requirements[type] ?? 0;
+    if (req > maxRequirement) maxRequirement = req;
+  }
+  return maxRequirement;
+}
+
+int getTotalAssetsCount(AssetInventory assets) {
+  return assets.items.values.fold(0, (sum, val) => sum + val);
+}
+
+// Fixed Cost Maps (Scaled 10x)
+const Map<String, int> rentCosts = {
+  "student_1_sharedStudio": 10,
+  "student_1_smallApartment": 10,
+  "student_1_luxuryHouse": 20,
+  "business_2_sharedStudio": 10,
+  "business_2_smallApartment": 20,
+  "business_2_luxuryHouse": 40,
+  "business_3_sharedStudio": 20,
+  "business_3_smallApartment": 40,
+  "business_3_luxuryHouse": 70,
+  "business_4_sharedStudio": 50,
+  "business_4_smallApartment": 80,
+  "business_4_luxuryHouse": 140,
+  "business_5_sharedStudio": 90,
+  "business_5_smallApartment": 150,
+  "business_5_luxuryHouse": 270,
+  "job_2_sharedStudio": 10,
+  "job_2_smallApartment": 20,
+  "job_2_luxuryHouse": 40,
+  "job_3_sharedStudio": 20,
+  "job_3_smallApartment": 40,
+  "job_3_luxuryHouse": 60,
+  "job_4_sharedStudio": 40,
+  "job_4_smallApartment": 60,
+  "job_4_luxuryHouse": 110,
+  "job_5_sharedStudio": 60,
+  "job_5_smallApartment": 100,
+  "job_5_luxuryHouse": 180,
+};
+
+const Map<String, int> foodCosts = {
+  "student_1_cheap": 2,
+  "student_1_balanced": 10,
+  "student_1_buffet": 10,
+  "business_2_cheap": 5,
+  "business_2_balanced": 10,
+  "business_2_buffet": 20,
+  "business_3_cheap": 10,
+  "business_3_balanced": 20,
+  "business_3_buffet": 40,
+  "business_4_cheap": 20,
+  "business_4_balanced": 40,
+  "business_4_buffet": 80,
+  "business_5_cheap": 30,
+  "business_5_balanced": 80,
+  "business_5_buffet": 150,
+  "job_2_cheap": 5,
+  "job_2_balanced": 10,
+  "job_2_buffet": 20,
+  "job_3_cheap": 10,
+  "job_3_balanced": 20,
+  "job_3_buffet": 40,
+  "job_4_cheap": 10,
+  "job_4_balanced": 30,
+  "job_4_buffet": 60,
+  "job_5_cheap": 20,
+  "job_5_balanced": 50,
+  "job_5_buffet": 100,
+};
+
+const Map<String, int> transportCosts = {
+  "student_1_public": 2,
+  "student_1_cycle": 0,
+  "student_1_car": 10,
+  "business_2_public": 5,
+  "business_2_cycle": 0,
+  "business_2_car": 20,
+  "business_3_public": 10,
+  "business_3_cycle": 0,
+  "business_3_car": 30,
+  "business_4_public": 20,
+  "business_4_cycle": 0,
+  "business_4_car": 60,
+  "business_5_public": 30,
+  "business_5_cycle": 0,
+  "business_5_car": 120,
+  "job_2_public": 5,
+  "job_2_cycle": 0,
+  "job_2_car": 20,
+  "job_3_public": 10,
+  "job_3_cycle": 0,
+  "job_3_car": 30,
+  "job_4_public": 10,
+  "job_4_cycle": 0,
+  "job_4_car": 50,
+  "job_5_public": 20,
+  "job_5_cycle": 0,
+  "job_5_car": 80,
+};
+
+int getRentCost(CareerTrack track, int level, RentType type) {
+  return rentCosts["${track.name}_${level}_${type.name}"] ?? 0;
+}
+
+int getFoodCost(CareerTrack track, int level, FoodType type) {
+  return foodCosts["${track.name}_${level}_${type.name}"] ?? 0;
+}
+
+int getTransportCost(CareerTrack track, int level, TransportType type) {
+  return transportCosts["${track.name}_${level}_${type.name}"] ?? 0;
 }

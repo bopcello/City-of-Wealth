@@ -25,7 +25,7 @@ class HomeTab extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: onDebugAdd,
-            child: const Text("💥 Add 1,000 KP and 10 gems (debug)"),
+            child: const Text("💥 Add 1,000 KP and 100 gems (debug)"),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
