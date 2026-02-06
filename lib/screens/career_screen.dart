@@ -4,12 +4,14 @@ import '../game_state.dart';
 class CareerScreen extends StatefulWidget {
   final CareerState career;
   final int currentKp;
+  final List<PlacedBuilding> cityLayout;
   final void Function(CareerState) onCareerChange;
 
   const CareerScreen({
     super.key,
     required this.career,
     required this.currentKp,
+    required this.cityLayout,
     required this.onCareerChange,
   });
 
@@ -46,6 +48,7 @@ class _CareerScreenState extends State<CareerScreen> {
               key: ValueKey('${career.track}-${career.level}'),
               career: career,
               currentKp: widget.currentKp,
+              cityLayout: widget.cityLayout,
               onCareerChange: _updateCareer,
             ),
             const SizedBox(height: 24),
@@ -72,12 +75,14 @@ class _CareerScreenState extends State<CareerScreen> {
 class _CareerHeroCard extends StatelessWidget {
   final CareerState career;
   final int currentKp;
+  final List<PlacedBuilding> cityLayout;
   final void Function(CareerState) onCareerChange;
 
   const _CareerHeroCard({
     super.key,
     required this.career,
     required this.currentKp,
+    required this.cityLayout,
     required this.onCareerChange,
   });
 
@@ -87,6 +92,19 @@ class _CareerHeroCard extends StatelessWidget {
 
   int _requiredKpForNext() {
     return requiredKpFor(career.track, career.level + 1);
+  }
+
+  List<String> _getMissingBuildings() {
+    if (career.level == 1) return [];
+    final info = getCareerLevelInfo(career);
+    if (info == null) return [];
+
+    List<String> missing = [];
+    for (var bName in info.unlockedBuildings) {
+      bool exists = cityLayout.any((pb) => pb.name == bName);
+      if (!exists) missing.add(bName);
+    }
+    return missing;
   }
 
   void _advance() {
@@ -143,7 +161,10 @@ class _CareerHeroCard extends StatelessWidget {
     final info = _currentInfo();
     final hasNextLevel = career.level < 5;
     final requiredKpValue = hasNextLevel ? _requiredKpForNext() : 0;
-    final canAdvance = hasNextLevel && currentKp >= requiredKpValue;
+    final missingBuildings = _getMissingBuildings();
+    final hasAllBuildings = missingBuildings.isEmpty;
+    final canAdvance =
+        hasNextLevel && currentKp >= requiredKpValue && hasAllBuildings;
 
     return Container(
       width: double.infinity,
@@ -202,6 +223,37 @@ class _CareerHeroCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
+            if (hasNextLevel && !hasAllBuildings) ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "To advance, build at least one of each:",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    ...missingBuildings.map(
+                      (b) => Text(
+                        "• $b",
+                        style: const TextStyle(fontSize: 12, color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

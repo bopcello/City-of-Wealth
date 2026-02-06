@@ -45,6 +45,8 @@ class _MainScreenState extends State<MainScreen> {
   RentType? rentChoice;
   FoodType? foodChoice;
   TransportType? transportChoice;
+  Set<AssetType> insurances = {};
+  int bankruptcyCount = 0;
 
   bool _loaded = false;
   bool _incomePaused = false; // [DEBUG: PAUSE_INCOME]
@@ -77,6 +79,8 @@ class _MainScreenState extends State<MainScreen> {
       savedRent,
       savedFood,
       savedTransport,
+      savedInsurances,
+      savedBankruptcyCount,
     ) = await loadGameState();
 
     setState(() {
@@ -89,6 +93,8 @@ class _MainScreenState extends State<MainScreen> {
       rentChoice = savedRent;
       foodChoice = savedFood;
       transportChoice = savedTransport;
+      insurances = savedInsurances;
+      bankruptcyCount = savedBankruptcyCount;
       _loaded = true;
     });
 
@@ -106,6 +112,8 @@ class _MainScreenState extends State<MainScreen> {
       rent: rentChoice,
       food: foodChoice,
       transport: transportChoice,
+      insurances: insurances,
+      bankruptcyCount: bankruptcyCount,
     );
   }
 
@@ -172,6 +180,31 @@ class _MainScreenState extends State<MainScreen> {
           ? getTransportCost(career.track, career.level, transportChoice!)
           : 0;
 
+      int insuranceCost = insurances.length * 5;
+      int insuranceKp = insurances.length * 20;
+
+      int maintenanceCost = 0;
+      if (dayNumber % 10 == 0) {
+        for (var b in cityLayout) {
+          maintenanceCost += getBuildingLevel(b.name);
+        }
+      }
+
+      // Debt Interest Calculation
+      int interestCost = 0;
+      if (gems < 0) {
+        double rate = 0.05;
+        int debtFactor = gems.abs();
+        if (debtFactor >= 2000) {
+          rate = 0.20;
+        } else if (debtFactor >= 1500) {
+          rate = 0.10;
+        } else if (debtFactor >= 1000) {
+          rate = 0.05;
+        }
+        interestCost = (debtFactor * rate).round();
+      }
+
       dayKp +=
           (rentChoice != null
               ? getRentKp(career.track, career.level, rentChoice!)
@@ -181,19 +214,31 @@ class _MainScreenState extends State<MainScreen> {
               : 0) +
           (transportChoice != null
               ? getTransportKp(career.track, career.level, transportChoice!)
-              : 0);
+              : 0) +
+          insuranceKp;
 
       if (hasWaste) {
         dayKp -= wastePenalty;
       }
 
-      dayGems -= (rCost + fCost + tCost);
+      dayGems -=
+          (rCost +
+          fCost +
+          tCost +
+          insuranceCost +
+          maintenanceCost +
+          interestCost);
 
       totalKpChange += dayKp;
       totalGemChange += dayGems;
 
       String event =
           "Day $dayNumber: Kp=${dayKp > 0 ? '+' : ''}$dayKp, Gems=${dayGems > 0 ? '+' : ''}$dayGems";
+      if (interestCost > 0) event += " (Interest: -$interestCost Gems)";
+      if (maintenanceCost > 0) {
+        event += " (Maintenance: -$maintenanceCost Gems)";
+      }
+      if (insuranceCost > 0) event += " (Insurance: -$insuranceCost Gems)";
       if (!hasAllEssentials)
         event +=
             " (No income: Go to liabilities to select rent, food and transport to begin receiving income)";
@@ -260,10 +305,16 @@ class _MainScreenState extends State<MainScreen> {
           rent: rentChoice,
           food: foodChoice,
           transport: transportChoice,
+          cityLayout: cityLayout,
+          insurances: insurances,
+          bankruptcyCount: bankruptcyCount,
           onKpChange: (delta) {
             setState(() => kp += delta);
             _save();
           },
+          onInsuranceToggle: _handleToggleInsurance,
+          onSellAsset: _handleSellAsset,
+          onBankruptcy: _handleBankruptcy,
           onCareerChange: (newCareer) {
             setState(() {
               if (newCareer.level > career.level) {
@@ -329,9 +380,20 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  void _handleToggleInsurance(AssetType type) {
+    setState(() {
+      if (insurances.contains(type)) {
+        insurances.remove(type);
+      } else {
+        insurances.add(type);
+        kp += 100; // Immediate bonus as requested
+      }
+    });
+    _save();
+  }
+
   void _handleBuyAsset(AssetType type, int amount) {
     final cost = assetCost(type) * amount;
-    if (gems < cost) return;
 
     int kpBonus = 10 * amount;
     String message = "Purchasing necessary assets: +$kpBonus KP";
@@ -365,6 +427,59 @@ class _MainScreenState extends State<MainScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text("Great!"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleSellAsset(AssetType type) {
+    if (assets.count(type) <= 0) return;
+    final sellPrice = assetSellPrice(type);
+    setState(() {
+      gems += sellPrice;
+      assets = assets.add(type, -1);
+    });
+    _save();
+  }
+
+  void _handleBankruptcy() {
+    if (bankruptcyCount >= 3) return;
+
+    int totalLiquidationValue = 0;
+    for (var type in AssetType.values) {
+      totalLiquidationValue += assets.count(type) * assetSellPrice(type);
+    }
+
+    final gemsRecovered = (totalLiquidationValue * 0.2).round();
+
+    setState(() {
+      bankruptcyCount++;
+      kp = 0;
+      gems = gemsRecovered;
+      career = const CareerState(track: CareerTrack.student, level: 1);
+      cityLayout = [];
+      assets = const AssetInventory({});
+      insurances = {};
+      rentChoice = null;
+      foodChoice = null;
+      transportChoice = null;
+    });
+    _save();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Bankruptcy Declared"),
+        content: Text(
+          "All your assets were auctioned off and your debt was waived. "
+          "Thankfully, the bank recovered $gemsRecovered gems more than your debt.\n\n"
+          "You are now back to being a Level 1 Student. Good luck starting over!",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("I understand"),
           ),
         ],
       ),

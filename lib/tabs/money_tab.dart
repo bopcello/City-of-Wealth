@@ -16,7 +16,13 @@ class MoneyTab extends StatelessWidget {
   final RentType? rent;
   final FoodType? food;
   final TransportType? transport;
+  final List<PlacedBuilding> cityLayout;
+  final Set<AssetType> insurances;
   final void Function(RentType?, FoodType?, TransportType?) onLiabilitiesChange;
+  final void Function(AssetType) onInsuranceToggle;
+  final void Function(AssetType) onSellAsset;
+  final VoidCallback onBankruptcy;
+  final int bankruptcyCount;
 
   const MoneyTab({
     super.key,
@@ -30,7 +36,13 @@ class MoneyTab extends StatelessWidget {
     required this.rent,
     required this.food,
     required this.transport,
+    required this.cityLayout,
+    required this.insurances,
     required this.onLiabilitiesChange,
+    required this.onInsuranceToggle,
+    required this.onSellAsset,
+    required this.onBankruptcy,
+    required this.bankruptcyCount,
   });
 
   @override
@@ -80,6 +92,7 @@ class MoneyTab extends StatelessWidget {
                     builder: (_) => CareerScreen(
                       career: career,
                       currentKp: currentKp,
+                      cityLayout: cityLayout,
                       onCareerChange: onCareerChange,
                     ),
                   ),
@@ -93,6 +106,7 @@ class MoneyTab extends StatelessWidget {
                       assets: assets,
                       gems: gems,
                       onBuyAsset: (type) => onBuyAsset(type, 1),
+                      onSellAsset: onSellAsset,
                     ),
                   ),
                 );
@@ -106,7 +120,14 @@ class MoneyTab extends StatelessWidget {
                       currentRent: rent,
                       currentFood: food,
                       currentTransport: transport,
+                      cityLayout: cityLayout,
+                      assets: assets,
+                      insurances: insurances,
+                      gems: gems,
+                      bankruptcyCount: bankruptcyCount,
                       onSelectionChanged: onLiabilitiesChange,
+                      onInsuranceToggle: onInsuranceToggle,
+                      onBankruptcy: onBankruptcy,
                     ),
                   ),
                 );

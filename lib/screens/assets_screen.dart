@@ -5,12 +5,14 @@ class AssetsScreen extends StatefulWidget {
   final AssetInventory assets;
   final int gems;
   final void Function(AssetType type) onBuyAsset;
+  final void Function(AssetType type) onSellAsset;
 
   const AssetsScreen({
     super.key,
     required this.assets,
     required this.gems,
     required this.onBuyAsset,
+    required this.onSellAsset,
   });
 
   @override
@@ -49,34 +51,75 @@ class _AssetsScreenState extends State<AssetsScreen> {
         padding: const EdgeInsets.all(16),
         children: AssetType.values.map((type) {
           final cost = assetCosts[type]!;
+          final sellPrice = assetSellPrice(type);
+          final canAfford = _currentGems >= cost;
+          final ownedCount = _currentAssets.count(type);
+
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.amber),
+              border: Border.all(
+                color: canAfford ? Colors.amber : Colors.red,
+                width: canAfford ? 1 : 2,
+              ),
             ),
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
-                  child: Text(
-                    assetLabel(type),
-                    style: const TextStyle(fontSize: 16),
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        assetLabel(type),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      "Owned: $ownedCount",
+                      style: const TextStyle(color: Colors.blueGrey),
+                    ),
+                  ],
                 ),
-                Text("Owned: ${_currentAssets.count(type)}"),
-                const SizedBox(width: 12),
-                ElevatedButton(
-                  onPressed: _currentGems >= cost
-                      ? () {
-                          setState(() {
-                            _currentGems -= cost;
-                            _currentAssets = _currentAssets.add(type, 1);
-                          });
-                          widget.onBuyAsset(type);
-                        }
-                      : null,
-                  child: Text("Buy ($cost 💎)"),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade100,
+                        foregroundColor: Colors.red.shade900,
+                      ),
+                      onPressed: ownedCount > 0
+                          ? () {
+                              setState(() {
+                                _currentGems += sellPrice;
+                                _currentAssets = _currentAssets.add(type, -1);
+                              });
+                              widget.onSellAsset(type);
+                            }
+                          : null,
+                      child: Text("Sell ($sellPrice 💎)"),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: canAfford ? Colors.green : null,
+                        foregroundColor: canAfford ? Colors.white : null,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _currentGems -= cost;
+                          _currentAssets = _currentAssets.add(type, 1);
+                        });
+                        widget.onBuyAsset(type);
+                      },
+                      child: Text("Buy ($cost 💎)"),
+                    ),
+                  ],
                 ),
               ],
             ),

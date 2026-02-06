@@ -6,7 +6,14 @@ class LiabilitiesScreen extends StatefulWidget {
   final RentType? currentRent;
   final FoodType? currentFood;
   final TransportType? currentTransport;
+  final List<PlacedBuilding> cityLayout;
+  final AssetInventory assets;
+  final Set<AssetType> insurances;
+  final int gems;
+  final int bankruptcyCount;
   final void Function(RentType?, FoodType?, TransportType?) onSelectionChanged;
+  final void Function(AssetType) onInsuranceToggle;
+  final VoidCallback onBankruptcy;
 
   const LiabilitiesScreen({
     super.key,
@@ -14,7 +21,14 @@ class LiabilitiesScreen extends StatefulWidget {
     required this.currentRent,
     required this.currentFood,
     required this.currentTransport,
+    required this.cityLayout,
+    required this.assets,
+    required this.insurances,
+    required this.gems,
+    required this.bankruptcyCount,
     required this.onSelectionChanged,
+    required this.onInsuranceToggle,
+    required this.onBankruptcy,
   });
 
   @override
@@ -96,6 +110,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
               color: Colors.amber.shade50,
               child: ListView(
                 children: [
+                  _SectionHeader(title: "Lifestyle", icon: Icons.favorite),
                   _buildPanel(
                     "Rent",
                     Icons.home,
@@ -152,7 +167,6 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                     (v) =>
                         getRentKp(widget.career.track, widget.career.level, v),
                   ),
-                  const SizedBox(height: 16),
                   _buildPanel(
                     "Food",
                     Icons.restaurant,
@@ -209,7 +223,6 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                     (v) =>
                         getFoodKp(widget.career.track, widget.career.level, v),
                   ),
-                  const SizedBox(height: 16),
                   _buildPanel(
                     "Transport",
                     Icons.directions_car,
@@ -269,35 +282,251 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                       v,
                     ),
                   ),
+                  const Divider(height: 32),
+                  _SectionHeader(title: "Maintenance", icon: Icons.build),
+                  _buildDebtSection(),
+                  _buildMaintenanceSection(),
+                  const Divider(height: 32),
+                  _SectionHeader(title: "Insurance", icon: Icons.verified_user),
+                  _buildInsuranceSection(),
+                  const Divider(height: 32),
+                  _SectionHeader(title: "Emergency", icon: Icons.emergency),
+                  _buildBankruptcySection(context),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
           ),
-          // Bottom Section
-          Container(
-            height: 100,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
-                ),
-              ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDebtSection() {
+    if (widget.gems >= 0) return const SizedBox.shrink();
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.red.shade200),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.warning_amber_rounded, color: Colors.red.shade700),
+          const SizedBox(width: 12),
+          Text(
+            "Debt: ${widget.gems.abs()} Gems",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.red.shade700,
             ),
-            child: const Center(
-              child: Text(
-                "Insurance system coming soon",
-                style: TextStyle(
-                  fontSize: 16,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMaintenanceSection() {
+    // Group buildings by name to show counts
+    final Map<String, int> counts = {};
+    for (var b in widget.cityLayout) {
+      counts[b.name] = (counts[b.name] ?? 0) + 1;
+    }
+
+    if (counts.isEmpty) {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Text(
+            "No buildings placed yet. Maintenance will start once you build something.",
+            style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+          ),
+        ),
+      );
+    }
+
+    int totalCost = 0;
+    return Column(
+      children: [
+        ...counts.entries.map((entry) {
+          final level = getBuildingLevel(entry.key);
+          final cost = level * entry.value;
+          totalCost += cost;
+          return Card(
+            elevation: 1,
+            margin: const EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.blue.shade50,
+                child: Text(
+                  "${level}L",
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue.shade800,
+                  ),
+                ),
+              ),
+              title: Text(entry.key),
+              subtitle: Text(
+                "${entry.value} buildings (@ $level Gems / 10 cycles)",
+              ),
+              trailing: Text(
+                "-$cost Gems",
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                  fontStyle: FontStyle.italic,
+                  color: Colors.red,
                 ),
               ),
             ),
+          );
+        }),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Total Maintenance (every 10 cycles):",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "-$totalCost Gems",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInsuranceSection() {
+    List<AssetType> eligibleTypes = [];
+    for (var type in AssetType.values) {
+      if (widget.assets.count(type) > 0) {
+        eligibleTypes.add(type);
+      }
+    }
+
+    if (eligibleTypes.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          child: Text(
+            "Available Insurances",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        ...eligibleTypes.map((type) {
+          final isInsured = widget.insurances.contains(type);
+          return Card(
+            elevation: 1,
+            margin: const EdgeInsets.only(bottom: 8),
+            child: SwitchListTile(
+              title: Text("${assetLabel(type)} Insurance"),
+              subtitle: const Text("Cost: 5 Gems/cycle | Reward: +20 KP/cycle"),
+              value: isInsured,
+              onChanged: (val) {
+                setState(() {
+                  widget.onInsuranceToggle(type);
+                });
+              },
+              activeColor: Colors.green,
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildBankruptcySection(BuildContext context) {
+    final remaining = 3 - widget.bankruptcyCount;
+    final isAvailable = remaining > 0;
+
+    return Card(
+      color: Colors.red.shade50,
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.red.shade200),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            const Text(
+              "Declare Bankruptcy",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "Resets your progress. Your debt will be waived and you will receive the remaining gems from auctioning off all your assets at market value.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.blueGrey),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              "Remaining Attempts: $remaining / 3",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isAvailable ? Colors.orange.shade800 : Colors.red,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isAvailable ? Colors.red : Colors.grey,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: isAvailable
+                  ? () {
+                      _showBankruptcyConfirmation(context);
+                    }
+                  : null,
+              child: const Text("DECLARE BANKRUPTCY"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showBankruptcyConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Auction Assets & Waive Debt?"),
+        content: const Text(
+          "This will reset your career to Level 1 Student and liquidate all your assets. "
+          "This is a fresh start. You can only do this 3 times per game.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("CANCEL"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              Navigator.pop(context); // Exit screen
+              widget.onBankruptcy();
+            },
+            child: const Text("YES, I AM SURE"),
           ),
         ],
       ),
@@ -379,6 +608,35 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final IconData icon;
+
+  const _SectionHeader({required this.title, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 24, color: Colors.amber.shade900),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.amber.shade900,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
       ),
     );
   }

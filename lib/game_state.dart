@@ -20,14 +20,23 @@ const Map<AssetType, int> assetCosts = {
   AssetType.officeEquipment: 150,
 };
 
+const Map<AssetType, int> assetSellingPrices = {
+  AssetType.land: 90,
+  AssetType.realEstate: 450,
+  AssetType.machinery: 150,
+  AssetType.vehicles: 180,
+  AssetType.officeEquipment: 100,
+};
+
 int assetCost(AssetType type) => assetCosts[type]!;
+int assetSellPrice(AssetType type) => assetSellingPrices[type]!;
 
 String assetLabel(AssetType type) {
   switch (type) {
     case AssetType.land:
       return "Land";
     case AssetType.realEstate:
-      return "Real Estate";
+      return "Properties";
     case AssetType.machinery:
       return "Machinery";
     case AssetType.vehicles:
@@ -147,6 +156,19 @@ const buildings = [
   ),
 ];
 
+int getBuildingLevel(String name) {
+  final b = buildings.firstWhere(
+    (e) => e.name == name,
+    orElse: () => const Building(
+      name: "",
+      track: CareerTrack.student,
+      requiredLevel: 1,
+      requirements: {},
+    ),
+  );
+  return b.requiredLevel;
+}
+
 class CareerState {
   final CareerTrack track;
   final int level;
@@ -168,6 +190,8 @@ const _assetsKey = 'assets';
 const _rentChoiceKey = 'rentChoice';
 const _foodChoiceKey = 'foodChoice';
 const _transportChoiceKey = 'transportChoice';
+const _insurancesKey = 'insurances';
+const _bankruptcyCountKey = 'bankruptcyCount';
 
 class PlacedBuilding {
   final String name;
@@ -253,17 +277,20 @@ Future<void> saveGameState({
   required RentType? rent,
   required FoodType? food,
   required TransportType? transport,
+  required Set<AssetType> insurances,
+  required int bankruptcyCount,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   debugPrint("💾 SAVING GAME");
   debugPrint(
-    "KP: $kp, Gems: $gems, Track: ${career.track}, Level: ${career.level}, Assets: ${assets.items.length}",
+    "KP: $kp, Gems: $gems, Track: ${career.track}, Level: ${career.level}, Assets: ${assets.items.length}, Bankruptcy: $bankruptcyCount",
   );
   await prefs.setInt(_kpKey, kp);
   await prefs.setInt(_gemsKey, gems);
   await prefs.setString(_careerTrackKey, career.track.name);
   await prefs.setInt(_careerLevelKey, career.level);
   await prefs.setInt(_lastIncomeTimeKey, lastIncomeTime.millisecondsSinceEpoch);
+  await prefs.setInt(_bankruptcyCountKey, bankruptcyCount);
 
   final layoutJson = jsonEncode(layout.map((b) => b.toJson()).toList());
   await prefs.setString(_cityLayoutKey, layoutJson);
@@ -286,6 +313,9 @@ Future<void> saveGameState({
   } else {
     await prefs.remove(_transportChoiceKey);
   }
+
+  final insuranceNames = insurances.map((e) => e.name).toList();
+  await prefs.setStringList(_insurancesKey, insuranceNames);
 }
 
 Future<
@@ -299,12 +329,15 @@ Future<
     RentType?,
     FoodType?,
     TransportType?,
+    Set<AssetType>,
+    int,
   )
 >
 loadGameState() async {
   final prefs = await SharedPreferences.getInstance();
   final kp = prefs.getInt(_kpKey) ?? 0;
   final gems = prefs.getInt(_gemsKey) ?? 0;
+  final bankruptcyCount = prefs.getInt(_bankruptcyCountKey) ?? 0;
 
   final trackName = prefs.getString(_careerTrackKey);
   final level = prefs.getInt(_careerLevelKey) ?? 1;
@@ -345,12 +378,18 @@ loadGameState() async {
       ? TransportType.values.firstWhere((e) => e.name == transportName)
       : null;
 
+  final insuranceNames = prefs.getStringList(_insurancesKey) ?? [];
+  final insurances = insuranceNames
+      .map((name) => AssetType.values.firstWhere((e) => e.name == name))
+      .toSet();
+
   debugPrint("Loaded KP: $kp");
   debugPrint("Loaded Gems: $gems");
   debugPrint("Loaded Track: ${track.name}");
   debugPrint("Loaded Level: $level");
   debugPrint("Loaded Buildings: ${layout.length}");
   debugPrint("Loaded Assets: ${assets.items.length}");
+  debugPrint("Loaded Bankruptcy: $bankruptcyCount");
 
   return (
     kp,
@@ -362,6 +401,8 @@ loadGameState() async {
     rent,
     food,
     transport,
+    insurances,
+    bankruptcyCount,
   );
 }
 
@@ -538,15 +579,15 @@ int getMaxRequirementForType(CareerTrack track, int level, AssetType type) {
   if (level == 1) {
     switch (type) {
       case AssetType.land:
-        return 2;
+        return 0;
       case AssetType.realEstate:
-        return 2;
+        return 0;
       case AssetType.machinery:
-        return 2;
+        return 0;
       case AssetType.vehicles:
-        return 2;
+        return 0;
       case AssetType.officeEquipment:
-        return 2;
+        return 0;
     }
   }
 
