@@ -137,7 +137,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                     (v) => getRentCost(
                       widget.career.track,
                       widget.career.level,
-                      v as RentType,
+                      v,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -183,7 +183,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                     (v) => getFoodCost(
                       widget.career.track,
                       widget.career.level,
-                      v as FoodType,
+                      v,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -229,7 +229,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                     (v) => getTransportCost(
                       widget.career.track,
                       widget.career.level,
-                      v as TransportType,
+                      v,
                     ),
                   ),
                 ],

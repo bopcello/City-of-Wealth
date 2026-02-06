@@ -12,20 +12,15 @@ enum FoodType { cheap, balanced, buffet }
 
 enum TransportType { public, cycle, car }
 
-int assetCost(AssetType type) {
-  switch (type) {
-    case AssetType.land:
-      return 100;
-    case AssetType.realEstate:
-      return 500;
-    case AssetType.machinery:
-      return 200;
-    case AssetType.vehicles:
-      return 300;
-    case AssetType.officeEquipment:
-      return 150;
-  }
-}
+const Map<AssetType, int> assetCosts = {
+  AssetType.land: 100,
+  AssetType.realEstate: 500,
+  AssetType.machinery: 200,
+  AssetType.vehicles: 300,
+  AssetType.officeEquipment: 150,
+};
+
+int assetCost(AssetType type) => assetCosts[type]!;
 
 String assetLabel(AssetType type) {
   switch (type) {
@@ -198,38 +193,54 @@ String trackLabel(CareerTrack track) {
   }
 }
 
+const Map<int, int> businessKpRequirements = {
+  2: 2000,
+  3: 5000,
+  4: 12000,
+  5: 25000,
+};
+
+const Map<int, int> jobKpRequirements = {2: 1500, 3: 4000, 4: 9000, 5: 20000};
+
+const int studentNextLevelKp = 2000;
+
+int requiredKpFor(CareerTrack track, int nextLevel) {
+  if (nextLevel <= 1) return 0;
+  if (nextLevel > 5) return 0;
+
+  if (track == CareerTrack.student) return studentNextLevelKp;
+
+  if (track == CareerTrack.business) {
+    return businessKpRequirements[nextLevel] ?? 0;
+  }
+
+  if (track == CareerTrack.job) {
+    return jobKpRequirements[nextLevel] ?? 0;
+  }
+  return 0;
+}
+
+const studentLevelInfo = CareerLevelInfo(
+  name: "Student",
+  dailyIncome: 20,
+  unlockedBuildings: [],
+);
+
 int dailyIncome(CareerTrack track, int level) {
-  if (level == 1) return 20; // Student base income (2 * 10)
+  if (track == CareerTrack.student) {
+    return studentLevelInfo.dailyIncome;
+  }
   final info = getCareerLevelInfo(CareerState(track: track, level: level));
   return info?.dailyIncome ?? 0;
 }
 
-int requiredKpFor(CareerTrack track, int nextLevel) {
-  if (nextLevel <= 1) return 0;
-
-  if (track == CareerTrack.business) {
-    return [0, 0, 2000, 5000, 12000, 25000][nextLevel];
-  }
-
-  if (track == CareerTrack.job) {
-    return [0, 0, 1500, 4000, 9000, 20000][nextLevel];
-  }
-
-  return 0;
-}
-
 String levelName(CareerTrack track, int level) {
-  if (track == CareerTrack.student) return "Student";
-
-  if (track == CareerTrack.business) {
-    return ["", "Student", "Idea", "Bootstrap", "Funded", "Unicorn"][level];
+  if (track == CareerTrack.student) {
+    return studentLevelInfo.name;
   }
 
-  if (track == CareerTrack.job) {
-    return ["", "Student", "Employee", "Supervisor", "Manager", "CEO"][level];
-  }
-
-  return "";
+  final info = getCareerLevelInfo(CareerState(track: track, level: level));
+  return info?.name ?? "Unknown Level";
 }
 
 Future<void> saveGameState({
@@ -260,18 +271,21 @@ Future<void> saveGameState({
   final assetsJson = jsonEncode(assets.toJson());
   await prefs.setString(_assetsKey, assetsJson);
 
-  if (rent != null)
+  if (rent != null) {
     await prefs.setString(_rentChoiceKey, rent.name);
-  else
+  } else {
     await prefs.remove(_rentChoiceKey);
-  if (food != null)
+  }
+  if (food != null) {
     await prefs.setString(_foodChoiceKey, food.name);
-  else
+  } else {
     await prefs.remove(_foodChoiceKey);
-  if (transport != null)
+  }
+  if (transport != null) {
     await prefs.setString(_transportChoiceKey, transport.name);
-  else
+  } else {
     await prefs.remove(_transportChoiceKey);
+  }
 }
 
 Future<
@@ -547,9 +561,9 @@ int getMaxRequirementForType(CareerTrack track, int level, AssetType type) {
     }
   }
 
-  // Find buildings for this level and track
+  // Find buildings for this level and track (and below)
   final levelBuildings = buildings.where(
-    (b) => b.track == track && b.requiredLevel == level,
+    (b) => b.track == track && b.requiredLevel <= level,
   );
   if (levelBuildings.isEmpty) return 0;
 
@@ -567,59 +581,59 @@ int getTotalAssetsCount(AssetInventory assets) {
 
 // Fixed Cost Maps (Scaled 10x)
 const Map<String, int> rentCosts = {
-  "student_1_sharedStudio": 10,
+  "student_1_sharedStudio": 5,
   "student_1_smallApartment": 10,
   "student_1_luxuryHouse": 20,
   "business_2_sharedStudio": 10,
-  "business_2_smallApartment": 20,
+  "business_2_smallApartment": 25,
   "business_2_luxuryHouse": 40,
   "business_3_sharedStudio": 20,
-  "business_3_smallApartment": 40,
-  "business_3_luxuryHouse": 70,
+  "business_3_smallApartment": 50,
+  "business_3_luxuryHouse": 90,
   "business_4_sharedStudio": 50,
-  "business_4_smallApartment": 80,
-  "business_4_luxuryHouse": 140,
-  "business_5_sharedStudio": 90,
-  "business_5_smallApartment": 150,
-  "business_5_luxuryHouse": 270,
+  "business_4_smallApartment": 125,
+  "business_4_luxuryHouse": 220,
+  "business_5_sharedStudio": 60,
+  "business_5_smallApartment": 300,
+  "business_5_luxuryHouse": 500,
   "job_2_sharedStudio": 10,
   "job_2_smallApartment": 20,
-  "job_2_luxuryHouse": 40,
+  "job_2_luxuryHouse": 35,
   "job_3_sharedStudio": 20,
   "job_3_smallApartment": 40,
-  "job_3_luxuryHouse": 60,
+  "job_3_luxuryHouse": 70,
   "job_4_sharedStudio": 40,
-  "job_4_smallApartment": 60,
-  "job_4_luxuryHouse": 110,
+  "job_4_smallApartment": 80,
+  "job_4_luxuryHouse": 150,
   "job_5_sharedStudio": 60,
-  "job_5_smallApartment": 100,
-  "job_5_luxuryHouse": 180,
+  "job_5_smallApartment": 200,
+  "job_5_luxuryHouse": 380,
 };
 
 const Map<String, int> foodCosts = {
   "student_1_cheap": 2,
-  "student_1_balanced": 10,
+  "student_1_balanced": 5,
   "student_1_buffet": 10,
   "business_2_cheap": 5,
-  "business_2_balanced": 10,
-  "business_2_buffet": 20,
+  "business_2_balanced": 20,
+  "business_2_buffet": 40,
   "business_3_cheap": 10,
-  "business_3_balanced": 20,
-  "business_3_buffet": 40,
+  "business_3_balanced": 25,
+  "business_3_buffet": 50,
   "business_4_cheap": 20,
-  "business_4_balanced": 40,
-  "business_4_buffet": 80,
+  "business_4_balanced": 75,
+  "business_4_buffet": 150,
   "business_5_cheap": 30,
-  "business_5_balanced": 80,
-  "business_5_buffet": 150,
+  "business_5_balanced": 150,
+  "business_5_buffet": 250,
   "job_2_cheap": 5,
   "job_2_balanced": 10,
   "job_2_buffet": 20,
   "job_3_cheap": 10,
   "job_3_balanced": 20,
   "job_3_buffet": 40,
-  "job_4_cheap": 10,
-  "job_4_balanced": 30,
+  "job_4_cheap": 15,
+  "job_4_balanced": 40,
   "job_4_buffet": 60,
   "job_5_cheap": 20,
   "job_5_balanced": 50,

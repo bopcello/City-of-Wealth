@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'game_state.dart';
@@ -32,6 +33,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int selectedIndex = 0;
+  Timer? _cycleTimer;
 
   late int kp;
   late int gems;
@@ -45,11 +47,23 @@ class _MainScreenState extends State<MainScreen> {
   TransportType? transportChoice;
 
   bool _loaded = false;
+  // bool _incomePaused = false; // DEBUG: income pause flag
+  final List<String> _pendingEvents = [];
 
   @override
   void initState() {
     super.initState();
     _loadGame();
+    // Start debug timer for 10s cycles
+    _cycleTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (_loaded) _checkDailyCycle();
+    });
+  }
+
+  @override
+  void dispose() {
+    _cycleTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadGame() async {
@@ -99,8 +113,16 @@ class _MainScreenState extends State<MainScreen> {
     final now = DateTime.now();
     final difference = now.difference(lastIncomeTime);
 
-    if (difference.inHours >= 24) {
-      final cycles = difference.inHours ~/ 24;
+    const int cycleSeconds = 10; // DEBUG: Changed from 24h to 10s
+    if (difference.inSeconds >= cycleSeconds) {
+      /* 
+      // DEBUG: check if income is paused
+      if (_incomePaused) {
+        lastIncomeTime = now; // Slide time forward without applying income
+        return;
+      }
+      */
+      final cycles = difference.inSeconds ~/ cycleSeconds;
       _applyCycles(cycles);
     }
   }
@@ -108,11 +130,30 @@ class _MainScreenState extends State<MainScreen> {
   void _applyCycles(int cycles) {
     int totalKpChange = 0;
     int totalGemChange = 0;
+    List<String> events = [];
 
+    final hasAllEssentials =
+        rentChoice != null && foodChoice != null && transportChoice != null;
     final income = dailyIncome(career.track, career.level);
 
+    // Check for unnecessary assets (recurring penalty)
+    bool hasWaste = false;
+    for (var type in AssetType.values) {
+      if (assets.count(type) >
+          getMaxRequirementForType(career.track, career.level, type)) {
+        hasWaste = true;
+        break;
+      }
+    }
+
     for (int i = 0; i < cycles; i++) {
-      totalGemChange += income;
+      int dayKp = 0;
+      int dayGems = 0;
+      final dayNumber = _pendingEvents.length + i + 1;
+
+      if (hasAllEssentials) {
+        dayGems += income;
+      }
 
       // Liabilities
       int rCost = rentChoice != null
@@ -125,52 +166,36 @@ class _MainScreenState extends State<MainScreen> {
           ? getTransportCost(career.track, career.level, transportChoice!)
           : 0;
 
-      totalKpChange +=
+      dayKp +=
           (rentChoice != null ? rentData[rentChoice!]!.kp : 0) +
           (foodChoice != null ? foodData[foodChoice!]!.kp : 0) +
           (transportChoice != null ? transportData[transportChoice!]!.kp : 0);
 
-      totalGemChange -= (rCost + fCost + tCost);
+      if (hasWaste) {
+        dayKp -= 100;
+      }
+
+      dayGems -= (rCost + fCost + tCost);
+
+      totalKpChange += dayKp;
+      totalGemChange += dayGems;
+
+      String event =
+          "Day $dayNumber: Kp=${dayKp > 0 ? '+' : ''}$dayKp, Gems=${dayGems > 0 ? '+' : ''}$dayGems";
+      if (!hasAllEssentials) event += " (No income: missing essentials)";
+      if (hasWaste) event += " (Waste penalty: -100 KP)";
+      events.add(event);
     }
 
     setState(() {
       kp += totalKpChange;
       gems += totalGemChange;
       lastIncomeTime = DateTime.now();
+
+      _pendingEvents.addAll(events);
+      // Popup removed as per request, events now shown on HomeTab
     });
     _save();
-
-    if (totalKpChange != 0 || totalGemChange != 0) {
-      _showCyclePopup(totalKpChange, totalGemChange, cycles);
-    }
-  }
-
-  void _showCyclePopup(int kpDelta, int gemDelta, int cycles) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("$cycles Day Cycle Summary"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("KP Change: ${kpDelta > 0 ? '+' : ''}$kpDelta"),
-            Text("Gems Change: ${gemDelta > 0 ? '+' : ''}$gemDelta"),
-            const SizedBox(height: 8),
-            const Text(
-              "Based on your current lifestyle choices in Liabilities.",
-              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildBody() {
@@ -180,23 +205,23 @@ class _MainScreenState extends State<MainScreen> {
           kp: kp,
           gems: gems,
           career: career,
-          onDebugAdd: () {
+          events: _pendingEvents,
+          rentChoice: rentChoice,
+          foodChoice: foodChoice,
+          transportChoice: transportChoice,
+          assets: assets,
+          onClearEvents: () {
             setState(() {
-              kp += 1000;
-              gems += 100;
+              _pendingEvents.clear();
             });
-            _save();
           },
-          onDebugReset: () {
-            setState(() {
-              career = const CareerState(track: CareerTrack.student, level: 1);
-              cityLayout = [];
-              rentChoice = null;
-              foodChoice = null;
-              transportChoice = null;
-            });
-            _save();
+          /*
+          // DEBUG: pause toggle callback
+          incomePaused: _incomePaused,
+          onPauseToggled: (val) {
+            setState(() => _incomePaused = val);
           },
+          */
         );
       case 1:
         return CityTab(
@@ -247,10 +272,15 @@ class _MainScreenState extends State<MainScreen> {
             setState(() {
               // Calculate immediate KP change for moving from 'None' to a selection
               int kpDelta = 0;
-              if (rentChoice == null && r != null) kpDelta += rentData[r]!.kp;
-              if (foodChoice == null && f != null) kpDelta += foodData[f]!.kp;
-              if (transportChoice == null && t != null)
+              if (rentChoice == null && r != null) {
+                kpDelta += rentData[r]!.kp;
+              }
+              if (foodChoice == null && f != null) {
+                kpDelta += foodData[f]!.kp;
+              }
+              if (transportChoice == null && t != null) {
                 kpDelta += transportData[t]!.kp;
+              }
 
               rentChoice = r;
               foodChoice = f;
@@ -261,7 +291,27 @@ class _MainScreenState extends State<MainScreen> {
           },
         );
       case 3:
-        return const SettingsTab();
+        return SettingsTab(
+          onDebugAdd: () {
+            setState(() {
+              kp += 1000;
+              gems += 1000;
+            });
+            _save();
+          },
+          onDebugReset: () {
+            setState(() {
+              career = const CareerState(track: CareerTrack.student, level: 1);
+              cityLayout = [];
+              assets = const AssetInventory({});
+              rentChoice = null;
+              foodChoice = null;
+              transportChoice = null;
+              _pendingEvents.clear();
+            });
+            _save();
+          },
+        );
       default:
         return const SizedBox.shrink();
     }
@@ -282,9 +332,9 @@ class _MainScreenState extends State<MainScreen> {
     );
 
     if (currentAssetsOfThisType + amount > maxAllowedForThisType) {
-      kpBonus -= 100;
+      kpBonus = -100;
       message =
-          "Over-purchasing ${assetLabel(type)} for your level is a bad decision: -100 KP (Total: $kpBonus)";
+          "Over-purchasing ${assetLabel(type)} for your level is a bad decision: -100 KP";
     }
 
     setState(() {

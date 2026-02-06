@@ -48,7 +48,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: AssetType.values.map((type) {
-          final cost = assetCost(type);
+          final cost = assetCosts[type]!;
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(16),

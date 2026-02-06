@@ -82,32 +82,11 @@ class _CareerHeroCard extends StatelessWidget {
   });
 
   CareerLevelInfo _currentInfo() {
-    switch (career.track) {
-      case CareerTrack.business:
-        return businessCareerInfo[career.level]!;
-      case CareerTrack.job:
-        return jobCareerInfo[career.level]!;
-      case CareerTrack.student:
-        return const CareerLevelInfo(
-          name: "Student",
-          dailyIncome: 20,
-          unlockedBuildings: [],
-        );
-    }
+    return (getCareerLevelInfo(career) ?? studentLevelInfo);
   }
 
   int _requiredKpForNext() {
-    final nextLevel = career.level + 1;
-    if (nextLevel > 5) return 0;
-    if (career.track == CareerTrack.student) return 2000;
-
-    final levels = career.track == CareerTrack.business
-        ? businessLevels
-        : jobLevels;
-    final match = levels.where((l) => l.level == nextLevel);
-    if (match.isEmpty) return 0;
-
-    return match.first.requiredKp;
+    return requiredKpFor(career.track, career.level + 1);
   }
 
   void _advance() {
