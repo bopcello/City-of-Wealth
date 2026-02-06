@@ -468,13 +468,11 @@ int getNextCareerLevel(CareerState career) {
 
 // Liability Data
 class LiabilityInfo {
-  final int kp;
   final double incomePercent;
   final String label;
   final String description;
 
   const LiabilityInfo({
-    required this.kp,
     required this.incomePercent,
     required this.label,
     required this.description,
@@ -483,19 +481,16 @@ class LiabilityInfo {
 
 Map<RentType, LiabilityInfo> rentData = {
   RentType.sharedStudio: const LiabilityInfo(
-    kp: 50,
     incomePercent: 0.3,
     label: "Shared Studio",
-    description: "Affordable shared living. Great for saving!",
+    description: "Affordable shared living, but difficult to work and rest.",
   ),
   RentType.smallApartment: const LiabilityInfo(
-    kp: 20,
     incomePercent: 0.5,
     label: "Small Apartment",
     description: "A private cozy space. Balanced lifestyle.",
   ),
   RentType.luxuryHouse: const LiabilityInfo(
-    kp: -150,
     incomePercent: 0.9,
     label: "Luxury House",
     description: "Extravagant living. Heavily affects your finances.",
@@ -504,19 +499,16 @@ Map<RentType, LiabilityInfo> rentData = {
 
 Map<FoodType, LiabilityInfo> foodData = {
   FoodType.cheap: const LiabilityInfo(
-    kp: -20,
     incomePercent: 0.1,
     label: "Cheap Food",
     description: "Lowest cost, but affects your health negatively.",
   ),
   FoodType.balanced: const LiabilityInfo(
-    kp: 30,
     incomePercent: 0.25,
     label: "Balanced Diet",
     description: "Good nutrition for a steady mind and body.",
   ),
   FoodType.buffet: const LiabilityInfo(
-    kp: -50,
     incomePercent: 0.5,
     label: "Buffet",
     description: "Rich and heavy. Expensive and not ideal for health.",
@@ -525,21 +517,18 @@ Map<FoodType, LiabilityInfo> foodData = {
 
 Map<TransportType, LiabilityInfo> transportData = {
   TransportType.public: const LiabilityInfo(
-    kp: 30,
     incomePercent: 0.1,
     label: "Public Transport",
     description: "Efficient and eco-friendly common travel.",
   ),
   TransportType.cycle: const LiabilityInfo(
-    kp: 10,
     incomePercent: 0.0,
     label: "Cycle",
-    description: "Zero cost! But slower and takes more energy.",
+    description: "Zero cost! But tolling on health and wastes time.",
   ),
   TransportType.car: const LiabilityInfo(
-    kp: -80,
     incomePercent: 0.4, // Estimated 40% for maintenance/fuel
-    label: "Own Car",
+    label: "Car",
     description: "Convenient but very high recurring maintenance costs.",
   ),
 };
@@ -615,7 +604,7 @@ const Map<String, int> foodCosts = {
   "student_1_balanced": 5,
   "student_1_buffet": 10,
   "business_2_cheap": 5,
-  "business_2_balanced": 20,
+  "business_2_balanced": 10,
   "business_2_buffet": 40,
   "business_3_cheap": 10,
   "business_3_balanced": 25,
@@ -641,7 +630,7 @@ const Map<String, int> foodCosts = {
 };
 
 const Map<String, int> transportCosts = {
-  "student_1_public": 2,
+  "student_1_public": 3,
   "student_1_cycle": 0,
   "student_1_car": 10,
   "business_2_public": 5,
@@ -653,7 +642,7 @@ const Map<String, int> transportCosts = {
   "business_4_public": 20,
   "business_4_cycle": 0,
   "business_4_car": 60,
-  "business_5_public": 30,
+  "business_5_public": 50,
   "business_5_cycle": 0,
   "business_5_car": 120,
   "job_2_public": 5,
@@ -680,4 +669,106 @@ int getFoodCost(CareerTrack track, int level, FoodType type) {
 
 int getTransportCost(CareerTrack track, int level, TransportType type) {
   return transportCosts["${track.name}_${level}_${type.name}"] ?? 0;
+}
+
+const Map<String, int> rentKp = {
+  "student_1_sharedStudio": 10,
+  "student_1_smallApartment": 5,
+  "student_1_luxuryHouse": -150,
+  "business_2_sharedStudio": 5,
+  "business_2_smallApartment": 15,
+  "business_2_luxuryHouse": -100,
+  "business_3_sharedStudio": 0,
+  "business_3_smallApartment": 20,
+  "business_3_luxuryHouse": -50,
+  "business_4_sharedStudio": -20,
+  "business_4_smallApartment": 10,
+  "business_4_luxuryHouse": 20,
+  "business_5_sharedStudio": -80,
+  "business_5_smallApartment": -10,
+  "business_5_luxuryHouse": 40,
+  "job_2_sharedStudio": 5,
+  "job_2_smallApartment": 15,
+  "job_2_luxuryHouse": -100,
+  "job_3_sharedStudio": 0,
+  "job_3_smallApartment": 20,
+  "job_3_luxuryHouse": -50,
+  "job_4_sharedStudio": -20,
+  "job_4_smallApartment": 15,
+  "job_4_luxuryHouse": 20,
+  "job_5_sharedStudio": -100,
+  "job_5_smallApartment": 5,
+  "job_5_luxuryHouse": 40,
+};
+
+const Map<String, int> transportKp = {
+  "student_1_public": 20,
+  "student_1_cycle": 10,
+  "student_1_car": -80,
+  "business_2_public": 30,
+  "business_2_cycle": 5,
+  "business_2_car": -60,
+  "business_3_public": 20,
+  "business_3_cycle": 0,
+  "business_3_car": -30,
+  "business_4_public": 10,
+  "business_4_cycle": -30,
+  "business_4_car": -10,
+  "business_5_public": -20,
+  "business_5_cycle": -80,
+  "business_5_car": 60,
+  "job_2_public": 30,
+  "job_2_cycle": 5,
+  "job_2_car": -60,
+  "job_3_public": 20,
+  "job_3_cycle": 0,
+  "job_3_car": -30,
+  "job_4_public": 10,
+  "job_4_cycle": -30,
+  "job_4_car": -10,
+  "job_5_public": -20,
+  "job_5_cycle": -100,
+  "job_5_car": 50,
+};
+
+const Map<String, int> foodKp = {
+  "student_1_cheap": -10,
+  "student_1_balanced": 30,
+  "student_1_buffet": -80,
+  "business_2_cheap": -20,
+  "business_2_balanced": 30,
+  "business_2_buffet": -60,
+  "business_3_cheap": -30,
+  "business_3_balanced": 40,
+  "business_3_buffet": -40,
+  "business_4_cheap": -50,
+  "business_4_balanced": 50,
+  "business_4_buffet": -20,
+  "business_5_cheap": -100,
+  "business_5_balanced": 60,
+  "business_5_buffet": 20,
+  "job_2_cheap": -20,
+  "job_2_balanced": 30,
+  "job_2_buffet": -60,
+  "job_3_cheap": -30,
+  "job_3_balanced": 40,
+  "job_3_buffet": -40,
+  "job_4_cheap": -50,
+  "job_4_balanced": 50,
+  "job_4_buffet": -20,
+  "job_5_cheap": -100,
+  "job_5_balanced": 60,
+  "job_5_buffet": 20,
+};
+
+int getRentKp(CareerTrack track, int level, RentType type) {
+  return rentKp["${track.name}_${level}_${type.name}"] ?? 0;
+}
+
+int getFoodKp(CareerTrack track, int level, FoodType type) {
+  return foodKp["${track.name}_${level}_${type.name}"] ?? 0;
+}
+
+int getTransportKp(CareerTrack track, int level, TransportType type) {
+  return transportKp["${track.name}_${level}_${type.name}"] ?? 0;
 }

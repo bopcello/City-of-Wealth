@@ -37,9 +37,10 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
   void _showResultPopup(
     String category,
     String choiceLabel,
-    LiabilityInfo info,
-    List<(String, LiabilityInfo, int)> others,
+    int choiceKp,
+    List<(String, int, int)> others,
     int cost,
+    String description,
   ) {
     showDialog(
       context: context,
@@ -50,11 +51,11 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              info.description,
+              description,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            Text("KP Result: ${info.kp > 0 ? '+' : ''}${info.kp} KP"),
+            Text("KP Result: ${choiceKp > 0 ? '+' : ''}$choiceKp KP"),
             Text("Cost: $cost Gems"),
             const Divider(height: 24),
             const Text(
@@ -65,7 +66,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
               (o) => Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  "• ${o.$1}: ${o.$2.kp > 0 ? '+' : ''}${o.$2.kp} KP (${o.$3} Gems cost)",
+                  "• ${o.$1}: ${o.$2 > 0 ? '+' : ''}${o.$2} KP (${o.$3} Gems cost)",
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ),
@@ -112,13 +113,21 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                       _showResultPopup(
                         "Rent",
                         rentData[val]!.label,
-                        rentData[val]!,
+                        getRentKp(
+                          widget.career.track,
+                          widget.career.level,
+                          val,
+                        ),
                         RentType.values
                             .where((e) => e != val)
                             .map(
                               (e) => (
                                 rentData[e]!.label,
-                                rentData[e]!,
+                                getRentKp(
+                                  widget.career.track,
+                                  widget.career.level,
+                                  e,
+                                ),
                                 getRentCost(
                                   widget.career.track,
                                   widget.career.level,
@@ -132,6 +141,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                           widget.career.level,
                           val,
                         ),
+                        rentData[val]!.description,
                       );
                     },
                     (v) => getRentCost(
@@ -139,6 +149,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                       widget.career.level,
                       v,
                     ),
+                    (v) =>
+                        getRentKp(widget.career.track, widget.career.level, v),
                   ),
                   const SizedBox(height: 16),
                   _buildPanel(
@@ -158,13 +170,21 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                       _showResultPopup(
                         "Food",
                         foodData[val]!.label,
-                        foodData[val]!,
+                        getFoodKp(
+                          widget.career.track,
+                          widget.career.level,
+                          val,
+                        ),
                         FoodType.values
                             .where((e) => e != val)
                             .map(
                               (e) => (
                                 foodData[e]!.label,
-                                foodData[e]!,
+                                getFoodKp(
+                                  widget.career.track,
+                                  widget.career.level,
+                                  e,
+                                ),
                                 getFoodCost(
                                   widget.career.track,
                                   widget.career.level,
@@ -178,6 +198,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                           widget.career.level,
                           val,
                         ),
+                        foodData[val]!.description,
                       );
                     },
                     (v) => getFoodCost(
@@ -185,6 +206,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                       widget.career.level,
                       v,
                     ),
+                    (v) =>
+                        getFoodKp(widget.career.track, widget.career.level, v),
                   ),
                   const SizedBox(height: 16),
                   _buildPanel(
@@ -204,13 +227,21 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                       _showResultPopup(
                         "Transport",
                         transportData[val]!.label,
-                        transportData[val]!,
+                        getTransportKp(
+                          widget.career.track,
+                          widget.career.level,
+                          val,
+                        ),
                         TransportType.values
                             .where((e) => e != val)
                             .map(
                               (e) => (
                                 transportData[e]!.label,
-                                transportData[e]!,
+                                getTransportKp(
+                                  widget.career.track,
+                                  widget.career.level,
+                                  e,
+                                ),
                                 getTransportCost(
                                   widget.career.track,
                                   widget.career.level,
@@ -224,9 +255,15 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                           widget.career.level,
                           val,
                         ),
+                        transportData[val]!.description,
                       );
                     },
                     (v) => getTransportCost(
+                      widget.career.track,
+                      widget.career.level,
+                      v,
+                    ),
+                    (v) => getTransportKp(
                       widget.career.track,
                       widget.career.level,
                       v,
@@ -275,6 +312,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     T? selectedValue,
     void Function(T) onSelected,
     int Function(T) costGetter,
+    int Function(T) kpGetter,
   ) {
     bool isLocked = selectedValue != null;
     return Card(

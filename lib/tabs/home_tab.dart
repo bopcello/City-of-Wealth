@@ -12,11 +12,9 @@ class HomeTab extends StatelessWidget {
   final AssetInventory assets;
   final VoidCallback onClearEvents;
 
-  /*
-  // DEBUG: pause toggle properties
+  // [DEBUG: PAUSE_INCOME] properties
   final bool incomePaused;
   final ValueChanged<bool> onPauseToggled;
-  */
 
   const HomeTab({
     super.key,
@@ -29,11 +27,9 @@ class HomeTab extends StatelessWidget {
     required this.transportChoice,
     required this.assets,
     required this.onClearEvents,
-    /*
-    // DEBUG: pause toggle parameters
+    // [DEBUG: PAUSE_INCOME] parameters
     this.incomePaused = false,
     required this.onPauseToggled,
-    */
   });
 
   @override
@@ -49,22 +45,17 @@ class HomeTab extends StatelessWidget {
           const SizedBox(height: 24),
           _buildSummarySection(),
           const SizedBox(height: 32),
-          /*
-          // DEBUG BUTTON START
+          // [DEBUG: PAUSE_INCOME] START
           Center(
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text("Pause Income Cycles (Debug): "),
-                Switch(
-                  value: incomePaused,
-                  onChanged: onPauseToggled,
-                ),
+                Switch(value: incomePaused, onChanged: onPauseToggled),
               ],
             ),
           ),
-          // DEBUG BUTTON END
-          */
+          // [DEBUG: PAUSE_INCOME] END
         ],
       ),
     );

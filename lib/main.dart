@@ -47,7 +47,7 @@ class _MainScreenState extends State<MainScreen> {
   TransportType? transportChoice;
 
   bool _loaded = false;
-  // bool _incomePaused = false; // DEBUG: income pause flag
+  bool _incomePaused = false; // [DEBUG: PAUSE_INCOME]
   final List<String> _pendingEvents = [];
 
   @override
@@ -115,13 +115,11 @@ class _MainScreenState extends State<MainScreen> {
 
     const int cycleSeconds = 10; // DEBUG: Changed from 24h to 10s
     if (difference.inSeconds >= cycleSeconds) {
-      /* 
-      // DEBUG: check if income is paused
+      // [DEBUG: PAUSE_INCOME] check if income is paused
       if (_incomePaused) {
         lastIncomeTime = now; // Slide time forward without applying income
         return;
       }
-      */
       final cycles = difference.inSeconds ~/ cycleSeconds;
       _applyCycles(cycles);
     }
@@ -138,11 +136,19 @@ class _MainScreenState extends State<MainScreen> {
 
     // Check for unnecessary assets (recurring penalty)
     bool hasWaste = false;
-    for (var type in AssetType.values) {
-      if (assets.count(type) >
-          getMaxRequirementForType(career.track, career.level, type)) {
+    int wastePenalty = 100;
+    if (career.level == 1) {
+      if (assets.items.isNotEmpty) {
         hasWaste = true;
-        break;
+        wastePenalty = 50;
+      }
+    } else {
+      for (var type in AssetType.values) {
+        if (assets.count(type) >
+            getMaxRequirementForType(career.track, career.level, type)) {
+          hasWaste = true;
+          break;
+        }
       }
     }
 
@@ -167,12 +173,18 @@ class _MainScreenState extends State<MainScreen> {
           : 0;
 
       dayKp +=
-          (rentChoice != null ? rentData[rentChoice!]!.kp : 0) +
-          (foodChoice != null ? foodData[foodChoice!]!.kp : 0) +
-          (transportChoice != null ? transportData[transportChoice!]!.kp : 0);
+          (rentChoice != null
+              ? getRentKp(career.track, career.level, rentChoice!)
+              : 0) +
+          (foodChoice != null
+              ? getFoodKp(career.track, career.level, foodChoice!)
+              : 0) +
+          (transportChoice != null
+              ? getTransportKp(career.track, career.level, transportChoice!)
+              : 0);
 
       if (hasWaste) {
-        dayKp -= 100;
+        dayKp -= wastePenalty;
       }
 
       dayGems -= (rCost + fCost + tCost);
@@ -182,8 +194,10 @@ class _MainScreenState extends State<MainScreen> {
 
       String event =
           "Day $dayNumber: Kp=${dayKp > 0 ? '+' : ''}$dayKp, Gems=${dayGems > 0 ? '+' : ''}$dayGems";
-      if (!hasAllEssentials) event += " (No income: missing essentials)";
-      if (hasWaste) event += " (Waste penalty: -100 KP)";
+      if (!hasAllEssentials)
+        event +=
+            " (No income: Go to liabilities to select rent, food and transport to begin receiving income)";
+      if (hasWaste) event += " (Waste penalty: -$wastePenalty KP)";
       events.add(event);
     }
 
@@ -215,13 +229,11 @@ class _MainScreenState extends State<MainScreen> {
               _pendingEvents.clear();
             });
           },
-          /*
-          // DEBUG: pause toggle callback
+          // [DEBUG: PAUSE_INCOME] pause toggle callback
           incomePaused: _incomePaused,
           onPauseToggled: (val) {
             setState(() => _incomePaused = val);
           },
-          */
         );
       case 1:
         return CityTab(
@@ -273,13 +285,13 @@ class _MainScreenState extends State<MainScreen> {
               // Calculate immediate KP change for moving from 'None' to a selection
               int kpDelta = 0;
               if (rentChoice == null && r != null) {
-                kpDelta += rentData[r]!.kp;
+                kpDelta += getRentKp(career.track, career.level, r);
               }
               if (foodChoice == null && f != null) {
-                kpDelta += foodData[f]!.kp;
+                kpDelta += getFoodKp(career.track, career.level, f);
               }
               if (transportChoice == null && t != null) {
-                kpDelta += transportData[t]!.kp;
+                kpDelta += getTransportKp(career.track, career.level, t);
               }
 
               rentChoice = r;

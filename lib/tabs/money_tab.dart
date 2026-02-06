@@ -37,7 +37,11 @@ class MoneyTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       _MoneyTileData("Career", Icons.badge),
-      _MoneyTileData("Passive Income", Icons.trending_up),
+      _MoneyTileData(
+        "Passive Income",
+        Icons.trending_up,
+        subtitle: "Passive income based on assets owned coming soon",
+      ),
       _MoneyTileData("Assets", Icons.account_balance),
       _MoneyTileData("Liabilities", Icons.warning),
       _MoneyTileData("Quiz", Icons.quiz),
@@ -118,8 +122,9 @@ class MoneyTab extends StatelessWidget {
 class _MoneyTileData {
   final String title;
   final IconData icon;
+  final String? subtitle;
 
-  _MoneyTileData(this.title, this.icon);
+  _MoneyTileData(this.title, this.icon, {this.subtitle});
 }
 
 class _MoneyTile extends StatelessWidget {
@@ -155,6 +160,21 @@ class _MoneyTile extends StatelessWidget {
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
+            if (data.subtitle != null) ...[
+              const SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  data.subtitle!,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey,
+                    fontStyle: FontStyle.italic,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ],
         ),
       ),
