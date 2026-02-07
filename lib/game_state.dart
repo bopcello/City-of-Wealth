@@ -200,6 +200,7 @@ const _insurancesKey = 'insurances';
 const _bankruptcyCountKey = 'bankruptcyCount';
 const _debtCycleCountKey = 'debtCycleCount';
 const _nextDestructionCycleKey = 'nextDestructionCycle';
+const _completedQuizzesKey = 'completedQuizzes';
 
 class PlacedBuilding {
   final String name;
@@ -285,6 +286,7 @@ Future<void> saveGameState({
   required int debtCycleCount,
   required int? nextDestructionCycle,
   bool? wall,
+  required Set<String> completedQuizzes,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   debugPrint("💾 SAVING GAME");
@@ -335,6 +337,8 @@ Future<void> saveGameState({
   } else {
     await prefs.remove('hasWall');
   }
+
+  await prefs.setStringList(_completedQuizzesKey, completedQuizzes.toList());
 }
 
 Future<
@@ -353,6 +357,7 @@ Future<
     int,
     int?,
     bool?,
+    Set<String>,
   )
 >
 loadGameState() async {
@@ -406,10 +411,17 @@ loadGameState() async {
 
   final insuranceNames = prefs.getStringList(_insurancesKey) ?? [];
   final insurances = insuranceNames
-      .map((name) => AssetType.values.firstWhere((e) => e.name == name))
+      .map(
+        (name) => AssetType.values.firstWhere(
+          (e) => e.name == name,
+          orElse: () => AssetType.realEstate,
+        ),
+      )
       .toSet();
 
   final savedWall = prefs.getBool('hasWall');
+  final completedQuizzes = (prefs.getStringList(_completedQuizzesKey) ?? [])
+      .toSet();
 
   debugPrint("Loaded KP: $kp");
   debugPrint("Loaded Gems: $gems");
@@ -434,7 +446,42 @@ loadGameState() async {
     debtCycleCount,
     nextDestructionCycle,
     savedWall,
+    completedQuizzes,
   );
+}
+
+// Helper methods for quiz progression
+bool isMediumQuiz(String quizId) {
+  // ID format: l{level}_q{num}
+  final parts = quizId.split('_');
+  if (parts.length != 2) return false;
+  final numPart = parts[1].substring(1); // remove 'q'
+  final num = int.tryParse(numPart);
+  if (num == null) return false;
+  return num >= 4 && num <= 18;
+}
+
+bool isHardQuiz(String quizId) {
+  final parts = quizId.split('_');
+  if (parts.length != 2) return false;
+  final numPart = parts[1].substring(1);
+  final num = int.tryParse(numPart);
+  if (num == null) return false;
+  return num >= 19 && num <= 20;
+}
+
+int countCompletedMediumQuizzes(Set<String> completed, int level) {
+  final prefix = 'l${level}_';
+  return completed
+      .where((id) => id.startsWith(prefix) && isMediumQuiz(id))
+      .length;
+}
+
+int countCompletedHardQuizzes(Set<String> completed, int level) {
+  final prefix = 'l${level}_';
+  return completed
+      .where((id) => id.startsWith(prefix) && isHardQuiz(id))
+      .length;
 }
 
 class BusinessLevel {

@@ -6,6 +6,7 @@ class CareerScreen extends StatefulWidget {
   final int currentKp;
   final List<PlacedBuilding> cityLayout;
   final void Function(CareerState) onCareerChange;
+  final Set<String> completedQuizzes;
 
   const CareerScreen({
     super.key,
@@ -13,6 +14,7 @@ class CareerScreen extends StatefulWidget {
     required this.currentKp,
     required this.cityLayout,
     required this.onCareerChange,
+    required this.completedQuizzes,
   });
 
   @override
@@ -50,6 +52,7 @@ class _CareerScreenState extends State<CareerScreen> {
               currentKp: widget.currentKp,
               cityLayout: widget.cityLayout,
               onCareerChange: _updateCareer,
+              completedQuizzes: widget.completedQuizzes,
             ),
             const SizedBox(height: 24),
             _CareerProgress(career: career),
@@ -77,6 +80,7 @@ class _CareerHeroCard extends StatelessWidget {
   final int currentKp;
   final List<PlacedBuilding> cityLayout;
   final void Function(CareerState) onCareerChange;
+  final Set<String> completedQuizzes;
 
   const _CareerHeroCard({
     super.key,
@@ -84,6 +88,7 @@ class _CareerHeroCard extends StatelessWidget {
     required this.currentKp,
     required this.cityLayout,
     required this.onCareerChange,
+    required this.completedQuizzes,
   });
 
   CareerLevelInfo _currentInfo() {
@@ -106,6 +111,21 @@ class _CareerHeroCard extends StatelessWidget {
     }
     return missing;
   }
+
+  bool _hasMetQuizRequirements() {
+    // Requirements: 10 Medium, 1 Hard
+    final mediumCount = countCompletedMediumQuizzes(
+      completedQuizzes,
+      career.level,
+    );
+    final hardCount = countCompletedHardQuizzes(completedQuizzes, career.level);
+    return mediumCount >= 10 && hardCount >= 1;
+  }
+
+  int _getMediumQuizCount() =>
+      countCompletedMediumQuizzes(completedQuizzes, career.level);
+  int _getHardQuizCount() =>
+      countCompletedHardQuizzes(completedQuizzes, career.level);
 
   void _advance() {
     onCareerChange(CareerState(track: career.track, level: career.level + 1));
@@ -163,8 +183,18 @@ class _CareerHeroCard extends StatelessWidget {
     final requiredKpValue = hasNextLevel ? _requiredKpForNext() : 0;
     final missingBuildings = _getMissingBuildings();
     final hasAllBuildings = missingBuildings.isEmpty;
+    final hasKeyQuizRequirements = _hasMetQuizRequirements();
+
+    // Only apply quiz requirements for levels > 1
+    final isQuizRequirementMet = career.level == 1
+        ? true
+        : hasKeyQuizRequirements;
+
     final canAdvance =
-        hasNextLevel && currentKp >= requiredKpValue && hasAllBuildings;
+        hasNextLevel &&
+        currentKp >= requiredKpValue &&
+        hasAllBuildings &&
+        isQuizRequirementMet;
 
     return Container(
       width: double.infinity,
@@ -248,6 +278,39 @@ class _CareerHeroCard extends StatelessWidget {
                         "• $b",
                         style: const TextStyle(fontSize: 12, color: Colors.red),
                       ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (hasNextLevel && career.level > 1 && !isQuizRequirementMet) ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Required Quizzes:",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "• Medium Quizzes: ${_getMediumQuizCount()}/10",
+                      style: const TextStyle(fontSize: 12, color: Colors.red),
+                    ),
+                    Text(
+                      "• Hard Quizzes: ${_getHardQuizCount()}/1",
+                      style: const TextStyle(fontSize: 12, color: Colors.red),
                     ),
                   ],
                 ),

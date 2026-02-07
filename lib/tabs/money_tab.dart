@@ -23,6 +23,8 @@ class MoneyTab extends StatelessWidget {
   final void Function(AssetType) onSellAsset;
   final VoidCallback onBankruptcy;
   final int bankruptcyCount;
+  final Set<String> completedQuizzes;
+  final void Function(String) onQuizComplete;
 
   const MoneyTab({
     super.key,
@@ -43,6 +45,8 @@ class MoneyTab extends StatelessWidget {
     required this.onSellAsset,
     required this.onBankruptcy,
     required this.bankruptcyCount,
+    required this.completedQuizzes,
+    required this.onQuizComplete,
   });
 
   @override
@@ -52,7 +56,8 @@ class MoneyTab extends StatelessWidget {
       _MoneyTileData(
         "Passive Income",
         Icons.trending_up,
-        subtitle: "Passive income based on assets owned coming soon",
+        subtitle:
+            "Passive income based on assets owned coming soon in future updates",
       ),
       _MoneyTileData("Assets", Icons.account_balance),
       _MoneyTileData("Liabilities", Icons.warning),
@@ -80,7 +85,10 @@ class MoneyTab extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => QuizMenuScreen(
                       currentKp: currentKp,
+                      currentLevel: career.level,
                       onKpChange: onKpChange,
+                      completedQuizzes: completedQuizzes,
+                      onQuizComplete: onQuizComplete,
                     ),
                   ),
                 );
@@ -94,6 +102,7 @@ class MoneyTab extends StatelessWidget {
                       currentKp: currentKp,
                       cityLayout: cityLayout,
                       onCareerChange: onCareerChange,
+                      completedQuizzes: completedQuizzes,
                     ),
                   ),
                 );

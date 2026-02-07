@@ -443,7 +443,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                   widget.onInsuranceToggle(type);
                 });
               },
-              activeColor: Colors.green,
+              activeTrackColor: Colors.green,
             ),
           );
         }),

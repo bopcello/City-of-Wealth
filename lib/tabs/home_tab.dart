@@ -88,7 +88,7 @@ class HomeTab extends StatelessWidget {
                 ),
               ),
               Text(
-                "Track: ${trackLabel(career.track)} (Lvl ${career.level})",
+                "(Level: ${career.level})",
                 style: TextStyle(color: Colors.grey.shade700),
               ),
             ],
