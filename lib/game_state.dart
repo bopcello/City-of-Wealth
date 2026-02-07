@@ -154,6 +154,12 @@ const buildings = [
     requiredLevel: 5,
     requirements: {AssetType.officeEquipment: 30, AssetType.realEstate: 25},
   ),
+  Building(
+    name: "The Keystone",
+    track: CareerTrack.business,
+    requiredLevel: 99, // Hidden from normal lists
+    requirements: {},
+  ),
 ];
 
 int getBuildingLevel(String name) {
@@ -192,6 +198,8 @@ const _foodChoiceKey = 'foodChoice';
 const _transportChoiceKey = 'transportChoice';
 const _insurancesKey = 'insurances';
 const _bankruptcyCountKey = 'bankruptcyCount';
+const _debtCycleCountKey = 'debtCycleCount';
+const _nextDestructionCycleKey = 'nextDestructionCycle';
 
 class PlacedBuilding {
   final String name;
@@ -217,14 +225,9 @@ String trackLabel(CareerTrack track) {
   }
 }
 
-const Map<int, int> businessKpRequirements = {
-  2: 2000,
-  3: 5000,
-  4: 12000,
-  5: 25000,
-};
+const Map<int, int> businessKpRequirements = {2: 5000, 3: 10000, 4: 20000};
 
-const Map<int, int> jobKpRequirements = {2: 1500, 3: 4000, 4: 9000, 5: 20000};
+const Map<int, int> jobKpRequirements = {2: 5000, 3: 10000, 4: 20000};
 
 const int studentNextLevelKp = 2000;
 
@@ -279,6 +282,9 @@ Future<void> saveGameState({
   required TransportType? transport,
   required Set<AssetType> insurances,
   required int bankruptcyCount,
+  required int debtCycleCount,
+  required int? nextDestructionCycle,
+  bool? wall,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   debugPrint("💾 SAVING GAME");
@@ -316,6 +322,19 @@ Future<void> saveGameState({
 
   final insuranceNames = insurances.map((e) => e.name).toList();
   await prefs.setStringList(_insurancesKey, insuranceNames);
+
+  await prefs.setInt(_debtCycleCountKey, debtCycleCount);
+  if (nextDestructionCycle != null) {
+    await prefs.setInt(_nextDestructionCycleKey, nextDestructionCycle);
+  } else {
+    await prefs.remove(_nextDestructionCycleKey);
+  }
+
+  if (wall != null) {
+    await prefs.setBool('hasWall', wall);
+  } else {
+    await prefs.remove('hasWall');
+  }
 }
 
 Future<
@@ -331,6 +350,9 @@ Future<
     TransportType?,
     Set<AssetType>,
     int,
+    int,
+    int?,
+    bool?,
   )
 >
 loadGameState() async {
@@ -338,6 +360,10 @@ loadGameState() async {
   final kp = prefs.getInt(_kpKey) ?? 0;
   final gems = prefs.getInt(_gemsKey) ?? 0;
   final bankruptcyCount = prefs.getInt(_bankruptcyCountKey) ?? 0;
+  final debtCycleCount = prefs.getInt(_debtCycleCountKey) ?? 0;
+  final nextDestructionCycle = prefs.containsKey(_nextDestructionCycleKey)
+      ? prefs.getInt(_nextDestructionCycleKey)
+      : null;
 
   final trackName = prefs.getString(_careerTrackKey);
   final level = prefs.getInt(_careerLevelKey) ?? 1;
@@ -383,6 +409,8 @@ loadGameState() async {
       .map((name) => AssetType.values.firstWhere((e) => e.name == name))
       .toSet();
 
+  final savedWall = prefs.getBool('hasWall');
+
   debugPrint("Loaded KP: $kp");
   debugPrint("Loaded Gems: $gems");
   debugPrint("Loaded Track: ${track.name}");
@@ -403,6 +431,9 @@ loadGameState() async {
     transport,
     insurances,
     bankruptcyCount,
+    debtCycleCount,
+    nextDestructionCycle,
+    savedWall,
   );
 }
 
@@ -480,7 +511,7 @@ const Map<int, CareerLevelInfo> jobCareerInfo = {
   2: CareerLevelInfo(
     name: "Employee",
     dailyIncome: 40,
-    unlockedBuildings: ["🏢 Office Desk"],
+    unlockedBuildings: ["🪑 Office Desk"],
   ),
   3: CareerLevelInfo(
     name: "Supervisor",
@@ -495,7 +526,7 @@ const Map<int, CareerLevelInfo> jobCareerInfo = {
   5: CareerLevelInfo(
     name: "CEO",
     dailyIncome: 400,
-    unlockedBuildings: ["🏙️ Corporate HQ"],
+    unlockedBuildings: ["🏢 Corporate HQ"],
   ),
 };
 

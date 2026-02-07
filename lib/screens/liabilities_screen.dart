@@ -434,7 +434,9 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
             margin: const EdgeInsets.only(bottom: 8),
             child: SwitchListTile(
               title: Text("${assetLabel(type)} Insurance"),
-              subtitle: const Text("Cost: 5 Gems/cycle | Reward: +20 KP/cycle"),
+              subtitle: const Text(
+                "Cost: 5 Gems/cycle, Provides 80% protection from losses",
+              ),
               value: isInsured,
               onChanged: (val) {
                 setState(() {

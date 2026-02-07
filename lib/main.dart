@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'game_state.dart';
@@ -47,6 +48,9 @@ class _MainScreenState extends State<MainScreen> {
   TransportType? transportChoice;
   Set<AssetType> insurances = {};
   int bankruptcyCount = 0;
+  int debtCycleCount = 0;
+  int? nextDestructionCycle;
+  bool hasWall = false;
 
   bool _loaded = false;
   bool _incomePaused = false; // [DEBUG: PAUSE_INCOME]
@@ -81,6 +85,9 @@ class _MainScreenState extends State<MainScreen> {
       savedTransport,
       savedInsurances,
       savedBankruptcyCount,
+      savedDebtCycleCount,
+      savedNextDestructionCycle,
+      savedWall,
     ) = await loadGameState();
 
     setState(() {
@@ -95,6 +102,9 @@ class _MainScreenState extends State<MainScreen> {
       transportChoice = savedTransport;
       insurances = savedInsurances;
       bankruptcyCount = savedBankruptcyCount;
+      debtCycleCount = savedDebtCycleCount;
+      nextDestructionCycle = savedNextDestructionCycle;
+      hasWall = savedWall ?? false;
       _loaded = true;
     });
 
@@ -114,6 +124,9 @@ class _MainScreenState extends State<MainScreen> {
       transport: transportChoice,
       insurances: insurances,
       bankruptcyCount: bankruptcyCount,
+      debtCycleCount: debtCycleCount,
+      nextDestructionCycle: nextDestructionCycle,
+      wall: hasWall,
     );
   }
 
@@ -184,17 +197,19 @@ class _MainScreenState extends State<MainScreen> {
       int insuranceKp = insurances.length * 20;
 
       int maintenanceCost = 0;
-      if (dayNumber % 10 == 0) {
-        for (var b in cityLayout) {
-          maintenanceCost += getBuildingLevel(b.name);
-        }
-      }
-
-      // Debt Interest Calculation
       int interestCost = 0;
-      if (gems < 0) {
+
+      // Calculate current balance: actual gems + accumulated changes so far
+      final currentBalance = gems + totalGemChange;
+
+      // Debt Logic
+      if (currentBalance < 0) {
+        // In debt: suspend maintenance, track grace period
+        debtCycleCount++;
+
+        // Calculate Interest
         double rate = 0.05;
-        int debtFactor = gems.abs();
+        int debtFactor = currentBalance.abs();
         if (debtFactor >= 2000) {
           rate = 0.20;
         } else if (debtFactor >= 1500) {
@@ -203,6 +218,44 @@ class _MainScreenState extends State<MainScreen> {
           rate = 0.05;
         }
         interestCost = (debtFactor * rate).round();
+
+        // Grace period logic
+        if (debtCycleCount > 30) {
+          // Grace period over, start destruction
+          if (cityLayout.isNotEmpty) {
+            if (nextDestructionCycle == null || nextDestructionCycle! <= 0) {
+              // First destruction or invalid state, set next cycle immediate or soon
+              final rng = Random();
+              nextDestructionCycle = dayNumber + rng.nextInt(6); // 0 to 5 days
+            }
+
+            if (dayNumber >= nextDestructionCycle!) {
+              // Time to destroy
+              final rng = Random();
+              if (cityLayout.isNotEmpty) {
+                final indexToRemove = rng.nextInt(cityLayout.length);
+                final removed = cityLayout.removeAt(indexToRemove);
+                events.add(
+                  "${removed.name} was foreclosed/destroyed due to unpaid maintainance costs since you were in debt for more than 30 days!",
+                );
+
+                // Scheme next destruction
+                nextDestructionCycle =
+                    dayNumber + rng.nextInt(6); // 0 to 5 days
+              }
+            }
+          }
+        }
+      } else {
+        // Not in debt
+        debtCycleCount = 0;
+        nextDestructionCycle = null;
+
+        if (dayNumber % 10 == 0) {
+          for (var b in cityLayout) {
+            maintenanceCost += getBuildingLevel(b.name);
+          }
+        }
       }
 
       dayKp +=
@@ -221,6 +274,11 @@ class _MainScreenState extends State<MainScreen> {
         dayKp -= wastePenalty;
       }
 
+      // Debt penalty: -200 KP per cycle when in debt
+      if (currentBalance < 0) {
+        dayKp -= 200;
+      }
+
       dayGems -=
           (rCost +
           fCost +
@@ -232,16 +290,25 @@ class _MainScreenState extends State<MainScreen> {
       totalKpChange += dayKp;
       totalGemChange += dayGems;
 
+      // Calculate balance after this day's changes for event message
+      final balanceAfterDay = gems + totalGemChange;
+
       String event =
           "Day $dayNumber: Kp=${dayKp > 0 ? '+' : ''}$dayKp, Gems=${dayGems > 0 ? '+' : ''}$dayGems";
-      if (interestCost > 0) event += " (Interest: -$interestCost Gems)";
+      if (interestCost > 0) {
+        event += " (Interest: -$interestCost Gems)";
+        if (balanceAfterDay < -5000) {
+          event += " Consider declaring bankruptcy";
+        }
+      }
       if (maintenanceCost > 0) {
         event += " (Maintenance: -$maintenanceCost Gems)";
       }
       if (insuranceCost > 0) event += " (Insurance: -$insuranceCost Gems)";
-      if (!hasAllEssentials)
+      if (!hasAllEssentials) {
         event +=
             " (No income: Go to liabilities to select rent, food and transport to begin receiving income)";
+      }
       if (hasWaste) event += " (Waste penalty: -$wastePenalty KP)";
       events.add(event);
     }
@@ -252,7 +319,6 @@ class _MainScreenState extends State<MainScreen> {
       lastIncomeTime = DateTime.now();
 
       _pendingEvents.addAll(events);
-      // Popup removed as per request, events now shown on HomeTab
     });
     _save();
   }
@@ -286,12 +352,28 @@ class _MainScreenState extends State<MainScreen> {
           gems: gems,
           assets: assets,
           cityLayout: cityLayout,
+          insurances: insurances,
+          hasWall: hasWall,
           onBuyAsset: (AssetType type, int amount) {
             _handleBuyAsset(type, amount);
           },
           onPlaceBuilding: (building) {
             setState(() {
               cityLayout.add(building);
+            });
+            _save();
+          },
+          onRemoveBuilding: (building) {
+            setState(() {
+              cityLayout.removeWhere(
+                (b) => b.x == building.x && b.y == building.y,
+              );
+            });
+            _save();
+          },
+          onBuyWall: () {
+            setState(() {
+              hasWall = true;
             });
             _save();
           },
@@ -411,6 +493,14 @@ class _MainScreenState extends State<MainScreen> {
           "Over-purchasing ${assetLabel(type)} for your level is a bad decision: -100 KP";
     }
 
+    if (career.level == 5) {
+      // Level 5 players can purchase unlimited assets without KP penalties
+      if (kpBonus < 0) {
+        kpBonus = 10 * amount; // Restore normal bonus
+        message = "Purchasing extra assets: +$kpBonus KP";
+      }
+    }
+
     setState(() {
       gems -= cost;
       assets = assets.add(type, amount);
@@ -426,7 +516,7 @@ class _MainScreenState extends State<MainScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Great!"),
+            child: const Text("Ok!"),
           ),
         ],
       ),
@@ -464,6 +554,9 @@ class _MainScreenState extends State<MainScreen> {
       rentChoice = null;
       foodChoice = null;
       transportChoice = null;
+      debtCycleCount = 0;
+      nextDestructionCycle = null;
+      hasWall = false;
     });
     _save();
 

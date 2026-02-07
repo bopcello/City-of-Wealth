@@ -9,8 +9,12 @@ class CityTab extends StatefulWidget {
   final int gems;
   final AssetInventory assets;
   final List<PlacedBuilding> cityLayout;
+  final Set<AssetType> insurances;
+  final bool hasWall;
   final void Function(AssetType type, int amount) onBuyAsset;
   final void Function(PlacedBuilding building) onPlaceBuilding;
+  final void Function(PlacedBuilding building) onRemoveBuilding;
+  final VoidCallback onBuyWall;
 
   const CityTab({
     super.key,
@@ -18,8 +22,12 @@ class CityTab extends StatefulWidget {
     required this.gems,
     required this.assets,
     required this.cityLayout,
+    required this.insurances,
+    required this.hasWall,
     required this.onBuyAsset,
     required this.onPlaceBuilding,
+    required this.onRemoveBuilding,
+    required this.onBuyWall,
   });
 
   @override
@@ -28,6 +36,7 @@ class CityTab extends StatefulWidget {
 
 class _CityTabState extends State<CityTab> {
   Building? _selectedBuilding;
+  bool _isEditMode = false; // Track edit mode state
   final ValueNotifier<int?> _hoveredX = ValueNotifier(null);
   final ValueNotifier<int?> _hoveredY = ValueNotifier(null);
   final ValueNotifier<Offset> _mousePos = ValueNotifier(Offset.zero);
@@ -66,9 +75,17 @@ class _CityTabState extends State<CityTab> {
   void _clearSelection() {
     setState(() {
       _selectedBuilding = null;
+      _isEditMode = false;
     });
     _hoveredX.value = null;
     _hoveredY.value = null;
+  }
+
+  void _toggleEditMode() {
+    setState(() {
+      _isEditMode = !_isEditMode;
+      _selectedBuilding = null; // Clear any building selection
+    });
   }
 
   @override
@@ -93,7 +110,43 @@ class _CityTabState extends State<CityTab> {
         },
         child: GestureDetector(
           onTap: () {
-            if (_selectedBuilding != null) {
+            if (_isEditMode) {
+              // Edit mode: select building to move it
+              final hX = _hoveredX.value;
+              final hY = _hoveredY.value;
+              if (hX != null && hY != null) {
+                final buildingKey = "$hX,$hY";
+                if (cityMap.containsKey(buildingKey)) {
+                  // Select the building and remove it from current position
+                  final building = cityMap[buildingKey]!;
+                  debugPrint(
+                    "✏️ SELECTING ${building.name} at ($hX, $hY) for move",
+                  );
+                  setState(() {
+                    _selectedBuilding = Building(
+                      name: building.name,
+                      track: CareerTrack.student, // Dummy values
+                      requiredLevel: 0,
+                      requirements: {},
+                    );
+                  });
+                  widget.onRemoveBuilding(building);
+                } else if (_selectedBuilding != null) {
+                  // Place the selected building at new location
+                  debugPrint(
+                    "🏗️ PLACING ${_selectedBuilding!.name} at ($hX, $hY)",
+                  );
+                  widget.onPlaceBuilding(
+                    PlacedBuilding(name: _selectedBuilding!.name, x: hX, y: hY),
+                  );
+                  // Clear only the selection, stay in edit mode
+                  setState(() {
+                    _selectedBuilding = null;
+                  });
+                }
+              }
+            } else if (_selectedBuilding != null) {
+              // Placement mode: place building
               final hX = _hoveredX.value;
               final hY = _hoveredY.value;
               if (hX != null && hY != null) {
@@ -119,25 +172,49 @@ class _CityTabState extends State<CityTab> {
               Container(color: Colors.transparent), // Catch all taps
               Center(
                 child: RepaintBoundary(
-                  child: Transform(
+                  child: Stack(
                     alignment: Alignment.center,
-                    transform: Matrix4.identity()
-                      ..rotateX(-math.pi / 6)
-                      ..rotateZ(math.pi / 4)
-                      ..scaleByDouble(_zoomScale, _zoomScale, 1.0, 1.0),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        _IsometricGrid(
-                          gridSize: gridSize,
-                          cityMap: cityMap,
-                          hoveredXNotifier: _hoveredX,
-                          hoveredYNotifier: _hoveredY,
-                          onHover: _onTileHover,
+                    children: [
+                      // Wall image with independent transform
+                      if (widget.hasWall)
+                        Transform.translate(
+                          offset: const Offset(
+                            0,
+                            40,
+                          ), // x, y translation in logical pixels
+                          child: Transform.rotate(
+                            angle: 0.0, // radians
+                            child: Transform.scale(
+                              scale: 1.1, // Visual adjustment
+                              child: Image.asset(
+                                "lib/assets/image-removebg-preview.png",
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
                         ),
-                        Positioned(child: _Palace()),
-                      ],
-                    ),
+                      // Isometric grid with its own transform
+                      Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.identity()
+                          ..rotateX(-math.pi / 3.5)
+                          ..rotateZ(math.pi / 4)
+                          ..scaleByDouble(_zoomScale, _zoomScale, 1.0, 1.0),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            _IsometricGrid(
+                              gridSize: gridSize,
+                              cityMap: cityMap,
+                              hoveredXNotifier: _hoveredX,
+                              hoveredYNotifier: _hoveredY,
+                              onHover: _onTileHover,
+                            ),
+                            Positioned(child: _Palace()),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -172,6 +249,18 @@ class _CityTabState extends State<CityTab> {
                     ),
                   ),
                 ),
+              // Edit button (bottom right, above Add buildings button)
+              Positioned(
+                right: 16,
+                bottom: 90, // Position above the "Add buildings" button
+                child: FloatingActionButton.extended(
+                  onPressed: _toggleEditMode,
+                  label: Text(_isEditMode ? "Done" : "Edit layout"),
+                  icon: Icon(_isEditMode ? Icons.check : Icons.edit),
+                  backgroundColor: _isEditMode ? Colors.green : null,
+                ),
+              ),
+              // Add buildings button
               Positioned(
                 right: 16,
                 bottom: 16,
@@ -189,11 +278,18 @@ class _CityTabState extends State<CityTab> {
                         return _BuildingsBottomSheet(
                           career: widget.career,
                           assets: widget.assets,
+                          insurances: widget.insurances,
+                          hasWall: widget.hasWall,
                           onSelect: (building) {
-                            Navigator.pop(context);
-                            setState(() {
-                              _selectedBuilding = building;
-                            });
+                            if (building.name == "The Keystone") {
+                              widget.onBuyWall();
+                              Navigator.pop(context);
+                            } else {
+                              Navigator.pop(context);
+                              setState(() {
+                                _selectedBuilding = building;
+                              });
+                            }
                           },
                           onClose: () {
                             Navigator.pop(context);
@@ -217,19 +313,32 @@ class _CityTabState extends State<CityTab> {
 class _BuildingsBottomSheet extends StatelessWidget {
   final CareerState career;
   final AssetInventory assets;
+  final Set<AssetType> insurances;
+  final bool hasWall;
   final Function(Building) onSelect;
   final VoidCallback onClose;
 
   const _BuildingsBottomSheet({
     required this.career,
     required this.assets,
+    required this.insurances,
+    required this.hasWall,
     required this.onSelect,
     required this.onClose,
   });
 
   @override
   Widget build(BuildContext context) {
-    final available = buildings.where((b) => b.track == career.track);
+    final available = buildings.where((b) {
+      if (b.name == "The Keystone") {
+        // Only show Keystone if: Level 5, all 5 insurances, and not already owned
+        if (hasWall) return false;
+        if (career.level < 5) return false;
+        if (insurances.length < 5) return false;
+        return true;
+      }
+      return b.track == career.track && b.requiredLevel < 99;
+    });
 
     return Container(
       height: 360,
@@ -268,6 +377,7 @@ class _BuildingsBottomSheet extends StatelessWidget {
                             building: b,
                             career: career,
                             assets: assets,
+                            insurances: insurances,
                             onSelect: () => onSelect(b),
                           ),
                         )
@@ -284,24 +394,38 @@ class _BuildingCard extends StatelessWidget {
   final Building building;
   final CareerState career;
   final AssetInventory assets;
+  final Set<AssetType> insurances;
   final VoidCallback onSelect;
 
   const _BuildingCard({
     required this.building,
     required this.career,
     required this.assets,
+    required this.insurances,
     required this.onSelect,
   });
 
   @override
   Widget build(BuildContext context) {
-    final hasLevel = career.level >= building.requiredLevel;
+    final isKeystone = building.name == "The Keystone";
+    final isLevel5 = career.level >= 5;
+    final hasAllInsurances = insurances.length >= 5;
 
-    final hasAssets = building.requirements.entries.every(
-      (e) => assets.count(e.key) >= e.value,
-    );
+    // Keystone Requirements: Level 5 + 5 Insurances (simplified check)
+    bool canBuild = false;
+    if (isKeystone) {
+      canBuild = isLevel5 && hasAllInsurances;
+    } else {
+      canBuild =
+          career.level >= building.requiredLevel &&
+          building.requirements.entries.every(
+            (e) => assets.count(e.key) >= e.value,
+          );
+    }
 
-    final canBuild = hasLevel && hasAssets;
+    final hasLevel = isKeystone
+        ? isLevel5
+        : career.level >= building.requiredLevel;
 
     final widgetCard = Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -327,7 +451,9 @@ class _BuildingCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "Requires level ${building.requiredLevel}",
+                  isKeystone
+                      ? "Level 5 + All 5 Insurances Required"
+                      : "Requires level ${building.requiredLevel}",
                   style: TextStyle(
                     fontSize: 12,
                     color: hasLevel ? Colors.green : Colors.red,
@@ -379,12 +505,17 @@ class _IsometricGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     const double tileSize = 50;
 
+    final int half = (gridSize - 1) ~/ 2;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: List.generate(gridSize, (y) {
+      children: List.generate(gridSize, (row) {
+        final y = row - half;
         return Row(
           mainAxisSize: MainAxisSize.min,
-          children: List.generate(gridSize, (x) {
+          children: List.generate(gridSize, (col) {
+            final x = col - half;
+
             final buildingAt = cityMap["$x,$y"];
             final hasBuilding = buildingAt != null;
 
@@ -403,8 +534,12 @@ class _IsometricGrid extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isHovered
                           ? (hasBuilding
-                                ? Colors.red.shade200
-                                : Colors.blue.shade200)
+                                ? Colors
+                                      .blue
+                                      .shade200 // Blue for occupied in edit mode
+                                : Colors
+                                      .red
+                                      .shade200) // Red for empty in edit mode
                           : Colors.green.shade300,
                       border: Border.all(color: Colors.green.shade700),
                     ),
