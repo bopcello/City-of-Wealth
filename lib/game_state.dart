@@ -484,6 +484,11 @@ int countCompletedHardQuizzes(Set<String> completed, int level) {
       .length;
 }
 
+int countTotalCompletedQuizzesForLevel(Set<String> completed, int level) {
+  final prefix = 'l${level}_';
+  return completed.where((id) => id.startsWith(prefix)).length;
+}
+
 class BusinessLevel {
   final int level;
   final String name;

@@ -113,13 +113,16 @@ class _CareerHeroCard extends StatelessWidget {
   }
 
   bool _hasMetQuizRequirements() {
-    // Requirements: 10 Medium, 1 Hard
+    // Current level requirements: 10 Medium, 1 Hard
     final mediumCount = countCompletedMediumQuizzes(
       completedQuizzes,
       career.level,
     );
     final hardCount = countCompletedHardQuizzes(completedQuizzes, career.level);
-    return mediumCount >= 10 && hardCount >= 1;
+
+    final hasMetCurrentLevelReqs = mediumCount >= 10 && hardCount >= 1;
+
+    return hasMetCurrentLevelReqs;
   }
 
   int _getMediumQuizCount() =>
@@ -186,9 +189,7 @@ class _CareerHeroCard extends StatelessWidget {
     final hasKeyQuizRequirements = _hasMetQuizRequirements();
 
     // Only apply quiz requirements for levels > 1
-    final isQuizRequirementMet = career.level == 1
-        ? true
-        : hasKeyQuizRequirements;
+    final isQuizRequirementMet = hasKeyQuizRequirements;
 
     final canAdvance =
         hasNextLevel &&
@@ -284,7 +285,7 @@ class _CareerHeroCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
             ],
-            if (hasNextLevel && career.level > 1 && !isQuizRequirementMet) ...[
+            if (hasNextLevel && !isQuizRequirementMet) ...[
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(

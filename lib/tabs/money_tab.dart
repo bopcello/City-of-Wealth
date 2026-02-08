@@ -25,6 +25,7 @@ class MoneyTab extends StatelessWidget {
   final int bankruptcyCount;
   final Set<String> completedQuizzes;
   final void Function(String) onQuizComplete;
+  final Listenable? gameListenable;
 
   const MoneyTab({
     super.key,
@@ -47,6 +48,7 @@ class MoneyTab extends StatelessWidget {
     required this.bankruptcyCount,
     required this.completedQuizzes,
     required this.onQuizComplete,
+    this.gameListenable,
   });
 
   @override
@@ -89,6 +91,7 @@ class MoneyTab extends StatelessWidget {
                       onKpChange: onKpChange,
                       completedQuizzes: completedQuizzes,
                       onQuizComplete: onQuizComplete,
+                      refreshListenable: gameListenable,
                     ),
                   ),
                 );

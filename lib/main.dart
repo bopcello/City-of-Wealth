@@ -95,6 +95,7 @@ class _MainScreenState extends State<MainScreen> {
           },
           onLiabilitiesChange: game.updateLiabilities,
           onQuizComplete: game.markQuizCompleted,
+          gameListenable: game,
         );
       case 3:
         return SettingsTab(

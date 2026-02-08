@@ -7,6 +7,7 @@ class QuizMenuScreen extends StatelessWidget {
   final Set<String> completedQuizzes;
   final void Function(int) onKpChange;
   final void Function(String) onQuizComplete;
+  final Listenable? refreshListenable;
 
   const QuizMenuScreen({
     super.key,
@@ -15,6 +16,7 @@ class QuizMenuScreen extends StatelessWidget {
     required this.completedQuizzes,
     required this.onKpChange,
     required this.onQuizComplete,
+    this.refreshListenable,
   });
 
   Color _getDifficultyColor(QuizDifficulty difficulty) {
@@ -39,117 +41,135 @@ class QuizMenuScreen extends StatelessWidget {
     }
   }
 
+  int _getRepeatAward(QuizDifficulty difficulty) {
+    switch (difficulty) {
+      case QuizDifficulty.easy:
+        return 0;
+      case QuizDifficulty.medium:
+        return 10;
+      case QuizDifficulty.hard:
+        return 15;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final quizzes = getQuizzesForLevel(currentLevel);
-
     return Scaffold(
       appBar: AppBar(title: const Text("Quizzes")),
-      body: quizzes.isEmpty
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.construction,
-                      size: 64,
-                      color: Colors.orange.shade300,
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Quizzes Coming Soon!',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'We apologize for the inconvenience.\nOur quiz database for this level is still being curated.',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey.shade600,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Please check back soon!',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade500,
-                        fontStyle: FontStyle.italic,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: quizzes.length,
-              itemBuilder: (context, index) {
-                final quiz = quizzes[index];
-                final scheme = quiz.markingScheme;
-                final isCompleted = completedQuizzes.contains(quiz.id);
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: isCompleted
-                            ? Colors.green
-                            : _getDifficultyColor(quiz.difficulty),
-                        width: 3,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      color: isCompleted ? Colors.green.shade50 : null,
-                    ),
-                    child: ListTile(
-                      leading: Icon(
-                        isCompleted ? Icons.check_circle : Icons.quiz,
-                        color: isCompleted
-                            ? Colors.green
-                            : _getDifficultyColor(quiz.difficulty),
-                      ),
-                      title: Text(
-                        quiz.title,
-                        style: TextStyle(
-                          decoration: isCompleted
-                              ? TextDecoration.lineThrough
-                              : null,
-                          color: isCompleted ? Colors.grey : null,
+      body: ListenableBuilder(
+        listenable: refreshListenable ?? ChangeNotifier(), // fallback if null
+        builder: (context, _) {
+          final quizzes = getQuizzesForLevel(currentLevel);
+          return quizzes.isEmpty
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.construction,
+                          size: 64,
+                          color: Colors.orange.shade300,
                         ),
-                      ),
-                      subtitle: Text(
-                        '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • +${scheme.correctPoints}/${scheme.wrongPoints} KP',
-                      ),
-                      isThreeLine: true,
-                      trailing: const Icon(Icons.arrow_forward),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => QuizScreen(
-                              quiz: quiz,
-                              currentKp: currentKp,
-                              onKpChange: onKpChange,
-                              onQuizComplete: onQuizComplete,
-                              isCompleted: isCompleted,
-                            ),
+                        const SizedBox(height: 24),
+                        const Text(
+                          'Quizzes Coming Soon!',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                           ),
-                        );
-                      },
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'We apologize for the inconvenience.\nOur quiz database for this level is still being curated.',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey.shade600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Please check back soon!',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade500,
+                            fontStyle: FontStyle.italic,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: quizzes.length,
+                  itemBuilder: (context, index) {
+                    final quiz = quizzes[index];
+                    final scheme = quiz.markingScheme;
+                    final isCompleted = completedQuizzes.contains(quiz.id);
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isCompleted
+                                ? Colors.green
+                                : _getDifficultyColor(quiz.difficulty),
+                            width: 3,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          color: isCompleted ? Colors.green.shade50 : null,
+                        ),
+                        child: ListTile(
+                          leading: Icon(
+                            isCompleted ? Icons.check_circle : Icons.quiz,
+                            color: isCompleted
+                                ? Colors.green
+                                : _getDifficultyColor(quiz.difficulty),
+                          ),
+                          title: Text(
+                            quiz.title,
+                            style: TextStyle(
+                              decoration: isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                              color: isCompleted ? Colors.grey : null,
+                            ),
+                          ),
+                          subtitle: Text(
+                            isCompleted
+                                ? '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • Repeat Award: +${_getRepeatAward(quiz.difficulty)} KP'
+                                : '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • +${scheme.correctPoints}/${scheme.wrongPoints} KP',
+                          ),
+                          isThreeLine: true,
+                          trailing: const Icon(Icons.arrow_forward),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => QuizScreen(
+                                  quiz: quiz,
+                                  currentKp: currentKp,
+                                  onKpChange: onKpChange,
+                                  onQuizComplete: onQuizComplete,
+                                  completedQuizzes: completedQuizzes,
+                                  isCompleted: isCompleted,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
                 );
-              },
-            ),
+        },
+      ),
     );
   }
 }
@@ -159,6 +179,7 @@ class QuizScreen extends StatefulWidget {
   final int currentKp;
   final void Function(int) onKpChange;
   final void Function(String) onQuizComplete;
+  final Set<String> completedQuizzes;
   final bool isCompleted;
 
   const QuizScreen({
@@ -167,6 +188,7 @@ class QuizScreen extends StatefulWidget {
     required this.currentKp,
     required this.onKpChange,
     required this.onQuizComplete,
+    required this.completedQuizzes,
     this.isCompleted = false,
   });
 
@@ -332,6 +354,7 @@ class _QuizScreenState extends State<QuizScreen> {
             results: results,
             currentQuizId: widget.quiz.id,
             level: widget.quiz.requiredLevel,
+            completedQuizzes: widget.completedQuizzes,
             onKpChange: widget.onKpChange,
             onQuizComplete: widget.onQuizComplete,
             isCompleted: widget.isCompleted,
@@ -458,6 +481,7 @@ class QuizAnalysisScreen extends StatelessWidget {
   final List<bool> results;
   final String currentQuizId;
   final int level;
+  final Set<String> completedQuizzes;
   final void Function(int) onKpChange;
   final void Function(String) onQuizComplete;
   final bool isCompleted;
@@ -472,6 +496,7 @@ class QuizAnalysisScreen extends StatelessWidget {
     required this.results,
     required this.currentQuizId,
     required this.level,
+    required this.completedQuizzes,
     required this.onKpChange,
     required this.onQuizComplete,
     required this.isCompleted,
@@ -575,7 +600,7 @@ class QuizAnalysisScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
-                      "KP: $currentKp ${deltaKp < 0 ? '- ' : '+ '}$deltaKp = $newKp",
+                      "KP: $currentKp ${deltaKp < 0 ? ' ' : '+ '}$deltaKp = $newKp",
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
@@ -591,19 +616,23 @@ class QuizAnalysisScreen extends StatelessWidget {
 
                         if (currentIndex != -1 &&
                             currentIndex < quizzes.length - 1) {
+                          final nextQuiz = quizzes[currentIndex + 1];
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (_) => QuizScreen(
-                                quiz: quizzes[currentIndex + 1],
+                                quiz: nextQuiz,
                                 currentKp: currentKp + deltaKp,
                                 onKpChange: onKpChange,
                                 onQuizComplete: onQuizComplete,
+                                completedQuizzes: completedQuizzes,
+                                isCompleted: completedQuizzes.contains(
+                                  nextQuiz.id,
+                                ),
                               ),
                             ),
                           );
                         } else {
-                          // ...
                           Navigator.pop(context);
                         }
                       },
