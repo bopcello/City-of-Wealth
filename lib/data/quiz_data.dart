@@ -1603,5 +1603,5 @@ QuizMetadata? getQuizById(String id) {
 }
 
 List<QuizMetadata> _getAllQuizzes() {
-  return [..._level1Quizzes, ..._mediumQuizzes, ..._hardQuizzes];
+  return _level1Quizzes;
 }
