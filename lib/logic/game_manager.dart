@@ -24,6 +24,10 @@ class GameManager extends ChangeNotifier {
   int cycleTracker = 0;
   bool hasWall = false;
   Set<String> completedQuizzes = {};
+  bool isWorkingOvertime = false;
+  int overtimeStreak = 0;
+  Map<AssetType, int> activePassiveIncomes = {};
+  Map<DisasterType, int> activeDisasterEffects = {};
 
   bool loaded = false;
   bool incomePaused = false;
@@ -62,6 +66,10 @@ class GameManager extends ChangeNotifier {
       savedNextDisasterCycle,
       savedWall,
       savedCompletedQuizzes,
+      savedIsWorkingOvertime,
+      savedOvertimeStreak,
+      savedActivePassiveIncomes,
+      savedActiveDisasterEffects,
     ) = await loadGameState();
 
     kp = savedKp;
@@ -80,6 +88,10 @@ class GameManager extends ChangeNotifier {
     nextDisasterCycle = savedNextDisasterCycle;
     hasWall = savedWall ?? false;
     completedQuizzes = savedCompletedQuizzes;
+    isWorkingOvertime = savedIsWorkingOvertime;
+    overtimeStreak = savedOvertimeStreak;
+    activePassiveIncomes = savedActivePassiveIncomes;
+    activeDisasterEffects = savedActiveDisasterEffects;
     loaded = true;
 
     notifyListeners();
@@ -104,6 +116,10 @@ class GameManager extends ChangeNotifier {
       nextDisasterCycle: nextDisasterCycle,
       wall: hasWall,
       completedQuizzes: completedQuizzes,
+      isWorkingOvertime: isWorkingOvertime,
+      overtimeStreak: overtimeStreak,
+      activePassiveIncomes: activePassiveIncomes,
+      activeDisasterEffects: activeDisasterEffects,
     );
   }
 
@@ -129,7 +145,23 @@ class GameManager extends ChangeNotifier {
 
     final hasAllEssentials =
         rentChoice != null && foodChoice != null && transportChoice != null;
-    final income = dailyIncome(career.track, career.level);
+    int income = dailyIncome(career.track, career.level);
+
+    int passiveIncomeTotal = 0;
+    activePassiveIncomes.forEach((assetType, investedCount) {
+      final multiplier = getPassiveIncomeMultiplier(assetType);
+      final info = passiveIncomeData.values.firstWhere(
+        (e) => e.assetType == assetType,
+      );
+      // Only add income if the corresponding building exists
+      if (cityLayout.any((b) => b.name == info.buildingName)) {
+        final ownedCount = assets.count(assetType);
+        final eligibleCount = min(ownedCount, investedCount);
+
+        passiveIncomeTotal += (eligibleCount * info.incomePerAsset * multiplier)
+            .round();
+      }
+    });
 
     bool hasWaste = false;
     int wastePenalty = 100;
@@ -138,7 +170,7 @@ class GameManager extends ChangeNotifier {
         hasWaste = true;
         wastePenalty = 50;
       }
-    } else {
+    } else if (career.level < 5) {
       for (var type in AssetType.values) {
         if (assets.count(type) >
             getMaxRequirementForType(career.track, career.level, type)) {
@@ -151,21 +183,40 @@ class GameManager extends ChangeNotifier {
     for (int i = 0; i < cycles; i++) {
       cycleTracker++;
       if (nextDisasterCycle == null) {
-        nextDisasterCycle = 15 + Random().nextInt(16);
+        nextDisasterCycle = 1 + Random().nextInt(5);
       } else {
         nextDisasterCycle = nextDisasterCycle! - 1;
         if (nextDisasterCycle! <= 0) {
           _triggerNaturalDisaster();
-          nextDisasterCycle = 15 + Random().nextInt(16);
+          nextDisasterCycle = 1 + Random().nextInt(5);
         }
+      }
+
+      // Update active disaster effects
+      final expiredEffectTypes = <DisasterType>[];
+      activeDisasterEffects.forEach((type, remaining) {
+        if (remaining <= 1) {
+          expiredEffectTypes.add(type);
+        } else {
+          activeDisasterEffects[type] = remaining - 1;
+        }
+      });
+      for (var type in expiredEffectTypes) {
+        activeDisasterEffects.remove(type);
+        events.add("The effect of ${type.name} has ended.");
       }
 
       int dayKp = 0;
       int dayGems = 0;
       final dayNumber = pendingEvents.length + i + 1;
 
+      int currentIncome = income;
+      if (isWorkingOvertime && i == 0) {
+        currentIncome = (currentIncome * 1.5).round();
+      }
+
       if (hasAllEssentials) {
-        dayGems += income;
+        dayGems += currentIncome;
       }
 
       int rCost = rentChoice != null
@@ -259,6 +310,8 @@ class GameManager extends ChangeNotifier {
           maintenanceCost +
           interestCost);
 
+      dayGems += passiveIncomeTotal;
+
       totalKpChange += dayKp;
       totalGemChange += dayGems;
 
@@ -266,9 +319,12 @@ class GameManager extends ChangeNotifier {
 
       String event =
           "Day $dayNumber: Kp=${dayKp > 0 ? '+' : ''}$dayKp, Gems=${dayGems > 0 ? '+' : ''}$dayGems";
+      if (isWorkingOvertime && i == 0) {
+        event += " (Worked overtime! Earned 50% extra income)";
+      }
       if (interestCost > 0) {
         event += " (You're in debt! Interest: -$interestCost Gems, -300 KP)";
-        if (balanceAfterDay < -5000) {
+        if (balanceAfterDay < -10000) {
           event += " Consider declaring bankruptcy";
         }
       }
@@ -280,14 +336,31 @@ class GameManager extends ChangeNotifier {
         event +=
             " (No income: Go to liabilities to select rent, food and transport to begin receiving income)";
       }
-      if (hasWaste)
+      if (hasWaste) {
         event +=
             " (Unnecessary assets penalty: -$wastePenalty KP, sell unnecessary assets)";
+      }
+      if (passiveIncomeTotal > 0) {
+        event += " (Passive Income: +$passiveIncomeTotal Gems)";
+      }
       events.add(event);
+    }
+
+    if (cycles > 1) {
+      events.add(
+        "--- TOTAL SUMMARY: ${totalKpChange > 0 ? '+' : ''}$totalKpChange KP, ${totalGemChange > 0 ? '+' : ''}$totalGemChange Gems across $cycles cycles ---",
+      );
     }
 
     kp += totalKpChange;
     gems += totalGemChange;
+
+    if (isWorkingOvertime && cycles > 0) {
+      isWorkingOvertime = false;
+    } else if (cycles > 0) {
+      overtimeStreak = 0;
+    }
+
     lastIncomeTime = DateTime.now();
     pendingEvents.addAll(events);
 
@@ -451,6 +524,8 @@ class GameManager extends ChangeNotifier {
     debtCycleCount = 0;
     nextDestructionCycle = null;
     hasWall = false;
+    activePassiveIncomes = {};
+    activeDisasterEffects = {};
     completedQuizzes = {};
 
     save();
@@ -483,6 +558,81 @@ class GameManager extends ChangeNotifier {
     }
   }
 
+  void investInPassiveIncome(AssetType assetType) {
+    final info = passiveIncomeData.values.firstWhere(
+      (e) => e.assetType == assetType,
+    );
+
+    final currentInvested = activePassiveIncomes[assetType] ?? 0;
+    final ownedCount = assets.count(assetType);
+
+    if (gems >= info.investmentCost && currentInvested < ownedCount) {
+      gems -= info.investmentCost;
+      activePassiveIncomes[assetType] = currentInvested + 1;
+      save();
+      notifyListeners();
+    }
+  }
+
+  DisasterType? getActiveDisasterForAsset(AssetType type) {
+    if (type == AssetType.land &&
+        activeDisasterEffects.containsKey(DisasterType.drought)) {
+      return DisasterType.drought;
+    } else if (type == AssetType.vehicles &&
+        activeDisasterEffects.containsKey(DisasterType.landslide)) {
+      return DisasterType.landslide;
+    } else if (type == AssetType.machinery &&
+        activeDisasterEffects.containsKey(DisasterType.economyCrash)) {
+      return DisasterType.economyCrash;
+    } else if (type == AssetType.properties &&
+        activeDisasterEffects.containsKey(DisasterType.massEmigration)) {
+      return DisasterType.massEmigration;
+    } else if (type == AssetType.officeEquipment &&
+        activeDisasterEffects.containsKey(DisasterType.pandemic)) {
+      return DisasterType.pandemic;
+    }
+    return null;
+  }
+
+  double getPassiveIncomeMultiplier(AssetType type) {
+    double multiplier = 1.0;
+    if (type == AssetType.land &&
+        activeDisasterEffects.containsKey(DisasterType.drought)) {
+      multiplier *= 0.25;
+    } else if (type == AssetType.vehicles &&
+        activeDisasterEffects.containsKey(DisasterType.landslide)) {
+      multiplier *= 0.20;
+    } else if (type == AssetType.machinery &&
+        activeDisasterEffects.containsKey(DisasterType.economyCrash)) {
+      multiplier *= 0.40;
+    } else if (type == AssetType.properties &&
+        activeDisasterEffects.containsKey(DisasterType.massEmigration)) {
+      multiplier *= 0.20;
+    } else if (type == AssetType.officeEquipment &&
+        activeDisasterEffects.containsKey(DisasterType.pandemic)) {
+      multiplier *= 0.10;
+    }
+    return multiplier;
+  }
+
+  void workOvertime() {
+    if (isWorkingOvertime) return;
+
+    overtimeStreak++;
+    int penalty = 50;
+    if (overtimeStreak > 10) {
+      penalty = 50 + (overtimeStreak - 10) * 50;
+      if (penalty > 1000) penalty = 1000;
+    }
+
+    kp -= penalty;
+    if (kp < 0) kp = 0;
+    isWorkingOvertime = true;
+
+    save();
+    notifyListeners();
+  }
+
   void debugAdd() {
     kp += 1000;
     gems += 1000;
@@ -507,34 +657,21 @@ class GameManager extends ChangeNotifier {
     if (cityLayout.isEmpty) return;
 
     final rng = Random();
-    final disasterType =
-        DisasterType.values[rng.nextInt(DisasterType.values.length)];
+    final assetDisasters = [
+      DisasterType.flood,
+      DisasterType.fire,
+      DisasterType.earthquake,
+    ];
+    final passiveIncomeDisasters = [
+      DisasterType.economyCrash,
+      DisasterType.drought,
+      DisasterType.landslide,
+      DisasterType.massEmigration,
+      DisasterType.pandemic,
+    ];
 
-    // Destroy up to 50% of buildings
-    int buildingsToDestroyCount = (cityLayout.length * 0.5).ceil();
-    if (buildingsToDestroyCount == 0 && cityLayout.isNotEmpty) {
-      buildingsToDestroyCount = 1;
-    }
-
-    List<PlacedBuilding> toDestroy = [];
-    List<PlacedBuilding> pool = List.from(cityLayout);
-
-    // Weighted selection based on disaster type
-    pool.sort((a, b) {
-      final bA = buildings.firstWhere((e) => e.name == a.name);
-      final bB = buildings.firstWhere((e) => e.name == b.name);
-
-      bool aMatches = _doesBuildingMatchDisaster(bA, disasterType);
-      bool bMatches = _doesBuildingMatchDisaster(bB, disasterType);
-
-      if (aMatches && !bMatches) return -1;
-      if (!aMatches && bMatches) return 1;
-      return 0;
-    });
-
-    for (int i = 0; i < buildingsToDestroyCount && pool.isNotEmpty; i++) {
-      toDestroy.add(pool.removeAt(0));
-    }
+    final allDisasters = [...assetDisasters, ...passiveIncomeDisasters];
+    final disasterType = allDisasters[rng.nextInt(allDisasters.length)];
 
     List<String> destroyedNames = [];
     Map<AssetType, int> lostAssets = {};
@@ -548,52 +685,104 @@ class GameManager extends ChangeNotifier {
       initialAssetCounts[type] = assets.count(type);
     }
 
-    for (var pb in toDestroy) {
-      destroyedNames.add(pb.name);
-      cityLayout.remove(pb);
+    if (assetDisasters.contains(disasterType)) {
+      // ASSET DISASTERS: Destroy raw assets directly (up to 50%)
+      List<AssetType> targets = [];
+      if (disasterType == DisasterType.flood) {
+        targets = [AssetType.land];
+      } else if (disasterType == DisasterType.fire) {
+        targets = [AssetType.properties, AssetType.vehicles];
+      } else if (disasterType == DisasterType.earthquake) {
+        targets = [AssetType.officeEquipment, AssetType.machinery];
+      }
 
-      final buildingData = buildings.firstWhere((e) => e.name == pb.name);
-      for (var entry in buildingData.requirements.entries) {
-        final type = entry.key;
-        final reqCount = entry.value;
+      for (var type in targets) {
+        int owned = initialAssetCounts[type]!;
+        if (owned > 0) {
+          int toDestroyCount = (rng.nextDouble() * 0.5 * owned).ceil();
+          if (toDestroyCount > 0) {
+            lostAssets[type] = toDestroyCount;
+            assets = assets.add(type, -toDestroyCount);
 
-        // Calculate potential loss for this building (20% to 100% of its requirement)
-        int potentialLoss = ((rng.nextDouble() * 0.8 + 0.2) * reqCount).ceil();
-
-        // Enforce 50% cap of total owned assets of this type
-        int maxAllowedLossForThisType = (initialAssetCounts[type]! * 0.5)
-            .floor();
-        int currentTotalLossForThisType = lostAssets[type] ?? 0;
-        int remainingLossAllowed =
-            maxAllowedLossForThisType - currentTotalLossForThisType;
-
-        int assetLoss = potentialLoss;
-        if (assetLoss > remainingLossAllowed) {
-          assetLoss = remainingLossAllowed;
-        }
-
-        final currentOwned = assets.count(type);
-        if (assetLoss > currentOwned) assetLoss = currentOwned;
-
-        if (assetLoss > 0) {
-          lostAssets[type] = (lostAssets[type] ?? 0) + assetLoss;
-          assets = assets.add(type, -assetLoss);
-
-          if (insurances.contains(type)) {
-            final payout = (assetLoss * assetCost(type) * 0.8).round();
-            insurancePayouts[type] = (insurancePayouts[type] ?? 0) + payout;
-            gems += payout;
-            hasAnyInsurance = true;
+            if (insurances.contains(type)) {
+              final payout = (toDestroyCount * assetCost(type) * 0.8).round();
+              insurancePayouts[type] = payout;
+              gems += payout;
+              hasAnyInsurance = true;
+            }
           }
         }
       }
     }
 
-    if (!hasAnyInsurance && lostAssets.isNotEmpty) {
-      kpPenalty = 1500;
-      kp -= kpPenalty;
-      if (kp < 0) kp = 0;
+    Map<AssetType, int> deactivatedPassiveIncomes = {};
+    String? passiveIncomeReduction;
+
+    if (passiveIncomeDisasters.contains(disasterType)) {
+      // PASSIVE INCOME DISASTERS: Reduce yield and deactivate units
+      const duration = 30;
+      activeDisasterEffects[disasterType] = duration;
+
+      switch (disasterType) {
+        case DisasterType.drought:
+          passiveIncomeReduction = "Farms -75% for $duration cycles";
+          break;
+        case DisasterType.landslide:
+          passiveIncomeReduction = "Goods Exchange -80% for $duration cycles";
+          break;
+        case DisasterType.economyCrash:
+          passiveIncomeReduction = "Factory -60% for $duration cycles";
+          break;
+        case DisasterType.massEmigration:
+          passiveIncomeReduction = "Apartment -80% for $duration cycles";
+          break;
+        case DisasterType.pandemic:
+          passiveIncomeReduction = "Xerox Shop -90% for $duration cycles";
+          break;
+        default:
+          break;
+      }
+
+      // 20% chance of unit deactivation for specifically Passive Income Disasters
+      activePassiveIncomes.forEach((type, count) {
+        if (count > 0 && rng.nextDouble() < 0.20) {
+          activePassiveIncomes[type] = count - 1;
+          deactivatedPassiveIncomes[type] =
+              (deactivatedPassiveIncomes[type] ?? 0) + 1;
+        }
+      });
     }
+
+    // Link asset destruction to passive income deactivation
+    lostAssets.forEach((assetType, lostCount) {
+      final currentInvested = activePassiveIncomes[assetType] ?? 0;
+      final currentOwned = assets.count(
+        assetType,
+      ); // assets already subtracted above
+      if (currentInvested > currentOwned) {
+        final loss = currentInvested - currentOwned;
+        activePassiveIncomes[assetType] = currentOwned;
+        deactivatedPassiveIncomes[assetType] =
+            (deactivatedPassiveIncomes[assetType] ?? 0) + loss;
+      }
+    });
+
+    // Remove buildings whose passive income units are now 0
+    deactivatedPassiveIncomes.forEach((type, deactivatedCount) {
+      if ((activePassiveIncomes[type] ?? 0) <= 0 && deactivatedCount > 0) {
+        final info = passiveIncomeData.values.firstWhere(
+          (e) => e.assetType == type,
+        );
+        // Find if this building exists in city
+        bool exists = cityLayout.any((b) => b.name == info.buildingName);
+        if (exists) {
+          cityLayout.removeWhere((b) => b.name == info.buildingName);
+          if (!destroyedNames.contains(info.buildingName)) {
+            destroyedNames.add(info.buildingName);
+          }
+        }
+      }
+    });
 
     pendingDisasterResults.add(
       DisasterResult(
@@ -603,29 +792,37 @@ class GameManager extends ChangeNotifier {
         insurancePayouts: insurancePayouts,
         kpPenalty: kpPenalty,
         protected: hasAnyInsurance,
+        deactivatedPassiveIncomes: deactivatedPassiveIncomes,
+        passiveIncomeReduction: passiveIncomeReduction,
       ),
     );
 
     pendingEvents.add(
-      "DISASTER: ${disasterType.name.toUpperCase()}! Check detail report for losses and insurance coverage.",
+      "DISASTER: ${disasterLabel(disasterType)}! Check the detail report for losses and insurance coverage.",
     );
 
     save();
     notifyListeners();
   }
 
-  bool _doesBuildingMatchDisaster(Building b, DisasterType type) {
+  String disasterLabel(DisasterType type) {
     switch (type) {
       case DisasterType.flood:
-        return b.requirements.containsKey(AssetType.land);
+        return "Flood";
       case DisasterType.fire:
-        return b.requirements.containsKey(AssetType.properties) ||
-            b.requirements.containsKey(AssetType.vehicles);
+        return "Fire";
       case DisasterType.earthquake:
-        return b.requirements.containsKey(AssetType.officeEquipment) ||
-            b.requirements.containsKey(AssetType.machinery);
+        return "Earthquake";
       case DisasterType.economyCrash:
-        return true;
+        return "Economy Crash";
+      case DisasterType.drought:
+        return "Drought";
+      case DisasterType.landslide:
+        return "Landslide";
+      case DisasterType.massEmigration:
+        return "Mass Emigration";
+      case DisasterType.pandemic:
+        return "Pandemic";
     }
   }
 
@@ -634,9 +831,9 @@ class GameManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void debugLevelUp() {
+  void debugLevelUp({CareerTrack? track}) {
     if (career.track == CareerTrack.student) {
-      updateCareer(const CareerState(track: CareerTrack.business, level: 2));
+      updateCareer(CareerState(track: track ?? CareerTrack.business, level: 2));
     } else if (career.level < 5) {
       updateCareer(career.copyWith(level: career.level + 1));
     } else {

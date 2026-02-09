@@ -12,15 +12,28 @@ enum FoodType { cheap, balanced, buffet }
 
 enum TransportType { public, cycle, car }
 
-enum DisasterType { flood, fire, earthquake, economyCrash }
+enum DisasterType {
+  flood,
+  fire,
+  earthquake,
+  economyCrash,
+  drought,
+  landslide,
+  massEmigration,
+  pandemic,
+}
+
+enum PassiveIncomeType { farm, factory, apartment, goodsExchange, xeroxShop }
 
 class DisasterResult {
   final DisasterType type;
   final List<String> destroyedBuildings;
   final Map<AssetType, int> lostAssets;
-  final Map<AssetType, int> insurancePayouts;
+  final Map<AssetType, int> insurancePayouts; // asset -> total gems
   final int kpPenalty;
   final bool protected;
+  final Map<AssetType, int> deactivatedPassiveIncomes;
+  final String? passiveIncomeReduction; // e.g., "Farms -75% for 15 cycles"
 
   DisasterResult({
     required this.type,
@@ -29,6 +42,8 @@ class DisasterResult {
     required this.insurancePayouts,
     required this.kpPenalty,
     required this.protected,
+    this.deactivatedPassiveIncomes = const {},
+    this.passiveIncomeReduction,
   });
 
   Map<String, dynamic> toJson() => {
@@ -38,6 +53,10 @@ class DisasterResult {
     'insurancePayouts': insurancePayouts.map((k, v) => MapEntry(k.name, v)),
     'kpPenalty': kpPenalty,
     'protected': protected,
+    'deactivatedPassiveIncomes': deactivatedPassiveIncomes.map(
+      (k, v) => MapEntry(k.name, v),
+    ),
+    'passiveIncomeReduction': passiveIncomeReduction,
   };
 
   factory DisasterResult.fromJson(Map<String, dynamic> json) => DisasterResult(
@@ -53,8 +72,71 @@ class DisasterResult {
     ),
     kpPenalty: json['kpPenalty'],
     protected: json['protected'],
+    deactivatedPassiveIncomes:
+        (json['deactivatedPassiveIncomes'] as Map<String, dynamic>?)?.map(
+          (k, v) => MapEntry(
+            AssetType.values.firstWhere((e) => e.name == k),
+            v as int,
+          ),
+        ) ??
+        const {},
+    passiveIncomeReduction: json['passiveIncomeReduction'],
   );
 }
+
+class PassiveIncomeInfo {
+  final PassiveIncomeType type;
+  final AssetType assetType;
+  final String buildingName;
+  final int investmentCost;
+  final int incomePerAsset;
+
+  const PassiveIncomeInfo({
+    required this.type,
+    required this.assetType,
+    required this.buildingName,
+    required this.investmentCost,
+    required this.incomePerAsset,
+  });
+}
+
+const Map<PassiveIncomeType, PassiveIncomeInfo> passiveIncomeData = {
+  PassiveIncomeType.farm: PassiveIncomeInfo(
+    type: PassiveIncomeType.farm,
+    assetType: AssetType.land,
+    buildingName: "🌾 Farm",
+    investmentCost: 80,
+    incomePerAsset: 10,
+  ),
+  PassiveIncomeType.factory: PassiveIncomeInfo(
+    type: PassiveIncomeType.factory,
+    assetType: AssetType.machinery,
+    buildingName: "🏭 Factory",
+    investmentCost: 150,
+    incomePerAsset: 12,
+  ),
+  PassiveIncomeType.apartment: PassiveIncomeInfo(
+    type: PassiveIncomeType.apartment,
+    assetType: AssetType.properties,
+    buildingName: "🏢 Apartment",
+    investmentCost: 400,
+    incomePerAsset: 50,
+  ),
+  PassiveIncomeType.goodsExchange: PassiveIncomeInfo(
+    type: PassiveIncomeType.goodsExchange,
+    assetType: AssetType.vehicles,
+    buildingName: "🚚 Goods Exchange",
+    investmentCost: 250,
+    incomePerAsset: 35,
+  ),
+  PassiveIncomeType.xeroxShop: PassiveIncomeInfo(
+    type: PassiveIncomeType.xeroxShop,
+    assetType: AssetType.officeEquipment,
+    buildingName: "📄 Xerox Shop",
+    investmentCost: 120,
+    incomePerAsset: 20,
+  ),
+};
 
 const Map<AssetType, int> assetCosts = {
   AssetType.land: 100,
@@ -130,6 +212,7 @@ class Building {
 }
 
 const buildings = [
+  // LEVEL 2
   Building(
     name: "💡 Idea Hub",
     track: CareerTrack.business,
@@ -137,17 +220,45 @@ const buildings = [
     requirements: {AssetType.properties: 5},
   ),
   Building(
-    name: "🏭 Small Workshop",
+    name: "🪑 Office Desk",
+    track: CareerTrack.job,
+    requiredLevel: 2,
+    requirements: {AssetType.officeEquipment: 3},
+  ),
+  Building(
+    name: "☕ Coffee Stand",
+    track: CareerTrack.job,
+    requiredLevel: 2,
+    requirements: {AssetType.officeEquipment: 5},
+  ),
+
+  // LEVEL 3
+  Building(
+    name: "� Small Workshop",
     track: CareerTrack.business,
     requiredLevel: 3,
     requirements: {AssetType.properties: 10, AssetType.land: 5},
   ),
   Building(
-    name: "📦 Storage Unit",
+    name: "� Storage Unit",
     track: CareerTrack.business,
     requiredLevel: 3,
-    requirements: {AssetType.land: 8},
+    requirements: {AssetType.properties: 15, AssetType.land: 8},
   ),
+  Building(
+    name: "👥 Team Office",
+    track: CareerTrack.job,
+    requiredLevel: 3,
+    requirements: {AssetType.officeEquipment: 8, AssetType.land: 10},
+  ),
+  Building(
+    name: "🚗 Logistics Garage",
+    track: CareerTrack.job,
+    requiredLevel: 3,
+    requirements: {AssetType.vehicles: 12, AssetType.land: 5},
+  ),
+
+  // LEVEL 4
   Building(
     name: "🏢 Office Building",
     track: CareerTrack.business,
@@ -155,11 +266,25 @@ const buildings = [
     requirements: {AssetType.properties: 20, AssetType.officeEquipment: 10},
   ),
   Building(
-    name: "📊 Analytics Center",
+    name: "� Analytics Center",
     track: CareerTrack.business,
     requiredLevel: 4,
-    requirements: {AssetType.officeEquipment: 15},
+    requirements: {AssetType.officeEquipment: 15, AssetType.machinery: 5},
   ),
+  Building(
+    name: "🏬 Department Office",
+    track: CareerTrack.job,
+    requiredLevel: 4,
+    requirements: {AssetType.officeEquipment: 15, AssetType.properties: 10},
+  ),
+  Building(
+    name: "🤝 Conference Center",
+    track: CareerTrack.job,
+    requiredLevel: 4,
+    requirements: {AssetType.properties: 20, AssetType.officeEquipment: 15},
+  ),
+
+  // LEVEL 5
   Building(
     name: "🏙️ HQ Tower",
     track: CareerTrack.business,
@@ -172,31 +297,50 @@ const buildings = [
     requiredLevel: 5,
     requirements: {AssetType.officeEquipment: 50, AssetType.properties: 50},
   ),
-
-  // JOB
-  Building(
-    name: "🪑 Office Desk",
-    track: CareerTrack.job,
-    requiredLevel: 2,
-    requirements: {AssetType.officeEquipment: 3},
-  ),
-  Building(
-    name: "👥 Team Office",
-    track: CareerTrack.job,
-    requiredLevel: 3,
-    requirements: {AssetType.officeEquipment: 8},
-  ),
-  Building(
-    name: "🏬 Department Office",
-    track: CareerTrack.job,
-    requiredLevel: 4,
-    requirements: {AssetType.officeEquipment: 15, AssetType.properties: 10},
-  ),
   Building(
     name: "🏢 Corporate HQ",
     track: CareerTrack.job,
     requiredLevel: 5,
     requirements: {AssetType.officeEquipment: 30, AssetType.properties: 25},
+  ),
+  Building(
+    name: "🏛️ Boardroom Pavilion",
+    track: CareerTrack.job,
+    requiredLevel: 5,
+    requirements: {AssetType.properties: 45, AssetType.officeEquipment: 20},
+  ),
+
+  // SPECIAL
+  // Passive Income Buildings
+  Building(
+    name: "🌾 Farm",
+    track: CareerTrack.student, // No track requirement
+    requiredLevel: 1,
+    requirements: {}, // Will check for passive income investment instead
+  ),
+  Building(
+    name: "🏭 Factory",
+    track: CareerTrack.student,
+    requiredLevel: 1,
+    requirements: {},
+  ),
+  Building(
+    name: "🏢 Apartment",
+    track: CareerTrack.student,
+    requiredLevel: 1,
+    requirements: {},
+  ),
+  Building(
+    name: "🚚 Goods Exchange",
+    track: CareerTrack.student,
+    requiredLevel: 1,
+    requirements: {},
+  ),
+  Building(
+    name: "📄 Xerox Shop",
+    track: CareerTrack.student,
+    requiredLevel: 1,
+    requirements: {},
   ),
   Building(
     name: "The Keystone",
@@ -246,6 +390,9 @@ const _debtCycleCountKey = 'debtCycleCount';
 const _nextDestructionCycleKey = 'nextDestructionCycle';
 const _nextDisasterCycleKey = 'nextDisasterCycle';
 const _completedQuizzesKey = 'completedQuizzes';
+const _isWorkingOvertimeKey = 'isWorkingOvertime';
+const _overtimeStreakKey = 'overtimeStreak';
+const _activePassiveIncomesKey = 'activePassiveIncomes';
 
 class PlacedBuilding {
   final String name;
@@ -333,6 +480,10 @@ Future<void> saveGameState({
   required int? nextDisasterCycle,
   bool? wall,
   required Set<String> completedQuizzes,
+  required bool isWorkingOvertime,
+  required int overtimeStreak,
+  required Map<AssetType, int> activePassiveIncomes,
+  required Map<DisasterType, int> activeDisasterEffects,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   debugPrint("💾 SAVING GAME");
@@ -391,6 +542,21 @@ Future<void> saveGameState({
   }
 
   await prefs.setStringList(_completedQuizzesKey, completedQuizzes.toList());
+  await prefs.setBool(_isWorkingOvertimeKey, isWorkingOvertime);
+  await prefs.setInt(_overtimeStreakKey, overtimeStreak);
+
+  final passiveIncomeMap = activePassiveIncomes.map(
+    (k, v) => MapEntry(k.name, v),
+  );
+  await prefs.setString(_activePassiveIncomesKey, jsonEncode(passiveIncomeMap));
+
+  final disasterEffectsMap = activeDisasterEffects.map(
+    (k, v) => MapEntry(k.name, v),
+  );
+  await prefs.setString(
+    'activeDisasterEffects',
+    jsonEncode(disasterEffectsMap),
+  );
 }
 
 Future<
@@ -411,6 +577,10 @@ Future<
     int?,
     bool?,
     Set<String>,
+    bool,
+    int,
+    Map<AssetType, int>,
+    Map<DisasterType, int>,
   )
 >
 loadGameState() async {
@@ -479,6 +649,39 @@ loadGameState() async {
   final completedQuizzes = (prefs.getStringList(_completedQuizzesKey) ?? [])
       .toSet();
 
+  final isWorkingOvertime = prefs.getBool(_isWorkingOvertimeKey) ?? false;
+  final overtimeStreak = prefs.getInt(_overtimeStreakKey) ?? 0;
+
+  final passiveIncomeJson = prefs.getString(_activePassiveIncomesKey);
+  Map<AssetType, int> activePassiveIncomes = {};
+  if (passiveIncomeJson != null) {
+    final Map<String, dynamic> decoded = jsonDecode(passiveIncomeJson);
+    activePassiveIncomes = decoded.map(
+      (k, v) => MapEntry(
+        AssetType.values.firstWhere(
+          (e) => e.name == k,
+          orElse: () => AssetType.land,
+        ),
+        v as int,
+      ),
+    );
+  }
+
+  final disasterEffectsJson = prefs.getString('activeDisasterEffects');
+  Map<DisasterType, int> activeDisasterEffects = {};
+  if (disasterEffectsJson != null) {
+    final Map<String, dynamic> decoded = jsonDecode(disasterEffectsJson);
+    activeDisasterEffects = decoded.map(
+      (k, v) => MapEntry(
+        DisasterType.values.firstWhere(
+          (e) => e.name == k,
+          orElse: () => DisasterType.flood,
+        ),
+        v as int,
+      ),
+    );
+  }
+
   debugPrint("Loaded KP: $kp");
   debugPrint("Loaded Gems: $gems");
   debugPrint("Loaded Track: ${track.name}");
@@ -504,6 +707,10 @@ loadGameState() async {
     nextDisasterCycle,
     savedWall,
     completedQuizzes,
+    isWorkingOvertime,
+    overtimeStreak,
+    activePassiveIncomes,
+    activeDisasterEffects,
   );
 }
 
@@ -620,22 +827,22 @@ const Map<int, CareerLevelInfo> jobCareerInfo = {
   2: CareerLevelInfo(
     name: "Employee",
     dailyIncome: 40,
-    unlockedBuildings: ["🪑 Office Desk"],
+    unlockedBuildings: ["🪑 Office Desk", "☕ Coffee Stand"],
   ),
   3: CareerLevelInfo(
     name: "Supervisor",
     dailyIncome: 80,
-    unlockedBuildings: ["👥 Team Office"],
+    unlockedBuildings: ["👥 Team Office", "🚗 Logistics Garage"],
   ),
   4: CareerLevelInfo(
     name: "Manager",
     dailyIncome: 160,
-    unlockedBuildings: ["🏬 Department Office"],
+    unlockedBuildings: ["🏬 Department Office", "🤝 Conference Center"],
   ),
   5: CareerLevelInfo(
     name: "CEO",
     dailyIncome: 400,
-    unlockedBuildings: ["🏢 Corporate HQ"],
+    unlockedBuildings: ["🏢 Corporate HQ", "🏛️ Boardroom Pavilion"],
   ),
 };
 

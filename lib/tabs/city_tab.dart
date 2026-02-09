@@ -10,6 +10,7 @@ class CityTab extends StatefulWidget {
   final AssetInventory assets;
   final List<PlacedBuilding> cityLayout;
   final Set<AssetType> insurances;
+  final Map<AssetType, int> activePassiveIncomes;
   final bool hasWall;
   final void Function(AssetType type, int amount) onBuyAsset;
   final void Function(PlacedBuilding building) onPlaceBuilding;
@@ -23,6 +24,7 @@ class CityTab extends StatefulWidget {
     required this.assets,
     required this.cityLayout,
     required this.insurances,
+    required this.activePassiveIncomes,
     required this.hasWall,
     required this.onBuyAsset,
     required this.onPlaceBuilding,
@@ -279,6 +281,7 @@ class _CityTabState extends State<CityTab> {
                           career: widget.career,
                           assets: widget.assets,
                           insurances: widget.insurances,
+                          activePassiveIncomes: widget.activePassiveIncomes,
                           hasWall: widget.hasWall,
                           onSelect: (building) {
                             if (building.name == "The Keystone") {
@@ -314,6 +317,7 @@ class _BuildingsBottomSheet extends StatelessWidget {
   final CareerState career;
   final AssetInventory assets;
   final Set<AssetType> insurances;
+  final Map<AssetType, int> activePassiveIncomes;
   final bool hasWall;
   final Function(Building) onSelect;
   final VoidCallback onClose;
@@ -322,6 +326,7 @@ class _BuildingsBottomSheet extends StatelessWidget {
     required this.career,
     required this.assets,
     required this.insurances,
+    required this.activePassiveIncomes,
     required this.hasWall,
     required this.onSelect,
     required this.onClose,
@@ -337,7 +342,22 @@ class _BuildingsBottomSheet extends StatelessWidget {
         if (insurances.length < 5) return false;
         return true;
       }
-      return b.track == career.track && b.requiredLevel < 99;
+
+      // Show if it matches career track OR if it's an invested passive income building
+      if (b.track == career.track) return true;
+
+      final isPassiveIncomeBuilding = passiveIncomeData.values.any(
+        (info) => info.buildingName == b.name,
+      );
+      if (isPassiveIncomeBuilding) {
+        final passiveInfo = passiveIncomeData.values.firstWhere(
+          (info) => info.buildingName == b.name,
+        );
+        final investedCount = activePassiveIncomes[passiveInfo.assetType] ?? 0;
+        return investedCount > 0;
+      }
+
+      return false;
     });
 
     return Container(
@@ -451,9 +471,17 @@ class _BuildingCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isKeystone
-                      ? "Level 5 + All 5 Insurances Required"
-                      : "Requires level ${building.requiredLevel}",
+                  () {
+                    if (isKeystone)
+                      return "Level 5 + All 5 Insurances Required";
+                    final passiveInfo = passiveIncomeData.values.where(
+                      (info) => info.buildingName == building.name,
+                    );
+                    if (passiveInfo.isNotEmpty) {
+                      return "Enables passive income from ${assetLabel(passiveInfo.first.assetType)}";
+                    }
+                    return "Requires level: ${building.requiredLevel}";
+                  }(),
                   style: TextStyle(
                     fontSize: 12,
                     color: hasLevel ? Colors.green : Colors.red,

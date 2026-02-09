@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import '../game_state.dart';
 
 class SettingsTab extends StatelessWidget {
+  final CareerState career;
   final VoidCallback onDebugAdd;
-  final VoidCallback onDebugLevelUp;
+  final void Function({CareerTrack? track}) onDebugLevelUp;
   final VoidCallback onDebugReset;
 
   const SettingsTab({
     super.key,
+    required this.career,
     required this.onDebugAdd,
     required this.onDebugLevelUp,
     required this.onDebugReset,
@@ -40,7 +43,37 @@ class SettingsTab extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ElevatedButton.icon(
-            onPressed: onDebugLevelUp,
+            onPressed: () {
+              if (career.track == CareerTrack.student) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("Choose Career Track"),
+                    content: const Text(
+                      "Which track would you like to advance into?",
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          onDebugLevelUp(track: CareerTrack.job);
+                        },
+                        child: const Text("Job"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          onDebugLevelUp(track: CareerTrack.business);
+                        },
+                        child: const Text("Business"),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                onDebugLevelUp();
+              }
+            },
             icon: const Icon(Icons.upgrade),
             label: const Text("Debug: Advance to Next Level"),
             style: ElevatedButton.styleFrom(

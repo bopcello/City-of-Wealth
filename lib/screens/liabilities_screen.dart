@@ -1,34 +1,21 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
+import '../logic/game_manager.dart';
 
 class LiabilitiesScreen extends StatefulWidget {
-  final CareerState career;
+  final GameManager game;
   final RentType? currentRent;
   final FoodType? currentFood;
   final TransportType? currentTransport;
-  final List<PlacedBuilding> cityLayout;
-  final AssetInventory assets;
-  final Set<AssetType> insurances;
-  final int gems;
-  final int bankruptcyCount;
   final void Function(RentType?, FoodType?, TransportType?) onSelectionChanged;
-  final void Function(AssetType) onInsuranceToggle;
-  final VoidCallback onBankruptcy;
 
   const LiabilitiesScreen({
     super.key,
-    required this.career,
+    required this.game,
     required this.currentRent,
     required this.currentFood,
     required this.currentTransport,
-    required this.cityLayout,
-    required this.assets,
-    required this.insurances,
-    required this.gems,
-    required this.bankruptcyCount,
     required this.onSelectionChanged,
-    required this.onInsuranceToggle,
-    required this.onBankruptcy,
   });
 
   @override
@@ -74,14 +61,20 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
             const Divider(height: 24),
             const Text(
               "Other options would have been:",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 12,
+                color: Color.fromARGB(121, 158, 158, 158),
+              ),
             ),
             ...others.map(
               (o) => Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   "• ${o.$1}: ${o.$2 > 0 ? '+' : ''}${o.$2} KP (${o.$3} Gems cost)",
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color.fromARGB(121, 158, 158, 158),
+                  ),
                 ),
               ),
             ),
@@ -99,211 +92,225 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Liabilities & Lifestyle")),
-      body: Column(
-        children: [
-          // Top Section
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              color: Colors.amber.shade50,
-              child: ListView(
-                children: [
-                  _SectionHeader(title: "Lifestyle", icon: Icons.favorite),
-                  _buildPanel(
-                    "Rent",
-                    Icons.home,
-                    RentType.values,
-                    rentData,
-                    selectedRent,
-                    (val) {
-                      if (selectedRent != null) return; // Locked
-                      setState(() => selectedRent = val);
-                      widget.onSelectionChanged(
-                        selectedRent,
-                        selectedFood,
-                        selectedTransport,
-                      );
-                      _showResultPopup(
+    return ListenableBuilder(
+      listenable: widget.game,
+      builder: (context, _) {
+        return Scaffold(
+          appBar: AppBar(title: const Text("Liabilities & Lifestyle")),
+          body: Column(
+            children: [
+              // Top Section
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  color: Colors.amber.shade50,
+                  child: ListView(
+                    children: [
+                      _SectionHeader(title: "Lifestyle", icon: Icons.favorite),
+                      _buildPanel(
                         "Rent",
-                        rentData[val]!.label,
-                        getRentKp(
-                          widget.career.track,
-                          widget.career.level,
-                          val,
-                        ),
-                        RentType.values
-                            .where((e) => e != val)
-                            .map(
-                              (e) => (
-                                rentData[e]!.label,
-                                getRentKp(
-                                  widget.career.track,
-                                  widget.career.level,
-                                  e,
-                                ),
-                                getRentCost(
-                                  widget.career.track,
-                                  widget.career.level,
-                                  e,
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        getRentCost(
-                          widget.career.track,
-                          widget.career.level,
-                          val,
-                        ),
-                        rentData[val]!.description,
-                      );
-                    },
-                    (v) => getRentCost(
-                      widget.career.track,
-                      widget.career.level,
-                      v,
-                    ),
-                    (v) =>
-                        getRentKp(widget.career.track, widget.career.level, v),
-                  ),
-                  _buildPanel(
-                    "Food",
-                    Icons.restaurant,
-                    FoodType.values,
-                    foodData,
-                    selectedFood,
-                    (val) {
-                      if (selectedFood != null) return; // Locked
-                      setState(() => selectedFood = val);
-                      widget.onSelectionChanged(
+                        Icons.home,
+                        RentType.values,
+                        rentData,
                         selectedRent,
-                        selectedFood,
-                        selectedTransport,
-                      );
-                      _showResultPopup(
+                        (val) {
+                          if (selectedRent != null) return; // Locked
+                          setState(() => selectedRent = val);
+                          widget.onSelectionChanged(
+                            selectedRent,
+                            selectedFood,
+                            selectedTransport,
+                          );
+                          _showResultPopup(
+                            "Rent",
+                            rentData[val]!.label,
+                            getRentKp(
+                              widget.game.career.track,
+                              widget.game.career.level,
+                              val,
+                            ),
+                            RentType.values
+                                .where((e) => e != val)
+                                .map(
+                                  (e) => (
+                                    rentData[e]!.label,
+                                    getRentKp(
+                                      widget.game.career.track,
+                                      widget.game.career.level,
+                                      e,
+                                    ),
+                                    getRentCost(
+                                      widget.game.career.track,
+                                      widget.game.career.level,
+                                      e,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            getRentCost(
+                              widget.game.career.track,
+                              widget.game.career.level,
+                              val,
+                            ),
+                            rentData[val]!.description,
+                          );
+                        },
+                        (v) => getRentCost(
+                          widget.game.career.track,
+                          widget.game.career.level,
+                          v,
+                        ),
+                        (v) => getRentKp(
+                          widget.game.career.track,
+                          widget.game.career.level,
+                          v,
+                        ),
+                      ),
+                      _buildPanel(
                         "Food",
-                        foodData[val]!.label,
-                        getFoodKp(
-                          widget.career.track,
-                          widget.career.level,
-                          val,
-                        ),
-                        FoodType.values
-                            .where((e) => e != val)
-                            .map(
-                              (e) => (
-                                foodData[e]!.label,
-                                getFoodKp(
-                                  widget.career.track,
-                                  widget.career.level,
-                                  e,
-                                ),
-                                getFoodCost(
-                                  widget.career.track,
-                                  widget.career.level,
-                                  e,
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        getFoodCost(
-                          widget.career.track,
-                          widget.career.level,
-                          val,
-                        ),
-                        foodData[val]!.description,
-                      );
-                    },
-                    (v) => getFoodCost(
-                      widget.career.track,
-                      widget.career.level,
-                      v,
-                    ),
-                    (v) =>
-                        getFoodKp(widget.career.track, widget.career.level, v),
-                  ),
-                  _buildPanel(
-                    "Transport",
-                    Icons.directions_car,
-                    TransportType.values,
-                    transportData,
-                    selectedTransport,
-                    (val) {
-                      if (selectedTransport != null) return; // Locked
-                      setState(() => selectedTransport = val);
-                      widget.onSelectionChanged(
-                        selectedRent,
+                        Icons.restaurant,
+                        FoodType.values,
+                        foodData,
                         selectedFood,
-                        selectedTransport,
-                      );
-                      _showResultPopup(
+                        (val) {
+                          if (selectedFood != null) return; // Locked
+                          setState(() => selectedFood = val);
+                          widget.onSelectionChanged(
+                            selectedRent,
+                            selectedFood,
+                            selectedTransport,
+                          );
+                          _showResultPopup(
+                            "Food",
+                            foodData[val]!.label,
+                            getFoodKp(
+                              widget.game.career.track,
+                              widget.game.career.level,
+                              val,
+                            ),
+                            FoodType.values
+                                .where((e) => e != val)
+                                .map(
+                                  (e) => (
+                                    foodData[e]!.label,
+                                    getFoodKp(
+                                      widget.game.career.track,
+                                      widget.game.career.level,
+                                      e,
+                                    ),
+                                    getFoodCost(
+                                      widget.game.career.track,
+                                      widget.game.career.level,
+                                      e,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            getFoodCost(
+                              widget.game.career.track,
+                              widget.game.career.level,
+                              val,
+                            ),
+                            foodData[val]!.description,
+                          );
+                        },
+                        (v) => getFoodCost(
+                          widget.game.career.track,
+                          widget.game.career.level,
+                          v,
+                        ),
+                        (v) => getFoodKp(
+                          widget.game.career.track,
+                          widget.game.career.level,
+                          v,
+                        ),
+                      ),
+                      _buildPanel(
                         "Transport",
-                        transportData[val]!.label,
-                        getTransportKp(
-                          widget.career.track,
-                          widget.career.level,
-                          val,
+                        Icons.directions_car,
+                        TransportType.values,
+                        transportData,
+                        selectedTransport,
+                        (val) {
+                          if (selectedTransport != null) return; // Locked
+                          setState(() => selectedTransport = val);
+                          widget.onSelectionChanged(
+                            selectedRent,
+                            selectedFood,
+                            selectedTransport,
+                          );
+                          _showResultPopup(
+                            "Transport",
+                            transportData[val]!.label,
+                            getTransportKp(
+                              widget.game.career.track,
+                              widget.game.career.level,
+                              val,
+                            ),
+                            TransportType.values
+                                .where((e) => e != val)
+                                .map(
+                                  (e) => (
+                                    transportData[e]!.label,
+                                    getTransportKp(
+                                      widget.game.career.track,
+                                      widget.game.career.level,
+                                      e,
+                                    ),
+                                    getTransportCost(
+                                      widget.game.career.track,
+                                      widget.game.career.level,
+                                      e,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            getTransportCost(
+                              widget.game.career.track,
+                              widget.game.career.level,
+                              val,
+                            ),
+                            transportData[val]!.description,
+                          );
+                        },
+                        (v) => getTransportCost(
+                          widget.game.career.track,
+                          widget.game.career.level,
+                          v,
                         ),
-                        TransportType.values
-                            .where((e) => e != val)
-                            .map(
-                              (e) => (
-                                transportData[e]!.label,
-                                getTransportKp(
-                                  widget.career.track,
-                                  widget.career.level,
-                                  e,
-                                ),
-                                getTransportCost(
-                                  widget.career.track,
-                                  widget.career.level,
-                                  e,
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        getTransportCost(
-                          widget.career.track,
-                          widget.career.level,
-                          val,
+                        (v) => getTransportKp(
+                          widget.game.career.track,
+                          widget.game.career.level,
+                          v,
                         ),
-                        transportData[val]!.description,
-                      );
-                    },
-                    (v) => getTransportCost(
-                      widget.career.track,
-                      widget.career.level,
-                      v,
-                    ),
-                    (v) => getTransportKp(
-                      widget.career.track,
-                      widget.career.level,
-                      v,
-                    ),
+                      ),
+                      const Divider(height: 32),
+                      _SectionHeader(title: "Maintenance", icon: Icons.build),
+                      _buildDebtSection(),
+                      _buildMaintenanceSection(),
+                      const Divider(height: 32),
+                      _SectionHeader(
+                        title: "Insurance",
+                        icon: Icons.verified_user,
+                      ),
+                      _buildInsuranceSection(),
+                      const Divider(height: 32),
+                      _SectionHeader(title: "Emergency", icon: Icons.emergency),
+                      _buildBankruptcySection(context),
+                      const SizedBox(height: 32),
+                    ],
                   ),
-                  const Divider(height: 32),
-                  _SectionHeader(title: "Maintenance", icon: Icons.build),
-                  _buildDebtSection(),
-                  _buildMaintenanceSection(),
-                  const Divider(height: 32),
-                  _SectionHeader(title: "Insurance", icon: Icons.verified_user),
-                  _buildInsuranceSection(),
-                  const Divider(height: 32),
-                  _SectionHeader(title: "Emergency", icon: Icons.emergency),
-                  _buildBankruptcySection(context),
-                  const SizedBox(height: 32),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildDebtSection() {
-    if (widget.gems >= 0) return const SizedBox.shrink();
+    if (widget.game.gems >= 0) return const SizedBox.shrink();
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(12),
@@ -320,7 +327,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
               Icon(Icons.warning_amber_rounded, color: Colors.red.shade700),
               const SizedBox(width: 12),
               Text(
-                "Debt: ${widget.gems.abs()} Gems",
+                "Debt: ${widget.game.gems.abs()} Gems",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -346,7 +353,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
   Widget _buildMaintenanceSection() {
     // Group buildings by name to show counts
     final Map<String, int> counts = {};
-    for (var b in widget.cityLayout) {
+    for (var b in widget.game.cityLayout) {
       counts[b.name] = (counts[b.name] ?? 0) + 1;
     }
 
@@ -424,7 +431,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
   Widget _buildInsuranceSection() {
     List<AssetType> eligibleTypes = [];
     for (var type in AssetType.values) {
-      if (widget.assets.count(type) > 0) {
+      if (widget.game.assets.count(type) > 0) {
         eligibleTypes.add(type);
       }
     }
@@ -442,7 +449,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
           ),
         ),
         ...eligibleTypes.map((type) {
-          final isInsured = widget.insurances.contains(type);
+          final isInsured = widget.game.insurances.contains(type);
           return Card(
             elevation: 1,
             margin: const EdgeInsets.only(bottom: 8),
@@ -453,9 +460,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
               ),
               value: isInsured,
               onChanged: (val) {
-                setState(() {
-                  widget.onInsuranceToggle(type);
-                });
+                widget.game.toggleInsurance(type);
               },
               activeTrackColor: Colors.green,
             ),
@@ -466,7 +471,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
   }
 
   Widget _buildBankruptcySection(BuildContext context) {
-    final remaining = 3 - widget.bankruptcyCount;
+    final remaining = 3 - widget.game.bankruptcyCount;
     final isAvailable = remaining > 0;
 
     return Card(
@@ -540,7 +545,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
             onPressed: () {
               Navigator.pop(context); // Close dialog
               Navigator.pop(context); // Exit screen
-              widget.onBankruptcy();
+              widget.game.declareBankruptcy(context);
             },
             child: const Text("YES, I AM SURE"),
           ),

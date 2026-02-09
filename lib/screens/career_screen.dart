@@ -1,21 +1,12 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
 
-class CareerScreen extends StatefulWidget {
-  final CareerState career;
-  final int currentKp;
-  final List<PlacedBuilding> cityLayout;
-  final void Function(CareerState) onCareerChange;
-  final Set<String> completedQuizzes;
+import '../logic/game_manager.dart';
 
-  const CareerScreen({
-    super.key,
-    required this.career,
-    required this.currentKp,
-    required this.cityLayout,
-    required this.onCareerChange,
-    required this.completedQuizzes,
-  });
+class CareerScreen extends StatefulWidget {
+  final GameManager game;
+
+  const CareerScreen({super.key, required this.game});
 
   @override
   State<CareerScreen> createState() => _CareerScreenState();
@@ -25,20 +16,14 @@ class _CareerScreenState extends State<CareerScreen> {
   late CareerState career;
 
   @override
-  void initState() {
-    super.initState();
-    career = widget.career;
-  }
-
-  void _updateCareer(CareerState newCareer) {
-    setState(() {
-      career = newCareer;
-      widget.onCareerChange(newCareer);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: widget.game,
+      builder: (context, _) => _buildScaffold(context),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Career")),
       body: SingleChildScrollView(
@@ -47,24 +32,28 @@ class _CareerScreenState extends State<CareerScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _CareerHeroCard(
-              key: ValueKey('${career.track}-${career.level}'),
-              career: career,
-              currentKp: widget.currentKp,
-              cityLayout: widget.cityLayout,
-              onCareerChange: _updateCareer,
-              completedQuizzes: widget.completedQuizzes,
+              key: ValueKey(
+                '${widget.game.career.track}-${widget.game.career.level}',
+              ),
+              career: widget.game.career,
+              currentKp: widget.game.kp,
+              cityLayout: widget.game.cityLayout,
+              onCareerChange: widget.game.updateCareer,
+              completedQuizzes: widget.game.completedQuizzes,
+              isWorkingOvertime: widget.game.isWorkingOvertime,
+              onWorkOvertime: widget.game.workOvertime,
             ),
             const SizedBox(height: 24),
-            _CareerProgress(career: career),
-            if (career.level == 1) ...[
+            _CareerProgress(career: widget.game.career),
+            if (widget.game.career.level == 1) ...[
               const SizedBox(height: 32),
               _CareerHint(),
-            ] else if (career.level <= 4) ...[
+            ] else if (widget.game.career.level <= 4) ...[
               const SizedBox(height: 32),
               _CareerCard(
                 career: CareerState(
-                  track: career.track,
-                  level: career.level + 1,
+                  track: widget.game.career.track,
+                  level: widget.game.career.level + 1,
                 ),
               ),
             ],
@@ -81,6 +70,8 @@ class _CareerHeroCard extends StatelessWidget {
   final List<PlacedBuilding> cityLayout;
   final void Function(CareerState) onCareerChange;
   final Set<String> completedQuizzes;
+  final bool isWorkingOvertime;
+  final VoidCallback onWorkOvertime;
 
   const _CareerHeroCard({
     super.key,
@@ -89,6 +80,8 @@ class _CareerHeroCard extends StatelessWidget {
     required this.cityLayout,
     required this.onCareerChange,
     required this.completedQuizzes,
+    required this.isWorkingOvertime,
+    required this.onWorkOvertime,
   });
 
   CareerLevelInfo _currentInfo() {
@@ -347,6 +340,50 @@ class _CareerHeroCard extends StatelessWidget {
                 ),
               ),
             ),
+            if (career.track != CareerTrack.student) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: isWorkingOvertime ? null : onWorkOvertime,
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: isWorkingOvertime
+                          ? Colors.grey.shade400
+                          : Colors.amber.shade700,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        isWorkingOvertime
+                            ? "Working overtime"
+                            : "Work overtime",
+                        style: TextStyle(
+                          color: isWorkingOvertime
+                              ? Colors.grey.shade600
+                              : Colors.amber.shade900,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "boost income by 50% at the cost of health and time",
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isWorkingOvertime
+                              ? Colors.grey.shade500
+                              : Colors.brown.shade400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ],
         ],
       ),
