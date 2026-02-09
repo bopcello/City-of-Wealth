@@ -19,6 +19,9 @@ class GameManager extends ChangeNotifier {
   int bankruptcyCount = 0;
   int debtCycleCount = 0;
   int? nextDestructionCycle;
+  int? nextDisasterCycle;
+  List<DisasterResult> pendingDisasterResults = [];
+  int cycleTracker = 0;
   bool hasWall = false;
   Set<String> completedQuizzes = {};
 
@@ -56,6 +59,7 @@ class GameManager extends ChangeNotifier {
       savedBankruptcyCount,
       savedDebtCycleCount,
       savedNextDestructionCycle,
+      savedNextDisasterCycle,
       savedWall,
       savedCompletedQuizzes,
     ) = await loadGameState();
@@ -73,6 +77,7 @@ class GameManager extends ChangeNotifier {
     bankruptcyCount = savedBankruptcyCount;
     debtCycleCount = savedDebtCycleCount;
     nextDestructionCycle = savedNextDestructionCycle;
+    nextDisasterCycle = savedNextDisasterCycle;
     hasWall = savedWall ?? false;
     completedQuizzes = savedCompletedQuizzes;
     loaded = true;
@@ -96,6 +101,7 @@ class GameManager extends ChangeNotifier {
       bankruptcyCount: bankruptcyCount,
       debtCycleCount: debtCycleCount,
       nextDestructionCycle: nextDestructionCycle,
+      nextDisasterCycle: nextDisasterCycle,
       wall: hasWall,
       completedQuizzes: completedQuizzes,
     );
@@ -143,6 +149,17 @@ class GameManager extends ChangeNotifier {
     }
 
     for (int i = 0; i < cycles; i++) {
+      cycleTracker++;
+      if (nextDisasterCycle == null) {
+        nextDisasterCycle = 15 + Random().nextInt(16);
+      } else {
+        nextDisasterCycle = nextDisasterCycle! - 1;
+        if (nextDisasterCycle! <= 0) {
+          _triggerNaturalDisaster();
+          nextDisasterCycle = 15 + Random().nextInt(16);
+        }
+      }
+
       int dayKp = 0;
       int dayGems = 0;
       final dayNumber = pendingEvents.length + i + 1;
@@ -250,7 +267,7 @@ class GameManager extends ChangeNotifier {
       String event =
           "Day $dayNumber: Kp=${dayKp > 0 ? '+' : ''}$dayKp, Gems=${dayGems > 0 ? '+' : ''}$dayGems";
       if (interestCost > 0) {
-        event += " (Interest: -$interestCost Gems)";
+        event += " (You're in debt! Interest: -$interestCost Gems, -300 KP)";
         if (balanceAfterDay < -5000) {
           event += " Consider declaring bankruptcy";
         }
@@ -263,7 +280,9 @@ class GameManager extends ChangeNotifier {
         event +=
             " (No income: Go to liabilities to select rent, food and transport to begin receiving income)";
       }
-      if (hasWaste) event += " (Waste penalty: -$wastePenalty KP)";
+      if (hasWaste)
+        event +=
+            " (Unnecessary assets penalty: -$wastePenalty KP, sell unnecessary assets)";
       events.add(event);
     }
 
@@ -482,5 +501,147 @@ class GameManager extends ChangeNotifier {
     pendingEvents.clear();
     save();
     notifyListeners();
+  }
+
+  void _triggerNaturalDisaster() {
+    if (cityLayout.isEmpty) return;
+
+    final rng = Random();
+    final disasterType =
+        DisasterType.values[rng.nextInt(DisasterType.values.length)];
+
+    // Destroy up to 50% of buildings
+    int buildingsToDestroyCount = (cityLayout.length * 0.5).ceil();
+    if (buildingsToDestroyCount == 0 && cityLayout.isNotEmpty) {
+      buildingsToDestroyCount = 1;
+    }
+
+    List<PlacedBuilding> toDestroy = [];
+    List<PlacedBuilding> pool = List.from(cityLayout);
+
+    // Weighted selection based on disaster type
+    pool.sort((a, b) {
+      final bA = buildings.firstWhere((e) => e.name == a.name);
+      final bB = buildings.firstWhere((e) => e.name == b.name);
+
+      bool aMatches = _doesBuildingMatchDisaster(bA, disasterType);
+      bool bMatches = _doesBuildingMatchDisaster(bB, disasterType);
+
+      if (aMatches && !bMatches) return -1;
+      if (!aMatches && bMatches) return 1;
+      return 0;
+    });
+
+    for (int i = 0; i < buildingsToDestroyCount && pool.isNotEmpty; i++) {
+      toDestroy.add(pool.removeAt(0));
+    }
+
+    List<String> destroyedNames = [];
+    Map<AssetType, int> lostAssets = {};
+    Map<AssetType, int> insurancePayouts = {};
+    int kpPenalty = 0;
+    bool hasAnyInsurance = false;
+
+    // Capture initial asset counts to enforce 50% cap
+    Map<AssetType, int> initialAssetCounts = {};
+    for (var type in AssetType.values) {
+      initialAssetCounts[type] = assets.count(type);
+    }
+
+    for (var pb in toDestroy) {
+      destroyedNames.add(pb.name);
+      cityLayout.remove(pb);
+
+      final buildingData = buildings.firstWhere((e) => e.name == pb.name);
+      for (var entry in buildingData.requirements.entries) {
+        final type = entry.key;
+        final reqCount = entry.value;
+
+        // Calculate potential loss for this building (20% to 100% of its requirement)
+        int potentialLoss = ((rng.nextDouble() * 0.8 + 0.2) * reqCount).ceil();
+
+        // Enforce 50% cap of total owned assets of this type
+        int maxAllowedLossForThisType = (initialAssetCounts[type]! * 0.5)
+            .floor();
+        int currentTotalLossForThisType = lostAssets[type] ?? 0;
+        int remainingLossAllowed =
+            maxAllowedLossForThisType - currentTotalLossForThisType;
+
+        int assetLoss = potentialLoss;
+        if (assetLoss > remainingLossAllowed) {
+          assetLoss = remainingLossAllowed;
+        }
+
+        final currentOwned = assets.count(type);
+        if (assetLoss > currentOwned) assetLoss = currentOwned;
+
+        if (assetLoss > 0) {
+          lostAssets[type] = (lostAssets[type] ?? 0) + assetLoss;
+          assets = assets.add(type, -assetLoss);
+
+          if (insurances.contains(type)) {
+            final payout = (assetLoss * assetCost(type) * 0.8).round();
+            insurancePayouts[type] = (insurancePayouts[type] ?? 0) + payout;
+            gems += payout;
+            hasAnyInsurance = true;
+          }
+        }
+      }
+    }
+
+    if (!hasAnyInsurance && lostAssets.isNotEmpty) {
+      kpPenalty = 1500;
+      kp -= kpPenalty;
+      if (kp < 0) kp = 0;
+    }
+
+    pendingDisasterResults.add(
+      DisasterResult(
+        type: disasterType,
+        destroyedBuildings: destroyedNames,
+        lostAssets: lostAssets,
+        insurancePayouts: insurancePayouts,
+        kpPenalty: kpPenalty,
+        protected: hasAnyInsurance,
+      ),
+    );
+
+    pendingEvents.add(
+      "DISASTER: ${disasterType.name.toUpperCase()}! Check detail report for losses and insurance coverage.",
+    );
+
+    save();
+    notifyListeners();
+  }
+
+  bool _doesBuildingMatchDisaster(Building b, DisasterType type) {
+    switch (type) {
+      case DisasterType.flood:
+        return b.requirements.containsKey(AssetType.land);
+      case DisasterType.fire:
+        return b.requirements.containsKey(AssetType.properties) ||
+            b.requirements.containsKey(AssetType.vehicles);
+      case DisasterType.earthquake:
+        return b.requirements.containsKey(AssetType.officeEquipment) ||
+            b.requirements.containsKey(AssetType.machinery);
+      case DisasterType.economyCrash:
+        return true;
+    }
+  }
+
+  void clearDisasterResults() {
+    pendingDisasterResults.clear();
+    notifyListeners();
+  }
+
+  void debugLevelUp() {
+    if (career.track == CareerTrack.student) {
+      updateCareer(const CareerState(track: CareerTrack.business, level: 2));
+    } else if (career.level < 5) {
+      updateCareer(career.copyWith(level: career.level + 1));
+    } else {
+      // If already level 5, maybe just add some resources
+      debugAdd();
+    }
   }
 }

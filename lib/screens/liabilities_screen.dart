@@ -312,16 +312,30 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.red.shade200),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.warning_amber_rounded, color: Colors.red.shade700),
-          const SizedBox(width: 12),
+          Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: Colors.red.shade700),
+              const SizedBox(width: 12),
+              Text(
+                "Debt: ${widget.gems.abs()} Gems",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red.shade700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
           Text(
-            "Debt: ${widget.gems.abs()} Gems",
+            "You will not pay maintainance to help you get out of debt faster, but it will cause your buildings to degrade over time!",
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.red.shade700,
+              fontSize: 12,
+              fontStyle: FontStyle.italic,
+              color: Colors.red.shade900,
             ),
           ),
         ],

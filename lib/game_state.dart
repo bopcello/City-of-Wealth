@@ -4,7 +4,7 @@ import 'dart:convert';
 
 enum CareerTrack { student, job, business }
 
-enum AssetType { land, realEstate, machinery, vehicles, officeEquipment }
+enum AssetType { land, properties, machinery, vehicles, officeEquipment }
 
 enum RentType { sharedStudio, smallApartment, luxuryHouse }
 
@@ -12,9 +12,53 @@ enum FoodType { cheap, balanced, buffet }
 
 enum TransportType { public, cycle, car }
 
+enum DisasterType { flood, fire, earthquake, economyCrash }
+
+class DisasterResult {
+  final DisasterType type;
+  final List<String> destroyedBuildings;
+  final Map<AssetType, int> lostAssets;
+  final Map<AssetType, int> insurancePayouts;
+  final int kpPenalty;
+  final bool protected;
+
+  DisasterResult({
+    required this.type,
+    required this.destroyedBuildings,
+    required this.lostAssets,
+    required this.insurancePayouts,
+    required this.kpPenalty,
+    required this.protected,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'type': type.name,
+    'destroyedBuildings': destroyedBuildings,
+    'lostAssets': lostAssets.map((k, v) => MapEntry(k.name, v)),
+    'insurancePayouts': insurancePayouts.map((k, v) => MapEntry(k.name, v)),
+    'kpPenalty': kpPenalty,
+    'protected': protected,
+  };
+
+  factory DisasterResult.fromJson(Map<String, dynamic> json) => DisasterResult(
+    type: DisasterType.values.firstWhere((e) => e.name == json['type']),
+    destroyedBuildings: List<String>.from(json['destroyedBuildings']),
+    lostAssets: (json['lostAssets'] as Map<String, dynamic>).map(
+      (k, v) =>
+          MapEntry(AssetType.values.firstWhere((e) => e.name == k), v as int),
+    ),
+    insurancePayouts: (json['insurancePayouts'] as Map<String, dynamic>).map(
+      (k, v) =>
+          MapEntry(AssetType.values.firstWhere((e) => e.name == k), v as int),
+    ),
+    kpPenalty: json['kpPenalty'],
+    protected: json['protected'],
+  );
+}
+
 const Map<AssetType, int> assetCosts = {
   AssetType.land: 100,
-  AssetType.realEstate: 500,
+  AssetType.properties: 500,
   AssetType.machinery: 200,
   AssetType.vehicles: 300,
   AssetType.officeEquipment: 150,
@@ -22,7 +66,7 @@ const Map<AssetType, int> assetCosts = {
 
 const Map<AssetType, int> assetSellingPrices = {
   AssetType.land: 90,
-  AssetType.realEstate: 450,
+  AssetType.properties: 450,
   AssetType.machinery: 150,
   AssetType.vehicles: 180,
   AssetType.officeEquipment: 100,
@@ -35,7 +79,7 @@ String assetLabel(AssetType type) {
   switch (type) {
     case AssetType.land:
       return "Land";
-    case AssetType.realEstate:
+    case AssetType.properties:
       return "Properties";
     case AssetType.machinery:
       return "Machinery";
@@ -90,13 +134,13 @@ const buildings = [
     name: "💡 Idea Hub",
     track: CareerTrack.business,
     requiredLevel: 2,
-    requirements: {AssetType.realEstate: 5},
+    requirements: {AssetType.properties: 5},
   ),
   Building(
     name: "🏭 Small Workshop",
     track: CareerTrack.business,
     requiredLevel: 3,
-    requirements: {AssetType.realEstate: 10, AssetType.land: 5},
+    requirements: {AssetType.properties: 10, AssetType.land: 5},
   ),
   Building(
     name: "📦 Storage Unit",
@@ -108,7 +152,7 @@ const buildings = [
     name: "🏢 Office Building",
     track: CareerTrack.business,
     requiredLevel: 4,
-    requirements: {AssetType.realEstate: 20, AssetType.officeEquipment: 10},
+    requirements: {AssetType.properties: 20, AssetType.officeEquipment: 10},
   ),
   Building(
     name: "📊 Analytics Center",
@@ -120,13 +164,13 @@ const buildings = [
     name: "🏙️ HQ Tower",
     track: CareerTrack.business,
     requiredLevel: 5,
-    requirements: {AssetType.realEstate: 50, AssetType.land: 20},
+    requirements: {AssetType.properties: 50, AssetType.land: 20},
   ),
   Building(
     name: "🌐 Global Operations",
     track: CareerTrack.business,
     requiredLevel: 5,
-    requirements: {AssetType.officeEquipment: 50, AssetType.realEstate: 50},
+    requirements: {AssetType.officeEquipment: 50, AssetType.properties: 50},
   ),
 
   // JOB
@@ -146,13 +190,13 @@ const buildings = [
     name: "🏬 Department Office",
     track: CareerTrack.job,
     requiredLevel: 4,
-    requirements: {AssetType.officeEquipment: 15, AssetType.realEstate: 10},
+    requirements: {AssetType.officeEquipment: 15, AssetType.properties: 10},
   ),
   Building(
     name: "🏢 Corporate HQ",
     track: CareerTrack.job,
     requiredLevel: 5,
-    requirements: {AssetType.officeEquipment: 30, AssetType.realEstate: 25},
+    requirements: {AssetType.officeEquipment: 30, AssetType.properties: 25},
   ),
   Building(
     name: "The Keystone",
@@ -200,6 +244,7 @@ const _insurancesKey = 'insurances';
 const _bankruptcyCountKey = 'bankruptcyCount';
 const _debtCycleCountKey = 'debtCycleCount';
 const _nextDestructionCycleKey = 'nextDestructionCycle';
+const _nextDisasterCycleKey = 'nextDisasterCycle';
 const _completedQuizzesKey = 'completedQuizzes';
 
 class PlacedBuilding {
@@ -285,6 +330,7 @@ Future<void> saveGameState({
   required int bankruptcyCount,
   required int debtCycleCount,
   required int? nextDestructionCycle,
+  required int? nextDisasterCycle,
   bool? wall,
   required Set<String> completedQuizzes,
 }) async {
@@ -332,6 +378,12 @@ Future<void> saveGameState({
     await prefs.remove(_nextDestructionCycleKey);
   }
 
+  if (nextDisasterCycle != null) {
+    await prefs.setInt(_nextDisasterCycleKey, nextDisasterCycle);
+  } else {
+    await prefs.remove(_nextDisasterCycleKey);
+  }
+
   if (wall != null) {
     await prefs.setBool('hasWall', wall);
   } else {
@@ -356,6 +408,7 @@ Future<
     int,
     int,
     int?,
+    int?,
     bool?,
     Set<String>,
   )
@@ -368,6 +421,9 @@ loadGameState() async {
   final debtCycleCount = prefs.getInt(_debtCycleCountKey) ?? 0;
   final nextDestructionCycle = prefs.containsKey(_nextDestructionCycleKey)
       ? prefs.getInt(_nextDestructionCycleKey)
+      : null;
+  final nextDisasterCycle = prefs.containsKey(_nextDisasterCycleKey)
+      ? prefs.getInt(_nextDisasterCycleKey)
       : null;
 
   final trackName = prefs.getString(_careerTrackKey);
@@ -414,7 +470,7 @@ loadGameState() async {
       .map(
         (name) => AssetType.values.firstWhere(
           (e) => e.name == name,
-          orElse: () => AssetType.realEstate,
+          orElse: () => AssetType.properties,
         ),
       )
       .toSet();
@@ -445,6 +501,7 @@ loadGameState() async {
     bankruptcyCount,
     debtCycleCount,
     nextDestructionCycle,
+    nextDisasterCycle,
     savedWall,
     completedQuizzes,
   );
@@ -663,7 +720,7 @@ int getMaxRequirementForType(CareerTrack track, int level, AssetType type) {
     switch (type) {
       case AssetType.land:
         return 0;
-      case AssetType.realEstate:
+      case AssetType.properties:
         return 0;
       case AssetType.machinery:
         return 0;

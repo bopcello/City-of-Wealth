@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class SettingsTab extends StatelessWidget {
   final VoidCallback onDebugAdd;
+  final VoidCallback onDebugLevelUp;
   final VoidCallback onDebugReset;
 
   const SettingsTab({
     super.key,
     required this.onDebugAdd,
+    required this.onDebugLevelUp,
     required this.onDebugReset,
   });
 
@@ -32,6 +34,15 @@ class SettingsTab extends StatelessWidget {
             onPressed: onDebugAdd,
             icon: const Icon(Icons.add),
             label: const Text("Add 1,000 KP & 1,000 Gems"),
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+            ),
+          ),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            onPressed: onDebugLevelUp,
+            icon: const Icon(Icons.upgrade),
+            label: const Text("Debug: Advance to Next Level"),
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
             ),
