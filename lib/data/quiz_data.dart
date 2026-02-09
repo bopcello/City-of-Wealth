@@ -1960,16 +1960,16 @@ final List<QuizMetadata> _level2Quizzes = [
       ),
       QuizQuestion(
         question:
-            'If you spend 💎50 on a video game instead of saving it, what is the opportunity cost?',
+            'If you spend [GEM]50 on a video game instead of saving it, what is the opportunity cost?',
         options: [
           'The video game itself',
-          'The 💎50 plus any future interest it could have earned',
+          'The [GEM]50 plus any future interest it could have earned',
           'The time spent playing the game',
-          'Nothing, the 💎50 is gone anyway',
+          'Nothing, the [GEM]50 is gone anyway',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You have the game, but you lost the growth potentially offered by saving or investing that 💎50.',
+            'You have the game, but you lost the growth potentially offered by saving or investing that [GEM]50.',
         correctExplanation:
             'Opportunity cost includes both the money and what that money *could have become* in the future.',
       ),
@@ -2219,19 +2219,19 @@ final List<QuizMetadata> _level2Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you have 💎1000 but owe 💎900, your net worth is only 💎100. Adding them would be wrong!',
+            'If you have [GEM]1000 but owe [GEM]900, your net worth is only [GEM]100. Adding them would be wrong!',
         correctExplanation:
             'Net worth is the most accurate measure of wealth, as it counts what you own minus what you owe.',
       ),
       QuizQuestion(
         question:
-            'If you have a 💎20,000 car but own it with a 💎15,000 loan, what is your net worth related to that car?',
-        options: ['💎20,000', '💎15,000', '💎5,000', '💎35,000'],
+            'If you have a [GEM]20,000 car but own it with a [GEM]15,000 loan, what is your net worth related to that car?',
+        options: ['[GEM]20,000', '[GEM]15,000', '[GEM]5,000', '[GEM]35,000'],
         correctIndex: 2,
         wrongExplanation:
-            'You must subtract the loan (💎15k) from the value (💎20k) to see your actual equity.',
+            'You must subtract the loan ([GEM]15k) from the value ([GEM]20k) to see your actual equity.',
         correctExplanation:
-            'Your equity (actual wealth) in the car is the value minus the debt: 💎5,000.',
+            'Your equity (actual wealth) in the car is the value minus the debt: [GEM]5,000.',
       ),
       QuizQuestion(
         question:
@@ -2244,7 +2244,7 @@ final List<QuizMetadata> _level2Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Someone with a 💎1M salary who spends 💎1.1M is actually getting poorer (negative net worth).',
+            'Someone with a [GEM]1M salary who spends [GEM]1.1M is actually getting poorer (negative net worth).',
         correctExplanation:
             'Wealth is built by growing assets and shrinking liabilities, not just by having a high income.',
       ),
@@ -2404,7 +2404,7 @@ final List<QuizMetadata> _level2Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Scammers use greed to blind people. If someone offers 💎1000 for 💎10, they are going to steal your 💎10.',
+            'Scammers use greed to blind people. If someone offers [GEM]1000 for [GEM]10, they are going to steal your [GEM]10.',
         correctExplanation:
             'Skepticism is a vital financial skill. Always research and double-check "amazing" offers.',
       ),
@@ -2436,12 +2436,12 @@ final List<QuizMetadata> _level2Quizzes = [
         options: [
           'One week of spending',
           '3 to 6 months of essential living expenses',
-          '💎100 is enough',
+          '[GEM]100 is enough',
           'All the money you will ever earn',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A week or 💎100 isn\'t enough if you lose a job. You need enough to live on while you recover.',
+            'A week or [GEM]100 isn\'t enough if you lose a job. You need enough to live on while you recover.',
         correctExplanation:
             'Having several months of expenses saved gives you peace of mind and true financial security.',
       ),
@@ -2718,10 +2718,10 @@ final List<QuizMetadata> _level2Quizzes = [
       ),
       QuizQuestion(
         question:
-            'Even saving 💎5 from every paycheck is better than 💎0 because...',
+            'Even saving [GEM]5 from every paycheck is better than [GEM]0 because...',
         options: [
           'It builds a powerful lifelong habit of saving',
-          'You can buy a car with 💎5',
+          'You can buy a car with [GEM]5',
           'It lowers your rent',
           'The bank gives you a free gift',
         ],
@@ -2778,7 +2778,7 @@ final List<QuizMetadata> _level2Quizzes = [
         ],
         correctIndex: 0,
         wrongExplanation:
-            'If you have a 💎500 deductible and a 💎2000 repair, you pay 💎500 and the insurance pays 💎1500.',
+            'If you have a [GEM]500 deductible and a [GEM]2000 repair, you pay [GEM]500 and the insurance pays [GEM]1500.',
         correctExplanation:
             'Higher deductibles usually mean lower monthly premiums, but higher costs if you have an accident.',
       ),
@@ -2871,7 +2871,7 @@ final List<QuizMetadata> _level2Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If 💎1 buys a loaf of bread today, it might cost 💎5 in the future. You must plan for rising costs.',
+            'If [GEM]1 buys a loaf of bread today, it might cost [GEM]5 in the future. You must plan for rising costs.',
         correctExplanation:
             'Successful retirement planning must account for the decreasing purchasing power of money over time.',
       ),
@@ -2928,7 +2928,7 @@ final List<QuizMetadata> _level2Quizzes = [
       ),
       QuizQuestion(
         question:
-            'If a 10oz box is 💎5 and a 20oz box is 💎8, which is the better value?',
+            'If a 10oz box is [GEM]5 and a 20oz box is [GEM]8, which is the better value?',
         options: [
           'The 10oz box',
           'The 20oz box',
@@ -2937,7 +2937,7 @@ final List<QuizMetadata> _level2Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            '10oz at 💎5 is 50c per oz. 20oz at 💎8 is 40c per oz. The bigger box is cheaper per unit.',
+            '10oz at [GEM]5 is 50c per oz. 20oz at [GEM]8 is 40c per oz. The bigger box is cheaper per unit.',
         correctExplanation:
             'In this case, the larger box saves you 10 cents on every ounce of the product.',
       ),
@@ -3027,7 +3027,7 @@ final List<QuizMetadata> _level2Quizzes = [
         options: ['Fixed', 'Variable', 'Random', 'Optional'],
         correctIndex: 0,
         wrongExplanation:
-            'If you pay the same 💎30 every month, it is a fixed expense, even if you don\'t go to the gym!',
+            'If you pay the same [GEM]30 every month, it is a fixed expense, even if you don\'t go to the gym!',
         correctExplanation:
             'Contracted monthly services are almost always fixed expenses.',
       ),
@@ -3085,13 +3085,13 @@ final List<QuizMetadata> _level2Quizzes = [
       ),
       QuizQuestion(
         question:
-            'If you need 💎40,000 a year to live, how much savings do you need using the "4% Rule"?',
-        options: ['💎400,000', '💎1,000,000', '💎2,000,000', '💎40,000'],
+            'If you need [GEM]40,000 a year to live, how much savings do you need using the "4% Rule"?',
+        options: ['[GEM]400,000', '[GEM]1,000,000', '[GEM]2,000,000', '[GEM]40,000'],
         correctIndex: 1,
         wrongExplanation:
-            'Take your annual expenses and multiply by 25 (💎40k * 25 = 💎1M). 4% of 💎1M is 💎40k.',
+            'Take your annual expenses and multiply by 25 ([GEM]40k * 25 = [GEM]1M). 4% of [GEM]1M is [GEM]40k.',
         correctExplanation:
-            'Reaching 💎1 Million in investments would allow you to withdraw 💎40,000 a year potentially forever.',
+            'Reaching [GEM]1 Million in investments would allow you to withdraw [GEM]40,000 a year potentially forever.',
       ),
       QuizQuestion(
         question: 'Achieving financial independence early usually requires...',
@@ -3175,16 +3175,16 @@ final List<QuizMetadata> _level2Quizzes = [
       ),
       QuizQuestion(
         question:
-            'If a product costs 💎10 to make and sells for 💎12, what is the problem?',
+            'If a product costs [GEM]10 to make and sells for [GEM]12, what is the problem?',
         options: [
           'The price is too high',
           'The "Profit Margin" is too low to cover marketing and other hidden costs',
-          'It is illegal to sell for 💎12',
+          'It is illegal to sell for [GEM]12',
           'There is no problem',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A 💎2 profit is very small. If it costs 💎3 to find a customer (marketing), you are losing money on every sale.',
+            'A [GEM]2 profit is very small. If it costs [GEM]3 to find a customer (marketing), you are losing money on every sale.',
         correctExplanation:
             'Healthy margins are necessary to cover the "overhead" costs of running a real business.',
       ),
@@ -3405,7 +3405,7 @@ final List<QuizMetadata> _level3Quizzes = [
       ),
       QuizQuestion(
         question:
-            'Why might a 💎1,000 deductible be better than a 💎250 deductible?',
+            'Why might a [GEM]1,000 deductible be better than a [GEM]250 deductible?',
         options: [
           'It is cheaper when you have an accident',
           'It lowers your monthly premium (the regular cost of insurance)',
@@ -3416,7 +3416,7 @@ final List<QuizMetadata> _level3Quizzes = [
         wrongExplanation:
             'A higher deductible is more "risk" for you, so the insurance company rewards you with a lower monthly bill.',
         correctExplanation:
-            'If you have an emergency fund of 💎1,000, choosing a higher deductible can save you hundreds of gems per year.',
+            'If you have an emergency fund of [GEM]1,000, choosing a higher deductible can save you hundreds of gems per year.',
       ),
       QuizQuestion(
         question: 'What is "Disability Insurance"?',
@@ -3467,7 +3467,7 @@ final List<QuizMetadata> _level3Quizzes = [
         wrongExplanation:
             'The Rule of 72 is a mental shortcut for growth. Divide 72 by the annual interest rate to find the years until your gems double.',
         correctExplanation:
-            'For example, at a 10% return, your 💎1,000 becomes 💎2,000 in about 7.2 years (72 / 10).',
+            'For example, at a 10% return, your [GEM]1,000 becomes [GEM]2,000 in about 7.2 years (72 / 10).',
       ),
       QuizQuestion(
         question:
@@ -3495,7 +3495,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Starting with more gems helps, but "time" is the multiplier. Starting 10 years earlier is often worth more than saving 💎10,000 later.',
+            'Starting with more gems helps, but "time" is the multiplier. Starting 10 years earlier is often worth more than saving [GEM]10,000 later.',
         correctExplanation:
             'Time allows the exponential curve of compounding to really take off.',
       ),
@@ -3574,7 +3574,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Putting all your 💎10,000 into one company is like putting all your eggs in one basket. If that company fails, you lose everything.',
+            'Putting all your [GEM]10,000 into one company is like putting all your eggs in one basket. If that company fails, you lose everything.',
         correctExplanation:
             'Diversity protects you. If tech stocks go down but energy stocks go up, your total wealth stays stable.',
       ),
@@ -3641,7 +3641,7 @@ final List<QuizMetadata> _level3Quizzes = [
         wrongExplanation:
             'It\'s named after old paper bonds that had physical coupons you clipped to get paid. It\'s just your interest rate.',
         correctExplanation:
-            'If you buy a 💎1,000 bond with a 5% coupon, you get 💎50 every year until the bond matures.',
+            'If you buy a [GEM]1,000 bond with a 5% coupon, you get [GEM]50 every year until the bond matures.',
       ),
       QuizQuestion(
         question: 'What is "Maturity Date"?',
@@ -3655,7 +3655,7 @@ final List<QuizMetadata> _level3Quizzes = [
         wrongExplanation:
             'Maturity isn\'t about your age. It\'s the "end of the contract" for a bond.',
         correctExplanation:
-            'On the maturity date, the company gives you back your initial 💎1,000 and the contract is finished.',
+            'On the maturity date, the company gives you back your initial [GEM]1,000 and the contract is finished.',
       ),
       QuizQuestion(
         question: 'Which bond is typically considered the SAFEST?',
@@ -3798,7 +3798,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Surprise! You can earn 💎1 Million a year and still have a bad score if you forget to pay your 💎50 phone bill.',
+            'Surprise! You can earn [GEM]1 Million a year and still have a bad score if you forget to pay your [GEM]50 phone bill.',
         correctExplanation:
             'One single late payment can stay on your record for 7 years and drop your score significantly.',
       ),
@@ -3812,7 +3812,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If your limit is 💎1,000 and you owe 💎900, your utilization is 90%. Banks hate this; it looks like you are struggling.',
+            'If your limit is [GEM]1,000 and you owe [GEM]900, your utilization is 90%. Banks hate this; it looks like you are struggling.',
         correctExplanation:
             'Financial experts suggest keeping your utilization below 30% to maintain a high score.',
       ),
@@ -3865,7 +3865,7 @@ final List<QuizMetadata> _level3Quizzes = [
         wrongExplanation:
             'Rent is for space someone else owns. A mortgage is a loan you use to eventually own the space yourself.',
         correctExplanation:
-            'Mortgages allow you to buy a 💎500,000 house without having all the gems upfront. The house itself acts as "collateral" for the loan.',
+            'Mortgages allow you to buy a [GEM]500,000 house without having all the gems upfront. The house itself acts as "collateral" for the loan.',
       ),
       QuizQuestion(
         question: 'What is the "Down Payment" on a house?',
@@ -3919,7 +3919,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Debt is what the bank owns. Equity is what YOU own. If your house is worth 💎300k and you owe 💎200k, your equity is 💎100k.',
+            'Debt is what the bank owns. Equity is what YOU own. If your house is worth [GEM]300k and you owe [GEM]200k, your equity is [GEM]100k.',
         correctExplanation:
             'Building equity is one of the most powerful ways for families to build wealth over a long period of time.',
       ),
@@ -3942,7 +3942,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Most cars aren\'t investments. They lose value the moment you drive them off the lot. A 💎30,000 new car might only be worth 💎15,000 in 5 years.',
+            'Most cars aren\'t investments. They lose value the moment you drive them off the lot. A [GEM]30,000 new car might only be worth [GEM]15,000 in 5 years.',
         correctExplanation:
             'Understanding depreciation is why many smart savers choose to buy slightly "used" cars rather than brand-new ones.',
       ),
@@ -3984,7 +3984,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Balloon payments are risky! They make your monthly bills look low, but then you suddenly owe 💎10,000 all at once at the very end.',
+            'Balloon payments are risky! They make your monthly bills look low, but then you suddenly owe [GEM]10,000 all at once at the very end.',
         correctExplanation:
             'Many people are forced into debt because they wasn\'t prepared for a massive balloon payment.',
       ),
@@ -4036,7 +4036,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s a flat fee. For example, your insurance might cover the whole 💎200 checkup, but you are required to pay a 💎20 co-pay at the front desk.',
+            'It\'s a flat fee. For example, your insurance might cover the whole [GEM]200 checkup, but you are required to pay a [GEM]20 co-pay at the front desk.',
         correctExplanation:
             'Co-pays make you "share the cost" so that people don\'t go to the doctor for every tiny scratch.',
       ),
@@ -4064,7 +4064,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Think of a real umbrella—it covers everything underneath it. If you are sued for 💎1 Million but your car insurance only covers 💎300k, the umbrella pays the rest.',
+            'Think of a real umbrella—it covers everything underneath it. If you are sued for [GEM]1 Million but your car insurance only covers [GEM]300k, the umbrella pays the rest.',
         correctExplanation:
             'Umbrella policies are very cheap ways to protect your total net worth from rare but massive disasters.',
       ),
@@ -4103,7 +4103,7 @@ final List<QuizMetadata> _level3Quizzes = [
         wrongExplanation:
             'It\'s an investment account, not just savings. The gems are taken from your paycheck *before* taxes, which is a huge benefit.',
         correctExplanation:
-            'Many companies offer a "Match." If you put in 💎1, they give you 💎1 for free! This is a 100% return on your gems instantly.',
+            'Many companies offer a "Match." If you put in [GEM]1, they give you [GEM]1 for free! This is a 100% return on your gems instantly.',
       ),
       QuizQuestion(
         question: 'What does "Vesting" mean?',
@@ -4129,7 +4129,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Traditional = Tax-deferred. You save 💎30 in taxes today for every 💎100 you save for the future.',
+            'Traditional = Tax-deferred. You save [GEM]30 in taxes today for every [GEM]100 you save for the future.',
         correctExplanation:
             'IRAs are great because YOU control the account, even if you change jobs 20 different times.',
       ),
@@ -4145,7 +4145,7 @@ final List<QuizMetadata> _level3Quizzes = [
         wrongExplanation:
             'Roth = Tax-free later. You pay the tax today, but you never pay a single gem to the government on the growth ever again.',
         correctExplanation:
-            'If your 💎5,000 grows into 💎50,000 inside a Roth IRA, you keep all 💎50,000 for your retirement.',
+            'If your [GEM]5,000 grows into [GEM]50,000 inside a Roth IRA, you keep all [GEM]50,000 for your retirement.',
       ),
       QuizQuestion(
         question:
@@ -4192,7 +4192,7 @@ final List<QuizMetadata> _level3Quizzes = [
         wrongExplanation:
             'CPI tracks the prices of eggs, milk, gas, and rent. It tells us how much the cost of living has changed.',
         correctExplanation:
-            'If the CPI is up 6% from last year, your 💎100 only has the purchasing power that 💎94 had before.',
+            'If the CPI is up 6% from last year, your [GEM]100 only has the purchasing power that [GEM]94 had before.',
       ),
       QuizQuestion(
         question: 'What is the "Federal Reserve"?',
@@ -4403,7 +4403,7 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "529 Plan"?',
         options: [
-          'A plan to work 5 days and save 29 gems',
+          'A plan to work 5 days and save [GEM]',
           'A tax-advantaged savings account specifically for education costs',
           'A type of credit card for students',
           'A government scholarship program',
@@ -4467,7 +4467,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a degree costs 💎100,000 but you only earn 💎30,000 a year, you will be in debt forever. The "ROI" (Return on Investment) is low.',
+            'If a degree costs [GEM]100,000 but you only earn [GEM]30,000 a year, you will be in debt forever. The "ROI" (Return on Investment) is low.',
         correctExplanation:
             'Treating your education as an investment helps you make smarter choices about how many gems to borrow.',
       ),
@@ -4532,7 +4532,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you get a 💎5,000 raise but immediately buy a 💎5,000 more expensive car, you are still "broke" at a higher level.',
+            'If you get a [GEM]5,000 raise but immediately buy a [GEM]5,000 more expensive car, you are still "broke" at a higher level.',
         correctExplanation:
             'Fighting lifestyle creep allows you to keep your 50/30/20 rule stable while your net worth explodes.',
       ),
@@ -4569,7 +4569,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Revenue is "Top Line." If you sell 100 apples for 💎1 each, your revenue is 💎100. It doesn\'t count your costs yet.',
+            'Revenue is "Top Line." If you sell 100 apples for [GEM]1 each, your revenue is [GEM]100. It doesn\'t count your costs yet.',
         correctExplanation:
             'High revenue is great, but a business can still fail if its costs are higher than its revenue.',
       ),
@@ -4643,13 +4643,13 @@ final List<QuizMetadata> _level3Quizzes = [
         question: 'What is the core concept of "Time Value of Money"?',
         options: [
           'Gems are only valuable in the morning',
-          '💎1 today is worth more than 💎1 in the future because of its potential to earn interest',
+          '[GEM]1 today is worth more than [GEM]1 in the future because of its potential to earn interest',
           'Wealth is measured by the number of hours you work',
           'The value of gems never changes',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you have 💎1,000 today, you can invest it and have 💎1,050 next year. If you wait a year to receive it, you lose that growth.',
+            'If you have [GEM]1,000 today, you can invest it and have [GEM]1,050 next year. If you wait a year to receive it, you lose that growth.',
         correctExplanation:
             'Understanding TVM is the reason why lenders charge interest—they are being paid for the "time" they don\'t have their gems.',
       ),
@@ -4663,7 +4663,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 0,
         wrongExplanation:
-            'It\'s a forward-looking calculation. It answers: "If I invest 💎1,000 at 5% for 10 years, how many gems will I have?"',
+            'It\'s a forward-looking calculation. It answers: "If I invest [GEM]1,000 at 5% for 10 years, how many gems will I have?"',
         correctExplanation:
             'FV calculations help you set realistic goals for big purchases like a house or a college degree.',
       ),
@@ -4677,7 +4677,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If someone promises you 💎1,000 in five years, it isn\'t worth 💎1,000 today. PV "discounts" that future amount back to the present.',
+            'If someone promises you [GEM]1,000 in five years, it isn\'t worth [GEM]1,000 today. PV "discounts" that future amount back to the present.',
         correctExplanation:
             'PV is vital for comparing different investments to see which one is actually the "better deal" in today\'s gems.',
       ),
@@ -4705,7 +4705,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A lottery prize paid out over 20 years is an annuity. A retirement plan that pays you 💎2,000 every month is also an annuity.',
+            'A lottery prize paid out over 20 years is an annuity. A retirement plan that pays you [GEM]2,000 every month is also an annuity.',
         correctExplanation:
             'Annuities are often used in retirement to ensure a person never runs out of gems to live on.',
       ),
@@ -4827,7 +4827,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The business can still lose everything. Limited Liability ensures that if the business fails, your personal house and 💎1,000 savings stay safe.',
+            'The business can still lose everything. Limited Liability ensures that if the business fails, your personal house and [GEM]1,000 savings stay safe.',
         correctExplanation:
             'This legal "shield" is the foundation of modern capitalism, allowing people to take risks without risking their entire life.',
       ),
@@ -4841,7 +4841,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Corporations are separate legal "people." In a general partnership, if your partner makes a 💎50,000 mistake, YOU are personally responsible to pay it back.',
+            'Corporations are separate legal "people." In a general partnership, if your partner makes a [GEM]50,000 mistake, YOU are personally responsible to pay it back.',
         correctExplanation:
             'General partnerships are simple to start but carry high personal risk compared to LLCs or Corporations.',
       ),
@@ -4950,7 +4950,7 @@ final List<QuizMetadata> _level4Quizzes = [
         wrongExplanation:
             'Bubbles are fueled by "irrational exuberance." People buy because they think they can sell to someone else for more, ignoring the "math."',
         correctExplanation:
-            'When the bubble "pops," prices crash back down to reality, often causing 💎billions in losses for late investors.',
+            'When the bubble "pops," prices crash back down to reality, often causing [GEM]billions in losses for late investors.',
       ),
     ],
   ),
@@ -4999,7 +4999,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you earn 💎50,000 but have 💎12,000 in deductions, the government only looks at 💎38,000 when calculating your bill.',
+            'If you earn [GEM]50,000 but have [GEM]12,000 in deductions, the government only looks at [GEM]38,000 when calculating your bill.',
         correctExplanation:
             'Smart tax planning focuses on legally reducing your taxable income so you keep more of your hard-earned gems.',
       ),
@@ -5013,7 +5013,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Sales tax is often regressive. A 💎1 tax on bread is a tiny slice for a billionaire, but a huge slice for someone earning 💎10 a day.',
+            'Sales tax is often regressive. A [GEM]1 tax on bread is a tiny slice for a billionaire, but a huge slice for someone earning [GEM]10 a day.',
         correctExplanation:
             'Developing a fair tax system requires balancing progressive income taxes with regressive sales or gas taxes.',
       ),
@@ -5027,7 +5027,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you buy a stock for 💎10 and sell for 💎15, you only pay tax on the 💎5 you "gained," not the whole 💎15.',
+            'If you buy a stock for [GEM]10 and sell for [GEM]15, you only pay tax on the [GEM]5 you "gained," not the whole [GEM]15.',
         correctExplanation:
             'Capital gains rates are often LOWER than income tax rates to encourage people to invest their gems in the economy.',
       ),
@@ -5066,7 +5066,7 @@ final List<QuizMetadata> _level4Quizzes = [
         wrongExplanation:
             'If they both go up and down together, your risk is high. True diversification requires "uncorrelated" assets (like Gold vs. Tech Stocks).',
         correctExplanation:
-            'In a perfect portfolio, when one asset drops, another stays steady or rises, protecting your total 💎 levels.',
+            'In a perfect portfolio, when one asset drops, another stays steady or rises, protecting your total [GEM] levels.',
       ),
       QuizQuestion(
         question: 'What is "Rebalancing" a portfolio?',
@@ -5172,7 +5172,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 0,
         wrongExplanation:
-            'A Put is a "Bet on Down." It lets you sell a stock for 💎100 even if the market price has crashed to 💎20.',
+            'A Put is a "Bet on Down." It lets you sell a stock for [GEM]100 even if the market price has crashed to [GEM]20.',
         correctExplanation:
             'Puts are the most common way professional investors hedge their portfolios against a sudden market crash.',
       ),
@@ -5209,7 +5209,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Forex is the largest market in the world, where trillions of 💎s worth of different countries\' currencies are traded every day.',
+            'Forex is the largest market in the world, where trillions of [GEM]s worth of different countries\' currencies are traded every day.',
         correctExplanation:
             'Everything you buy from overseas (like a car or a phone) depends on the Forex rates between countries.',
       ),
@@ -5223,7 +5223,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Appreciate = Grow. If the Dollar appreciates against the Euro, you can buy more European goods with the same amount of 💎s.',
+            'Appreciate = Grow. If the Dollar appreciates against the Euro, you can buy more European goods with the same amount of [GEM]s.',
         correctExplanation:
             'A strong currency makes imports cheaper but makes it harder for local companies to sell their products to other countries.',
       ),
@@ -5274,7 +5274,7 @@ final List<QuizMetadata> _level4Quizzes = [
   QuizMetadata(
     id: 'l4_q7',
     title: 'Advanced Mortgages',
-    subtitle: 'The 💎100,000 math of a home',
+    subtitle: 'The [GEM]100,000 math of a home',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
@@ -5318,7 +5318,7 @@ final List<QuizMetadata> _level4Quizzes = [
         wrongExplanation:
             'In the beginning, almost 100% of your payment is just "interest" (the bank\'s profit). You don\'t actually own much more of the house until years later.',
         correctExplanation:
-            'Looking at an amortization table is the best way to see how much a 💎200,000 house actually costs (often 💎400,000+ after interest).',
+            'Looking at an amortization table is the best way to see how much a [GEM]200,000 house actually costs (often [GEM]400,000+ after interest).',
       ),
       QuizQuestion(
         question: 'What is "Home Equity"?',
@@ -5330,7 +5330,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If your house is worth 💎300,000 but you owe the bank 💎250,000, you only have 💎50,000 in equity. The bank owns the rest!',
+            'If your house is worth [GEM]300,000 but you owe the bank [GEM]250,000, you only have [GEM]50,000 in equity. The bank owns the rest!',
         correctExplanation:
             'Building equity is the main way middle-class families build long-term wealth over their lifetimes.',
       ),
@@ -5344,7 +5344,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If interest rates drop from 6% to 3%, you "Refi" to lower your monthly bill and save 💎thousands in interest over time.',
+            'If interest rates drop from 6% to 3%, you "Refi" to lower your monthly bill and save [GEM]thousands in interest over time.',
         correctExplanation:
             'Refinancing costs gems upfront in fees, so you must calculate if the monthly savings are worth the initial cost.',
       ),
@@ -5367,7 +5367,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 0,
         wrongExplanation:
-            'P/E tells you "how many gems you are paying for every 💎1 of profit." A P/E of 20 means you pay 💎20 to own 💎1 of the company\'s annual earnings.',
+            'P/E tells you "how many gems you are paying for every [GEM]1 of profit." A P/E of 20 means you pay [GEM]20 to own [GEM]1 of the company\'s annual earnings.',
         correctExplanation:
             'High P/E usually means investors expect the company to grow very fast in the future.',
       ),
@@ -5383,7 +5383,7 @@ final List<QuizMetadata> _level4Quizzes = [
         wrongExplanation:
             'Market Cap is the "Price Tag" of the whole company. Small-cap companies are risky but growth-heavy; Large-cap companies (like Walmart) are stable.',
         correctExplanation:
-            'Don\'t look at share price alone! A 💎100 stock might be a "Smaller" company than a 💎10 stock if there are few shares.',
+            'Don\'t look at share price alone! A [GEM]100 stock might be a "Smaller" company than a [GEM]10 stock if there are few shares.',
       ),
       QuizQuestion(
         question: 'What is "EBITDA"?',
@@ -5409,7 +5409,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a 💎100 stock pays 💎4 a year in dividends, the yield is 4%. It is like the "Interest Rate" of your investment.',
+            'If a [GEM]100 stock pays [GEM]4 a year in dividends, the yield is 4%. It is like the "Interest Rate" of your investment.',
         correctExplanation:
             'High-dividend stocks (like Utility companies) are favored by retirees who need a steady stream of gems every month.',
       ),
@@ -5432,7 +5432,7 @@ final List<QuizMetadata> _level4Quizzes = [
   QuizMetadata(
     id: 'l4_q9',
     title: 'Monetary Policy & The Fed',
-    subtitle: 'The 💎trillion-dollar levers of power',
+    subtitle: 'The [GEM]trillion-dollar levers of power',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
@@ -5541,7 +5541,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Deficit is a yearly number. If you earn 💎100 and spend 💎120, your deficit for that year is 💎20.',
+            'Deficit is a yearly number. If you earn [GEM]100 and spend [GEM]120, your deficit for that year is [GEM]20.',
         correctExplanation:
             'To pay for the deficit, the government borrows gems from investors by selling "Treasury Bonds."',
       ),
@@ -5569,7 +5569,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A 💎1,000 debt is small for a billionaire but huge for a student. Debt-to-GDP tells you if the "size" of the debt is sustainable for that country.',
+            'A [GEM]1,000 debt is small for a billionaire but huge for a student. Debt-to-GDP tells you if the "size" of the debt is sustainable for that country.',
         correctExplanation:
             'Economists watch this ratio to see if a country is at risk of "Defaulting" (refusing to pay back) its lenders.',
       ),
@@ -5592,7 +5592,7 @@ final List<QuizMetadata> _level4Quizzes = [
   QuizMetadata(
     id: 'l4_q11',
     title: 'Behavioral Finance',
-    subtitle: 'The psychology of the 💎 market',
+    subtitle: 'The psychology of the [GEM] market',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
@@ -5606,7 +5606,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Losing 💎100 "hurts" more than finding 💎100 "feels good." This causes investors to make irrational choices, like holding onto a crashing stock for too long.',
+            'Losing [GEM]100 "hurts" more than finding [GEM]100 "feels good." This causes investors to make irrational choices, like holding onto a crashing stock for too long.',
         correctExplanation:
             'Being aware of your loss aversion can help you stick to your long-term plan even when the market is red.',
       ),
@@ -5685,7 +5685,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you have 💎1,000,000, the 4% rule says you can live on 💎40,000 a year forever. It assumes your gems keep growing while you spend them.',
+            'If you have [GEM]1,000,000, the 4% rule says you can live on [GEM]40,000 a year forever. It assumes your gems keep growing while you spend them.',
         correctExplanation:
             'The 4% rule is the gold standard for "Financial Independence" (the point where work becomes optional).',
       ),
@@ -5715,7 +5715,7 @@ final List<QuizMetadata> _level4Quizzes = [
         wrongExplanation:
             'You pay tax now on the gems you move, but you never pay tax on that folder again. It\'s a strategy used when you expect taxes to be higher in the future.',
         correctExplanation:
-            'Strategic conversions can save 💎hundreds of thousands in taxes over a 30-year retirement.',
+            'Strategic conversions can save [GEM]hundreds of thousands in taxes over a 30-year retirement.',
       ),
       QuizQuestion(
         question: 'What is a "Required Minimum Distribution" (RMD)?',
@@ -5780,7 +5780,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Economists "shop" for the same basket of milk, rent, and shoes every month. If the basket price goes from 💎100 to 💎108, the inflation rate is 8%.',
+            'Economists "shop" for the same basket of milk, rent, and shoes every month. If the basket price goes from [GEM]100 to [GEM]108, the inflation rate is 8%.',
         correctExplanation:
             'The Fed uses "Core CPI" (which ignores food and energy) to get a clearer picture of long-term price trends.',
       ),
@@ -5847,7 +5847,7 @@ final List<QuizMetadata> _level4Quizzes = [
         wrongExplanation:
             'VCs aren\'t banks. They don\'t want "interest." They want to own 10% of a company that might become the next Google or Amazon.',
         correctExplanation:
-            'VCs take massive risks! 9 out of 10 startups fail, but the one that succeeds can return 💎billions to the investors.',
+            'VCs take massive risks! 9 out of 10 startups fail, but the one that succeeds can return [GEM]billions to the investors.',
       ),
       QuizQuestion(
         question: 'What happens during a "Series A" funding round?',
@@ -5859,7 +5859,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Founders start with "Seed" funding. Series A is when the business is proven and needs 💎millions to grow fast.',
+            'Founders start with "Seed" funding. Series A is when the business is proven and needs [GEM] millions to grow fast.',
         correctExplanation:
             'Each letter (Series A, B, C) usually represents a larger amount of gems and a higher valuation for the company.',
       ),
@@ -5867,13 +5867,13 @@ final List<QuizMetadata> _level4Quizzes = [
         question: 'What is a "Unicorn" in the business world?',
         options: [
           'A company that sells mythical toys',
-          'A private startup company valued at over 💎1 Billion',
+          'A private startup company valued at over [GEM]1 Billion',
           'A company with zero employees',
           'A business that never pays taxes',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s called a unicorn because they used to be rare. Today, there are hundreds of them, though reaching 💎1 Billion is still extremely difficult.',
+            'It\'s called a unicorn because they used to be rare. Today, there are hundreds of them, though reaching [GEM]1 Billion is still extremely difficult.',
         correctExplanation:
             'Unicorn status is a major milestone that usually leads to an IPO (going public) or being bought by a larger company.',
       ),
@@ -5887,7 +5887,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Gems in a private company are "illiquid" (you can\'t spend them). The exit is the moment those shares turn back into spendable 💎s.',
+            'Gems in a private company are "illiquid" (you can\'t spend them). The exit is the moment those shares turn back into spendable [GEM]s.',
         correctExplanation:
             'Common exits include being bought by a larger company (Acquisition) or selling shares to the public (IPO).',
       ),
@@ -5901,7 +5901,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 0,
         wrongExplanation:
-            'If a startup has 💎1,000,000 in the bank and spends 💎100,000 a month, its "runway" is 10 months. If it doesn\'t make profit by then, it dies.',
+            'If a startup has [GEM]1,000,000 in the bank and spends [GEM]100,000 a month, its "runway" is 10 months. If it doesn\'t make profit by then, it dies.',
         correctExplanation:
             'Managing burn rate is the #1 job of a startup CEO, ensuring they don\'t run out of gems before reaching success.',
       ),
@@ -5924,7 +5924,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'An IPO is the "Graduation Day" of a company. It moves from being owned by founders and VCs to being owned by anyone with 💎s.',
+            'An IPO is the "Graduation Day" of a company. It moves from being owned by founders and VCs to being owned by anyone with [GEM]s.',
         correctExplanation:
             'IPOs allow a company to raise massive wealth to build new products and expand globally.',
       ),
@@ -5989,7 +5989,7 @@ final List<QuizMetadata> _level4Quizzes = [
   QuizMetadata(
     id: 'l4_q16',
     title: 'Hedge Funds & Investing',
-    subtitle: 'Chasing "Alpha" in the 💎 market',
+    subtitle: 'Chasing "Alpha" in the [GEM] market',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
@@ -6006,7 +6006,7 @@ final List<QuizMetadata> _level4Quizzes = [
         wrongExplanation:
             'Index funds are "Passive" (cheap and easy). Hedge funds are "Active" (expensive and complex). 90% of hedge funds actually FAIL to beat the index over time.',
         correctExplanation:
-            'Hedge funds are usually only for "Accredited Investors" (people who already have 💎millions) because they are so risky.',
+            'Hedge funds are usually only for "Accredited Investors" (people who already have [GEM] millions) because they are so risky.',
       ),
       QuizQuestion(
         question: 'In investing, what does "Alpha" represent?',
@@ -6039,7 +6039,7 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the "2 and 20" fee structure common in hedge funds?',
         options: [
-          '2 gems per month and 20% of your total gems',
+          ' [GEM] per month and 20% of your total gems',
           'A 2% management fee and a 20% performance fee (on profits)',
           '2 employees for every 20 investors',
           'A 20-year contract and a 2% interest rate',
@@ -6062,14 +6062,14 @@ final List<QuizMetadata> _level4Quizzes = [
         wrongExplanation:
             'They "Hedge" their bets. They might buy the best tech stock and short the worst one, hoping to profit on the difference regardless of a crash.',
         correctExplanation:
-            'True market-neutral funds are very rare and require extremely complex 💎trader algorithms to work.',
+            'True market-neutral funds are very rare and require extremely complex [GEM]trader algorithms to work.',
       ),
     ],
   ),
   QuizMetadata(
     id: 'l4_q17',
     title: 'Bond Markets & Yields',
-    subtitle: 'The 💎debt engine of the world',
+    subtitle: 'The [GEM]debt engine of the world',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
@@ -6163,7 +6163,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'REITs allow you to own pieces of 💎100,000,000 malls, hotels, and apartments without ever needing to fix a toilet yourself.',
+            'REITs allow you to own pieces of [GEM]100,000,000 malls, hotels, and apartments without ever needing to fix a toilet yourself.',
         correctExplanation:
             'By law, REITs must pay out 90% of their taxable income to you. They are excellent for generating a "passive income" stream.',
       ),
@@ -6259,7 +6259,7 @@ final List<QuizMetadata> _level4Quizzes = [
         wrongExplanation:
             'NPV answers: "Is this project worth doing?" If NPV is POSITIVE, it means the investment will create more wealth than it costs (including interest).',
         correctExplanation:
-            'Companies only build new factories or launch products if the NPV calculation shows they will gain a net profit in today\'s 💎s.',
+            'Companies only build new factories or launch products if the NPV calculation shows they will gain a net profit in today\'s [GEM]s.',
       ),
       QuizQuestion(
         question: 'In a DCF, what is the "Terminal Value"?',
@@ -6308,7 +6308,7 @@ final List<QuizMetadata> _level4Quizzes = [
   QuizMetadata(
     id: 'l4_q20',
     title: 'Arbitrage & HFT',
-    subtitle: 'The 💎speed of light in finance',
+    subtitle: 'The [GEM]speed of light in finance',
     difficulty: QuizDifficulty.hard,
     requiredLevel: 4,
     questions: [
@@ -6322,7 +6322,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If Gold is 💎1,000 in London and 💎1,001 in New York, an arbitrageur buys it in London and sells it in NY at the same time for a "Risk-Free" 💎1 profit.',
+            'If Gold is [GEM]1,000 in London and [GEM]1,001 in New York, an arbitrageur buys it in London and sells it in NY at the same time for a "Risk-Free" [GEM]1 profit.',
         correctExplanation:
             'Arbitrage is the "Force of Nature" that keeps prices equal across the whole world.',
       ),
@@ -6378,7 +6378,7 @@ final List<QuizMetadata> _level4Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'An algorithm might say: "If the 50-day average moves above the 200-day average, buy 💎10,000 worth of shares." It never gets tired or emotional.',
+            'An algorithm might say: "If the 50-day average moves above the 200-day average, buy [GEM]10,000 worth of shares." It never gets tired or emotional.',
         correctExplanation:
             'Today, over 80% of all trading in the stock market is done by algorithms, not humans.',
       ),
@@ -6413,7 +6413,7 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What does a "Current Ratio" of 1.2 mean?',
         options: [
-          'The company has 💎1.20 in current assets for every 💎1.00 of current liabilities',
+          'The company has [GEM]1.20 in current assets for every [GEM]1.00 of current liabilities',
           'The company is bankrupt',
           'The company has 120 employees',
           'The company made 20% profit this year',
@@ -6448,7 +6448,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you have 💎100 in debt and 💎10 in equity, your ratio is 10. This is very "Aggressive" and dangerous if profits drop.',
+            'If you have [GEM]100 in debt and [GEM]10 in equity, your ratio is 10. This is very "Aggressive" and dangerous if profits drop.',
         correctExplanation:
             'Conservative companies keep this ratio low to ensure they can survive economic downturns without the bank taking their assets.',
       ),
@@ -6485,7 +6485,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Auditors don\'t check every single 💎1 transaction. They set a "Materiality" level (e.g., 💎50,000). If an error is below that, they might ignore it.',
+            'Auditors don\'t check every single [GEM]1 transaction. They set a "Materiality" level (e.g., [GEM]50,000). If an error is below that, they might ignore it.',
         correctExplanation:
             'Materiality is a matter of "Professional Judgment" and varies based on the size and nature of the company.',
       ),
@@ -6527,7 +6527,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If an auditor owns stock in the company they are auditing, they have a "Conflict of Interest." They might hide bad news to protect their own 💎s.',
+            'If an auditor owns stock in the company they are auditing, they have a "Conflict of Interest." They might hide bad news to protect their own [GEM]s.',
         correctExplanation:
             'Independence is the "Bedrock" of the profession. Without it, the audit report has zero value to the market.',
       ),
@@ -6579,7 +6579,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Even a profitable company can\'t do EVERYTHING. If you have 💎1,000,000 but three 💎500,000 projects, you must "ration" your capital.',
+            'Even a profitable company can\'t do EVERYTHING. If you have [GEM]1,000,000 but three [GEM]500,000 projects, you must "ration" your capital.',
         correctExplanation:
             'The goal of rationing is to pick the "Combination" of projects that results in the HIGHEST total NPV.',
       ),
@@ -6593,7 +6593,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'PI shows "Bang for your Buck." A PI of 1.2 means for every 💎1 you invest, you get back 💎1.20 in present value.',
+            'PI shows "Bang for your Buck." A PI of 1.2 means for every [GEM]1 you invest, you get back [GEM]1.20 in present value.',
         correctExplanation:
             'PI is the perfect tool for working under "Capital Rationing" because it ranks projects by their efficiency.',
       ),
@@ -6659,7 +6659,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Book Value is just a historical number. You must use "Fair Value" (what the assets are worth today). If you pay 💎1,000,000 for 💎800,000 in assets, you have 💎200,000 in Goodwill.',
+            'Book Value is just a historical number. You must use "Fair Value" (what the assets are worth today). If you pay [GEM]1,000,000 for [GEM]800,000 in assets, you have [GEM]200,000 in Goodwill.',
         correctExplanation:
             'Goodwill represents "unidentifiable" assets like brand reputation, customer loyalty, and synergistic value that cannot be sold separately.',
       ),
@@ -6673,7 +6673,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you sell a pen to yourself for 💎100, you haven\'t made 💎100. In group accounting, "internal" sales must be erased so only "outside" gems are counted.',
+            'If you sell a pen to yourself for [GEM]100, you haven\'t made [GEM]100. In group accounting, "internal" sales must be erased so only "outside" gems are counted.',
         correctExplanation:
             'Eliminating these transactions prevents the group from "inflating" its revenue numbers by trading with its own companies.',
       ),
@@ -6701,7 +6701,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Goodwill is never "depreciated." It is only checked once a year for impairment. If the 💎200,000 value you paid for "reputation" is now only worth 💎100,000, you must record a loss.',
+            'Goodwill is never "depreciated." It is only checked once a year for impairment. If the [GEM]200,000 value you paid for "reputation" is now only worth [GEM]100,000, you must record a loss.',
         correctExplanation:
             'Impairment tests are high-stakes! A massive impairment charge can wipe out a year\'s worth of profit and crash the stock price.',
       ),
@@ -6752,7 +6752,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'US GAAP usually forbids this (you stay at historical cost). IFRS allows it, which can make a company\'s 💎 balance sheet look much stronger if land or buildings go up.',
+            'US GAAP usually forbids this (you stay at historical cost). IFRS allows it, which can make a company\'s [GEM] balance sheet look much stronger if land or buildings go up.',
         correctExplanation:
             'Any gain from revaluation is usually tucked away in "Other Comprehensive Income" (OCI) so it doesn\'t inflate normal profit.',
       ),
@@ -6768,7 +6768,7 @@ final List<QuizMetadata> _level5Quizzes = [
         wrongExplanation:
             'If the company works in the building, it\'s an "Owner-Occupied" asset. If they just rent it out to others, it\'s an Investment Property with different accounting rules.',
         correctExplanation:
-            'Investment properties can often be recorded at Fair Value, with any 💎 profit going directly to the income statement every year!',
+            'Investment properties can often be recorded at Fair Value, with any [GEM] profit going directly to the income statement every year!',
       ),
       QuizQuestion(
         question: 'What is the "Impairment Loss" formula for an asset?',
@@ -6782,7 +6782,7 @@ final List<QuizMetadata> _level5Quizzes = [
         wrongExplanation:
             'Recoverable Amount is the HIGHER of: 1) What you could sell it for today, or 2) The value of the gems it will make you if you keep using it.',
         correctExplanation:
-            'If your factory is on the books for 💎1M but it\'s only worth 💎600k, you have an impairment loss of 💎400k.',
+            'If your factory is on the books for [GEM]1M but it\'s only worth [GEM]600k, you have an impairment loss of [GEM]400k.',
       ),
     ],
   ),
@@ -6819,7 +6819,7 @@ final List<QuizMetadata> _level5Quizzes = [
         wrongExplanation:
             'This is the "Digging" phase. You don\'t just ask if the computer works; you check 100 actual receipts to see if the gems were spent correctly.',
         correctExplanation:
-            'Every audit must include substantive testing to ensure the 💎 values on the balance sheet actually exist.',
+            'Every audit must include substantive testing to ensure the [GEM] values on the balance sheet actually exist.',
       ),
       QuizQuestion(
         question: 'What does "Tolerable Error" mean in audit sampling?',
@@ -6831,7 +6831,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you check 100 items and find 💎1 missing, is that a problem? Tolerable error is the "Line in the Sand" the auditor draws before sounding the alarm.',
+            'If you check 100 items and find [GEM]1 missing, is that a problem? Tolerable error is the "Line in the Sand" the auditor draws before sounding the alarm.',
         correctExplanation:
             'If the estimated error from your sample is higher than the tolerable error, you must "Reject" the whole account and dig deeper.',
       ),
@@ -6839,7 +6839,7 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is an "Analytical Procedure"?',
         options: [
           'A procedure done by a very analytical person',
-          'Evaluations of financial information through analysis of plausible relationships (like comparing 💎 revenue to last year)',
+          'Evaluations of financial information through analysis of plausible relationships (like comparing [GEM] revenue to last year)',
           'A type of computer repair',
           'A way to train new auditors',
         ],
@@ -6859,7 +6859,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A 💎100,000,000 inventory of Diamonds is "inherently" riskier to lose or steal than a 💎100,000,000 inventory of Concrete Pipes.',
+            'A [GEM]100,000,000 inventory of Diamonds is "inherently" riskier to lose or steal than a [GEM]100,000,000 inventory of Concrete Pipes.',
         correctExplanation:
             'Auditors focus most of their gems and time on areas with high inherent risk.',
       ),
@@ -6876,7 +6876,7 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'Why do we use the "Post-Tax" cost of debt in WACC?',
         options: [
           'Because the bank requires it',
-          'Because interest payments are tax-deductible, reducing the actual 💎 cost to the company',
+          'Because interest payments are tax-deductible, reducing the actual [GEM] cost to the company',
           'Because taxes are unpaid debt',
           'To make the calculation look more professional',
         ],
@@ -6898,7 +6898,7 @@ final List<QuizMetadata> _level5Quizzes = [
         wrongExplanation:
             'Book value represents the past; Market value represents the PRESENT cost of gems. Professional WACC must always use market prices.',
         correctExplanation:
-            'If a company has 1M shares at 💎10 and 💎5M in debt, the weights are approx 66% Equity and 33% Debt.',
+            'If a company has 1M shares at [GEM]10 and [GEM]5M in debt, the weights are approx 66% Equity and 33% Debt.',
       ),
       QuizQuestion(
         question: 'What are "Flotation Costs"?',
@@ -6910,7 +6910,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'New gems aren\'t free to raise. If you want 💎1,000,000, the bank might take 💎50,000 in fees. You only get 💎950,000, which makes your cost of capital higher.',
+            'New gems aren\'t free to raise. If you want [GEM]1,000,000, the bank might take [GEM]50,000 in fees. You only get [GEM]950,000, which makes your cost of capital higher.',
         correctExplanation:
             'Flotation costs are usually included by "Adjusting" the initial investment in an NPV model.',
       ),
@@ -6918,13 +6918,13 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is the "Marginal Cost of Capital" (MCC)?',
         options: [
           'The cost of the very first gem the company ever borrowed',
-          'The cost of raising the NEXT additional 💎1 of new capital',
+          'The cost of raising the NEXT additional [GEM]1 of new capital',
           'The cost of paying for minor repairs',
           'A cost that is at the margin of error',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'As a company borrows more and more gems, the bank gets scared and raises the interest rate. The "Last" 💎1 you borrow is always more expensive than the "First" 💎1.',
+            'As a company borrows more and more gems, the bank gets scared and raises the interest rate. The "Last" [GEM]1 you borrow is always more expensive than the "First" [GEM]1.',
         correctExplanation:
             'The MCC schedule shows that a company\'s cost of capital increases as it tries to grow too fast.',
       ),
@@ -6989,7 +6989,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you might get a 💎10,000 bonus for finishing early, you can only record it if it is "Highly Probable." You can\'t be an optimist in accounting!',
+            'If you might get a [GEM]10,000 bonus for finishing early, you can only record it if it is "Highly Probable." You can\'t be an optimist in accounting!',
         correctExplanation:
             'Companies must estimate variable gems using either the "Expected Value" or "Most Likely Amount" method.',
       ),
@@ -7017,7 +7017,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you spend 3 years building a stadium, you don\'t wait until year 3 to record revenue. You record a piece of it as you lay each 💎 brick.',
+            'If you spend 3 years building a stadium, you don\'t wait until year 3 to record revenue. You record a piece of it as you lay each [GEM] brick.',
         correctExplanation:
             'This matches the "Effort" with the "Reward," giving a better picture of the company\'s annual progress.',
       ),
@@ -7033,7 +7033,7 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Transaction Exposure" in Forex?',
         options: [
-          'The risk that the exchange rate will change before a specific 💎 payment is completed',
+          'The risk that the exchange rate will change before a specific [GEM] payment is completed',
           'The risk of the bank being closed',
           'The risk of the building losing value',
           'A tax on every transaction',
@@ -7048,7 +7048,7 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is "Translation Exposure" (Accounting Exposure)?',
         options: [
           'The cost of hiring a translator',
-          'The risk that a subsidiary\'s financial statements will look worse when converted to the parent\'s 💎 currency for reporting',
+          'The risk that a subsidiary\'s financial statements will look worse when converted to the parent\'s [GEM] currency for reporting',
           'Translating documents for an audit',
           'A change in the company\'s brand name',
         ],
@@ -7062,7 +7062,7 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is "Economic Exposure" (Operating Exposure)?',
         options: [
           'When the whole economy goes into a recession',
-          'The risk that exchange rate changes will affect a company\'s long-term competitive position and future 💎 cash flows',
+          'The risk that exchange rate changes will affect a company\'s long-term competitive position and future [GEM] cash flows',
           'A tax on the country\'s total wealth',
           'The cost of running a factory overseas',
         ],
@@ -7082,7 +7082,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you are owed 100 Euros, you borrow 90 Euros today, convert them to 💎s, and invest them. You use the 100 Euros you get later to pay back the loan. No more risk!',
+            'If you are owed 100 Euros, you borrow 90 Euros today, convert them to [GEM]s, and invest them. You use the 100 Euros you get later to pay back the loan. No more risk!',
         correctExplanation:
             'Money market hedges are a professional alternative to Forward contracts, often used when banks charge too much for Forwards.',
       ),
@@ -7090,13 +7090,13 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is "Netting" in global treasury management?',
         options: [
           'Catching fish for the company cafeteria',
-          'Combining all internal 💎 flows between subsidiaries and only paying the final "Net" difference',
+          'Combining all internal [GEM] flows between subsidiaries and only paying the final "Net" difference',
           'A tax on the total revenue',
           'A way to hide gems from the auditor',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If Sub A owes Sub B 💎100, and Sub B owes Sub A 💎80, they only send 💎20. This saves massive amounts in bank fees and Forex spreads.',
+            'If Sub A owes Sub B [GEM]100, and Sub B owes Sub A [GEM]80, they only send [GEM]20. This saves massive amounts in bank fees and Forex spreads.',
         correctExplanation:
             'Large global "whales" use netting to run their entire world empire using the smallest possible amount of liquid gems.',
       ),
@@ -7134,7 +7134,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You don\'t wait until the end. If you lose 💎100 today, the exchange TAKES 💎100 from your account TONIGHT. If you run out of gems, you are kicked out.',
+            'You don\'t wait until the end. If you lose [GEM]100 today, the exchange TAKES [GEM]100 from your account TONIGHT. If you run out of gems, you are kicked out.',
         correctExplanation:
             'Daily settling prevents "default risk"—it ensures that every loser has enough gems to pay Every day.',
       ),
@@ -7150,7 +7150,7 @@ final List<QuizMetadata> _level5Quizzes = [
         wrongExplanation:
             'If your account drops below this level, you get a "Margin Call." You must add more gems immediately or your position is closed at a loss.',
         correctExplanation:
-            'Margins allow traders to use "Leverage," controlling large amounts of assets with a small amount of 💎s.',
+            'Margins allow traders to use "Leverage," controlling large amounts of assets with a small amount of [GEM]s.',
       ),
       QuizQuestion(
         question: 'What does "Contango" mean in the futures market?',
@@ -7170,7 +7170,7 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is an "Option Premium"?',
         options: [
           'The highest price a stock ever reached',
-          'The non-refundable 💎 price paid by the buyer to the seller for the rights in an option contract',
+          'The non-refundable [GEM] price paid by the buyer to the seller for the rights in an option contract',
           'A reward for being a good investor',
           'A tax on the profit from an option',
         ],
@@ -7185,7 +7185,7 @@ final List<QuizMetadata> _level5Quizzes = [
   QuizMetadata(
     id: 'l5_q11',
     title: 'Advanced Working Capital',
-    subtitle: 'The 💎Operating Cycle Math',
+    subtitle: 'The [GEM]Operating Cycle Math',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 5,
     questions: [
@@ -7199,7 +7199,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It is the total time from buying a raw 💎 to getting the final 💎 from the customer. If inventory takes 60 days and customers take 30 days to pay, your cycle is 90 days.',
+            'It is the total time from buying a raw [GEM] to getting the final [GEM] from the customer. If inventory takes 60 days and customers take 30 days to pay, your cycle is 90 days.',
         correctExplanation:
             'Successful companies try to shrink this cycle as much as possible to keep their gems working instead of sitting on a shelf.',
       ),
@@ -7221,13 +7221,13 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is "Factoring" in working capital?',
         options: [
           'Choosing the best factory to use',
-          'Selling your Accounts Receivable to a third party (a factor) for immediate 💎s at a discount',
+          'Selling your Accounts Receivable to a third party (a factor) for immediate [GEM]s at a discount',
           'A way to calculate the cost of a product',
           'Hiring new employees to count gems',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a customer owes you 💎1,000 in 90 days, you sell that debt to a bank for 💎950 today. You lose 💎50 but get your gems NOW to keep the business running.',
+            'If a customer owes you [GEM]1,000 in 90 days, you sell that debt to a bank for [GEM]950 today. You lose [GEM]50 but get your gems NOW to keep the business running.',
         correctExplanation:
             'Factoring is common for fast-growing small businesses that can\'t wait for slow-paying customers.',
       ),
@@ -7243,7 +7243,7 @@ final List<QuizMetadata> _level5Quizzes = [
         wrongExplanation:
             'Buying too much cost gems in "Storage." Buying too little costs gems in "Shipping fees." EOQ is the perfect "Sweet Spot" in the middle.',
         correctExplanation:
-            'Professional supply chain managers use the EOQ formula to ensure the 💎 efficiency of the warehouse.',
+            'Professional supply chain managers use the EOQ formula to ensure the [GEM] efficiency of the warehouse.',
       ),
       QuizQuestion(
         question: 'What is "Just-In-Time" (JIT) Inventory?',
@@ -7255,7 +7255,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'JIT is very efficient but "Fragile." If a single truck is late, the whole factory stops. But it saves 💎millions in storage costs.',
+            'JIT is very efficient but "Fragile." If a single truck is late, the whole factory stops. But it saves [GEM] millions in storage costs.',
         correctExplanation:
             'JIT was pioneered by Toyota and is now a standard for professional manufacturing worldwide.',
       ),
@@ -7322,7 +7322,7 @@ final List<QuizMetadata> _level5Quizzes = [
         wrongExplanation:
             'CAPM only uses one Beta. APT uses many (like Inflation Beta, GDP Beta, Interest Rate Beta) to be more accurate.',
         correctExplanation:
-            'APT is favored by professional "Quants" who build complex 💎 algorithms to find market edge.',
+            'APT is favored by professional "Quants" who build complex [GEM] algorithms to find market edge.',
       ),
       QuizQuestion(
         question: 'What is the "Sharpe Ratio"?',
@@ -7343,7 +7343,7 @@ final List<QuizMetadata> _level5Quizzes = [
   QuizMetadata(
     id: 'l5_q13',
     title: 'Internal Controls & COSO',
-    subtitle: 'The 💎Ethics of Business',
+    subtitle: 'The [GEM]Ethics of Business',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 5,
     questions: [
@@ -7371,7 +7371,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If the same person writes the checks AND signs them, they can steal 💎billions easily. You must split these "Keys to the Vault."',
+            'If the same person writes the checks AND signs them, they can steal [GEM]billions easily. You must split these "Keys to the Vault."',
         correctExplanation:
             'SoD is the #1 internal control recommended by professional auditors.',
       ),
@@ -7413,7 +7413,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Most fraud is found by "Tips" from honest employees, not by auditors. A safe reporting system is vital for keeping the 💎s safe.',
+            'Most fraud is found by "Tips" from honest employees, not by auditors. A safe reporting system is vital for keeping the [GEM]s safe.',
         correctExplanation:
             'Under laws like Sarbanes-Oxley, companies are REQIURED to have a way for people to report fraud privately.',
       ),
@@ -7438,7 +7438,7 @@ final List<QuizMetadata> _level5Quizzes = [
         wrongExplanation:
             'GGM says: Value = D1 / (k - g). It is perfect for "Boring" stable companies that pay steady dividends every year.',
         correctExplanation:
-            'Professional analysts use GGM as a baseline to see if a stable company is fairly priced compared to its 💎 payout.',
+            'Professional analysts use GGM as a baseline to see if a stable company is fairly priced compared to its [GEM] payout.',
       ),
       QuizQuestion(
         question: 'What is an "EV/EBITDA" multiple used to compare?',
@@ -7464,7 +7464,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a stock is 💎10, you might pay 💎13 to buy the WHOLE company. That 💎3 (30%) is the price of "Power"—the right to fire the board and change the strategy.',
+            'If a stock is [GEM]10, you might pay [GEM]13 to buy the WHOLE company. That [GEM]3 (30%) is the price of "Power"—the right to fire the board and change the strategy.',
         correctExplanation:
             'Calculating the control premium is a vital skill for mergers and acquisitions (M&A) professionals.',
       ),
@@ -7515,9 +7515,9 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'In the old days, companies hid 💎billions in debt by "Renting" airplanes instead of buying them. Now, those rentals MUST be shown as debt.',
+            'In the old days, companies hid [GEM]billions in debt by "Renting" airplanes instead of buying them. Now, those rentals MUST be shown as debt.',
         correctExplanation:
-            'IFRS 16 brought massive transparency to the market, forcing companies to admit their true long-term 💎 obligations.',
+            'IFRS 16 brought massive transparency to the market, forcing companies to admit their true long-term [GEM] obligations.',
       ),
       QuizQuestion(
         question: 'Why might a company choose to LEASE instead of BUY?',
@@ -7543,7 +7543,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If NAL is POSITIVE, you should lease. It factors in tax shields, depreciation and the 💎 cost of borrowing.',
+            'If NAL is POSITIVE, you should lease. It factors in tax shields, depreciation and the [GEM] cost of borrowing.',
         correctExplanation:
             'Professional CFOs run NAL models for every major piece of equipment or real estate a company needs.',
       ),
@@ -7557,7 +7557,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This is a way to unlock "Dead Gems" trapped in a building. You get 💎100M today to invest in growth, and just pay rent every month.',
+            'This is a way to unlock "Dead Gems" trapped in a building. You get [GEM]100M today to invest in growth, and just pay rent every month.',
         correctExplanation:
             'Leasebacks are common when a company is growing fast but needs more liquid cash for its daily operations.',
       ),
@@ -7580,7 +7580,7 @@ final List<QuizMetadata> _level5Quizzes = [
   QuizMetadata(
     id: 'l5_q16',
     title: 'International Finance Parity',
-    subtitle: 'The 💎Math of Global Markets',
+    subtitle: 'The [GEM]Math of Global Markets',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 5,
     questions: [
@@ -7594,7 +7594,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If 💎s earn 10% in India and 2% in the US, IRP says the Indian Rupee MUST get cheaper in the future to prevent people from getting "free" money.',
+            'If [GEM]s earn 10% in India and 2% in the US, IRP says the Indian Rupee MUST get cheaper in the future to prevent people from getting "free" money.',
         correctExplanation:
             'IRP is the force that prevents "Risk-Free" arbitrage across international borders.',
       ),
@@ -7608,7 +7608,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The "Big Mac Index" is a famous example. If a burger is 💎5 in NY but 💎2 in London, PPP says the Pound is "Underpriced" and will eventually go up.',
+            'The "Big Mac Index" is a famous example. If a burger is [GEM]5 in NY but [GEM]2 in London, PPP says the Pound is "Underpriced" and will eventually go up.',
         correctExplanation:
             'While it rarely works in the short term, PPP is the best tool for "Long-Term" Forex prediction.',
       ),
@@ -7638,7 +7638,7 @@ final List<QuizMetadata> _level5Quizzes = [
         wrongExplanation:
             'If a US company needs Euros and a German company needs gems, they "Swap" loans. This can lower the interest and Forex risk for both sides.',
         correctExplanation:
-            'Large global "Whales" use currency swaps to manage their 💎 billon-dollar global debt.',
+            'Large global "Whales" use currency swaps to manage their [GEM] billon-dollar global debt.',
       ),
       QuizQuestion(
         question: 'What is "Country Risk"?',
@@ -7673,7 +7673,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a human makes up fake 💎 receipts, they naturally use "1" through "9" equally. A computer can spot this "unnatural" pattern instantly.',
+            'If a human makes up fake [GEM] receipts, they naturally use "1" through "9" equally. A computer can spot this "unnatural" pattern instantly.',
         correctExplanation:
             'Benford\'s Law is a powerful digital tool for finding hidden patterns of fraud in millions of transactions.',
       ),
@@ -7716,7 +7716,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It doesn\'t matter if it\'s "legal" in the other country. If a US company pays a bribe, it can face 💎billions in fines and jail time.',
+            'It doesn\'t matter if it\'s "legal" in the other country. If a US company pays a bribe, it can face [GEM]billions in fines and jail time.',
         correctExplanation:
             'The FCPA is the "World Cop" of business ethics, ensuring fair competition based on quality, not bribes.',
       ),
@@ -7730,7 +7730,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you see 💎100,000 on the report, but there is no record of where it came from, that is a "Broken Trail" and a major sign of fraud.',
+            'If you see [GEM]100,000 on the report, but there is no record of where it came from, that is a "Broken Trail" and a major sign of fraud.',
         correctExplanation:
             'Maintaining a secure audit trail is a legal requirement for all public companies.',
       ),
@@ -7797,7 +7797,7 @@ final List<QuizMetadata> _level5Quizzes = [
         wrongExplanation:
             'You don\'t wait for a miracle. You aim to save 1 cent today, half a cent tomorrow. Over a million gems, this adds up to a massive advantage.',
         correctExplanation:
-            'Kaizen requires "Everyone" in the building to be involved in saving 💎s and improving quality.',
+            'Kaizen requires "Everyone" in the building to be involved in saving [GEM]s and improving quality.',
       ),
       QuizQuestion(
         question: 'What is "Total Quality Management" (TQM)?',
@@ -7809,7 +7809,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Quality isn\'t checked at the end. It is built in starting from the very first 💎 brick. It turns out, doing it right the first time is actually CHEAPER than fixing mistakes.',
+            'Quality isn\'t checked at the end. It is built in starting from the very first [GEM] brick. It turns out, doing it right the first time is actually CHEAPER than fixing mistakes.',
         correctExplanation:
             'TQM companies have higher customer loyalty and spend far fewer gems on repairs and refunds.',
       ),
@@ -7832,7 +7832,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You don\'t just add the new cost. You must "Revalue" your old 20% to its current Fair Market Value today and record a 💎 profit or loss BEFORE consolidating.',
+            'You don\'t just add the new cost. You must "Revalue" your old 20% to its current Fair Market Value today and record a [GEM] profit or loss BEFORE consolidating.',
         correctExplanation:
             'Step acquisitions require professional "Remeasurement" of previous equity interests, which is a high-level CA exam topic.',
       ),
@@ -7847,7 +7847,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This method is used when the subsidiary is "Independent." Any 💎 gains or losses from translation go to the CTA (Cumulative Translation Adjustment) in equity.',
+            'This method is used when the subsidiary is "Independent." Any [GEM] gains or losses from translation go to the CTA (Cumulative Translation Adjustment) in equity.',
         correctExplanation:
             'The Current Rate method ensures the subsidiary\'s financial ratios (like Current Ratio) stay the same after translation.',
       ),
@@ -7861,7 +7861,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This is used for "Dependent" subsidiaries. Any 💎 gains or losses go directly to the Income Statement, which makes the parent\'s profit very volatile.',
+            'This is used for "Dependent" subsidiaries. Any [GEM] gains or losses go directly to the Income Statement, which makes the parent\'s profit very volatile.',
         correctExplanation:
             'Professional accountants choose between Current and Temporal methods based on the "Functional Currency" of the subsidiary.',
       ),
@@ -7869,13 +7869,13 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is a "Bargain Purchase" (Negative Goodwill)?',
         options: [
           'Buying a product on sale',
-          'When you buy a company for LESS than the fair value of its net assets, resulting in an immediate 💎 gain on the income statement',
+          'When you buy a company for LESS than the fair value of its net assets, resulting in an immediate [GEM] gain on the income statement',
           'A company that is going bankrupt',
           'A secret deal with a supplier',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This is the opposite of Goodwill. It usually happens in "Fire Sales." If a company has 💎100M in assets but you pay 💎80M, you "made" 💎20M profit on Day 1.',
+            'This is the opposite of Goodwill. It usually happens in "Fire Sales." If a company has [GEM]100M in assets but you pay [GEM]80M, you "made" [GEM]20M profit on Day 1.',
         correctExplanation:
             'Auditors check bargain purchases very strictly to ensure the assets aren\'t overvalued on the books.',
       ),
@@ -7889,7 +7889,7 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you own 30%, you don\'t put their factory on your balance sheet. You just increase your initial 💎 investment by 30% of their annual profit.',
+            'If you own 30%, you don\'t put their factory on your balance sheet. You just increase your initial [GEM] investment by 30% of their annual profit.',
         correctExplanation:
             'Distinguishing between "Influence" and "Control" is the foundation of professional group reporting.',
       ),
@@ -7898,7 +7898,7 @@ final List<QuizMetadata> _level5Quizzes = [
   QuizMetadata(
     id: 'l5_q20',
     title: 'Advanced Derivatives Strategy',
-    subtitle: 'The 💎Delta \u0026 Gamma Professional',
+    subtitle: 'The [GEM]Delta \u0026 Gamma Professional',
     difficulty: QuizDifficulty.hard,
     requiredLevel: 5,
     questions: [
@@ -7906,13 +7906,13 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is "Delta Neutral" hedging?',
         options: [
           'A way to stay neutral in a political debate',
-          'Building a portfolio so that the total Delta is zero, meaning the 💎 value doesn\'t change if the stock price moves slightly',
+          'Building a portfolio so that the total Delta is zero, meaning the [GEM] value doesn\'t change if the stock price moves slightly',
           'Buying equal amounts of every stock in the market',
           'A hedge made with zero gems',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If your stock goes up 💎1, your option might go down 💎1. You are "Immune" to small price swings.',
+            'If your stock goes up [GEM]1, your option might go down [GEM]1. You are "Immune" to small price swings.',
         correctExplanation:
             'Banks and Market Makers use Delta Neutral strategies to earn gems from "Spreads" without caring about where the stock price goes.',
       ),
@@ -7934,7 +7934,7 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is a "Bull Call Spread"?',
         options: [
           'A type of farm animal',
-          'Buying one Call option and selling another Call at a higher strike price to lower the 💎 cost of the trade',
+          'Buying one Call option and selling another Call at a higher strike price to lower the [GEM] cost of the trade',
           'Telling everyone a stock is going up',
           'A way to borrow gems from a bull',
         ],
@@ -7962,13 +7962,13 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is "Value at Risk" (VaR)?',
         options: [
           'The total amount of gems the company owns',
-          'A statistical measure of the maximum 💎 amount you could lose in a portfolio over a specific time with a certain confidence (e.g., 95%)',
+          'A statistical measure of the maximum [GEM] amount you could lose in a portfolio over a specific time with a certain confidence (e.g., 95%)',
           'A way to calculate interest on a loan',
           'A list of the riskiest stocks in the country',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'VaR says: "There is a 95% chance we won\'t lose more than 💎1M today." It helps CEOs sleep at night, but it can fail during "Black Swan" events.',
+            'VaR says: "There is a 95% chance we won\'t lose more than [GEM]1M today." It helps CEOs sleep at night, but it can fail during "Black Swan" events.',
         correctExplanation:
             'VaR is the standard risk reporting tool for every major investment bank and hedge fund in the world.',
       ),

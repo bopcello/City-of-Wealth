@@ -104,35 +104,35 @@ const Map<PassiveIncomeType, PassiveIncomeInfo> passiveIncomeData = {
   PassiveIncomeType.farm: PassiveIncomeInfo(
     type: PassiveIncomeType.farm,
     assetType: AssetType.land,
-    buildingName: "🌾 Farm",
+    buildingName: "Farm",
     investmentCost: 80,
     incomePerAsset: 10,
   ),
   PassiveIncomeType.factory: PassiveIncomeInfo(
     type: PassiveIncomeType.factory,
     assetType: AssetType.machinery,
-    buildingName: "🏭 Factory",
+    buildingName: "Factory",
     investmentCost: 150,
     incomePerAsset: 12,
   ),
   PassiveIncomeType.apartment: PassiveIncomeInfo(
     type: PassiveIncomeType.apartment,
     assetType: AssetType.properties,
-    buildingName: "🏢 Apartment",
+    buildingName: "Apartment",
     investmentCost: 400,
     incomePerAsset: 50,
   ),
   PassiveIncomeType.goodsExchange: PassiveIncomeInfo(
     type: PassiveIncomeType.goodsExchange,
     assetType: AssetType.vehicles,
-    buildingName: "🚚 Goods Exchange",
+    buildingName: "Distribution Center",
     investmentCost: 250,
     incomePerAsset: 35,
   ),
   PassiveIncomeType.xeroxShop: PassiveIncomeInfo(
     type: PassiveIncomeType.xeroxShop,
     assetType: AssetType.officeEquipment,
-    buildingName: "📄 Xerox Shop",
+    buildingName: "IT Service Center",
     investmentCost: 120,
     incomePerAsset: 20,
   ),
@@ -209,24 +209,52 @@ class Building {
     required this.requiredLevel,
     required this.requirements,
   });
+
+  String get iconPath {
+    final Map<String, String> mapping = {
+      "Idea Hub": "idea_hub.png",
+      "Office Desk": "office_desk.png",
+      "Coffee Stand": "coffee_stand.png",
+      "Workshop": "workshop.png",
+      "Storage Unit": "storage_unit.png",
+      "Team Office": "team_office.png",
+      "Logistics Garage": "logistics_garage.png",
+      "Office Building": "office_building.png",
+      "Analytics Center": "analytics_center.png",
+      "Department Office": "department_office.png",
+      "Conference Center": "conference_center.png",
+      "R&D Center": "rd_center.png",
+      "Global Operations": "global_operations.png",
+      "Company Headquarters": "company_hq.png",
+      "Boardroom Pavilion": "boardroom_pavilion.png",
+      "Farm": "farm.png",
+      "Factory": "factory.png",
+      "Apartment": "apartment.png",
+      "Distribution Center": "distribution_center.png",
+      "IT Service Center": "it_service_center.png",
+      "The Keystone": "keystone.png",
+      "Palace": "palace.png",
+    };
+    return "lib/assets/buildings/${mapping[name] ?? 'default_building.png'}";
+  }
 }
 
 const buildings = [
   // LEVEL 2
   Building(
-    name: "💡 Idea Hub",
+    name: "Idea Hub",
     track: CareerTrack.business,
     requiredLevel: 2,
     requirements: {AssetType.properties: 5},
   ),
   Building(
-    name: "🪑 Office Desk",
+    name: "Office Desk",
     track: CareerTrack.job,
     requiredLevel: 2,
     requirements: {AssetType.officeEquipment: 3},
   ),
   Building(
-    name: "☕ Coffee Stand",
+    name: "Coffee Stand",
     track: CareerTrack.job,
     requiredLevel: 2,
     requirements: {AssetType.officeEquipment: 5},
@@ -234,25 +262,25 @@ const buildings = [
 
   // LEVEL 3
   Building(
-    name: "� Small Workshop",
+    name: "Workshop",
     track: CareerTrack.business,
     requiredLevel: 3,
     requirements: {AssetType.properties: 10, AssetType.land: 5},
   ),
   Building(
-    name: "� Storage Unit",
+    name: "Storage Unit",
     track: CareerTrack.business,
     requiredLevel: 3,
     requirements: {AssetType.properties: 15, AssetType.land: 8},
   ),
   Building(
-    name: "👥 Team Office",
+    name: "Team Office",
     track: CareerTrack.job,
     requiredLevel: 3,
     requirements: {AssetType.officeEquipment: 8, AssetType.land: 10},
   ),
   Building(
-    name: "🚗 Logistics Garage",
+    name: "Logistics Garage",
     track: CareerTrack.job,
     requiredLevel: 3,
     requirements: {AssetType.vehicles: 12, AssetType.land: 5},
@@ -260,25 +288,25 @@ const buildings = [
 
   // LEVEL 4
   Building(
-    name: "🏢 Office Building",
+    name: "Office Building",
     track: CareerTrack.business,
     requiredLevel: 4,
     requirements: {AssetType.properties: 20, AssetType.officeEquipment: 10},
   ),
   Building(
-    name: "� Analytics Center",
+    name: "Analytics Center",
     track: CareerTrack.business,
     requiredLevel: 4,
     requirements: {AssetType.officeEquipment: 15, AssetType.machinery: 5},
   ),
   Building(
-    name: "🏬 Department Office",
+    name: "Department Office",
     track: CareerTrack.job,
     requiredLevel: 4,
     requirements: {AssetType.officeEquipment: 15, AssetType.properties: 10},
   ),
   Building(
-    name: "🤝 Conference Center",
+    name: "Conference Center",
     track: CareerTrack.job,
     requiredLevel: 4,
     requirements: {AssetType.properties: 20, AssetType.officeEquipment: 15},
@@ -286,58 +314,57 @@ const buildings = [
 
   // LEVEL 5
   Building(
-    name: "🏙️ HQ Tower",
+    name: "R&D Center",
     track: CareerTrack.business,
     requiredLevel: 5,
     requirements: {AssetType.properties: 50, AssetType.land: 20},
   ),
   Building(
-    name: "🌐 Global Operations",
+    name: "Global Operations",
     track: CareerTrack.business,
     requiredLevel: 5,
     requirements: {AssetType.officeEquipment: 50, AssetType.properties: 50},
   ),
   Building(
-    name: "🏢 Corporate HQ",
+    name: "Company Headquarters",
     track: CareerTrack.job,
     requiredLevel: 5,
     requirements: {AssetType.officeEquipment: 30, AssetType.properties: 25},
   ),
   Building(
-    name: "🏛️ Boardroom Pavilion",
+    name: "Boardroom Pavilion",
     track: CareerTrack.job,
     requiredLevel: 5,
     requirements: {AssetType.properties: 45, AssetType.officeEquipment: 20},
   ),
 
-  // SPECIAL
   // Passive Income Buildings
   Building(
-    name: "🌾 Farm",
+    name: "Farm",
     track: CareerTrack.student, // No track requirement
     requiredLevel: 1,
     requirements: {}, // Will check for passive income investment instead
   ),
   Building(
-    name: "🏭 Factory",
+    name: "Factory",
     track: CareerTrack.student,
     requiredLevel: 1,
     requirements: {},
   ),
   Building(
-    name: "🏢 Apartment",
+    name: "Apartment",
     track: CareerTrack.student,
     requiredLevel: 1,
     requirements: {},
   ),
   Building(
-    name: "🚚 Goods Exchange",
+    name: "Distribution Center",
     track: CareerTrack.student,
     requiredLevel: 1,
     requirements: {},
   ),
   Building(
-    name: "📄 Xerox Shop",
+    name: "IT Service Center",
     track: CareerTrack.student,
     requiredLevel: 1,
     requirements: {},
@@ -393,6 +420,7 @@ const _completedQuizzesKey = 'completedQuizzes';
 const _isWorkingOvertimeKey = 'isWorkingOvertime';
 const _overtimeStreakKey = 'overtimeStreak';
 const _activePassiveIncomesKey = 'activePassiveIncomes';
+const _isDarkModeKey = 'isDarkMode';
 
 class PlacedBuilding {
   final String name;
@@ -484,6 +512,7 @@ Future<void> saveGameState({
   required int overtimeStreak,
   required Map<AssetType, int> activePassiveIncomes,
   required Map<DisasterType, int> activeDisasterEffects,
+  required bool isDarkMode,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   debugPrint("💾 SAVING GAME");
@@ -557,6 +586,7 @@ Future<void> saveGameState({
     'activeDisasterEffects',
     jsonEncode(disasterEffectsMap),
   );
+  await prefs.setBool(_isDarkModeKey, isDarkMode);
 }
 
 Future<
@@ -581,6 +611,7 @@ Future<
     int,
     Map<AssetType, int>,
     Map<DisasterType, int>,
+    bool,
   )
 >
 loadGameState() async {
@@ -595,6 +626,7 @@ loadGameState() async {
   final nextDisasterCycle = prefs.containsKey(_nextDisasterCycleKey)
       ? prefs.getInt(_nextDisasterCycleKey)
       : null;
+  final isDarkMode = prefs.getBool(_isDarkModeKey) ?? false;
 
   final trackName = prefs.getString(_careerTrackKey);
   final level = prefs.getInt(_careerLevelKey) ?? 1;
@@ -711,6 +743,7 @@ loadGameState() async {
     overtimeStreak,
     activePassiveIncomes,
     activeDisasterEffects,
+    isDarkMode,
   );
 }
 
@@ -809,7 +842,7 @@ const Map<int, CareerLevelInfo> businessCareerInfo = {
   3: CareerLevelInfo(
     name: "Bootstrap",
     dailyIncome: 100,
-    unlockedBuildings: ["🏭 Small Workshop", "📦 Storage Unit"],
+    unlockedBuildings: ["🏭 Workshop", "📦 Storage Unit"],
   ),
   4: CareerLevelInfo(
     name: "Funded",
@@ -819,7 +852,7 @@ const Map<int, CareerLevelInfo> businessCareerInfo = {
   5: CareerLevelInfo(
     name: "Unicorn",
     dailyIncome: 600,
-    unlockedBuildings: ["🏙️ HQ Tower", "🌐 Global Operations"],
+    unlockedBuildings: ["🏙️ R&D Center", "🌐 Global Operations"],
   ),
 };
 
@@ -842,7 +875,7 @@ const Map<int, CareerLevelInfo> jobCareerInfo = {
   5: CareerLevelInfo(
     name: "CEO",
     dailyIncome: 400,
-    unlockedBuildings: ["🏢 Corporate HQ", "🏛️ Boardroom Pavilion"],
+    unlockedBuildings: ["🏢 Company Headquarters", "🏛️ Boardroom Pavilion"],
   ),
 };
 

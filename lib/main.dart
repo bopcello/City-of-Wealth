@@ -6,33 +6,20 @@ import 'tabs/home_tab.dart';
 import 'tabs/city_tab.dart';
 import 'tabs/money_tab.dart';
 import 'tabs/settings_tab.dart';
+import 'widgets/counter_chip.dart';
 
 void main() {
   runApp(const CityOfWealthApp());
 }
 
-class CityOfWealthApp extends StatelessWidget {
+class CityOfWealthApp extends StatefulWidget {
   const CityOfWealthApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: Colors.amber, useMaterial3: true),
-      home: const MainScreen(),
-    );
-  }
+  State<CityOfWealthApp> createState() => _CityOfWealthAppState();
 }
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int selectedIndex = 0;
+class _CityOfWealthAppState extends State<CityOfWealthApp> {
   final GameManager game = GameManager();
 
   @override
@@ -41,7 +28,51 @@ class _MainScreenState extends State<MainScreen> {
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: game,
+      builder: (context, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorSchemeSeed: Colors.amber,
+            useMaterial3: true,
+            brightness: Brightness.light,
+          ),
+          darkTheme: ThemeData(
+            useMaterial3: true,
+            brightness: Brightness.dark,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.amber,
+              brightness: Brightness.dark,
+              surface: const Color(0xFF1A1C1E),
+              onSurface: Colors.white,
+              surfaceVariant: const Color(0xFF2C2E33),
+              onSurfaceVariant: Colors.white,
+            ),
+          ),
+          themeMode: game.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          home: MainScreen(game: game),
+        );
+      },
+    );
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  final GameManager game;
+  const MainScreen({super.key, required this.game});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int selectedIndex = 0;
+
   Widget _buildBody() {
+    final game = widget.game;
     switch (selectedIndex) {
       case 0:
         return HomeTab(
@@ -106,6 +137,8 @@ class _MainScreenState extends State<MainScreen> {
       case 3:
         return SettingsTab(
           career: game.career,
+          isDarkMode: game.isDarkMode,
+          onThemeToggle: game.toggleTheme,
           onDebugAdd: game.debugAdd,
           onDebugLevelUp: game.debugLevelUp,
           onDebugReset: game.debugReset,
@@ -117,87 +150,63 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: game,
-      builder: (context, child) {
-        if (!game.loaded) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+    final game = widget.game;
+    if (!game.loaded) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
-        // Handle Disaster Results
-        if (game.pendingDisasterResults.isNotEmpty) {
-          final results = List<DisasterResult>.from(
-            game.pendingDisasterResults,
-          );
-          game.clearDisasterResults();
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => DisasterReportDialog(results: results),
-            );
-          });
-        }
-
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text("City of Wealth"),
-            actions: [
-              _CounterChip(label: "KP", value: game.kp, icon: Icons.school),
-              const SizedBox(width: 8),
-              _CounterChip(
-                label: "Gems",
-                value: game.gems,
-                icon: Icons.diamond,
-              ),
-              const SizedBox(width: 12),
-            ],
-          ),
-          body: _buildBody(),
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: selectedIndex,
-            onTap: (index) {
-              setState(() => selectedIndex = index);
-            },
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.white,
-            selectedItemColor: Colors.amber.shade700,
-            unselectedItemColor: Colors.grey.shade600,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.location_city),
-                label: "City",
-              ),
-              BottomNavigationBarItem(icon: Icon(Icons.work), label: "Money"),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                label: "Settings",
-              ),
-            ],
-          ),
+    // Handle Disaster Results
+    if (game.pendingDisasterResults.isNotEmpty) {
+      final results = List<DisasterResult>.from(game.pendingDisasterResults);
+      game.clearDisasterResults();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => DisasterReportDialog(results: results),
         );
-      },
+      });
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("City of Wealth"),
+        actions: [
+          CounterChip(label: "KP", value: game.kp, icon: Icons.school),
+          const SizedBox(width: 8),
+          CounterChip(
+            label: "Gems",
+            value: game.gems,
+            icon: Icons.diamond,
+            color: Colors.blue,
+          ),
+          const SizedBox(width: 12),
+        ],
+      ),
+      body: _buildBody(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: selectedIndex,
+        onTap: (index) {
+          setState(() => selectedIndex = index);
+        },
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: game.isDarkMode ? Colors.grey.shade900 : Colors.white,
+        selectedItemColor: Colors.amber.shade700,
+        unselectedItemColor: Colors.grey.shade600,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.location_city),
+            label: "City",
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.work), label: "Money"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "Settings",
+          ),
+        ],
+      ),
     );
-  }
-}
-
-class _CounterChip extends StatelessWidget {
-  final String label;
-  final int value;
-  final IconData icon;
-
-  const _CounterChip({
-    required this.label,
-    required this.value,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Chip(avatar: Icon(icon, size: 18), label: Text("$label: $value"));
   }
 }
 

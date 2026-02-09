@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:math' as math;
+import '../widgets/icon_text.dart';
 import '../game_state.dart';
 
 class CityTab extends StatefulWidget {
@@ -125,11 +126,8 @@ class _CityTabState extends State<CityTab> {
                     "✏️ SELECTING ${building.name} at ($hX, $hY) for move",
                   );
                   setState(() {
-                    _selectedBuilding = Building(
-                      name: building.name,
-                      track: CareerTrack.student, // Dummy values
-                      requiredLevel: 0,
-                      requirements: {},
+                    _selectedBuilding = buildings.firstWhere(
+                      (b) => b.name == building.name,
                     );
                   });
                   widget.onRemoveBuilding(building);
@@ -177,21 +175,15 @@ class _CityTabState extends State<CityTab> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Wall image with independent transform
+                      // Wall image with independent transform tied to zoom
                       if (widget.hasWall)
                         Transform.translate(
-                          offset: const Offset(
-                            0,
-                            40,
-                          ), // x, y translation in logical pixels
-                          child: Transform.rotate(
-                            angle: 0.0, // radians
-                            child: Transform.scale(
-                              scale: 1.1, // Visual adjustment
-                              child: Image.asset(
-                                "lib/assets/image-removebg-preview.png",
-                                fit: BoxFit.contain,
-                              ),
+                          offset: const Offset(0, 45) * _zoomScale,
+                          child: Transform.scale(
+                            scale: 1.8 * _zoomScale,
+                            child: Image.asset(
+                              "lib/assets/The Keystone.png",
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),
@@ -242,9 +234,11 @@ class _CityTabState extends State<CityTab> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
-                          child: Text(
-                            _selectedBuilding!.name.characters.first,
-                            style: const TextStyle(fontSize: 32),
+                          child: Image.asset(
+                            _selectedBuilding!.iconPath,
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.contain,
                           ),
                         ),
                       ),
@@ -363,10 +357,10 @@ class _BuildingsBottomSheet extends StatelessWidget {
     return Container(
       height: 360,
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [BoxShadow(blurRadius: 20, color: Colors.black26)],
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: const [BoxShadow(blurRadius: 20, color: Colors.black26)],
       ),
       child: Column(
         children: [
@@ -430,6 +424,9 @@ class _BuildingCard extends StatelessWidget {
     final isKeystone = building.name == "The Keystone";
     final isLevel5 = career.level >= 5;
     final hasAllInsurances = insurances.length >= 5;
+    final isPassive = passiveIncomeData.values.any(
+      (info) => info.buildingName == building.name,
+    );
 
     // Keystone Requirements: Level 5 + 5 Insurances (simplified check)
     bool canBuild = false;
@@ -451,6 +448,7 @@ class _BuildingCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: canBuild ? Colors.green : Colors.red,
@@ -459,6 +457,20 @@ class _BuildingCard extends StatelessWidget {
       ),
       child: Row(
         children: [
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Image.asset(
+              building.iconPath,
+              width: 32,
+              height: 32,
+              fit: BoxFit.contain,
+            ),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -471,37 +483,39 @@ class _BuildingCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  () {
-                    if (isKeystone)
-                      return "Level 5 + All 5 Insurances Required";
-                    final passiveInfo = passiveIncomeData.values.where(
-                      (info) => info.buildingName == building.name,
-                    );
-                    if (passiveInfo.isNotEmpty) {
-                      return "Enables passive income from ${assetLabel(passiveInfo.first.assetType)}";
-                    }
-                    return "Requires level: ${building.requiredLevel}";
-                  }(),
+                  "Level: ${building.requiredLevel}",
                   style: TextStyle(
                     fontSize: 12,
                     color: hasLevel ? Colors.green : Colors.red,
                   ),
                 ),
+                if (building.requirements.isNotEmpty) ...[
+                  IconText(
+                    "Requires: ${building.requirements.entries.map((e) => "${e.value} ${assetLabel(e.key)}").join(", ")}",
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  if (building.name == "The Keystone")
+                    const IconText(
+                      "Special: Requires all 5 Insurances",
+                      style: TextStyle(fontSize: 12, color: Colors.blue),
+                    ),
+                ] else if (isPassive) ...[
+                  const IconText(
+                    "Passive Income Building",
+                    style: TextStyle(fontSize: 12, color: Colors.green),
+                  ),
+                  IconText(
+                    "Cost: ${passiveIncomeData.values.firstWhere((e) => e.buildingName == building.name).investmentCost} [GEM]",
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: building.requirements.entries.map((e) {
-              final owned = assets.count(e.key);
-              return Text(
-                "${assetLabel(e.key)}: ${e.value}",
-                style: TextStyle(
-                  color: owned >= e.value ? Colors.green : Colors.red,
-                ),
-              );
-            }).toList(),
-          ),
+          if (canBuild)
+            const Icon(Icons.check_circle, color: Colors.blue)
+          else
+            const Icon(Icons.lock, color: Colors.grey, size: 16),
         ],
       ),
     );
@@ -544,8 +558,11 @@ class _IsometricGrid extends StatelessWidget {
           children: List.generate(gridSize, (col) {
             final x = col - half;
 
-            final buildingAt = cityMap["$x,$y"];
-            final hasBuilding = buildingAt != null;
+            final placedBuilding = cityMap["$x,$y"];
+            final hasBuilding = placedBuilding != null;
+            final building = hasBuilding
+                ? buildings.firstWhere((b) => b.name == placedBuilding.name)
+                : null;
 
             return MouseRegion(
               onEnter: (_) => onHover(x, y),
@@ -576,9 +593,11 @@ class _IsometricGrid extends StatelessWidget {
                 },
                 child: hasBuilding
                     ? Center(
-                        child: Text(
-                          buildingAt.name.characters.first,
-                          style: const TextStyle(fontSize: 32),
+                        child: Image.asset(
+                          building!.iconPath,
+                          width: tileSize * 0.8,
+                          height: tileSize * 0.8,
+                          fit: BoxFit.contain,
                         ),
                       )
                     : null,
@@ -629,7 +648,14 @@ class _Palace extends StatelessWidget {
           BoxShadow(blurRadius: 6, offset: Offset(2, 4), color: Colors.black26),
         ],
       ),
-      child: const Center(child: Text("🏰", style: TextStyle(fontSize: 36))),
+      child: Center(
+        child: Image.asset(
+          "lib/assets/buildings/palace.png",
+          width: 48,
+          height: 48,
+          fit: BoxFit.contain,
+        ),
+      ),
     );
   }
 }

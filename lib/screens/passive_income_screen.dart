@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/icon_text.dart';
 import '../game_state.dart';
 import 'dart:math';
 
@@ -136,9 +137,10 @@ class _PassiveIncomeCard extends StatelessWidget {
               style: const TextStyle(color: Colors.grey, fontSize: 14),
             ),
             const SizedBox(height: 8),
-            Text("Investment: ${info.investmentCost} gems"),
-            Text(
-              "Income: ${info.incomePerAsset} gems per ${assetLabel(info.assetType).toLowerCase()}",
+            IconText("Investment: ${info.investmentCost} [GEM]"),
+            const SizedBox(height: 4),
+            IconText(
+              "Income: ${info.incomePerAsset} [GEM] per ${assetLabel(info.assetType).toLowerCase()}",
             ),
             Text(
               "You own: $ownedAssets ${assetLabel(info.assetType).toLowerCase()}",
@@ -149,7 +151,7 @@ class _PassiveIncomeCard extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
+                  color: Colors.orange.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.orange, width: 2),
                 ),
@@ -189,7 +191,7 @@ class _PassiveIncomeCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade50,
+                  color: Colors.green.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.green),
                 ),
@@ -204,10 +206,12 @@ class _PassiveIncomeCard extends StatelessWidget {
                     Expanded(
                       child: RichText(
                         text: TextSpan(
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.color,
                           ),
                           children: [
                             const TextSpan(text: "Earning "),
@@ -221,7 +225,7 @@ class _PassiveIncomeCard extends StatelessWidget {
                               ),
                             TextSpan(
                               text:
-                                  " ${(potentialIncome * multiplier).round()} gems per cycle!",
+                                  " ${(potentialIncome * multiplier).round()} [GEM] per cycle!",
                             ),
                             if (multiplier < 1.0 && activeDisaster != null)
                               TextSpan(
@@ -252,11 +256,11 @@ class _PassiveIncomeCard extends StatelessWidget {
                   child: Text(
                     canInvest
                         ? (investedCount == 0
-                              ? "Invest (${info.investmentCost} gems)"
-                              : "Invest in one more (${info.investmentCost} gems)")
+                              ? "Invest (${info.investmentCost} [GEM])"
+                              : "Invest in one more (${info.investmentCost} [GEM])")
                         : ownedAssets == 0
                         ? "Need ${assetLabel(info.assetType)} first"
-                        : "Not enough gems (need ${info.investmentCost})",
+                        : "Not enough [GEM] (need ${info.investmentCost})",
                   ),
                 ),
               ),

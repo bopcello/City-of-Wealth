@@ -30,8 +30,8 @@ Invest your hard-earned assets into specialized buildings to generate recurring 
 - **Farms**: Requires Land.
 - **Factories**: Requires Machinery.
 - **Apartments**: Requires Properties.
-- **Goods Exchange**: Requires Vehicles.
-- **Xerox Shops**: Requires Office Equipment.
+- **Distribution Center**: Requires Vehicles.
+- **IT Service Centers**: Requires Office Equipment.
 *Buildings will only generate income if you own enough raw assets to support the investment!*
 
 ### 4. Dynamic Disaster System 🌪️

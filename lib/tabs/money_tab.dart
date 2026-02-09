@@ -174,13 +174,16 @@ class _MoneyTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.amber.shade100,
+          color: Theme.of(context).colorScheme.surfaceVariant,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
+          boxShadow: [
             BoxShadow(
-              blurRadius: 6,
-              offset: Offset(2, 4),
-              color: Colors.black12,
+              blurRadius: 4,
+              offset: const Offset(1, 2),
+              color: Colors.black.withOpacity(0.2),
             ),
           ],
         ),

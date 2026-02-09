@@ -39,11 +39,11 @@ class HomeTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildCareerHeader(),
+          _buildCareerHeader(context),
           const SizedBox(height: 24),
-          _buildEventSection(),
+          _buildEventSection(context),
           const SizedBox(height: 24),
-          _buildSummarySection(),
+          _buildSummarySection(context),
           const SizedBox(height: 32),
           // [DEBUG: PAUSE_INCOME] START
           Center(
@@ -61,13 +61,13 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildCareerHeader() {
+  Widget _buildCareerHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.amber.shade100,
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.amber.shade300),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
@@ -98,7 +98,7 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildEventSection() {
+  Widget _buildEventSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -121,9 +121,9 @@ class HomeTab extends StatelessWidget {
           height: 200,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.grey.shade50,
+            color: Theme.of(context).colorScheme.surfaceVariant,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: events.isEmpty
               ? const Center(
@@ -164,7 +164,7 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildSummarySection() {
+  Widget _buildSummarySection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -221,7 +221,6 @@ class HomeTab extends StatelessWidget {
               return Chip(
                 label: Text("${assetLabel(e.key)}: ${e.value}"),
                 visualDensity: VisualDensity.compact,
-                backgroundColor: Colors.amber.shade50,
               );
             }).toList(),
           ),

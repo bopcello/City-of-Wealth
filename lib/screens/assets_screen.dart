@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
+import '../widgets/icon_text.dart';
+import '../widgets/counter_chip.dart';
 
 class AssetsScreen extends StatefulWidget {
   final AssetInventory assets;
@@ -39,9 +41,11 @@ class _AssetsScreenState extends State<AssetsScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Center(
-              child: Text(
-                "Gems: $_currentGems 💎",
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              child: CounterChip(
+                label: "Gems",
+                value: _currentGems,
+                icon: Icons.diamond,
+                color: Colors.blue,
               ),
             ),
           ),
@@ -61,8 +65,10 @@ class _AssetsScreenState extends State<AssetsScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: canAfford ? Colors.amber : Colors.red,
-                width: canAfford ? 1 : 2,
+                color: canAfford
+                    ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                    : Colors.red.withOpacity(0.5),
+                width: 2,
               ),
             ),
             child: Column(
@@ -90,8 +96,8 @@ class _AssetsScreenState extends State<AssetsScreen> {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade100,
-                        foregroundColor: Colors.red.shade900,
+                        backgroundColor: Colors.red.withOpacity(0.1),
+                        foregroundColor: Colors.red.shade400,
                       ),
                       onPressed: ownedCount > 0
                           ? () {
@@ -102,7 +108,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                               widget.onSellAsset(type);
                             }
                           : null,
-                      child: Text("Sell ($sellPrice 💎)"),
+                      child: IconText("Sell ($sellPrice [GEM])"),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -117,7 +123,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                         });
                         widget.onBuyAsset(type);
                       },
-                      child: Text("Buy ($cost 💎)"),
+                      child: IconText("Buy ($cost [GEM])"),
                     ),
                   ],
                 ),

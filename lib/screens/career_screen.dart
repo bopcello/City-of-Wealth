@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
+import '../widgets/icon_text.dart';
 
 import '../logic/game_manager.dart';
 
@@ -194,8 +195,9 @@ class _CareerHeroCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF4E5),
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,10 +208,10 @@ class _CareerHeroCard extends StatelessWidget {
                 : career.track == CareerTrack.business
                 ? "Business career"
                 : "Job career",
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               letterSpacing: 1.2,
-              color: Colors.brown.shade400,
+              color: Colors.white70,
             ),
           ),
           const SizedBox(height: 8),
@@ -222,11 +224,12 @@ class _CareerHeroCard extends StatelessWidget {
             children: [
               const Text("Daily income"),
               const Spacer(),
-              Text(
-                "💎 ${info.dailyIncome} Gems",
+              IconText(
+                "[GEM] ${info.dailyIncome}",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
               ),
             ],
@@ -235,7 +238,10 @@ class _CareerHeroCard extends StatelessWidget {
           if (hasNextLevel) ...[
             Row(
               children: [
-                const Text("Required KP"),
+                const Text(
+                  "Required KP",
+                  style: TextStyle(color: Colors.white),
+                ),
                 const Spacer(),
                 Text(
                   "$requiredKpValue",
@@ -251,9 +257,9 @@ class _CareerHeroCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.shade50,
+                  color: Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red.shade200),
+                  border: Border.all(color: Colors.red.withOpacity(0.5)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,9 +288,9 @@ class _CareerHeroCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.shade50,
+                  color: Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red.shade200),
+                  border: Border.all(color: Colors.red.withOpacity(0.5)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,7 +440,7 @@ class _CareerHint extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(20),
       ),
       child: const Text(
@@ -461,8 +467,9 @@ class _CareerCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF4E5),
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -472,7 +479,7 @@ class _CareerCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               letterSpacing: 1.2,
-              color: Colors.brown,
+              color: Colors.white70,
             ),
           ),
           const SizedBox(height: 8),
@@ -485,11 +492,12 @@ class _CareerCard extends StatelessWidget {
             children: [
               const Text("Daily income"),
               const Spacer(),
-              Text(
-                "💎 ${info.dailyIncome} Gems",
+              IconText(
+                "[GEM] ${info.dailyIncome}",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
               ),
             ],
@@ -497,13 +505,13 @@ class _CareerCard extends StatelessWidget {
           const SizedBox(height: 16),
           const Text(
             "Unlocked in your city",
-            style: TextStyle(fontWeight: FontWeight.w600),
+            style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
           ),
           const SizedBox(height: 8),
           ...info.unlockedBuildings.map(
             (b) => Padding(
               padding: const EdgeInsets.only(bottom: 6),
-              child: Text("• $b"),
+              child: Text("• $b", style: TextStyle(color: Colors.white70)),
             ),
           ),
         ],
@@ -531,7 +539,7 @@ class _TrackChoiceTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.grey.shade100,
+          color: Theme.of(context).colorScheme.surfaceVariant,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -548,7 +556,7 @@ class _TrackChoiceTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(subtitle),
+                  Text(subtitle, style: const TextStyle(color: Colors.white70)),
                 ],
               ),
             ),

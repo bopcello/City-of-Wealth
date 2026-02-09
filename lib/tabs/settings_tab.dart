@@ -3,6 +3,8 @@ import '../game_state.dart';
 
 class SettingsTab extends StatelessWidget {
   final CareerState career;
+  final bool isDarkMode;
+  final void Function(bool) onThemeToggle;
   final VoidCallback onDebugAdd;
   final void Function({CareerTrack? track}) onDebugLevelUp;
   final VoidCallback onDebugReset;
@@ -10,6 +12,8 @@ class SettingsTab extends StatelessWidget {
   const SettingsTab({
     super.key,
     required this.career,
+    required this.isDarkMode,
+    required this.onThemeToggle,
     required this.onDebugAdd,
     required this.onDebugLevelUp,
     required this.onDebugReset,
@@ -27,6 +31,16 @@ class SettingsTab extends StatelessWidget {
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
+          const Divider(),
+          const SizedBox(height: 8),
+          SwitchListTile(
+            title: const Text("Dark Theme"),
+            subtitle: const Text("Switch between light and dark mode"),
+            value: isDarkMode,
+            onChanged: onThemeToggle,
+            secondary: const Icon(Icons.brightness_4),
+          ),
+          const SizedBox(height: 16),
           const Text(
             "Developer Options (Debug)",
             style: TextStyle(color: Colors.grey),

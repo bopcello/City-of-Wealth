@@ -28,6 +28,7 @@ class GameManager extends ChangeNotifier {
   int overtimeStreak = 0;
   Map<AssetType, int> activePassiveIncomes = {};
   Map<DisasterType, int> activeDisasterEffects = {};
+  bool isDarkMode = false;
 
   bool loaded = false;
   bool incomePaused = false;
@@ -70,6 +71,7 @@ class GameManager extends ChangeNotifier {
       savedOvertimeStreak,
       savedActivePassiveIncomes,
       savedActiveDisasterEffects,
+      savedIsDarkMode,
     ) = await loadGameState();
 
     kp = savedKp;
@@ -92,6 +94,7 @@ class GameManager extends ChangeNotifier {
     overtimeStreak = savedOvertimeStreak;
     activePassiveIncomes = savedActivePassiveIncomes;
     activeDisasterEffects = savedActiveDisasterEffects;
+    isDarkMode = savedIsDarkMode;
     loaded = true;
 
     notifyListeners();
@@ -120,6 +123,7 @@ class GameManager extends ChangeNotifier {
       overtimeStreak: overtimeStreak,
       activePassiveIncomes: activePassiveIncomes,
       activeDisasterEffects: activeDisasterEffects,
+      isDarkMode: isDarkMode,
     );
   }
 
@@ -183,12 +187,12 @@ class GameManager extends ChangeNotifier {
     for (int i = 0; i < cycles; i++) {
       cycleTracker++;
       if (nextDisasterCycle == null) {
-        nextDisasterCycle = 1 + Random().nextInt(5);
+        nextDisasterCycle = 20 + Random().nextInt(20);
       } else {
         nextDisasterCycle = nextDisasterCycle! - 1;
         if (nextDisasterCycle! <= 0) {
           _triggerNaturalDisaster();
-          nextDisasterCycle = 1 + Random().nextInt(5);
+          nextDisasterCycle = 20 + Random().nextInt(20);
         }
       }
 
@@ -318,20 +322,20 @@ class GameManager extends ChangeNotifier {
       final balanceAfterDay = gems + totalGemChange;
 
       String event =
-          "Day $dayNumber: Kp=${dayKp > 0 ? '+' : ''}$dayKp, Gems=${dayGems > 0 ? '+' : ''}$dayGems";
+          "Day $dayNumber: [KP]=${dayKp > 0 ? '+' : ''}$dayKp, [GEM]=${dayGems > 0 ? '+' : ''}$dayGems";
       if (isWorkingOvertime && i == 0) {
         event += " (Worked overtime! Earned 50% extra income)";
       }
       if (interestCost > 0) {
-        event += " (You're in debt! Interest: -$interestCost Gems, -300 KP)";
+        event += " (You're in debt! Interest: -$interestCost [GEM], -300 [KP])";
         if (balanceAfterDay < -10000) {
           event += " Consider declaring bankruptcy";
         }
       }
       if (maintenanceCost > 0) {
-        event += " (Maintenance: -$maintenanceCost Gems)";
+        event += " (Maintenance: -$maintenanceCost [GEM])";
       }
-      if (insuranceCost > 0) event += " (Insurance: -$insuranceCost Gems)";
+      if (insuranceCost > 0) event += " (Insurance: -$insuranceCost [GEM])";
       if (!hasAllEssentials) {
         event +=
             " (No income: Go to liabilities to select rent, food and transport to begin receiving income)";
@@ -341,14 +345,14 @@ class GameManager extends ChangeNotifier {
             " (Unnecessary assets penalty: -$wastePenalty KP, sell unnecessary assets)";
       }
       if (passiveIncomeTotal > 0) {
-        event += " (Passive Income: +$passiveIncomeTotal Gems)";
+        event += " (Passive Income: +$passiveIncomeTotal [GEM])";
       }
       events.add(event);
     }
 
     if (cycles > 1) {
       events.add(
-        "--- TOTAL SUMMARY: ${totalKpChange > 0 ? '+' : ''}$totalKpChange KP, ${totalGemChange > 0 ? '+' : ''}$totalGemChange Gems across $cycles cycles ---",
+        "--- TOTAL SUMMARY: ${totalKpChange > 0 ? '+' : ''}$totalKpChange [KP], ${totalGemChange > 0 ? '+' : ''}$totalGemChange [GEM] across $cycles cycles ---",
       );
     }
 
@@ -370,6 +374,12 @@ class GameManager extends ChangeNotifier {
 
   void clearEvents() {
     pendingEvents.clear();
+    notifyListeners();
+  }
+
+  void toggleTheme(bool val) {
+    isDarkMode = val;
+    save();
     notifyListeners();
   }
 
@@ -448,7 +458,7 @@ class GameManager extends ChangeNotifier {
     final cost = assetCost(type) * amount;
 
     int kpBonus = 10 * amount;
-    String message = "Purchasing necessary assets: +$kpBonus KP";
+    String message = "Purchasing necessary assets: +$kpBonus [KP]";
 
     final currentAssetsOfThisType = assets.count(type);
     final maxAllowedForThisType = getMaxRequirementForType(
@@ -460,13 +470,13 @@ class GameManager extends ChangeNotifier {
     if (currentAssetsOfThisType + amount > maxAllowedForThisType) {
       kpBonus = -100;
       message =
-          "Over-purchasing ${assetLabel(type)} for your level is a bad decision: -100 KP";
+          "Over-purchasing ${assetLabel(type)} for your level is a bad decision: -100 [KP]";
     }
 
     if (career.level == 5) {
       if (kpBonus < 0) {
         kpBonus = 10 * amount;
-        message = "Purchasing extra assets: +$kpBonus KP";
+        message = "Purchasing extra assets: +$kpBonus [KP]";
       }
     }
 
@@ -728,7 +738,8 @@ class GameManager extends ChangeNotifier {
           passiveIncomeReduction = "Farms -75% for $duration cycles";
           break;
         case DisasterType.landslide:
-          passiveIncomeReduction = "Goods Exchange -80% for $duration cycles";
+          passiveIncomeReduction =
+              "Distribution Center -80% for $duration cycles";
           break;
         case DisasterType.economyCrash:
           passiveIncomeReduction = "Factory -60% for $duration cycles";
@@ -737,7 +748,8 @@ class GameManager extends ChangeNotifier {
           passiveIncomeReduction = "Apartment -80% for $duration cycles";
           break;
         case DisasterType.pandemic:
-          passiveIncomeReduction = "Xerox Shop -90% for $duration cycles";
+          passiveIncomeReduction =
+              "IT Service Center -90% for $duration cycles";
           break;
         default:
           break;

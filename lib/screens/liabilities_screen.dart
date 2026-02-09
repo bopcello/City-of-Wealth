@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
+import '../widgets/icon_text.dart';
+import '../widgets/counter_chip.dart';
 import '../logic/game_manager.dart';
 
 class LiabilitiesScreen extends StatefulWidget {
@@ -56,8 +58,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            Text("KP Result: ${choiceKp > 0 ? '+' : ''}$choiceKp KP"),
-            Text("Cost: $cost Gems"),
+            IconText("KP Result: ${choiceKp > 0 ? '+' : ''}$choiceKp [KP]"),
+            IconText("Cost: $cost [GEM]"),
             const Divider(height: 24),
             const Text(
               "Other options would have been:",
@@ -69,8 +71,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
             ...others.map(
               (o) => Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  "• ${o.$1}: ${o.$2 > 0 ? '+' : ''}${o.$2} KP (${o.$3} Gems cost)",
+                child: IconText(
+                  "• ${o.$1}: ${o.$2 > 0 ? '+' : ''}${o.$2} [KP] (${o.$3} [GEM] cost)",
                   style: const TextStyle(
                     fontSize: 12,
                     color: Color.fromARGB(121, 158, 158, 158),
@@ -96,14 +98,29 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
       listenable: widget.game,
       builder: (context, _) {
         return Scaffold(
-          appBar: AppBar(title: const Text("Liabilities & Lifestyle")),
+          appBar: AppBar(
+            title: const Text("Liabilities & Lifestyle"),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: Center(
+                  child: CounterChip(
+                    label: "Gems",
+                    value: widget.game.gems,
+                    icon: Icons.diamond,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ],
+          ),
           body: Column(
             children: [
               // Top Section
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(16),
-                  color: Colors.amber.shade50,
+                  color: Theme.of(context).colorScheme.surface,
                   child: ListView(
                     children: [
                       _SectionHeader(title: "Lifestyle", icon: Icons.favorite),
@@ -315,9 +332,9 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.red.shade50,
+        color: Colors.red.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.shade200),
+        border: Border.all(color: Colors.red.withOpacity(0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,8 +343,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
             children: [
               Icon(Icons.warning_amber_rounded, color: Colors.red.shade700),
               const SizedBox(width: 12),
-              Text(
-                "Debt: ${widget.game.gems.abs()} Gems",
+              IconText(
+                "Debt: ${widget.game.gems.abs()} [GEM]",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -381,22 +398,22 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
             margin: const EdgeInsets.only(bottom: 8),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: Colors.blue.shade50,
+                backgroundColor: Colors.blue.withOpacity(0.1),
                 child: Text(
                   "${level}L",
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue.shade800,
+                    color: Colors.blue.shade400,
                   ),
                 ),
               ),
               title: Text(entry.key),
-              subtitle: Text(
-                "${entry.value} buildings (@ $level Gems / 10 cycles)",
+              subtitle: IconText(
+                "${entry.value} buildings (@ $level [GEM] / 10 cycles)",
               ),
-              trailing: Text(
-                "-$cost Gems",
+              trailing: IconText(
+                "-$cost [GEM]",
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.red,
@@ -410,12 +427,12 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              const IconText(
                 "Total Maintenance (every 10 cycles):",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text(
-                "-$totalCost Gems",
+              IconText(
+                "-$totalCost [GEM]",
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.red,
@@ -455,8 +472,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
             margin: const EdgeInsets.only(bottom: 8),
             child: SwitchListTile(
               title: Text("${assetLabel(type)} Insurance"),
-              subtitle: const Text(
-                "Cost: 5 Gems/cycle, Provides 80% protection from losses",
+              subtitle: const IconText(
+                "Cost: 5 [GEM]/cycle, Provides 80% protection from losses",
               ),
               value: isInsured,
               onChanged: (val) {
@@ -474,12 +491,11 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     final remaining = 3 - widget.game.bankruptcyCount;
     final isAvailable = remaining > 0;
 
-    return Card(
-      color: Colors.red.shade50,
-      elevation: 2,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.red.shade200),
+        border: Border.all(color: Colors.red.withOpacity(0.5)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -575,7 +591,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
           children: [
             Row(
               children: [
-                Icon(icon, color: Colors.amber.shade800),
+                Icon(icon, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 8),
                 Text(
                   title,
@@ -608,8 +624,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(info.label),
-                      Text(
-                        "$cost Gems",
+                      IconText(
+                        "$cost [GEM]",
                         style: TextStyle(
                           fontSize: 10,
                           color: isSelected ? Colors.black : Colors.grey,
@@ -623,7 +639,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                       : (selected) {
                           if (selected) onSelected(val);
                         },
-                  selectedColor: Colors.amber.shade200,
+                  selectedColor: Theme.of(context).colorScheme.surfaceVariant,
                 );
               }).toList(),
             ),
@@ -646,14 +662,14 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       child: Row(
         children: [
-          Icon(icon, size: 24, color: Colors.amber.shade900),
+          Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 12),
           Text(
             title,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.amber.shade900,
+              color: Theme.of(context).colorScheme.primary,
               letterSpacing: 0.5,
             ),
           ),

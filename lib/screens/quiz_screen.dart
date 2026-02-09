@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/quiz_data.dart';
+import '../widgets/icon_text.dart';
 
 class QuizMenuScreen extends StatelessWidget {
   final int currentKp;
@@ -84,18 +85,18 @@ class QuizMenuScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         Text(
                           'We apologize for the inconvenience.\nOur quiz database for this level is still being curated.',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
-                            color: Colors.grey.shade600,
+                            color: Colors.white,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
                         Text(
                           'Please check back soon!',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
-                            color: Colors.grey.shade500,
+                            color: Colors.white70,
                             fontStyle: FontStyle.italic,
                           ),
                           textAlign: TextAlign.center,
@@ -123,7 +124,9 @@ class QuizMenuScreen extends StatelessWidget {
                             width: 3,
                           ),
                           borderRadius: BorderRadius.circular(12),
-                          color: isCompleted ? Colors.green.shade50 : null,
+                          color: isCompleted
+                              ? Colors.green.withOpacity(0.1)
+                              : null,
                         ),
                         child: ListTile(
                           leading: Icon(
@@ -138,13 +141,23 @@ class QuizMenuScreen extends StatelessWidget {
                               decoration: isCompleted
                                   ? TextDecoration.lineThrough
                                   : null,
-                              color: isCompleted ? Colors.grey : null,
+                              color: isCompleted
+                                  ? Colors.white.withOpacity(0.5)
+                                  : Colors.white,
                             ),
                           ),
                           subtitle: Text(
                             isCompleted
                                 ? '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • Repeat Award: +${_getRepeatAward(quiz.difficulty)} KP'
                                 : '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • +${scheme.correctPoints}/${scheme.wrongPoints} KP',
+                            style: TextStyle(
+                              color: isCompleted
+                                  ? Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant
+                                        .withOpacity(0.7)
+                                  : null,
+                            ),
                           ),
                           isThreeLine: true,
                           trailing: const Icon(Icons.arrow_forward),
@@ -213,7 +226,7 @@ class _QuizScreenState extends State<QuizScreen> {
     // Immediate feedback KP change (removed or kept? User said "change award to...". Usually this implies the END award for the quiz, but existing code changes KP on every answer. The prompt says "change award to 0kp...". Only end reward? Or per question?
     // Existing code: `widget.onKpChange(kpChange);` per answer.
     // If I change the award logic, I should probably disable per-question KP updates if the user wants fixed awards for the *quiz*.
-    // However, the prompt says "award to 0kp for easy quiz...". This phrasing suggests the TOTAL award.
+    // However, the prompt says "award to 0 KP for easy quiz...". This phrasing suggests the TOTAL award.
     // I will comment out per-question KP updates and move all KP updates to the end to control the exact amount.
     // Or I can keep per-question updates if they sum up to the target?
     // Easy: 0 KP. So per question = 0?
@@ -371,7 +384,7 @@ class _QuizScreenState extends State<QuizScreen> {
     final progress = (current + 1) / widget.quiz.questions.length;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(title: Text(widget.quiz.title)),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -395,7 +408,7 @@ class _QuizScreenState extends State<QuizScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: const [
                           BoxShadow(
@@ -410,14 +423,15 @@ class _QuizScreenState extends State<QuizScreen> {
                         children: [
                           Text(
                             "Question ${current + 1}",
-                            style: TextStyle(color: Colors.grey.shade600),
+                            style: const TextStyle(color: Colors.white),
                           ),
                           const SizedBox(height: 12),
-                          Text(
+                          IconText(
                             q.question,
                             style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
                           ),
                         ],
@@ -425,13 +439,13 @@ class _QuizScreenState extends State<QuizScreen> {
                     ),
                     const SizedBox(height: 24),
                     ...List.generate(q.options.length, (i) {
-                      Color bg = Colors.white;
+                      Color bg = Theme.of(context).colorScheme.surfaceVariant;
 
                       if (selected != null) {
                         if (i == q.correctIndex) {
-                          bg = Colors.green.shade200;
+                          bg = Colors.green.withOpacity(0.3);
                         } else if (i == selected) {
-                          bg = Colors.red.shade200;
+                          bg = Colors.red.withOpacity(0.3);
                         }
                       }
 
@@ -454,9 +468,12 @@ class _QuizScreenState extends State<QuizScreen> {
                                 ),
                               ],
                             ),
-                            child: Text(
+                            child: IconText(
                               q.options[i],
-                              style: const TextStyle(fontSize: 16),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -529,7 +546,7 @@ class QuizAnalysisScreen extends StatelessWidget {
     final newKp = currentKp + deltaKp;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Stack(
         children: [
           // Confetti removed
@@ -556,6 +573,7 @@ class QuizAnalysisScreen extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -568,6 +586,7 @@ class QuizAnalysisScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -596,12 +615,15 @@ class QuizAnalysisScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.amber.shade50,
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                       borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                      ),
                     ),
                     child: Text(
                       "KP: $currentKp ${deltaKp < 0 ? ' ' : '+ '}$deltaKp = $newKp",
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                   const SizedBox(height: 32),
