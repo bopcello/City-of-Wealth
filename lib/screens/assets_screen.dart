@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import '../game_state.dart';
 import '../widgets/icon_text.dart';
 import '../widgets/counter_chip.dart';
+import '../services/sfx_manager.dart';
 
 class AssetsScreen extends StatefulWidget {
   final AssetInventory assets;
   final int gems;
   final void Function(AssetType type) onBuyAsset;
   final void Function(AssetType type) onSellAsset;
+  final SfxManager sfx;
 
   const AssetsScreen({
     super.key,
@@ -15,6 +17,7 @@ class AssetsScreen extends StatefulWidget {
     required this.gems,
     required this.onBuyAsset,
     required this.onSellAsset,
+    required this.sfx,
   });
 
   @override
@@ -63,11 +66,14 @@ class _AssetsScreenState extends State<AssetsScreen> {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: canAfford
-                    ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                    : Colors.red.withOpacity(0.5),
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.5)
+                    : Colors.red.withValues(alpha: 0.5),
                 width: 2,
               ),
             ),
@@ -96,7 +102,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.withOpacity(0.1),
+                        backgroundColor: Colors.red.withValues(alpha: 0.1),
                         foregroundColor: Colors.red.shade400,
                       ),
                       onPressed: ownedCount > 0
@@ -105,6 +111,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                                 _currentGems += sellPrice;
                                 _currentAssets = _currentAssets.add(type, -1);
                               });
+                              widget.sfx.playSell();
                               widget.onSellAsset(type);
                             }
                           : null,
@@ -121,6 +128,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                           _currentGems -= cost;
                           _currentAssets = _currentAssets.add(type, 1);
                         });
+                        widget.sfx.playBuy();
                         widget.onBuyAsset(type);
                       },
                       child: IconText("Buy ($cost [GEM])"),

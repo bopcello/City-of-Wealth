@@ -83,7 +83,7 @@ final _level1Quizzes = [
         question: 'What does "saving" mean?',
         options: [
           'Spending it all',
-          'Giving it away',
+          'Giving it away to someone who needs saving',
           'Keeping some for later',
           'Hiding it',
         ],
@@ -105,7 +105,7 @@ final _level1Quizzes = [
       QuizQuestion(
         question: 'What is income?',
         options: [
-          'Money you owe',
+          'Money you owe to someone',
           'Money you lose',
           'Money you find',
           'Money you earn',
@@ -139,8 +139,8 @@ final _level1Quizzes = [
         options: [
           'Something for fun',
           'Something you must have',
-          'Something expensive',
-          'A gift',
+          'Something can live without',
+          'A gift on your birthday',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -151,9 +151,9 @@ final _level1Quizzes = [
       QuizQuestion(
         question: 'What is a "want"?',
         options: [
-          'Must have to live',
+          'Something you must have to live',
           'Nice to have for fun',
-          'Free items',
+          'Free items you get',
           'Old toys',
         ],
         correctIndex: 1,
@@ -207,8 +207,8 @@ final _level1Quizzes = [
         question: 'Why should you save?',
         options: [
           'For future goals',
-          'To show off',
-          'To hide it',
+          'To show off to others',
+          'To hide it away',
           'To lose it',
         ],
         correctIndex: 0,
@@ -229,8 +229,8 @@ final _level1Quizzes = [
       QuizQuestion(
         question: 'What is an emergency?',
         options: [
-          'A fun party',
-          'A new toy',
+          'A fun party or a gift that is on sale',
+          'A new limited edition toy',
           'A movie',
           'An unexpected problem',
         ],
@@ -245,12 +245,12 @@ final _level1Quizzes = [
         options: [
           'A math problem',
           'Something to save for',
-          'A secret',
-          'A game',
+          'A secret goal in football',
+          'A goal in a game',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A savings goal is not a math problem, a secret you keep, or a game you play. It is a target for your savings.',
+            'A savings goal is not a math problem, a secret goal with bonus points, or a game you play. It is a target for your savings.',
         correctExplanation:
             'A savings goal is a specific thing you are saving your money to buy, like a new bike. It helps you stay focused on your goal and avoid distractions like candy or toys.',
       ),
@@ -289,9 +289,9 @@ final List<QuizMetadata> _mediumQuizzes = [
       QuizQuestion(
         question: 'What is debt?',
         options: [
-          'Money you find',
-          'Money you earn',
-          'Money you save',
+          'Money you find on the street',
+          'Money you earn from your job',
+          'Money you save in a bank',
           'Money you owe to someone',
         ],
         correctIndex: 3,
@@ -304,7 +304,7 @@ final List<QuizMetadata> _mediumQuizzes = [
         question: 'What is a credit card?',
         options: [
           'Free money',
-          'A gift card',
+          'A card that you can use to buy anything',
           'A savings account',
           'Borrowed money for later',
         ],
@@ -320,7 +320,7 @@ final List<QuizMetadata> _mediumQuizzes = [
           'Makes you rich',
           'Limits financial freedom',
           'Helps you save',
-          'It is always good',
+          'It is good because it helps you save',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -332,9 +332,9 @@ final List<QuizMetadata> _mediumQuizzes = [
         question: 'What is interest on debt?',
         options: [
           'A bank gift',
-          'A discount',
+          'A discount on the debt',
           'Extra money to pay',
-          'A reward',
+          'A reward for the borrower',
         ],
         correctIndex: 2,
         wrongExplanation:
@@ -346,8 +346,8 @@ final List<QuizMetadata> _mediumQuizzes = [
         question: 'How should you handle debt?',
         options: [
           'Make a plan to pay it',
-          'Ignore it',
-          'Borrow more',
+          'Ignore it and pay when you can',
+          'Borrow more money from a different lender',
           'Hide from it',
         ],
         correctIndex: 0,
@@ -369,7 +369,7 @@ final List<QuizMetadata> _mediumQuizzes = [
         question: 'What is a financial goal?',
         options: [
           'A random wish',
-          'A bank account',
+          'A bank account with goals',
           'A shiny toy',
           'A specific saving or fund',
         ],
@@ -385,7 +385,7 @@ final List<QuizMetadata> _mediumQuizzes = [
           'To guide your spending',
           'To waste time',
           'To get confused',
-          'To impress friends',
+          'To impress friends and show off',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -398,7 +398,7 @@ final List<QuizMetadata> _mediumQuizzes = [
         options: [
           'A 20-year plan',
           'Goal for lunch',
-          'A secret dream',
+          'A secret dream that lasts only one night',
           'Goal reached within a year',
         ],
         correctIndex: 3,
@@ -411,7 +411,7 @@ final List<QuizMetadata> _mediumQuizzes = [
         question: 'What is a long-term goal?',
         options: [
           'Goal for next week',
-          'Something easy',
+          'Something easy that can be done later',
           'Goal many years away',
           'A goal for dinner',
         ],
@@ -489,14 +489,14 @@ final List<QuizMetadata> _mediumQuizzes = [
       QuizQuestion(
         question: 'What is an ATM?',
         options: [
-          'A money machine',
-          'A video game',
-          'A type of car',
-          'A grocery store',
+          'A place to get cash from your account',
+          'A video game where a secret code gives you money',
+          'A brand of bike',
+          'A free money machine',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'An ATM is not a video game, a fast car, or a place to buy groceries. It is a specialized machine used for banking and money.',
+            'An ATM is not a video game, a fast bike, or a place to get free money. It is a specialized machine used for banking and money.',
         correctExplanation:
             'An ATM is an Automated Teller Machine that lets you get cash or check your balance. You can use it even when the bank is closed.',
       ),
@@ -568,7 +568,7 @@ final List<QuizMetadata> _mediumQuizzes = [
       QuizQuestion(
         question: 'What is impulse buying?',
         options: [
-          'Planned shopping',
+          'Planned shopping based on impulse',
           'Returning items',
           'Saving for later',
           'Buying without thinking',
@@ -650,7 +650,7 @@ final List<QuizMetadata> _mediumQuizzes = [
           'A tax fee',
           'Pay based on sales',
           'A monthly bill',
-          'Free money',
+          'Free money from the bank',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -664,11 +664,11 @@ final List<QuizMetadata> _mediumQuizzes = [
           'A heavy box',
           'A shiny toy',
           'Ability learned for work',
-          'A fast car',
+          'learning to drift a car',
         ],
         correctIndex: 2,
         wrongExplanation:
-            'Professional skills are not heavy objects like boxes, shiny toys, or fast cars. They are mental or physical abilities used to perform a specific job well.',
+            'Professional skills are not heavy objects like boxes, shiny toys, or knowing how to drift a car. They are mental or physical abilities used to perform a specific job well.',
         correctExplanation:
             'Skills are things you learn to do a job well, like coding or fixing cars. Having more skills often helps you earn a much higher.',
       ),
@@ -729,7 +729,7 @@ final List<QuizMetadata> _mediumQuizzes = [
           'Buy it fast',
           'It is probably a scam',
           'It is a lucky break',
-          'Tell everyone',
+          'Call your friends and tell everyone',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -739,12 +739,7 @@ final List<QuizMetadata> _mediumQuizzes = [
       ),
       QuizQuestion(
         question: "What is the 'Phishing' scam?",
-        options: [
-          'Catching fish',
-          'A sport',
-          'Buying a boat',
-          'Fake emails for info',
-        ],
+        options: ['Catching fish', 'A sport', 'Buying a boat', 'Fake emails'],
         correctIndex: 3,
         wrongExplanation:
             'Phishing is not about catching real fish, playing a sport, or buying a boat. It is a digital crime used to steal your personal financial information.',
@@ -778,8 +773,8 @@ final List<QuizMetadata> _mediumQuizzes = [
         question: 'What does "frugal" mean?',
         options: [
           'Being careful with money',
-          'Being cheap',
-          'Being rich',
+          'Being cheap and mean when you have money',
+          'Being rich and never saving',
           'Being lazy',
         ],
         correctIndex: 0,
@@ -794,7 +789,7 @@ final List<QuizMetadata> _mediumQuizzes = [
           'To be bored',
           'To waste paper',
           'To see where money goes',
-          'To feel bad',
+          'To feel bad about your money',
         ],
         correctIndex: 2,
         wrongExplanation:
@@ -807,7 +802,7 @@ final List<QuizMetadata> _mediumQuizzes = [
         options: [
           'Buying now',
           'Getting angry',
-          'Being late',
+          'Being late for a sale and missing out',
           'Waiting for something better',
         ],
         correctIndex: 3,
@@ -821,8 +816,8 @@ final List<QuizMetadata> _mediumQuizzes = [
         options: [
           'Social media',
           'Trusted adults',
-          'Random strangers',
-          'Nobody',
+          'Rich strangers',
+          'Nobody, keep it to yourself',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -956,7 +951,7 @@ final List<QuizMetadata> _mediumQuizzes = [
           'Every time you get money',
           'Once a year',
           'Never',
-          'Only on birthdays',
+          'Only a few days before birthdays',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -970,7 +965,7 @@ final List<QuizMetadata> _mediumQuizzes = [
           'A math test',
           'A phone number',
           'A budgeting method',
-          'A secret code',
+          'A secret code to get rich',
         ],
         correctIndex: 2,
         wrongExplanation:
@@ -1080,7 +1075,7 @@ final List<QuizMetadata> _mediumQuizzes = [
         options: [
           'A fun party',
           'A free gift',
-          'A shiny toy',
+          'A toy from the bank that you must pay for',
           'Something you must pay',
         ],
         correctIndex: 3,
@@ -1095,7 +1090,7 @@ final List<QuizMetadata> _mediumQuizzes = [
           'To track your money',
           'To waste time',
           'To use more ink',
-          'To show off',
+          'To show off how much money you have',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -1153,7 +1148,7 @@ final List<QuizMetadata> _mediumQuizzes = [
         question: "What is the best definition of a 'fixed expense'?",
         options: [
           'Cost that stays the same',
-          'A broken toy',
+          'the cost of fixing a broken toy',
           'A gift',
           'A random bill',
         ],
@@ -1166,7 +1161,7 @@ final List<QuizMetadata> _mediumQuizzes = [
       QuizQuestion(
         question: "What is the best definition of a 'variable expense'?",
         options: [
-          'A constant cost',
+          'The cost of the variable',
           'Cost that changes',
           'A free item',
           'A car',
@@ -1194,7 +1189,7 @@ final List<QuizMetadata> _mediumQuizzes = [
       QuizQuestion(
         question: 'What is "disposable income"?',
         options: [
-          'Garbage money',
+          'Garbage money that can be disposed of',
           'Debt money',
           'Tax money',
           'Money left after needs',
@@ -1217,10 +1212,10 @@ final List<QuizMetadata> _mediumQuizzes = [
       QuizQuestion(
         question: 'What is "cash"?',
         options: [
-          'Metal coins',
+          'Only metal coins',
           'A credit card',
-          'A check',
-          'Physical bills and coins',
+          'Another name for a check',
+          'Physical bills',
         ],
         correctIndex: 3,
         wrongExplanation:
@@ -1233,7 +1228,7 @@ final List<QuizMetadata> _mediumQuizzes = [
         options: [
           'Borrowed money',
           'Your own bank money',
-          'A gift card',
+          'A gift card which you can use to buy anything',
           'A library card',
         ],
         correctIndex: 1,
@@ -1248,7 +1243,7 @@ final List<QuizMetadata> _mediumQuizzes = [
           'A metal box',
           'A video game',
           'An app that stores cards',
-          'A website',
+          'A website with digital cash and coins',
         ],
         correctIndex: 2,
         wrongExplanation:
@@ -1272,7 +1267,12 @@ final List<QuizMetadata> _mediumQuizzes = [
       ),
       QuizQuestion(
         question: 'What is a "transaction"?',
-        options: ['A money exchange', 'A car', 'A secret', 'A gift'],
+        options: [
+          'A money exchange',
+          'A car',
+          'A secret deal with a friend',
+          'A gift',
+        ],
         correctIndex: 0,
         wrongExplanation:
             'A transaction is not a type of car, a secret you keep, or a simple gift. it is a business action between two people or companies today.',
@@ -1294,7 +1294,7 @@ final List<QuizMetadata> _mediumQuizzes = [
           'Strength to buy',
           'Cost of a car',
           'How much money buys',
-          'Having a job',
+          'Having a job with lots of power',
         ],
         correctIndex: 2,
         wrongExplanation:
@@ -1335,7 +1335,7 @@ final List<QuizMetadata> _mediumQuizzes = [
         options: [
           'Trading items directly',
           'Buying with cash',
-          'Saving coins',
+          'Saving coins with the help of a barter',
           'Working hard',
         ],
         correctIndex: 0,
@@ -1350,11 +1350,11 @@ final List<QuizMetadata> _mediumQuizzes = [
           'They never change',
           'Supply and demand',
           'By magic',
-          'By accident',
+          'By anyone\'s wish',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Prices do not stay the same forever, and they certainly don\'t change by magic or by accident. They follow very specific rules of the national economy.',
+            'Prices do not stay the same forever, and they certainly don\'t change by magic or by anyone\'s wish. They follow very specific rules of the national economy.',
         correctExplanation:
             'Prices change based on supply and demand in the market. If many people want something but there is not much of it, the price rises.',
       ),
@@ -1372,7 +1372,7 @@ final List<QuizMetadata> _mediumQuizzes = [
         options: [
           'A big store',
           'A bank',
-          'A type of food',
+          'A type of food with charred vegetables',
           'An organization that helps',
         ],
         correctIndex: 3,
@@ -1400,7 +1400,7 @@ final List<QuizMetadata> _mediumQuizzes = [
         options: [
           'To be famous',
           'To lose money',
-          'To be cool',
+          'To be cool and show off',
           'To help the community',
         ],
         correctIndex: 3,
@@ -1412,7 +1412,7 @@ final List<QuizMetadata> _mediumQuizzes = [
       QuizQuestion(
         question: 'What is "volunteering"?',
         options: [
-          'A paid job',
+          'A paid job in a volunt',
           'Giving your time free',
           'Going to school',
           'Playing games',
@@ -1429,7 +1429,7 @@ final List<QuizMetadata> _mediumQuizzes = [
           'Everything you own',
           'Nothing',
           'What you can afford',
-          'At least one thousand',
+          'At least 1000[GEM]',
         ],
         correctIndex: 2,
         wrongExplanation:
@@ -1561,7 +1561,7 @@ final List<QuizMetadata> _hardQuizzes = [
         options: [
           'Focus on buying more',
           'A type of plant',
-          'A bank',
+          'A bank that gives you free money',
           'A sport',
         ],
         correctIndex: 0,
@@ -1575,8 +1575,8 @@ final List<QuizMetadata> _hardQuizzes = [
         options: [
           'Better quality only',
           'It is cheaper',
-          'It is magic',
-          'It costs more for name',
+          'It is magic and makes you cool',
+          'It costs more for the brand',
         ],
         correctIndex: 3,
         wrongExplanation:
@@ -1588,7 +1588,7 @@ final List<QuizMetadata> _hardQuizzes = [
         question: 'What is a "money mindset"?',
         options: [
           'Your attitude on money',
-          'A brain disease',
+          'A brain disease that sets your mind on money',
           'A math skill',
           'A bank',
         ],
@@ -1628,24 +1628,24 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is interest in a savings account?',
         options: [
-          'A fee you pay to the bank',
+          'A fee you pay to the bank for keeping your money safe over time',
           'Money the bank pays you for keeping your money there',
-          'A type of tax',
-          'A physical coin',
+          'Money taken by the government as a required tax',
+          'Cash that must be deposited every month',
         ],
         correctIndex: 1,
         wrongExplanation:
             'Interest in a savings account is a reward, not a fee or a tax. The bank pays you to use your money.',
         correctExplanation:
-            'Interest is essentially "rent" that the bank pays you to use the money you keep in your account.',
+            'Interest is essentially "rent" that the bank pays you to use the money you keep with them.',
       ),
       QuizQuestion(
         question: 'What is "compound interest"?',
         options: [
-          'Interest earned only on the principal',
+          'Interest earned only on the original amount of money deposited',
           'Interest earned on principal plus previous interest',
-          'A very difficult math problem',
-          'Interest that never changes',
+          'Interest that is calculated using a fixed yearly formula',
+          'Interest that stays the same every year',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -1657,10 +1657,10 @@ final List<QuizMetadata> _level2Quizzes = [
         question:
             'Which of these makes your money grow the most over 10 years?',
         options: [
-          'Keeping it in a jar at home',
-          'Simple interest',
+          'Keeping it in a jar at home with no interest at all',
+          'Simple interest added once per year',
           'Compound interest',
-          'Spending it immediately',
+          'Spending it quickly instead of saving it',
         ],
         correctIndex: 2,
         wrongExplanation:
@@ -1671,10 +1671,10 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'Why is a high interest rate bad when you OWE money (debt)?',
         options: [
-          'It makes your debt disappear',
+          'It reduces the amount you have to repay over time',
           'It makes your debt grow faster',
-          'It makes no difference',
-          'It makes the bank happy',
+          'It has no effect on how much you owe',
+          'It only affects the bank and not you',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -1686,9 +1686,9 @@ final List<QuizMetadata> _level2Quizzes = [
         question: 'Why is it better to start saving earlier in life?',
         options: [
           'You have more time for interest to compound',
-          'You have less money to spend',
-          'It is easier to find banks',
-          'Older people aren\'t allowed to save',
+          'You are required by law to save when young',
+          'Banks only allow young people to open accounts',
+          'Saving early prevents you from spending later',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -1708,24 +1708,24 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is a credit score?',
         options: [
-          'Your total bank balance',
+          'The total amount of money in your bank account',
           'A rating of how likely you are to pay back a loan',
-          'A grade from your math teacher',
-          'The number of credit cards you have',
+          'A score given by your school or teachers',
+          'The number of credit cards you currently own',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s not your balance or teacher grade. It\'s a numerical "trust rating" used by lenders.',
+            'It\'s not your balance or school performance. It\'s a numerical "trust rating" used by lenders.',
         correctExplanation:
             'A credit score is a number that tells banks and lenders how responsible you have been with borrowed money in the past.',
       ),
       QuizQuestion(
         question: 'Which of these helps improve your credit score?',
         options: [
-          'Paying your bills late',
+          'Paying bills after the due date',
           'Paying your bills on time, every time',
-          'Maxing out all your credit cards',
-          'Avoiding all forms of money',
+          'Using all available credit at once',
+          'Never using money or financial services',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -1736,42 +1736,42 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'Who might check your credit score?',
         options: [
-          'Your friends',
-          'Social media companies',
+          'Your close friends and classmates',
+          'Entertainment or social media companies',
           'Landlords and banks',
-          'Only your parents',
+          'Only family members',
         ],
         correctIndex: 2,
         wrongExplanation:
-            'Social media and friends don\'t check it, but people who you want to borrow from or rent from will.',
+            'Friends and social platforms don\'t check it. Lenders and landlords do.',
         correctExplanation:
             'Landlords use it to see if you\'ll pay rent, and banks use it to decide if they should give you a loan.',
       ),
       QuizQuestion(
         question: 'What is a "credit report"?',
         options: [
-          'A report card for school',
-          'A list of all your financial earnings',
+          'A report card showing academic performance',
+          'A list of all money you earn in a year',
           'A history of your borrowing and payments',
-          'A list of things you want to buy',
+          'A checklist of things you want to purchase',
         ],
         correctIndex: 2,
         wrongExplanation:
-            'It\'s not about school or earnings. It\'s the detailed history used to calculate your credit score.',
+            'It\'s not about school or income. It\'s the detailed history used to calculate your credit score.',
         correctExplanation:
             'A credit report is the record of your credit history, including loans, credit cards, and payment history.',
       ),
       QuizQuestion(
         question: 'Why is it beneficial to have a high credit score?',
         options: [
-          'You get free groceries',
+          'You receive free products and services',
           'You can get lower interest rates on loans',
-          'You never have to pay taxes',
-          'It makes you taller',
+          'You no longer have to pay taxes',
+          'It automatically increases your income',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It won\'t skip taxes or give free food, but it saves you massive amounts of money on house or car loans.',
+            'A good score doesn\'t remove taxes or give free items, but it does save money over time.',
         correctExplanation:
             'A high score shows you are reliable, so banks offer you lower interest rates because you are a "low risk" borrower.',
       ),
@@ -1787,10 +1787,10 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is "sales tax"?',
         options: [
-          'A discount on items',
+          'A price reduction offered by stores',
           'An extra percentage added to the price of items you buy',
-          'The price of a product',
-          'A fee for using a credit card',
+          'The original cost of a product',
+          'A service fee charged by banks',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -1801,24 +1801,24 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is "income tax"?',
         options: [
-          'A tax on the items you sell',
+          'A tax on items you sell in a store',
           'A tax on the money you earn from a job',
-          'Money the government gives you',
-          'A fee to open a bank account',
+          'Money the government gives workers',
+          'A fee for opening a bank account',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Income tax is taken from your earnings, not from sales or bank fees.',
+            'Income tax is taken from your earnings, not from sales or bank services.',
         correctExplanation:
             'Income tax is a type of tax that governments impose on income generated by businesses and individuals.',
       ),
       QuizQuestion(
         question: 'What are some things that tax money pays for?',
         options: [
-          'Video games for everyone',
+          'Entertainment and personal gifts',
           'Roads, schools, and public safety',
-          'Private vacations for government workers',
-          'Only big businesses',
+          'Private trips for officials',
+          'Only large corporations',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -1829,14 +1829,14 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is "Net Pay" on a paycheck?',
         options: [
-          'The total amount you earned before taxes',
+          'The amount earned before any deductions',
           'The amount you actually take home after taxes and deductions',
-          'A bonus for good work',
-          'A fee for working',
+          'Extra money given as a reward',
+          'A fee charged for working',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Before taxes is "Gross Pay." Net Pay is what is actually available in your bank account.',
+            'Before taxes is "Gross Pay." Net Pay is what you actually receive.',
         correctExplanation:
             'Net pay is the amount of money an employee takes home after all deductions have been made from their gross pay.',
       ),
@@ -1844,15 +1844,15 @@ final List<QuizMetadata> _level2Quizzes = [
         question: 'Why should you include tax when planning a big purchase?',
         options: [
           'Because the final price will be higher than the price tag',
-          'To help the store make more money',
-          'Because taxes are optional',
-          'To get a refund later',
+          'Because stores earn extra profit from taxes',
+          'Because taxes are optional in most places',
+          'Because taxes are refunded immediately',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'Taxes aren\'t optional and they don\'t help the store profit; they just increase the total cost you must pay.',
+            'Taxes aren\'t optional and they don\'t increase store profits; they increase the total cost.',
         correctExplanation:
-            'Since sales tax is added at the register, the "sticker price" isn\'t the total amount of money you need to have.',
+            'Since sales tax is added at checkout, the listed price isn\'t the total amount you must pay.',
       ),
     ],
   ),
@@ -1960,16 +1960,16 @@ final List<QuizMetadata> _level2Quizzes = [
       ),
       QuizQuestion(
         question:
-            'If you spend [GEM]50 on a video game instead of saving it, what is the opportunity cost?',
+            'If you spend 50[GEM] on a video game instead of saving it, what is the opportunity cost?',
         options: [
           'The video game itself',
-          'The [GEM]50 plus any future interest it could have earned',
+          'The 50[GEM] plus any future interest it could have earned',
           'The time spent playing the game',
-          'Nothing, the [GEM]50 is gone anyway',
+          'Nothing, the 50[GEM] is gone anyway',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You have the game, but you lost the growth potentially offered by saving or investing that [GEM]50.',
+            'You have the game, but you lost the growth potentially offered by saving or investing that 50[GEM].',
         correctExplanation:
             'Opportunity cost includes both the money and what that money *could have become* in the future.',
       ),
@@ -2175,78 +2175,242 @@ final List<QuizMetadata> _level2Quizzes = [
     ],
   ),
   QuizMetadata(
-    id: 'l2_q8',
-    title: 'Net Worth: Financial Health',
-    subtitle: 'The big picture of your money',
+    id: 'l2_q4',
+    title: 'Inflation: When Prices Rise',
+    subtitle: 'Understanding why things cost more',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 2,
     questions: [
       QuizQuestion(
-        question: 'What is an "Asset"?',
+        question: 'What is "inflation"?',
         options: [
-          'Money you owe to others',
-          'Something you own that has value',
-          'A type of financial mistake',
-          'Only cash in your wallet',
+          'When prices for everything generaly go up over time',
+          'When the value of money increases compared to goods and services in a growing economy over many years',
+          'A term used to describe economic growth during a boom period',
+          'When more products are available in stores',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
-            'Money you owe is a liability. Assets include cash, properties, cars, and investments.',
+            'Inflation is about prices rising, which actually makes the value of your money go down.',
         correctExplanation:
-            'An asset is anything of value that can be converted into cash.',
+            'Inflation is a general increase in prices and fall in the purchasing value of money.',
       ),
       QuizQuestion(
-        question: 'What is a "Liability"?',
+        question: 'How does inflation affect your savings?',
         options: [
-          'Something you own',
-          'Money you owe to someone else (debt)',
-          'Your total income',
-          'A high credit score',
+          'It makes your savings more valuable over time as prices increase',
+          'It buys less over time if interest doesn\'t keep up',
+          'It keeps savings equal in value no matter what happens in the economy',
+          'It automatically increases your bank balance',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Assets are owned; liabilities are owed. Examples include loans and credit card debt.',
+            'Inflation "eats" your savings by making everything more expensive in the future.',
         correctExplanation:
-            'A liability is a financial obligation or debt that you must pay to others.',
-      ),
-      QuizQuestion(
-        question: 'How do you calculate "Net Worth"?',
-        options: [
-          'Total Assets + Total Liabilities',
-          'Total Assets - Total Liabilities',
-          'Monthly Income - Monthly Rent',
-          'Total Cash in Bank',
-        ],
-        correctIndex: 1,
-        wrongExplanation:
-            'If you have [GEM]1000 but owe [GEM]900, your net worth is only [GEM]100. Adding them would be wrong!',
-        correctExplanation:
-            'Net worth is the most accurate measure of wealth, as it counts what you own minus what you owe.',
+            'If prices go up 5% but your savings only grow 1%, you actually lose "purchasing power."',
       ),
       QuizQuestion(
         question:
-            'If you have a [GEM]20,000 car but own it with a [GEM]15,000 loan, what is your net worth related to that car?',
-        options: ['[GEM]20,000', '[GEM]15,000', '[GEM]5,000', '[GEM]35,000'],
-        correctIndex: 2,
-        wrongExplanation:
-            'You must subtract the loan ([GEM]15k) from the value ([GEM]20k) to see your actual equity.',
-        correctExplanation:
-            'Your equity (actual wealth) in the car is the value minus the debt: [GEM]5,000.',
-      ),
-      QuizQuestion(
-        question:
-            'Why is Net Worth more important than just having a high salary?',
+            'If inflation is 3% and your bank interest is 1%, are you gaining purchasing power?',
         options: [
-          'It isn\'t, salary is all that matters',
-          'It shows if you are actually keeping your money or just spending it',
-          'Because it sounds more professional',
-          'It helps you get more vacation time',
+          'Yes, because any growth always beats inflation over long periods of time',
+          'No, you are losing purchasing power because prices rise faster than your interest',
+          'It stays exactly the same every year',
+          'This situation has no real impact on savings',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Someone with a [GEM]1M salary who spends [GEM]1.1M is actually getting poorer (negative net worth).',
+            'Even if you have more dollars, those dollars buy 3% less stuff, while you only have 1% more dollars.',
         correctExplanation:
-            'Wealth is built by growing assets and shrinking liabilities, not just by having a high income.',
+            'To "win" against inflation, your money must grow faster than the rate at which prices are rising.',
+      ),
+      QuizQuestion(
+        question:
+            'What usually happens to inflation if too much money is printed?',
+        options: [
+          'Prices slowly decrease as money becomes common and easier to obtain',
+          'Prices go up because money becomes less rare',
+          'Prices remain stable with no long-term effects',
+          'Everyone suddenly becomes wealthier',
+        ],
+        correctIndex: 1,
+        wrongExplanation:
+            'When money is too common, people charge more for goods, leading to higher inflation.',
+        correctExplanation:
+            'If everyone has too much money chasing the same amount of goods, the prices of those goods will rise.',
+      ),
+      QuizQuestion(
+        question: 'Why are historical prices (like 1950) usually much lower?',
+        options: [
+          'People valued money differently and spent less overall',
+          'Because of long-term inflation over decades',
+          'Because money systems were not developed yet',
+          'Because products were always cheaper to make',
+        ],
+        correctIndex: 1,
+        wrongExplanation:
+            'It\'s not about the quality; it\'s about the steady rise of prices over many years.',
+        correctExplanation:
+            'Over long periods, small amounts of inflation add up, making a certain amount of money in 1950 much more purchasing power than today.',
+      ),
+    ],
+  ),
+  QuizMetadata(
+    id: 'l2_q5',
+    title: 'Opportunity Cost: Choices',
+    subtitle: 'What are you giving up?',
+    difficulty: QuizDifficulty.medium,
+    requiredLevel: 2,
+    questions: [
+      QuizQuestion(
+        question: "What is the primary definition of 'opportunity cost'?",
+        options: [
+          'The price printed on a product label including taxes and fees',
+          'The value of the next best thing you give up when making a choice',
+          'The cost of being given a job opportunity',
+          'A special fee added to expensive purchases',
+        ],
+        correctIndex: 1,
+        wrongExplanation:
+            'It\'s not a dollar cost on a tag; it\'s the "lost value" of the choice you didn\'t pick.',
+        correctExplanation:
+            'Every time you spend money on A, you lose the chance to use that same money on B. B is the opportunity cost.',
+      ),
+      QuizQuestion(
+        question:
+            'If you spend [GEM]50 on a video game instead of saving it, what is the opportunity cost?',
+        options: [
+          'The entertainment value of the video game and the enjoyment you receive from playing it',
+          'The [GEM]50 plus any future interest it could have earned',
+          'Only the time spent playing the game',
+          'Nothing, because the money was spent anyway',
+        ],
+        correctIndex: 1,
+        wrongExplanation:
+            'You have the game, but you lost the growth potentially offered by saving or investing that [GEM]50.',
+        correctExplanation:
+            'Opportunity cost includes both the money and what that money *could have become* in the future.',
+      ),
+      QuizQuestion(
+        question: 'Does a "free" activity have an opportunity cost?',
+        options: [
+          'No, because no money is spent at any point',
+          'Yes, because you give up the time you could have used for something else',
+          'Only if the activity requires equipment',
+          'Free activities never affect choices',
+        ],
+        correctIndex: 1,
+        wrongExplanation:
+            'Time is money! Using 2 hours on something "free" means you didn\'t use those 2 hours to earn or learn.',
+        correctExplanation:
+            'Time is a limited resource. Using it for one thing means you can\'t use it for another.',
+      ),
+      QuizQuestion(
+        question: 'Why is understanding opportunity cost important for wealth?',
+        options: [
+          'It helps you realize the true impact of spending',
+          'It forces you to stop spending money completely in all situations',
+          'It reduces how much tax you must pay',
+          'It guarantees higher income',
+        ],
+        correctIndex: 0,
+        wrongExplanation:
+            'It doesn\'t lower taxes, but it makes you a much smarter "chooser" of where your money goes.',
+        correctExplanation:
+            'By seeing what you lose (long term growth) for what you gain (short term fun), you make better financial choices.',
+      ),
+      QuizQuestion(
+        question: 'Every financial choice involves...',
+        options: [
+          'Visiting a bank or ATM to complete the transaction',
+          'Giving something up to get something else',
+          'Making a profit every time',
+          'Signing a legal contract',
+        ],
+        correctIndex: 1,
+        wrongExplanation:
+            'You don\'t always need a bank, but you always give up an alternative when you choose.',
+        correctExplanation:
+            'In a world of limited money and time, every choice is a trade-off.',
+      ),
+    ],
+  ),
+  QuizMetadata(
+    id: 'l2_q6',
+    title: 'Entrepreneurs & Profit',
+    subtitle: 'Being your own boss',
+    difficulty: QuizDifficulty.medium,
+    requiredLevel: 2,
+    questions: [
+      QuizQuestion(
+        question: 'What is an "entrepreneur"?',
+        options: [
+          'A person employed by the government in a stable job',
+          'Someone who starts and runs their own business',
+          'A senior manager in a large company',
+          'A worker assigned by a bank',
+        ],
+        correctIndex: 1,
+        wrongExplanation:
+            'Entrepreneurs take the initiative to create something new rather than working for an existing system.',
+        correctExplanation:
+            'An entrepreneur organizes, manages, and assumes the risks of a business or enterprise.',
+      ),
+      QuizQuestion(
+        question: 'How do you calculate "Profit"?',
+        options: [
+          'Total Income + Total Expenses over a business year',
+          'Total Income - Total Expenses',
+          'Total money stored in the bank',
+          'Number of workers multiplied by income',
+        ],
+        correctIndex: 1,
+        wrongExplanation:
+            'Adding expenses would be bad! You must subtract what you spend from what you make.',
+        correctExplanation:
+            'Profit is the money left over after all the bills and costs of the business are paid.',
+      ),
+      QuizQuestion(
+        question: 'What is "Revenue"?',
+        options: [
+          'The total money a business receives from selling goods/services',
+          'The remaining money after paying all costs and expenses',
+          'The debt owed by a business',
+          'The value of company property',
+        ],
+        correctIndex: 0,
+        wrongExplanation:
+            'Revenue is the "top line" - all the money coming in before any expenses are subtracted.',
+        correctExplanation:
+            'Revenue is the total amount of money generated by the sale of goods or services associated with the business.',
+      ),
+      QuizQuestion(
+        question: 'What is the main "Risk" for an entrepreneur?',
+        options: [
+          'Getting too many customers at once and being overwhelmed',
+          'Losing their own money and time if the business fails',
+          'Working fewer hours than planned',
+          'Receiving unexpected promotions',
+        ],
+        correctIndex: 1,
+        wrongExplanation:
+            'The risk is that the "Profit" might be negative, meaning the owner loses money instead of making it.',
+        correctExplanation:
+            'Entrepreneurs often invest their own money and time with no guarantee of success.',
+      ),
+      QuizQuestion(
+        question: 'Why might a business fail even if it has many customers?',
+        options: [
+          'Because customers pay more than expected each time',
+          'Because its expenses are higher than its income',
+          'Because the owner enjoys the business too much',
+          'Because competition disappears',
+        ],
+        correctIndex: 1,
+        wrongExplanation:
+            'More customers can sometimes mean more loss if every sale costs more to produce than the sales price.',
+        correctExplanation:
+            'Sustainability requires that Revenue is consistently higher than Expenses.',
       ),
     ],
   ),
@@ -2260,9 +2424,9 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is generally considered "Good Debt"?',
         options: [
-          'Debt used for things that lose value quickly',
+          'Debt used for things that lose value quickly and provide no long-term benefit',
           'Debt that helps you increase your wealth or income long-term',
-          'Any debt with a high interest rate',
+          'Any debt with a high interest rate and strict repayment rules',
           'Debt you never plan to pay back',
         ],
         correctIndex: 1,
@@ -2274,10 +2438,10 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is an example of "Bad Debt"?',
         options: [
-          'A student loan for a useful degree',
-          'A business loan for a profitable shop',
+          'A student loan for a useful degree that increases earning potential',
+          'A business loan for a profitable shop with steady customers',
           'High-interest credit card debt for luxury clothes',
-          'A mortgage for a home you can afford',
+          'A mortgage for a home you can afford over many years',
         ],
         correctIndex: 2,
         wrongExplanation:
@@ -2288,7 +2452,7 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'Is a house loan (mortgage) usually good or bad debt?',
         options: [
-          'Always bad, because it is a huge amount',
+          'Always bad, because it is a huge amount borrowed from a bank',
           'Usually good, because houses often increase in value over time',
           'It doesn\'t count as debt',
           'Only bad if the house has a garden',
@@ -2302,7 +2466,7 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'Why are "Payday Loans" considered very bad debt?',
         options: [
-          'They are too easy to get',
+          'They are too easy to get without much paperwork',
           'They have extremely high interest rates (often over 300%)',
           'They are only for weekends',
           'The banks are too friendly',
@@ -2317,7 +2481,7 @@ final List<QuizMetadata> _level2Quizzes = [
         question: 'Borrowing money to start a business is good debt if...',
         options: [
           'The business makes more profit than the loan interest costs',
-          'The owner gets a fancy office',
+          'The owner gets a fancy office and modern furniture',
           'The loan is never repaid',
           'The business has a cool name',
         ],
@@ -2339,7 +2503,7 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is "Phishing"?',
         options: [
-          'A type of outdoor sport',
+          'A type of outdoor sport involving water and fishing equipment',
           'Fake emails or texts designed to steal your passwords or info',
           'Buying too many fish online',
           'A new way to invest in stocks',
@@ -2354,7 +2518,7 @@ final List<QuizMetadata> _level2Quizzes = [
         question:
             'What should you do if a "bank worker" calls and asks for your password?',
         options: [
-          'Give it to them so they can help you',
+          'Give it to them so they can help you quickly',
           'Hang up immediately because real banks never ask for passwords on the phone',
           'Ask them for their password first',
           'Give them a fake password',
@@ -2368,7 +2532,7 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'Which of these is a sign of a "Ponzi Scheme"?',
         options: [
-          'A business selling high-quality products',
+          'A business selling high-quality products to real customers',
           'A deal that promises "guaranteed high returns with zero risk"',
           'A bank with low interest rates',
           'A store with a big sale',
@@ -2382,10 +2546,10 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'How can you protect your money when using an ATM?',
         options: [
-          'Tell the person behind you your PIN',
+          'Tell the person behind you your PIN so they can help',
           'Cover the keypad when typing your PIN',
           'Leave your receipt in the machine',
-          'Use the ATM in the middle of the night in a dark alley',
+          'Use the ATM late at night in an empty place',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -2397,14 +2561,14 @@ final List<QuizMetadata> _level2Quizzes = [
         question:
             'If an online deal sounds "too good to be true," it usually is...',
         options: [
-          'A lucky break',
+          'A lucky break that happens very often',
           'A scam designed to take your money',
           'A gift from the internet',
           'A mistake by the website owners',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Scammers use greed to blind people. If someone offers [GEM]1000 for [GEM]10, they are going to steal your [GEM]10.',
+            'Scammers use greed to blind people. If someone offers 1000[GEM] for 10[GEM], they are going to steal your 10[GEM].',
         correctExplanation:
             'Skepticism is a vital financial skill. Always research and double-check "amazing" offers.',
       ),
@@ -2421,9 +2585,9 @@ final List<QuizMetadata> _level2Quizzes = [
         question: 'What is an "Emergency Fund"?',
         options: [
           'Money saved specifically for unexpected crises',
-          'A fund for your next vacation',
-          'Money you use for daily snacks',
-          'A pile of cash for a new car',
+          'A fund for your next vacation planned months ahead',
+          'Money you use for daily snacks and small treats',
+          'A pile of cash saved for buying luxury items',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -2434,14 +2598,14 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'How much should you ideally have in an emergency fund?',
         options: [
-          'One week of spending',
+          'One week of spending for basic needs',
           '3 to 6 months of essential living expenses',
-          '[GEM]100 is enough',
+          '100[GEM] saved just in case',
           'All the money you will ever earn',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A week or [GEM]100 isn\'t enough if you lose a job. You need enough to live on while you recover.',
+            'A week or 100[GEM] isn\'t enough if you lose a job. You need enough to live on while you recover.',
         correctExplanation:
             'Having several months of expenses saved gives you peace of mind and true financial security.',
       ),
@@ -2449,7 +2613,7 @@ final List<QuizMetadata> _level2Quizzes = [
         question:
             'Which of these is a valid reason to use your emergency fund?',
         options: [
-          'A big sale on your favorite clothes',
+          'A big sale on your favorite clothes at the mall',
           'Losing your job or a major medical emergency',
           'Wanting to upgrade to a newer phone',
           'Buying a birthday gift for a friend',
@@ -2466,8 +2630,8 @@ final List<QuizMetadata> _level2Quizzes = [
         options: [
           'Credit cards are illegal for emergencies',
           'It avoids high interest debt and added stress',
-          'Credit cards have no limit',
-          'Emergency funds are more stylish',
+          'Credit cards have no spending limit',
+          'Emergency funds look more impressive',
         ],
         correctIndex: 1,
         wrongExplanation:
@@ -2478,7 +2642,7 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'Where is the best place to keep an emergency fund?',
         options: [
-          'Under your mattress',
+          'Under your mattress at home',
           'A liquid savings account that is easy to access',
           'Invested in risky startup stocks',
           'In a locked box with no key',
@@ -2501,7 +2665,7 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What does "Diversification" mean in investing?',
         options: [
-          'Buying only one very good stock',
+          'Buying only one very good stock that you trust',
           'Spreading your money across many different types of investments',
           'Changing your bank every month',
           'Learning to speak different languages',
@@ -2516,7 +2680,7 @@ final List<QuizMetadata> _level2Quizzes = [
         question:
             'If you only own stock in ONE company, what is your biggest risk?',
         options: [
-          'The company might become too successful',
+          'The company might become too successful too quickly',
           'If that one company fails, you lose all your money',
           'Dividends might be too high',
           'You won\'t be able to buy more',
@@ -2530,7 +2694,7 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is a "Mutual Fund"?',
         options: [
-          'A fund owned by two friends',
+          'A fund owned by two friends who invest together',
           'A collection of many stocks/bonds managed together',
           'A type of bank account for kids',
           'A loan from a family member',
@@ -2582,7 +2746,7 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What does it mean to "Lease" a car?',
         options: [
-          'To buy it with a loan',
+          'To buy it with a loan from a bank',
           'To pay to use it for a few years then return it (like a long-term rental)',
           'To borrow it from a friend',
           'To build the car yourself',
@@ -2610,7 +2774,7 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'When you "Buy" a home with a mortgage, you are building...',
         options: [
-          'Rent debt',
+          'Rent debt that never goes away',
           'Equity (your actual ownership value)',
           'A new road',
           'Nothing for yourself',
@@ -2662,14 +2826,14 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What does "Pay Yourself First" mean?',
         options: [
-          'Buying yourself a gift as soon as you get paid',
+          'Buying yourself a gift as soon as you get paid each month',
           'Setting aside savings immediately before paying other bills or spending',
           'Only working for yourself instead of a boss',
           'Paying your own taxes directly',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s not about spending; it\'s about making your future "self" a priority by saving first.',
+            'It\'s not about spending; it\'s about making your future self a priority by saving first.',
         correctExplanation:
             'By treating savings like a non-negotiable bill, you ensure your wealth grows before you spend the rest.',
       ),
@@ -2678,56 +2842,56 @@ final List<QuizMetadata> _level2Quizzes = [
             'Why is this more effective than saving "whatever is left over"?',
         options: [
           'Because usually there is nothing left over at the end of the month',
-          'Because banks prefer it that way',
+          'Because banks encourage people to save this way for their own benefit',
           'Because it is required by law',
-          'It isn\'t, saving at the end is exactly the same',
+          'It isn\'t, saving at the end works just as well',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'Human nature is to spend what we have. If you save what\'s left, you will usually find reasons to spend it all.',
+            'Human nature is to spend what we have. If you save what\'s left, you usually end up with nothing.',
         correctExplanation:
             'Automatic savings at the start of the month remove the temptation to spend that money.',
       ),
       QuizQuestion(
         question: 'Where should "Pay Yourself First" money ideally go?',
         options: [
-          'Into a checking account for shopping',
+          'Into a checking account used for daily spending',
           'Into a high-yield savings or investment account',
           'Into a physical piggy bank at home',
           'To your friends',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Checking accounts are for spending. You want this money to grow where it is harder to spend on impulse.',
+            'Checking accounts are for spending. Savings should be harder to access so they can grow.',
         correctExplanation:
-            'Investing or saving in a separate account helps protect that money from being used for daily expenses.',
+            'Investing or saving in a separate account helps protect that money from daily expenses.',
       ),
       QuizQuestion(
         question: 'If you "Pay Yourself Last," you are essentially...',
         options: [
-          'Making yourself a priority',
+          'Making yourself a priority in every financial decision',
           'Giving your money to everyone else first and hoping some is left',
-          'Saving more money',
+          'Saving more money than usual',
           'Avoiding taxes',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Landlords, grocers, and streaming services get paid first, and you only get what they didn\'t take.',
+            'Bills and subscriptions get paid first, leaving little or nothing for you.',
         correctExplanation:
-            'Flipping the script ensures you build your own wealth before enriching others.',
+            'Paying yourself first ensures your future goals are funded before others are paid.',
       ),
       QuizQuestion(
         question:
-            'Even saving [GEM]5 from every paycheck is better than [GEM]0 because...',
+            'Even saving 5[GEM] from every paycheck is better than 0[GEM] because...',
         options: [
           'It builds a powerful lifelong habit of saving',
-          'You can buy a car with [GEM]5',
-          'It lowers your rent',
-          'The bank gives you a free gift',
+          'You can buy a car with 5[GEM] over time',
+          'It lowers your rent automatically',
+          'The bank gives you a free reward',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'The amount matters less than the HABIT. Once you start, it becomes easier to increase the amount later.',
+            'The habit matters more than the amount. Small savings make future saving easier.',
         correctExplanation:
             'Habits are the foundation of wealth. Starting small is better than never starting.',
       ),
@@ -2750,65 +2914,65 @@ final List<QuizMetadata> _level2Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Insurance isn\'t for making profit; it\'s a safety net for when something expensive goes wrong.',
+            'Insurance is a safety net, not a way to earn extra money.',
         correctExplanation:
             'By paying a small amount regularly, you transfer the risk of a huge bill to the insurance company.',
       ),
       QuizQuestion(
         question: 'What is an insurance "Premium"?',
         options: [
-          'The amount you pay every month/year to keep the insurance active',
-          'A special award for being a good driver',
-          'The amount you pay when you have an accident',
-          'The maximum amount the insurance will pay you',
+          'The amount you pay every month or year to keep insurance active',
+          'A special reward for being a careful customer',
+          'The amount you pay after an accident happens',
+          'The maximum amount the insurance will pay',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'The premium is the "subscription fee" for the protection provided.',
+            'The premium is the regular payment that keeps your coverage active.',
         correctExplanation:
-            'You must pay your premium consistently, or your insurance coverage will stop.',
+            'If you stop paying the premium, your insurance protection ends.',
       ),
       QuizQuestion(
         question: 'What is a "Deductible"?',
         options: [
-          'The part of a bill YOU must pay before the insurance covers the rest',
-          'The money the insurance company pays you',
-          'A type of discount for new customers',
+          'The part of a bill you must pay before insurance covers the rest',
+          'The money the insurance company gives you',
+          'A discount for good behavior',
           'The total value of your car',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'If you have a [GEM]500 deductible and a [GEM]2000 repair, you pay [GEM]500 and the insurance pays [GEM]1500.',
+            'Deductibles are your responsibility before insurance pays anything.',
         correctExplanation:
-            'Higher deductibles usually mean lower monthly premiums, but higher costs if you have an accident.',
+            'Higher deductibles usually lower premiums but increase out-of-pocket costs.',
       ),
       QuizQuestion(
         question: 'Which of these is NOT a typical type of insurance?',
         options: [
           'Health Insurance',
           'Car Insurance',
-          'Video Game Victory Insurance',
+          'Video game competition insurance for wins',
           'Life Insurance',
         ],
         correctIndex: 2,
         wrongExplanation:
-            'Insurance is for real-world financial risks like health, property, and life, not for fun/games.',
+            'Insurance covers serious financial risks, not games or entertainment.',
         correctExplanation:
-            'Insurance focuses on high-impact events that would cause significant financial hardship.',
+            'Insurance focuses on real events that could cause major financial harm.',
       ),
       QuizQuestion(
         question: 'Is insurance an "Investment"?',
         options: [
-          'Yes, it always makes you money',
+          'Yes, it always increases your wealth',
           'No, it is a risk management tool that costs money for protection',
-          'Only if you have an accident',
-          'It depends on the color of the car',
+          'Only if you make a claim',
+          'It depends on luck',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Ideally, you NEVER want to use your insurance! It is a cost you pay to avoid bankruptcy from a crisis.',
+            'Insurance is meant to protect you, not grow your money.',
         correctExplanation:
-            'Wealth is built through investments; wealth is *protected* through insurance.',
+            'Investments grow wealth; insurance protects wealth.',
       ),
     ],
   ),
@@ -2822,72 +2986,67 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is "Retirement"?',
         options: [
-          'When you are too old to have fun',
+          'When you are too old to enjoy life',
           'When you stop working and live off your savings and investments',
           'A long vacation from school',
           'When you move to a different country',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Retirement is the stage of life where your "money works for you" so you don\'t have to.',
+            'Retirement means financial independence, not boredom.',
         correctExplanation:
-            'The goal of retirement planning is to have enough wealth to maintain your lifestyle without a paycheck.',
+            'The goal is to have enough money so you no longer need a paycheck.',
       ),
       QuizQuestion(
         question: 'Why is starting at age 20 better than starting at age 40?',
         options: [
           'You have more time for compound interest to grow your money',
-          'Young people get higher interest rates',
-          'Older people aren\'t allowed to save',
-          'There is no difference if you save the same total amount',
+          'Young people automatically earn higher interest',
+          'Older people are not allowed to save',
+          'There is no difference if totals match',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'Time is the "engine" of compound interest. Doubling your time can quadruple your final wealth.',
-        correctExplanation:
-            'Starting early allows your early contributions to grow for decades, making it much easier to reach your goals.',
+            'Time allows money to grow on itself many more times.',
+        correctExplanation: 'Starting early gives your money decades to grow.',
       ),
       QuizQuestion(
         question: 'What is a "Pension"?',
         options: [
           'A type of writing tool',
           'Regular payments from an employer or government after you retire',
-          'A fee for being late to work',
-          'Money you pay for insurance',
+          'A fee for being late',
+          'Money paid for insurance',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Pensions are becoming rare, but they act as a steady stream of income for retirees.',
+        wrongExplanation: 'Pensions act like steady retirement income.',
         correctExplanation:
-            'A pension is a fund into which a sum of money is added during an employee\'s employment years.',
+            'They are funded during working years and paid later.',
       ),
       QuizQuestion(
         question: 'How does "Inflation" affect your retirement plan?',
         options: [
-          'It makes things cheaper in the future',
-          'It means you will need MORE money in the future to buy the same things',
-          'It has no effect on retirement',
-          'It doubles your savings automatically',
+          'It makes future costs cheaper',
+          'You will need more money in the future to buy the same things',
+          'It has no effect',
+          'It doubles your savings',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If [GEM]1 buys a loaf of bread today, it might cost [GEM]5 in the future. You must plan for rising costs.',
-        correctExplanation:
-            'Successful retirement planning must account for the decreasing purchasing power of money over time.',
+            'Prices usually rise over time, reducing purchasing power.',
+        correctExplanation: 'Plans must account for rising costs.',
       ),
       QuizQuestion(
         question: 'What is the "Biggest Factor" in growing a retirement fund?',
         options: [
-          'Having a fancy bank',
-          'TIME and consistency',
-          'Winning the lottery once',
-          'Only choosing the stock that goes up the most',
+          'Using a famous bank',
+          'Time and consistency',
+          'Winning once',
+          'Picking only the best stock',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'You can\'t control the market, but you CAN control how early you start and how often you contribute.',
-        correctExplanation:
-            'Consistent investing over a long period is the most reliable path to a wealthy retirement.',
+        wrongExplanation: 'Consistency matters more than luck.',
+        correctExplanation: 'Long-term regular investing builds wealth.',
       ),
     ],
   ),
@@ -2901,73 +3060,63 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is "Unit Price"?',
         options: [
-          'The total price on the tag',
-          'The cost per weight or volume (e.g., cost per ounce or per piece)',
-          'The price of a single item in a pack',
-          'A type of special discount',
+          'The total price on the label',
+          'The cost per weight or volume, such as per ounce or per item',
+          'The price of one item in a bundle',
+          'A special discount type',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Total price doesn\'t tell you the value. Unit price lets you compare different sizes fairly.',
-        correctExplanation:
-            'Understanding unit price helps you see which box of cereal or bottle of juice is actually the best deal.',
+        wrongExplanation: 'Total price alone does not show value.',
+        correctExplanation: 'Unit price helps compare different sizes fairly.',
       ),
       QuizQuestion(
         question: 'Why is it helpful to check the unit price?',
         options: [
-          'To see which color box is better',
-          'To find which brand or size is actually the cheapest for the amount you get',
-          'Because the store requires you to',
-          'To help the store employees',
+          'To judge the packaging design',
+          'To see which size or brand is actually cheaper for the amount',
+          'Because stores require it',
+          'To help workers',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Big boxes are usually cheaper per ounce, but not ALWAYS. Unit price reveals the truth.',
-        correctExplanation:
-            'It prevents you from being tricked by "marketing" or "bulk" packaging that isn\'t actually a deal.',
+        wrongExplanation: 'Marketing can be misleading.',
+        correctExplanation: 'Unit price reveals the real cost.',
       ),
       QuizQuestion(
         question:
-            'If a 10oz box is [GEM]5 and a 20oz box is [GEM]8, which is the better value?',
+            'If a 10oz box is 5[GEM] and a 20oz box is 8[GEM], which is the better value?',
         options: [
-          'The 10oz box',
+          'The smaller box',
           'The 20oz box',
-          'They are the same',
-          'It is impossible to tell',
+          'They cost the same',
+          'It cannot be calculated',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            '10oz at [GEM]5 is 50c per oz. 20oz at [GEM]8 is 40c per oz. The bigger box is cheaper per unit.',
-        correctExplanation:
-            'In this case, the larger box saves you 10 cents on every ounce of the product.',
+        wrongExplanation: 'The larger box costs less per ounce.',
+        correctExplanation: 'Lower unit cost means better value.',
       ),
       QuizQuestion(
         question: 'Does "Bulk Pricing" always save you money?',
         options: [
-          'Yes, big is always cheaper',
-          'No, sometimes a smaller item on sale has a lower unit price',
-          'Only at specific stores',
-          'Bulk items are always better quality',
+          'Yes, bigger is always cheaper',
+          'No, sometimes smaller items have lower unit prices',
+          'Only at large stores',
+          'Bulk items are always better',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Always check the tag! A "Family Size" box can sometimes cost more per ounce than two regular boxes on sale.',
-        correctExplanation:
-            'Smart shoppers always compare the small unit price numbers on the shelf tags.',
+        wrongExplanation: 'Always check unit price.',
+        correctExplanation: 'Bulk is not always a deal.',
       ),
       QuizQuestion(
         question: 'What is a "Marketing Trap" related to pricing?',
         options: [
-          'Putting expensive items at eye level',
-          'Using "Bulk Buy" signs for items that aren\'t actually cheaper',
-          'Using the color red for "discounts"',
-          'All of the above',
+          'Placing costly items at eye level',
+          'Using bulk labels when prices are not lower',
+          'Using bright sale colors',
+          'All of the above techniques combined',
         ],
         correctIndex: 3,
-        wrongExplanation:
-            'Stores use many tricks to make you spend. Unit pricing is your best tool to avoid them.',
-        correctExplanation:
-            'Being aware of how stores influence your choices helps you keep more of your own money.',
+        wrongExplanation: 'Stores use many tricks.',
+        correctExplanation: 'Knowing them helps you save.',
       ),
     ],
   ),
@@ -2981,70 +3130,59 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is a "Fixed Expense"?',
         options: [
-          'An expense that changes every month',
-          'An expense that stays the same every month (like rent or a phone plan)',
-          'Something you only pay for once',
-          'A broken item that needs fixing',
+          'An expense that changes often',
+          'An expense that stays the same each month, like rent or a phone plan',
+          'A one-time purchase',
+          'A broken item',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Fixed expenses are predictable. You know exactly how much they will cost ahead of time.',
-        correctExplanation:
-            'Monthly rent, car payments, and consistent subscriptions are examples of fixed expenses.',
+        wrongExplanation: 'Fixed costs are predictable.',
+        correctExplanation: 'They stay consistent month to month.',
       ),
       QuizQuestion(
         question: 'What is a "Variable Expense"?',
         options: [
-          'An expense that stays the same',
-          'An expense that changes depending on your choices (like groceries or gas)',
-          'Money you find in the street',
-          'A type of investment',
+          'An expense that never changes',
+          'An expense that changes based on your choices, like food or gas',
+          'Money found randomly',
+          'An investment type',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Variable expenses are harder to predict but easier to CONTROL and reduce.',
-        correctExplanation:
-            'Eating out, entertainment, and utility bills usually vary from month to month.',
+        wrongExplanation: 'Variable expenses depend on usage.',
+        correctExplanation: 'They can often be reduced.',
       ),
       QuizQuestion(
         question:
             'If you need to save money quickly, which should you cut first?',
-        options: [
-          'Fixed expenses',
-          'Variable expenses',
-          'Your income',
-          'Your taxes',
-        ],
+        options: ['Fixed expenses', 'Variable expenses', 'Income', 'Taxes'],
         correctIndex: 1,
-        wrongExplanation:
-            'Fixed expenses (like rent) are hard to change quickly. Variable expenses (like snacks) can be cut today.',
-        correctExplanation:
-            'Reducing variable spending is the most effective way to improve your cash flow immediately.',
+        wrongExplanation: 'Variable costs are flexible.',
+        correctExplanation: 'They are easiest to reduce fast.',
       ),
       QuizQuestion(
         question:
-            'Is a gym membership (with a monthly contract) usually fixed or variable?',
-        options: ['Fixed', 'Variable', 'Random', 'Optional'],
+            'Is a gym membership with a monthly contract fixed or variable?',
+        options: [
+          'Fixed',
+          'Variable with usage',
+          'Random',
+          'Optional spending',
+        ],
         correctIndex: 0,
-        wrongExplanation:
-            'If you pay the same [GEM]30 every month, it is a fixed expense, even if you don\'t go to the gym!',
-        correctExplanation:
-            'Contracted monthly services are almost always fixed expenses.',
+        wrongExplanation: 'Same monthly payment makes it fixed.',
+        correctExplanation: 'Contracts create fixed expenses.',
       ),
       QuizQuestion(
-        question:
-            'Why are utility bills (like water and power) considered variable?',
+        question: 'Why are utility bills considered variable?',
         options: [
-          'They stay the same every month',
-          'The amount depends on how much water or power you use',
-          'They aren\'t real expenses',
-          'The government pays them',
+          'They never change',
+          'They depend on how much you use',
+          'They are imaginary',
+          'They are paid by others',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'If you take shorter showers or turn off lights, the bill goes down. That makes it variable.',
-        correctExplanation:
-            'Variable expenses often give you the power to save money through more efficient habits.',
+        wrongExplanation: 'Usage changes costs.',
+        correctExplanation: 'Habits affect the bill.',
       ),
     ],
   ),
@@ -3058,68 +3196,73 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is "Financial Independence"?',
         options: [
-          'Having a very high-paying job',
+          'Having a very high-paying job with a famous company',
           'When your investment income covers all your living expenses',
-          'Winning the lottery',
-          'Never paying for anything again',
+          'Winning the lottery and never worrying about money again',
+          'Never paying for anything again in your entire life',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A job requires you to WORK. Independence means your MONEY does the work for you.',
+            'A job still requires your time. Independence means your money provides income without daily work.',
         correctExplanation:
             'At this point, you choose to work because you want to, not because you have to pay the bills.',
       ),
       QuizQuestion(
         question: 'What is the "4% Rule" in retirement planning?',
         options: [
-          'You should save 4% of your income',
+          'You should save exactly 4% of your income every year',
           'A guideline for safely withdrawing 4% of your savings annually in retirement',
-          'The interest rate of every bank',
-          'The tax rate for millionaires',
+          'The fixed interest rate offered by all banks',
+          'A special tax rate for wealthy people',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s a strategy to ensure your money lasts for 30+ years by not taking too much out at once.',
+            'It is not about saving 4%, but about how much you can safely withdraw each year.',
         correctExplanation:
-            'The 4% rule assumes that if you withdraw only 4%, your investments will likely grow enough to last forever.',
+            'The 4% rule suggests that careful withdrawals allow savings to last for decades.',
       ),
       QuizQuestion(
         question:
-            'If you need [GEM]40,000 a year to live, how much savings do you need using the "4% Rule"?',
-        options: ['[GEM]400,000', '[GEM]1,000,000', '[GEM]2,000,000', '[GEM]40,000'],
+            'If you need 40,000[GEM] a year to live, how much savings do you need using the "4% Rule"?',
+        options: [
+          '400,000[GEM] saved across multiple bank accounts',
+          '1,000,000[GEM]',
+          '2,000,000[GEM] invested very aggressively',
+          '40,000[GEM] in yearly income',
+        ],
         correctIndex: 1,
         wrongExplanation:
-            'Take your annual expenses and multiply by 25 ([GEM]40k * 25 = [GEM]1M). 4% of [GEM]1M is [GEM]40k.',
+            'You multiply yearly expenses by 25. This ensures 4% withdrawals match spending.',
         correctExplanation:
-            'Reaching [GEM]1 Million in investments would allow you to withdraw [GEM]40,000 a year potentially forever.',
+            'With 1,000,000[GEM] saved, 4% equals 40,000[GEM] per year.',
       ),
       QuizQuestion(
         question: 'Achieving financial independence early usually requires...',
         options: [
-          'A high savings rate (saving 30-50% of income)',
-          'Constant spending on luxury items',
-          'Only saving in a checking account',
-          'Pure luck',
+          'A high savings rate such as saving 30–50% of income consistently',
+          'Spending more money to enjoy life as much as possible',
+          'Keeping all money in a checking account',
+          'Relying entirely on luck or inheritance',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'The more of your income you save, the faster your "wealth snowballs" into independence.',
+            'Saving a large portion of income accelerates wealth growth.',
         correctExplanation:
-            'By living below your means and investing the difference, you "buy" your future freedom.',
+            'Living below your means and investing the difference buys future freedom.',
       ),
       QuizQuestion(
         question: 'What does the acronym "FIRE" stand for in finance?',
         options: [
           'Financial Independence, Retire Early',
-          'Federal Income Revenue Exchange',
-          'Fixed Interest Rate Earnings',
-          'Funding Investment Real Estate',
+          'Federal Income Revenue Exchange program',
+          'Fixed Interest Rate Earnings system',
+          'Funding Investment Real Estate projects',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'FIRE is a movement of people focused on reaching financial freedom as quickly as possible.',
+            'FIRE focuses on freedom and time, not government programs or financial products.',
         correctExplanation:
-            'The core idea of FIRE is prioritize freedom and time over material possessions.',
+            'The FIRE movement emphasizes reaching independence as early as possible.',
       ),
     ],
   ),
@@ -3133,81 +3276,81 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'What is a business "Value Proposition"?',
         options: [
-          'The price of the business',
+          'The price listed for the business or product',
           'The unique benefit or solution a business offers its customers',
-          'The name of the company',
-          'The location of the office',
+          'The official name and logo of the company',
+          'The physical location of the office or store',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It answers: "Why should a customer choose YOU over everyone else?"',
+            'A value proposition explains why customers should choose you over others.',
         correctExplanation:
-            'A strong value proposition solves a specific problem or fulfills a specific need better than others.',
+            'Strong businesses clearly explain what problem they solve better than competitors.',
       ),
       QuizQuestion(
         question:
             'Why is "Market Research" critical before starting a business?',
         options: [
-          'To find the cheapest office rent',
+          'To find the cheapest office space available',
           'To see if enough people actually want to buy what you are selling',
-          'To avoid paying taxes',
-          'Market research is optional',
+          'To avoid paying taxes legally',
+          'Because every business must do it by law',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Even the best idea will fail if there are no customers willing to pay for it.',
+            'Even great ideas fail if no customers are willing to pay.',
         correctExplanation:
-            'Understanding your audience and competition prevents you from wasting time and money on a product nobody wants.',
+            'Market research reduces risk by confirming real demand.',
       ),
       QuizQuestion(
         question: 'What does "Scalability" mean for a business?',
         options: [
-          'Fitting more people in an office',
+          'Fitting more employees into a single office',
           'The ability of a business to grow income much faster than its costs',
-          'How many scales the company owns',
-          'A type of fish business',
+          'Owning many weighing scales',
+          'Selling fish or seafood products',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A scalable business (like software) can serve 1 million people almost as cheaply as 1,000 people.',
+            'Scalable businesses grow revenue without matching cost increases.',
         correctExplanation:
-            'Scalability is key to explosive growth and massive profitability in the long run.',
+            'Scalability allows profits to grow rapidly over time.',
       ),
       QuizQuestion(
         question:
-            'If a product costs [GEM]10 to make and sells for [GEM]12, what is the problem?',
+            'If a product costs 10[GEM] to make and sells for 12[GEM], what is the problem?',
         options: [
-          'The price is too high',
-          'The "Profit Margin" is too low to cover marketing and other hidden costs',
-          'It is illegal to sell for [GEM]12',
-          'There is no problem',
+          'The selling price is too high for customers',
+          'The profit margin is too low to cover marketing and other business costs',
+          'Selling at 12[GEM] is illegal',
+          'There is no issue with this pricing model',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A [GEM]2 profit is very small. If it costs [GEM]3 to find a customer (marketing), you are losing money on every sale.',
+            'Small margins disappear once marketing, rent, and salaries are included.',
         correctExplanation:
-            'Healthy margins are necessary to cover the "overhead" costs of running a real business.',
+            'Healthy profit margins are required for a business to survive.',
       ),
       QuizQuestion(
         question: 'Successful businesses primarily focus on...',
         options: [
-          'Solving a customer\'s problem or fulfilling a desire',
-          'Having the coolest logo',
-          'Taking as much money as possible from people',
-          'Only hiring family members',
+          'Solving a customer\'s problem or fulfilling a real need',
+          'Having the most attractive branding',
+          'Taking as much money as possible from customers',
+          'Hiring only friends and family',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'Money is a "result" of providing value. If you solve a problem, people will gladly pay you.',
+            'Profit follows value creation, not tricks or appearance.',
         correctExplanation:
-            'Focusing on the customer\'s needs is the most sustainable way to build a long-term business.',
+            'Customer-focused businesses last longer and grow stronger.',
       ),
     ],
   ),
 ];
 
 final List<QuizMetadata> _level3Quizzes = [
-  // Quiz 1-3: Easy (Level 3)
+  // Quiz 1–3: Easy (Level 3)
   QuizMetadata(
     id: 'l3_q1',
     title: 'Advanced Tax Concepts',
@@ -3218,72 +3361,72 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Progressive Tax" system?',
         options: [
-          'Everyone pays the same percentage',
+          'Everyone pays the same percentage regardless of income level',
           'Higher income earners pay a higher percentage of their income in tax',
-          'Tax that only applies to progress in school',
-          'A tax that decreases as you earn more',
+          'A tax system based on progress in school and education outcomes',
+          'A tax that decreases as you earn more money over time',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A progressive tax doesn\'t mean a flat rate. It means your tax rate increases as your income climbs into higher brackets.',
+            'A progressive tax does not use a flat rate; the percentage increases as income rises.',
         correctExplanation:
-            'In a progressive system, those with the "ability to pay" contribute a larger share of their earnings to support public services.',
+            'In a progressive system, people with higher incomes contribute a larger share to public services.',
       ),
       QuizQuestion(
         question: 'What is a "Tax Deduction"?',
         options: [
-          'A penalty for paying taxes late',
+          'A penalty charged for paying taxes after the deadline',
           'An amount that reduces your total taxable income',
-          'A special gift from the government',
-          'The total amount of tax you owe',
+          'A special payment given by the government to taxpayers',
+          'The final amount of tax you owe after calculations',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s not a penalty or the final bill. It\'s a specific expense you can subtract from your income *before* the tax is calculated.',
+            'A deduction lowers the income that gets taxed; it is not a penalty or a refund.',
         correctExplanation:
-            'Deductions (like student loan interest or charitable gifts) lower the amount of income the government is allowed to tax.',
+            'Deductions reduce how much of your income the government is allowed to tax.',
       ),
       QuizQuestion(
         question: 'What is the purpose of a "W-4 Form"?',
         options: [
-          'To apply for a new job',
+          'To apply for a new job with an employer',
           'To tell your employer how much tax to withhold from your paycheck',
-          'To file your year-end taxes',
-          'To request a raise',
+          'To file your taxes at the end of the year',
+          'To formally request a raise or promotion',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A W-4 isn\'t a job application or the final tax return. It is an internal document that determines your "withholding" amount.',
+            'A W-4 controls withholding during the year, not the final tax filing.',
         correctExplanation:
-            'Filling out a W-4 accurately ensures you don\'t owe a huge bill at the end of the year or give the government too much of your money for free.',
+            'Accurate withholding helps avoid large refunds or surprise tax bills.',
       ),
       QuizQuestion(
         question: 'What does "FICA" tax usually fund?',
         options: [
-          'National Parks only',
+          'Maintenance of national parks and public land',
           'Social Security and Medicare',
-          'Military spending',
-          'Space exploration',
+          'Military operations and defense spending',
+          'Scientific research and space programs',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'FICA is a specific payroll tax. While income tax goes to many things, FICA is strictly for retirement and health programs.',
+            'FICA is dedicated to retirement and health programs, not general government spending.',
         correctExplanation:
-            'FICA contributions ensure that workers have a safety net for healthcare and income when they get older.',
+            'These programs support income and healthcare for older adults and disabled workers.',
       ),
       QuizQuestion(
         question: 'Why do some people receive a "Tax Refund"?',
         options: [
-          'They won a government contest',
+          'They won a government-sponsored contest',
           'They overpaid their taxes throughout the year',
-          'The government had extra money left over',
-          'They didn\'t work enough',
+          'The government had excess funds to return',
+          'They worked fewer hours than expected',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A refund isn\'t "free money." It\'s just the government returning interest-free money that you accidentally overpaid.',
+            'A refund simply returns money that was withheld in excess.',
         correctExplanation:
-            'Ideally, you want your withholding to be accurate so you don\'t give the government an interest-free loan all year.',
+            'A refund means you paid more tax during the year than you owed.',
       ),
     ],
   ),
@@ -3297,154 +3440,152 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'When you use a "Debit Card," the money comes from...',
         options: [
-          'A loan from the bank',
+          'A temporary loan provided by the bank',
           'Your existing checking account balance',
-          'Your future salary',
-          'A central pool of gems',
+          'Your future income that has not been earned yet',
+          'A shared pool of digital currency managed by banks',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Debit cards aren\'t loans. They are digital keys to money you *already* have in the bank.',
+            'Debit cards access money you already have, not borrowed funds.',
         correctExplanation:
-            'Debit cards are great for staying out of debt because you can\'t spend more than you actually own.',
+            'Using debit helps avoid debt because spending is limited to your balance.',
       ),
       QuizQuestion(
         question: 'When you use a "Credit Card," you are...',
         options: [
-          'Spending your own money',
+          'Spending only money you already own',
           'Taking a short-term loan from the bank',
-          'Getting free items from the store',
-          'Decreasing your debt',
+          'Receiving free products from stores',
+          'Reducing your total debt automatically',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It feels like your money, but it\'s the bank\'s money! You are promising to pay them back later, potentially with interest.',
+            'Credit card purchases are borrowed money that must be repaid.',
         correctExplanation:
-            'Credit cards offer convenience and protection, but they required discipline to avoid high-interest charges.',
+            'Interest may apply if the balance is not paid in full.',
       ),
       QuizQuestion(
         question:
             'Which card usually offers better "Fraud Protection" for shoppers?',
         options: [
-          'Debit Card',
-          'Credit Card',
-          'Both are exactly the same',
-          'Cash',
+          'Debit card with a personal identification number',
+          'Credit card',
+          'Both provide identical protection in all situations',
+          'Cash stored securely in a wallet',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a debit card is stolen, your actual cash is gone until the bank fixes it. With credit, the bank\'s money is at risk, not yours.',
+            'With credit cards, fraudulent charges affect the bank’s money first.',
         correctExplanation:
-            'Credit cards have stronger legal protections, making it easier to cancel charges if you are scammed.',
+            'Credit cards are easier to dispute and reverse fraudulent charges.',
       ),
       QuizQuestion(
         question: 'What is a "Credit Limit"?',
         options: [
-          'The minimum you must spend',
+          'The minimum amount you must spend each month',
           'The maximum amount the bank allows you to borrow on the card',
-          'The number of cards you can own',
-          'A time limit on your purchases',
+          'The total number of credit cards you may own',
+          'A deadline for completing purchases',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s not about time or minimums. It\'s the "ceiling" of debt you are allowed to have at one time.',
+            'It represents the maximum allowed balance, not a spending requirement.',
         correctExplanation:
-            'Keeping your balance well below your credit limit (low utilization) is a great way to boost your credit score.',
+            'Lower usage compared to the limit helps maintain a strong credit score.',
       ),
       QuizQuestion(
         question:
             'What happens if you only pay the "Minimum Balance" on a credit card?',
         options: [
-          'You become debt-free quickly',
-          'You pay a huge amount of interest and the debt lasts for years',
-          'Nothing, it is the best strategy',
-          'The bank gives you a bonus',
+          'Your debt disappears quickly',
+          'You pay a large amount of interest and the debt lasts for years',
+          'Nothing changes over time',
+          'The bank rewards you for consistency',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Paying the minimum is a trap. Most of that payment goes to interest, not the actual debt you owe.',
-        correctExplanation:
-            'Always aim to pay the "Full Balance" every month to use the bank\'s money for free!',
+            'Most minimum payments go toward interest rather than principal.',
+        correctExplanation: 'Paying the full balance avoids interest entirely.',
       ),
     ],
   ),
   QuizMetadata(
     id: 'l3_q3',
     title: 'Advanced Insurance',
-    subtitle: 'Liability and Comprehensive coverage',
+    subtitle: 'Liability and comprehensive coverage',
     difficulty: QuizDifficulty.easy,
     requiredLevel: 3,
     questions: [
       QuizQuestion(
         question: 'What does "Liability Coverage" in car insurance pay for?',
         options: [
-          'Repairs for your own car',
-          'Damage or injuries YOU cause to OTHER people or their property',
-          'Theft of your car',
-          'A new car for you',
+          'Repairs to your own vehicle after an accident',
+          'Damage or injuries you cause to other people or their property',
+          'Replacement of a stolen vehicle',
+          'The full cost of purchasing a new car',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Liability is about your "legal responsibility" to others. It doesn\'t fix your own car at all.',
+            'Liability covers harm you cause to others, not your own vehicle.',
         correctExplanation:
-            'Liability is usually required by law because it ensures you can pay for the mistakes you make on the road.',
+            'This coverage ensures victims can be compensated after an accident.',
       ),
       QuizQuestion(
         question: 'What is "Comprehensive Coverage"?',
         options: [
-          'Insurance for everything in the world',
+          'Insurance coverage for every possible situation',
           'Protection against non-accident events like theft, fire, or weather damage',
-          'A type of health insurance',
-          'Insurance that only works on weekends',
+          'A category of medical insurance',
+          'Insurance that only applies during weekends',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Collision covers crashes. Comprehensive covers almost everything else that can happen to your car while it\'s parked.',
-        correctExplanation:
-            'If a tree falls on your car, "Comprehensive" is the coverage that saves your budget.',
+            'Comprehensive applies to non-collision events affecting your car.',
+        correctExplanation: 'It protects against many unpredictable risks.',
       ),
       QuizQuestion(
         question:
-            'Why might a [GEM]1,000 deductible be better than a [GEM]250 deductible?',
+            'Why might a 1000[GEM] deductible be better than a 250[GEM] deductible?',
         options: [
-          'It is cheaper when you have an accident',
-          'It lowers your monthly premium (the regular cost of insurance)',
-          'It means the insurance pays more',
-          'It has no advantage',
+          'It costs less when you file a claim',
+          'It lowers your monthly premium, reducing regular insurance costs',
+          'It increases how much the insurer pays',
+          'It provides no meaningful benefit',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A higher deductible is more "risk" for you, so the insurance company rewards you with a lower monthly bill.',
+            'Higher deductibles shift more risk to you, lowering premiums.',
         correctExplanation:
-            'If you have an emergency fund of [GEM]1,000, choosing a higher deductible can save you hundreds of gems per year.',
+            'This can be beneficial if you have savings for emergencies.',
       ),
       QuizQuestion(
         question: 'What is "Disability Insurance"?',
         options: [
-          'Insurance for your car',
-          'Insurance that replaces part of your income if you are too sick or injured to work',
-          'Insurance for old people only',
-          'A type of life insurance',
+          'Insurance coverage for vehicle accidents',
+          'Insurance that replaces part of your income if you are unable to work',
+          'Insurance designed only for retirees',
+          'A variation of life insurance policies',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Health insurance pays the doctor. Disability insurance pays YOUR bills (rent, food) while you can\'t work.',
+            'Health insurance pays medical bills, not lost income.',
         correctExplanation:
-            'Many experts call this the most important insurance because it protects your "greatest asset": your ability to earn money.',
+            'Income protection is crucial if illness or injury stops you from working.',
       ),
       QuizQuestion(
         question: 'An insurance "Claim" is...',
         options: [
-          'A request to the insurance company to pay for a loss',
-          'The amount you pay every month',
-          'A type of bank account',
-          'The total value of your home',
+          'A request to the insurance company to pay for a covered loss',
+          'The monthly payment required to keep insurance active',
+          'A special type of savings account',
+          'The total value of insured property',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'Monthly pay is the "Premium." A "Claim" is when you actually ask for the money back after something goes wrong.',
+            'Premiums are regular payments; claims are filed after a loss.',
         correctExplanation:
-            'Filing a claim starts the process of the insurance company evaluating and paying for a covered loss.',
+            'Claims trigger the insurer’s review and payment process.',
       ),
     ],
   ),
@@ -3459,73 +3600,73 @@ final List<QuizMetadata> _level3Quizzes = [
         question: 'What is the "Rule of 72" used for?',
         options: [
           'Estimating how long it takes for an investment to double',
-          'Calculating your total tax debt',
-          'Determining the price of a house',
-          'Finding the best interest rate at a bank',
+          'Calculating your total tax debt over multiple years',
+          'Determining the long-term market value of a house',
+          'Finding the best advertised interest rate at a local bank branch',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'The Rule of 72 is a mental shortcut for growth. Divide 72 by the annual interest rate to find the years until your gems double.',
+            'The Rule of 72 is a mental shortcut for growth. Divide 72 by the annual interest rate to estimate doubling time.',
         correctExplanation:
-            'For example, at a 10% return, your [GEM]1,000 becomes [GEM]2,000 in about 7.2 years (72 / 10).',
+            'For example, at a 10% return, your 1000[GEM] becomes 2000[GEM] in about 7.2 years.',
       ),
       QuizQuestion(
         question:
             'Compound interest is often called the "Eighth Wonder of the World" because...',
         options: [
-          'It is very old',
+          'It has existed for hundreds of years in financial systems',
           'It allows you to earn interest on your previous interest',
-          'Only seven other things are better',
-          'It is required by law for all accounts',
+          'It ranks just after seven major historical discoveries',
+          'It is required by law for all savings and investment accounts',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Simple interest only pays on the principal. Compound interest pays on the principal PLUS the accumulated growth!',
+            'Simple interest only grows on the original amount, while compound interest grows on accumulated gains.',
         correctExplanation:
-            'Over decades, compounding can turn small monthly savings into massive piles of gems.',
+            'Over long periods, compounding can turn small, regular savings into very large amounts.',
       ),
       QuizQuestion(
         question:
             'Which factor has the BIGGEST impact on compound interest growth?',
         options: [
-          'The initial amount of gems',
+          'The initial amount of money you invest at the beginning',
           'The number of years the money stays invested',
-          'The color of your bank card',
-          'The name of the investment',
+          'The design or color of your bank card',
+          'The official name of the investment product',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Starting with more gems helps, but "time" is the multiplier. Starting 10 years earlier is often worth more than saving [GEM]10,000 later.',
+            'Starting with more money helps, but time allows growth to multiply repeatedly.',
         correctExplanation:
-            'Time allows the exponential curve of compounding to really take off.',
+            'Long time horizons allow exponential growth to take effect.',
       ),
       QuizQuestion(
         question: 'What is the "APY" (Annual Percentage Yield)?',
         options: [
-          'The name of a bank',
+          'The official name of a financial institution',
           'The real interest rate you earn including compounding',
-          'A penalty for early withdrawal',
-          'The total gems in your account',
+          'A fee charged for withdrawing money early',
+          'The total amount of money currently in your account',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'APR is the basic rate. APY accounts for how often the interest is added (daily, monthly), giving you the TRUE return.',
+            'APR does not include compounding, while APY reflects the true return.',
         correctExplanation:
-            'Always compare APY when choosing where to store your gems to see who is actually paying you more.',
+            'APY makes it easier to compare savings and investment options accurately.',
       ),
       QuizQuestion(
         question: 'Inflation is the "enemy" of compound interest because...',
         options: [
-          'It makes the bank close',
-          'It reduces the "purchasing power" of the gems you earn',
-          'It increases your tax rate',
-          'It stops the math from working',
+          'It forces banks to shut down operations',
+          'It reduces the purchasing power of the money you earn',
+          'It automatically increases your tax rate',
+          'It prevents mathematical growth formulas from working',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If your interest is 5% but inflation is 3%, your "real" growth is only 2%. You have more gems, but they buy less bread.',
+            'Even if numbers grow, inflation can reduce what that money can actually buy.',
         correctExplanation:
-            'To build true wealth, your investments must grow significantly faster than the rate of inflation.',
+            'True wealth grows only when returns exceed inflation.',
       ),
     ],
   ),
@@ -3539,151 +3680,138 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What actually IS a "Share of Stock"?',
         options: [
-          'A loan to a company',
+          'A loan provided to a company with fixed repayment terms',
           'A certificate of partial ownership in a corporation',
-          'A type of lottery ticket',
-          'A promise of free products',
+          'A ticket similar to a lottery entry',
+          'A promise that guarantees free products for life',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Bonds are loans. Stocks are equity. If you own 100 shares, you actually own a tiny piece of the company\'s buildings, ideas, and profits.',
+        wrongExplanation: 'Stocks represent ownership, not debt.',
         correctExplanation:
-            'As the company grows and becomes more valuable, your piece of the pie (the share price) usually goes up.',
+            'When a company becomes more valuable, the value of its shares usually increases.',
       ),
       QuizQuestion(
         question: 'What are "Dividends"?',
         options: [
-          'Fees you pay to a stockbroker',
+          'Fees charged by investment platforms',
           'A portion of a company\'s profit paid out to stockholders',
-          'The price of a share',
-          'A type of company debt',
+          'The market price of one share',
+          'A form of long-term company debt',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Dividends aren\'t fees or prices. They are a "thank you" check sent to owners when the company made good profit.',
+            'Dividends are profit distributions, not costs or prices.',
         correctExplanation:
-            'Many investors use dividends to buy even more shares, further accelerating their compound growth.',
+            'They can be reinvested to increase long-term growth.',
       ),
       QuizQuestion(
         question: 'What does a "Diversified Portfolio" mean?',
         options: [
-          'Buying only one very expensive stock',
-          'Spreading your gems across many different types of companies and industries',
-          'Selling all your stocks every day',
-          'Investing only in your local town',
+          'Buying only one high-priced stock',
+          'Spreading your money across many different companies and industries',
+          'Frequently buying and selling the same stock every day',
+          'Investing only in businesses located near you',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Putting all your [GEM]10,000 into one company is like putting all your eggs in one basket. If that company fails, you lose everything.',
+        wrongExplanation: 'Concentration increases risk.',
         correctExplanation:
-            'Diversity protects you. If tech stocks go down but energy stocks go up, your total wealth stays stable.',
+            'Diversification reduces the impact of a single failure.',
       ),
       QuizQuestion(
         question: 'What is a "Market Index" (like the S&P 500)?',
         options: [
-          'A list of the best prices in town',
+          'A published list of the cheapest products available',
           'A tool that tracks the performance of a specific group of stocks',
-          'The name of the main stock exchange',
-          'A tax on stock market gains',
+          'The official building where stocks are traded',
+          'A government tax applied to stock profits',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'An index isn\'t a stock itself. It\'s a "scoreboard" that tells you how the overall market is doing.',
+            'Indexes measure performance but cannot be purchased directly.',
         correctExplanation:
-            'Many successful investors simply buy "Index Funds" that track these scores rather than trying to pick individual winners.',
+            'They show how a section of the market is performing overall.',
       ),
       QuizQuestion(
         question: 'A "Bear Market" occurs when...',
         options: [
-          'Stock prices are rising rapidly',
+          'Stock prices are rising very quickly',
           'Stock prices have fallen by 20% or more over a period of time',
-          'Bears start working at the stock exchange',
-          'Companies are giving out free gems',
+          'Animals become mascots for stock exchanges',
+          'Companies give away free money to investors',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Bulls charge up (rising prices). Bears swipe down (falling prices). It describes the "mood" of the market.',
-        correctExplanation:
-            'Bear markets can be scary, but for long-term investors, they can be a great time to buy shares at a "discount."',
+        wrongExplanation: 'Bear markets describe widespread declines.',
+        correctExplanation: 'They are normal parts of long-term market cycles.',
       ),
     ],
   ),
   QuizMetadata(
     id: 'l3_q6',
     title: 'Bonds and Fixed Income',
-    subtitle: 'Lending your gems for profit',
+    subtitle: 'Lending your money for profit',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 3,
     questions: [
       QuizQuestion(
         question: 'What is a "Bond" in the financial world?',
         options: [
-          'An agreement to work for a company',
-          'An I.O.U. where you lend gems to a government or corporation for interest',
-          'A type of insurance policy',
-          'A permanent partnership',
+          'An employment agreement with a company',
+          'An I.O.U. where you lend money to a government or corporation for interest',
+          'A type of insurance contract',
+          'A permanent ownership partnership',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Shares make you an owner. Bonds make you a "Lender." You give them gems now, and they promise to pay them back with interest.',
-        correctExplanation:
-            'Bonds are generally considered safer than stocks, but they usually offer lower potential growth.',
+        wrongExplanation: 'Bonds represent lending, not ownership.',
+        correctExplanation: 'They generally offer lower risk than stocks.',
       ),
       QuizQuestion(
         question: 'What is the "Coupon Rate" of a bond?',
         options: [
-          'A discount on local groceries',
+          'A discount program for consumers',
           'The fixed interest rate the bond issuer pays to the lender',
-          'The price of the bond',
-          'The date the bond expires',
+          'The market value of the bond',
+          'The year the bond expires',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'It\'s named after old paper bonds that had physical coupons you clipped to get paid. It\'s just your interest rate.',
+        wrongExplanation: 'Coupon rate refers to interest, not price.',
         correctExplanation:
-            'If you buy a [GEM]1,000 bond with a 5% coupon, you get [GEM]50 every year until the bond matures.',
+            'It determines how much income the bond pays each year.',
       ),
       QuizQuestion(
         question: 'What is "Maturity Date"?',
         options: [
-          'The day you are old enough to invest',
-          'The date the borrower must pay back the full original loan amount',
-          'The day the company was founded',
-          'The best day to sell a stock',
+          'The legal age to invest in markets',
+          'The date the borrower must repay the original loan amount',
+          'The founding date of the issuing company',
+          'The ideal time to sell stocks',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Maturity isn\'t about your age. It\'s the "end of the contract" for a bond.',
-        correctExplanation:
-            'On the maturity date, the company gives you back your initial [GEM]1,000 and the contract is finished.',
+        wrongExplanation: 'Maturity marks the end of the bond contract.',
+        correctExplanation: 'At maturity, principal is returned.',
       ),
       QuizQuestion(
         question: 'Which bond is typically considered the SAFEST?',
         options: [
-          'Corporate Bond from a new startup',
+          'Corporate bonds issued by new startups',
           'U.S. Treasury Bond',
-          'International Bond from a small country',
-          'Bond from an amusement park',
+          'International bonds from unstable economies',
+          'Bonds issued by private entertainment venues',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Startups can go broke. Small countries can have trouble. The U.S. government has the strongest history of paying its debts.',
-        correctExplanation:
-            'Because they are so safe, Treasury bonds often have the lowest interest rates in the whole market.',
+        wrongExplanation: 'Government backing reduces default risk.',
+        correctExplanation: 'Safety usually comes with lower returns.',
       ),
       QuizQuestion(
         question: 'What is a "Municipal Bond"?',
         options: [
           'A bond issued by a city or state to fund public projects',
-          'A bond used to buy a new car',
-          'A bond for private individuals only',
-          'A bond that never pays interest',
+          'A bond used for personal vehicle purchases',
+          'A bond reserved for private individuals only',
+          'A bond that never pays interest at any time',
         ],
         correctIndex: 0,
-        wrongExplanation:
-            'Municipalities are local governments. They use these bonds to build schools, bridges, and parks in your town.',
-        correctExplanation:
-            'A special benefit of "Munis" is that the interest you earn is often tax-free!',
+        wrongExplanation: 'Municipal bonds are issued by local governments.',
+        correctExplanation: 'Their interest is often tax-advantaged.',
       ),
     ],
   ),
@@ -3697,73 +3825,64 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is an "Index Fund"?',
         options: [
-          'A list of the most expensive companies',
+          'A list of the most expensive public companies',
           'A type of mutual fund or ETF designed to track the performance of a specific market index',
-          'A fund that only invests in index cards',
-          'A government savings bond',
+          'A fund that invests in office supplies',
+          'A savings product issued by the government',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It isn\'t just a list. It\'s a "passive" investment that buys every company in an index (like the S&P 500) so you can match the market\'s growth.',
-        correctExplanation:
-            'Index funds are famous for having the lowest fees (expense ratios) because they don\'t need expensive managers to pick stocks.',
+            'Index funds track markets rather than selecting individual stocks.',
+        correctExplanation: 'Low fees make them powerful long-term tools.',
       ),
       QuizQuestion(
         question: 'What does "ETF" stand for?',
         options: [
-          'Electronic Total Fund',
+          'Electronic Total Fund structure',
           'Exchange-Traded Fund',
-          'Easy Tax Filing',
-          'Every Trading Friday',
+          'Easy Tax Filing system',
+          'Every Trading Friday program',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'The name is the clue: it\'s a fund that is traded on a stock "Exchange," just like an individual stock.',
-        correctExplanation:
-            'ETFs are very popular because they usually have lower fees than traditional mutual funds.',
+        wrongExplanation: 'ETFs trade on exchanges like stocks.',
+        correctExplanation: 'They combine diversification with flexibility.',
       ),
       QuizQuestion(
         question: 'What is an "Expense Ratio"?',
         options: [
           'The percentage of your investment taken each year for management fees',
-          'The total gems you spend on lunch',
-          'The ratio of your debt to your income',
+          'The total money you spend on daily expenses',
+          'A calculation comparing income and debt',
           'The cost of buying a single share',
         ],
         correctIndex: 0,
-        wrongExplanation:
-            'Investing isn\'t free! The people running the fund take a small cut (like 0.1% or 1%) to pay for their office and work.',
-        correctExplanation:
-            'Choosing a fund with a LOW expense ratio can save you tens of thousands of gems over your lifetime.',
+        wrongExplanation: 'Expense ratios represent ongoing costs.',
+        correctExplanation: 'Lower ratios improve long-term returns.',
       ),
       QuizQuestion(
         question: 'What is "Dollar-Cost Averaging" (DCA)?',
         options: [
-          'Trying to buy only when prices are the lowest',
-          'Investing a fixed amount of gems at regular intervals, regardless of price',
-          'Trading one currency for another',
-          'Calculating the average price of a house',
+          'Trying to buy only at market lows',
+          'Investing a fixed amount of money at regular intervals regardless of price',
+          'Exchanging one currency for another',
+          'Estimating housing prices',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'DCA removes the stress of "timing the market." You buy more shares when prices are low and fewer when they are high.',
-        correctExplanation:
-            'This is a proven strategy for long-term wealth because it forces you to keep saving through both good and bad times.',
+        wrongExplanation: 'DCA reduces timing risk.',
+        correctExplanation: 'It encourages consistent investing habits.',
       ),
       QuizQuestion(
         question:
             'The primary advantage of Index Funds over Active Funds is...',
         options: [
-          'They always have higher returns',
-          'They have much lower fees and generally better long-term performance',
-          'They are only for rich people',
-          'They are guaranteed by the government',
+          'They always guarantee higher returns',
+          'They have much lower fees and often better long-term performance',
+          'They are restricted to wealthy investors',
+          'They are backed by the government',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Active managers try to "beat" the market but often fail. Index funds just "be" the market for a very low cost.',
-        correctExplanation:
-            'By keeping fees low, more of your gems stay in your account to compound over time.',
+        wrongExplanation: 'Most active managers fail to beat the market.',
+        correctExplanation: 'Lower costs compound into higher wealth.',
       ),
     ],
   ),
@@ -3777,72 +3896,62 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "FICO Score"?',
         options: [
-          'The secret name of a bank',
+          'A secret internal bank rating',
           'A three-digit number representing your creditworthiness',
-          'A grade in your economics class',
-          'The total gems you have in savings',
+          'A school exam result',
+          'The total money you have saved',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'It\'s like a "grade point average" for how you handle borrowed money. Scores range from 300 to 850.',
-        correctExplanation:
-            'A high score (700+) proves to banks that you are a safe person to lend gems to.',
+        wrongExplanation: 'It measures how reliably you handle borrowed money.',
+        correctExplanation: 'Higher scores signal lower risk to lenders.',
       ),
       QuizQuestion(
         question: 'Which factor has the LARGEST impact on your credit score?',
         options: [
-          'How much money you earn',
-          'Payment History (paying bills on time)',
-          'The number of cards you own',
-          'The type of car you drive',
+          'Your annual income level',
+          'Payment history, including on-time bill payments',
+          'The number of credit cards owned',
+          'The brand of vehicle you drive',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Surprise! You can earn [GEM]1 Million a year and still have a bad score if you forget to pay your [GEM]50 phone bill.',
-        correctExplanation:
-            'One single late payment can stay on your record for 7 years and drop your score significantly.',
+        wrongExplanation: 'Income does not directly affect scores.',
+        correctExplanation: 'Late payments cause major damage.',
       ),
       QuizQuestion(
         question: 'What is "Credit Utilization"?',
         options: [
-          'The amount of time you spend using a card',
-          'The percentage of your total available credit that you are currently using',
-          'The total number of loans you have',
-          'Paying for things with cash',
+          'How often you use your credit card',
+          'The percentage of your total available credit currently in use',
+          'The number of active loans you have',
+          'Paying for purchases with cash',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'If your limit is [GEM]1,000 and you owe [GEM]900, your utilization is 90%. Banks hate this; it looks like you are struggling.',
-        correctExplanation:
-            'Financial experts suggest keeping your utilization below 30% to maintain a high score.',
+        wrongExplanation: 'High utilization suggests financial stress.',
+        correctExplanation: 'Keeping it low improves scores.',
       ),
       QuizQuestion(
         question: 'Why does "Length of Credit History" matter?',
         options: [
-          'It doesn\'t matter at all',
-          'It shows the bank you have long-term experience managing debt',
-          'It determines your retirement age',
-          'It makes the card look cooler',
+          'It has no real effect',
+          'It shows long-term experience managing credit responsibly',
+          'It determines retirement eligibility',
+          'It affects card appearance',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'A person who has credit for 10 years is more "predictable" than someone who just started 2 months ago.',
-        correctExplanation:
-            'This is why it is often smart to keep your oldest credit card open, even if you don\'t use it often.',
+        wrongExplanation: 'Longer history increases predictability.',
+        correctExplanation: 'Older accounts strengthen credit profiles.',
       ),
       QuizQuestion(
-        question: 'Hard inquiries (checking your credit for a new loan) can...',
+        question: 'Hard inquiries can...',
         options: [
-          'Raise your score',
+          'Instantly increase your score',
           'Slightly lower your score for a short period',
-          'Make your score disappear',
-          'Give you a tax refund',
+          'Erase your credit history',
+          'Trigger automatic tax refunds',
         ],
         correctIndex: 1,
-        wrongExplanation:
-            'Applying for 10 credit cards in one week makes you look "desperate" for gems, which scares the bank.',
-        correctExplanation:
-            'Only apply for credit when you actually need it to avoid unnecessary "dips" in your score.',
+        wrongExplanation: 'Multiple inquiries suggest risk.',
+        correctExplanation: 'Apply for credit only when necessary.',
       ),
     ],
   ),
@@ -3865,21 +3974,21 @@ final List<QuizMetadata> _level3Quizzes = [
         wrongExplanation:
             'Rent is for space someone else owns. A mortgage is a loan you use to eventually own the space yourself.',
         correctExplanation:
-            'Mortgages allow you to buy a [GEM]500,000 house without having all the gems upfront. The house itself acts as "collateral" for the loan.',
+            'Mortgages allow you to buy a 500,000[GEM] house without having all the [GEM] upfront. The house itself acts as "collateral" for the loan.',
       ),
       QuizQuestion(
         question: 'What is the "Down Payment" on a house?',
         options: [
           'The final payment of the loan',
-          'The upfront gems you pay out of pocket before the mortgage starts',
+          'The upfront [GEM] you pay out of pocket before the mortgage starts',
           'A fee for moving in',
           'The monthly interest rate',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s the "initial" payment. Usually, banks want you to pay 5% to 20% of the home price in cash (gems) at the very start.',
+            'It\'s the "initial" payment. Usually, banks want you to pay 5% to 20% of the home price in cash ([GEM]) at the very start.',
         correctExplanation:
-            'A larger down payment means you borrow fewer gems, which lowers your monthly interest costs.',
+            'A larger down payment means you borrow fewer [GEM], which lowers your monthly interest costs.',
       ),
       QuizQuestion(
         question: 'What is a "Fixed-Rate Mortgage"?',
@@ -3899,20 +4008,20 @@ final List<QuizMetadata> _level3Quizzes = [
         question: 'What is "Escrow" in home ownership?',
         options: [
           'The name of the front door key',
-          'An account where gems are held to pay for property taxes and home insurance',
+          'An account where [GEM] are held to pay for property taxes and home insurance',
           'A legal way to avoid paying rent',
           'The total square footage of the backyard',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s a "holding pen" for gems. Every month, you pay a bit extra to the bank, and they use it to pay your big annual tax and insurance bills for you.',
+            'It\'s a "holding pen" for [GEM]. Every month, you pay a bit extra to the bank, and they use it to pay your big annual tax and insurance bills for you.',
         correctExplanation:
             'Escrow ensures that your vital bills (like taxes) are always paid on time so you don\'t lose your home.',
       ),
       QuizQuestion(
         question: 'What is "Equity"?',
         options: [
-          'The total gems you still owe the bank',
+          'The total [GEM] you still owe the bank',
           'The difference between the market value of your home and the amount you still owe on your mortgage',
           'The number of rooms in your house',
           'A monthly maintenance fee',
@@ -3972,7 +4081,7 @@ final List<QuizMetadata> _level3Quizzes = [
         wrongExplanation:
             'Liability (already learned) pays for the OTHER guy. Collision is what pays to fix YOUR shiny car.',
         correctExplanation:
-            'If your car is old and worth very little, you might choose to cancel collision coverage to save gems every month.',
+            'If your car is old and worth very little, you might choose to cancel collision coverage to save [GEM] every month.',
       ),
       QuizQuestion(
         question: 'What is a "Balloon Payment"?',
@@ -3995,11 +4104,11 @@ final List<QuizMetadata> _level3Quizzes = [
           'The monthly payments are higher',
           'You pay much more in total interest over the longer time',
           'The car becomes illegal after 3 years',
-          'The 36-month loan is more expensive in total gems',
+          'The 36-month loan is more expensive in total [GEM]',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Longer loans have lower "monthly" bills, which tricks people. But because you are borrowing for longer, the bank earns way more gems from you.',
+            'Longer loans have lower "monthly" bills, which tricks people. But because you are borrowing for longer, the bank earns way more [GEM] from you.',
         correctExplanation:
             'Always calculate the "Total Cost" (Monthly payment * Number of months) when choosing a loan.',
       ),
@@ -4095,27 +4204,27 @@ final List<QuizMetadata> _level3Quizzes = [
         question: 'What is a "401(k)" plan?',
         options: [
           'A type of bank savings account',
-          'A retirement savings plan offered by an employer that often includes matching gems',
-          'The total gems you need to retire',
+          'A retirement savings plan offered by an employer that often includes matching [GEM]',
+          'The total [GEM] you need to retire',
           'A government tax form',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s an investment account, not just savings. The gems are taken from your paycheck *before* taxes, which is a huge benefit.',
+            'It\'s an investment account, not just savings. The [GEM] are taken from your paycheck *before* taxes, which is a huge benefit.',
         correctExplanation:
-            'Many companies offer a "Match." If you put in [GEM]1, they give you [GEM]1 for free! This is a 100% return on your gems instantly.',
+            'Many companies offer a "Match." If you put in 1[GEM], they give you 1[GEM] for free! This is a 100% return on your [GEM] instantly.',
       ),
       QuizQuestion(
         question: 'What does "Vesting" mean?',
         options: [
-          'The right to keep all the gems your employer contributed to your retirement account',
+          'The right to keep all the [GEM] your employer contributed to your retirement account',
           'Buying a new suit for work',
           'Investing in the stock market',
           'Paying your monthly insurance premium',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'Employers want you to stay! They might say you are "fully vested" after 3 years. If you leave sooner, they take back their matching gems.',
+            'Employers want you to stay! They might say you are "fully vested" after 3 years. If you leave sooner, they take back their matching [GEM].',
         correctExplanation:
             'Knowing your "Vesting Schedule" is very important before you decide to quit a job.',
       ),
@@ -4129,7 +4238,7 @@ final List<QuizMetadata> _level3Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Traditional = Tax-deferred. You save [GEM]30 in taxes today for every [GEM]100 you save for the future.',
+            'Traditional = Tax-deferred. You save 30[GEM] in taxes today for every 100[GEM] you save for the future.',
         correctExplanation:
             'IRAs are great because YOU control the account, even if you change jobs 20 different times.',
       ),
@@ -4137,15 +4246,15 @@ final List<QuizMetadata> _level3Quizzes = [
         question: 'What is the special benefit of a "Roth IRA"?',
         options: [
           'You get a tax break now',
-          'Your gems grow and are withdrawn 100% TAX-FREE in retirement',
-          'The government gives you free gems',
+          'Your [GEM] grow and are withdrawn 100% TAX-FREE in retirement',
+          'The government gives you free [GEM]',
           'It has no special benefits',
         ],
         correctIndex: 1,
         wrongExplanation:
             'Roth = Tax-free later. You pay the tax today, but you never pay a single gem to the government on the growth ever again.',
         correctExplanation:
-            'If your [GEM]5,000 grows into [GEM]50,000 inside a Roth IRA, you keep all [GEM]50,000 for your retirement.',
+            'If your 5000[GEM] grows into 50000[GEM] inside a Roth IRA, you keep all 50000[GEM] for your retirement.',
       ),
       QuizQuestion(
         question:
@@ -4153,7 +4262,7 @@ final List<QuizMetadata> _level3Quizzes = [
         options: ['18', '59.5', '100', 'Anytime you want'],
         correctIndex: 1,
         wrongExplanation:
-            'Retirement accounts have strict rules! If you take the gems out at age 30 to buy a fancy car, the government takes a huge 10% penalty plus taxes.',
+            'Retirement accounts have strict rules! If you take the [GEM] out at age 30 to buy a fancy car, the government takes a huge 10% penalty plus taxes.',
         correctExplanation:
             'These rules exist to "force" you to leave your wealth alone so it has time to compound for 40+ years.',
       ),
@@ -4169,7 +4278,7 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "GDP" (Gross Domestic Product)?',
         options: [
-          'The total gems in the national bank',
+          'The total [GEM] in the national bank',
           'The total value of all goods and services produced in a country in one year',
           'The price of food at the grocery store',
           'The number of people who have jobs',
@@ -4192,12 +4301,12 @@ final List<QuizMetadata> _level3Quizzes = [
         wrongExplanation:
             'CPI tracks the prices of eggs, milk, gas, and rent. It tells us how much the cost of living has changed.',
         correctExplanation:
-            'If the CPI is up 6% from last year, your [GEM]100 only has the purchasing power that [GEM]94 had before.',
+            'If the CPI is up 6% from last year, your 100[GEM] only has the purchasing power that 94[GEM] had before.',
       ),
       QuizQuestion(
         question: 'What is the "Federal Reserve"?',
         options: [
-          'The place where all gems are stored',
+          'The place where all [GEM] are stored',
           'The central bank of the U.S. that controls interest rates and money supply',
           'A department that collects taxes',
           'A type of military base',
@@ -4226,13 +4335,13 @@ final List<QuizMetadata> _level3Quizzes = [
         question: 'What is a "Trade Deficit"?',
         options: [
           'When a country buys (imports) more from others than it sells (exports)',
-          'When a country has zero gems left',
+          'When a country has zero [GEM] left',
           'A law that stops trading',
           'A type of bank robbery',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'Imports = Buying from neighbors. Exports = Selling to neighbors. A deficit means more gems are leaving the country than coming in.',
+            'Imports = Buying from neighbors. Exports = Selling to neighbors. A deficit means more [GEM] are leaving the country than coming in.',
         correctExplanation:
             'Trade deficits aren\'t always bad, but they can impact the value of a country\'s currency and its manufacturing jobs.',
       ),
@@ -4248,73 +4357,73 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Ransomware"?',
         options: [
-          'A reward for finding a lost pet',
-          'Malware that locks your files or device and demands gems to unlock them',
-          'A type of very expensive software',
-          'A way to donate gems to charity',
+          'A software system used to recover lost digital files',
+          'Malicious software that locks access to files or devices until payment is demanded',
+          'A cyberattack method that permanently deletes data and disables recovery systems across entire networks',
+          'A legal service that helps companies recover stolen intellectual property',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It isn\'t a reward or a donation. It\'s "digital kidnapping." The criminal holds your data hostage until you pay a "ransom."',
+            'Ransomware is not a recovery tool or legal service. It is designed to block access and pressure victims into paying attackers.',
         correctExplanation:
-            'The best defense against ransomware is having regular "Offline Backups" of your important files and gems.',
+            'Ransomware encrypts or locks data and demands payment for access. Strong backups and security habits reduce damage and recovery costs.',
       ),
       QuizQuestion(
         question: 'What should you do if you suspect "Identity Theft"?',
         options: [
-          'Wait and see if it stops',
-          'Contact your bank and place a "Credit Freeze" on your accounts',
-          'Delete all your social media',
-          'Tell your friends but do nothing else',
+          'Monitor accounts casually and wait for suspicious activity to stop',
+          'Contact your bank and place a credit freeze on your accounts',
+          'Only change social media passwords without reporting the incident',
+          'Ignore small charges because they usually disappear on their own',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Waiting is the worst thing you can do. Every hour you wait, the criminal can borrow more gems in your name.',
+            'Delaying action allows criminals to open new accounts and cause more financial harm that becomes harder to reverse later.',
         correctExplanation:
-            'A credit freeze stops anyone (including you) from opening new soul-crushing debts in your name until you unlock it.',
+            'A credit freeze blocks new accounts from being opened, limiting damage while you investigate and recover control of your identity.',
       ),
       QuizQuestion(
         question: 'What is "Two-Factor Authentication" (2FA)?',
         options: [
-          'A way to pay two bills at once',
-          'Using two different security steps (like a password AND a code from your phone) to log in',
-          'Having two bank accounts',
-          'A type of very expensive lock',
+          'Using one strong password for multiple important accounts',
+          'Using two security steps such as a password and a temporary verification code',
+          'Having duplicate accounts in case one becomes inaccessible',
+          'Relying on security questions instead of passwords for protection',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s not about two accounts. It\'s about "two proofs" that you are who you say you are. This stops 99% of hackers.',
+            'Using a single password or backup accounts does not provide the additional verification required to stop unauthorized access.',
         correctExplanation:
-            'Even if a hacker steals your password, they can\'t get in without the secret code sent to your physical device.',
+            'Two-factor authentication adds a second verification step, making accounts far harder to access even if passwords are stolen.',
       ),
       QuizQuestion(
         question:
-            'How often are you legally entitled to a FREE credit report from each bureau?',
+            'How often are you legally entitled to a free credit report from each bureau?',
         options: [
-          'Once every 10 years',
+          'Only once every several years under special circumstances',
           'Once every 12 months',
-          'Only when you are buying a house',
-          'Never, you always have to pay',
+          'Only when applying for major loans or credit cards',
+          'Never unless you pay for a monitoring subscription',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Don\'t pay for what is free! You can use AnnualCreditReport.com to check for errors or fake accounts once a year for free.',
+            'Federal law guarantees regular access to credit reports, so paying or waiting years is unnecessary and risky.',
         correctExplanation:
-            'Monitoring your report is the best way to spot identity theft before it destroys your credit score.',
+            'Checking your report yearly helps detect fraud, errors, or unauthorized accounts before serious financial damage occurs.',
       ),
       QuizQuestion(
         question: 'Why is it dangerous to use public Wi-Fi for your bank app?',
         options: [
-          'It is too slow',
-          'Hackers can "sniff" the data being sent between your phone and the bank',
-          'The battery will die faster',
-          'It costs extra gems to use',
+          'Public Wi-Fi networks usually have slower internet speeds',
+          'Hackers can intercept data sent between your device and the bank',
+          'Using public Wi-Fi drains battery life more quickly',
+          'Public networks charge hidden access fees',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Speed isn\'t the issue. Public Wi-Fi has no walls. Someone sitting in the same coffee shop could see everything you type.',
+            'Speed and battery life are minor concerns. The real danger is weak security that exposes sensitive financial data.',
         correctExplanation:
-            'Always use your phone\'s cellular data (5G/LTE) or a VPN when handling your gems in public.',
+            'Unsecured networks allow attackers to monitor traffic, potentially stealing login details or transaction information.',
       ),
     ],
   ),
@@ -4328,68 +4437,73 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Will"?',
         options: [
-          'A person\'s name',
-          'A legal document that explains how you want your wealth and property distributed after you die',
-          'A plan for your next vacation',
-          'A type of savings account',
+          'A personal statement of preferences without legal authority',
+          'A legal document explaining how assets are distributed after death',
+          'A financial plan for retirement savings',
+          'A contract used to transfer property during a sale',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s not just a wish; it\'s a legal map. Without a will, the government (the court) decides who gets your gems.',
+            'Without a will, courts decide asset distribution based on law rather than personal wishes.',
         correctExplanation:
-            'Having a will ensures that your family is taken care of according to your specific wishes.',
+            'A will provides legally binding instructions that protect family members and ensure assets go to intended recipients.',
       ),
       QuizQuestion(
         question: 'What is an "Executor"?',
         options: [
           'A person who carries out the instructions in a will',
-          'A professional athlete',
-          'A type of expensive lawyer',
-          'The person who gets all the money',
+          'A legal professional who automatically inherits assets',
+          'A financial advisor who manages investments long-term',
+          'A court-appointed official who replaces family members',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'They aren\'t the "heir." They are the "manager." They do the hard work of paying bills and giving gems to the right people.',
+            'Executors manage distribution but do not personally own the assets unless named separately as beneficiaries.',
         correctExplanation:
-            'Choose an executor you trust completely, as they handle your entire life\'s work after you are gone.',
+            'An executor ensures debts are paid, documents are filed, and assets are distributed correctly and legally.',
       ),
       QuizQuestion(
         question: 'What is a "Trust"?',
         options: [
-          'Just being a nice person',
-          'A legal arrangement where a third party (trustee) holds assets for a beneficiary',
-          'A type of bank loan',
-          'A secret password',
+          'A personal belief in someone’s reliability',
+          'A legal arrangement where assets are held for beneficiaries',
+          'A short-term loan agreement',
+          'An informal promise without legal force',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s more than a feeling. It\'s a "legal bucket." You put your gems in the bucket with strict rules on when people can take them out.',
+            'Trusts are formal legal structures, not emotional relationships or informal agreements.',
         correctExplanation:
-            'Trusts can help families avoid "Probate" (a long, expensive court process) and reduce death taxes.',
+            'Trusts allow controlled distribution of assets and can reduce taxes or avoid lengthy court processes.',
       ),
       QuizQuestion(
         question: 'What is a "Power of Attorney"?',
         options: [
-          'The right to be a lawyer',
-          'A document that gives someone else the power to make financial or medical decisions for you',
-          'A type of very strong battery',
-          'A requirement to join the military',
+          'Permission to practice law professionally',
+          'A document allowing someone to make decisions on your behalf',
+          'A financial account with special authority',
+          'A requirement for medical treatment approval',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s about "agency." If you are in a coma or have a bad accident, this person can pay your rent and talk to your doctors for you.',
+            'Power of attorney grants decision authority, not professional credentials or financial ownership.',
         correctExplanation:
-            'This is a vital part of planning for emergencies at any age, not just for old people.',
+            'It ensures trusted individuals can manage finances or medical decisions if you become unable to act.',
       ),
       QuizQuestion(
         question:
             'The people who receive assets from a will or insurance are called...',
-        options: ['Executors', 'Beneficiaries', 'Trustees', 'Policyholders'],
+        options: [
+          'Executors who manage estate paperwork',
+          'Beneficiaries',
+          'Trustees overseeing legal arrangements',
+          'Policyholders responsible for premiums',
+        ],
         correctIndex: 1,
         wrongExplanation:
-            'An executor works. A trustee guards. A "Beneficiary" is the one who receives the "benefit" (the gems).',
+            'Executors and trustees manage assets, but beneficiaries are the ones who actually receive them.',
         correctExplanation:
-            'Always keep your beneficiary designations updated on your bank and insurance accounts!',
+            'Keeping beneficiary designations updated ensures assets transfer smoothly without legal disputes.',
       ),
     ],
   ),
@@ -4403,73 +4517,73 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "529 Plan"?',
         options: [
-          'A plan to work 5 days and save [GEM]',
-          'A tax-advantaged savings account specifically for education costs',
-          'A type of credit card for students',
-          'A government scholarship program',
+          'A budgeting strategy for families',
+          'A tax-advantaged savings account for education expenses',
+          'A private student loan program',
+          'A government-run scholarship system',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s an investment account like a 401k, but for school. The gems grow tax-free if you use them for tuition, books, or room and board.',
+            '529 plans are savings and investment accounts, not loans or automatic scholarship programs.',
         correctExplanation:
-            'Starting a 529 plan when a child is born can turn a small amount into a full college degree through decades of compounding.',
+            'Money grows tax-free when used for qualified education costs, reducing long-term college expenses.',
       ),
       QuizQuestion(
         question: 'What is the "FAFSA"?',
         options: [
-          'A type of fast food',
-          'The "Free Application for Federal Student Aid"',
-          'A law that makes college free',
-          'A student loan company',
+          'An academic performance exam',
+          'The Free Application for Federal Student Aid',
+          'A private lender offering student loans',
+          'A law guaranteeing free college tuition',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It isn\'t the loan itself. It\'s the "entrance form." You must fill it out to see if the government will give you grants or low-interest loans.',
+            'FAFSA does not provide money directly; it determines eligibility for financial aid programs.',
         correctExplanation:
-            'Almost every college student should fill out the FAFSA every year to find the most affordable way to study.',
+            'Completing FAFSA opens access to grants, work-study, and low-interest federal loans.',
       ),
       QuizQuestion(
         question: 'What is a "Student Loan Subsidized" by the government?',
         options: [
-          'A loan that never has to be repaid',
-          'A loan where the government pays the interest while you are in school',
-          'A loan for rich people only',
-          'A loan that must be paid back in one year',
+          'A loan that never requires repayment',
+          'A loan where the government pays interest while you are in school',
+          'A loan reserved only for high-income families',
+          'A loan that must be repaid within one year',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Subsidized = Help! The government "subsidizes" the interest so your debt doesn\'t grow while you are busy studying.',
+            'Subsidized loans still require repayment but prevent interest growth during school.',
         correctExplanation:
-            'These are the best types of student loans because they are much cheaper than private bank loans.',
+            'They reduce total debt by stopping interest accumulation while students focus on education.',
       ),
       QuizQuestion(
         question: 'What is a "Grant"?',
         options: [
-          'Money for college that NEVER has to be paid back',
-          'A loan with 0% interest',
-          'A person\'s name',
-          'A type of university building',
+          'Money for college that does not need to be repaid',
+          'A loan with delayed repayment terms',
+          'A contract with a university',
+          'A tuition discount that must be earned back',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'Loans are borrowed. Grants are "gifted." Usually, they are given based on financial need.',
+            'Grants differ from loans because they do not create future debt obligations.',
         correctExplanation:
-            'Winning grants is the "holy grail" of education funding because they have zero cost to you.',
+            'They lower education costs directly and reduce the need for borrowing.',
       ),
       QuizQuestion(
         question:
             'Why is "Average Starting Salary" important when choosing a degree?',
         options: [
-          'It isn\'t important at all',
-          'It helps you determine if the cost of the degree is a good investment',
-          'It tells you how many hours you will work',
-          'It determines your retirement date',
+          'It has no effect on long-term finances',
+          'It helps evaluate whether education costs are financially reasonable',
+          'It determines job satisfaction levels',
+          'It predicts future promotion speed',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a degree costs [GEM]100,000 but you only earn [GEM]30,000 a year, you will be in debt forever. The "ROI" (Return on Investment) is low.',
+            'Ignoring salary can lead to debt that is difficult to repay after graduation.',
         correctExplanation:
-            'Treating your education as an investment helps you make smarter choices about how many gems to borrow.',
+            'Comparing salary to tuition helps assess return on investment for education decisions.',
       ),
     ],
   ),
@@ -4483,72 +4597,72 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'In the "50/30/20 Rule," what does the 50% stand for?',
         options: [
-          'Wants and fun',
-          'Needs (Rent, Groceries, Utilities)',
-          'Savings and Debt',
-          'Taxes',
+          'Entertainment and discretionary spending',
+          'Needs such as rent, groceries, and utilities',
+          'Savings and investments',
+          'Tax obligations',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Needs = Survival. Half of your net income should cover the absolute basics. If it\'s higher, your lifestyle is too expensive!',
+            'Needs are essential expenses required to maintain basic living standards.',
         correctExplanation:
-            'Keeping needs at 50% leaves plenty of room for both fun and future building.',
+            'Limiting needs to half your income creates balance between stability, enjoyment, and future planning.',
       ),
       QuizQuestion(
         question: 'In the "50/30/20 Rule," what does the 30% represent?',
         options: [
-          'Savings',
-          'Wants (Hobbies, Dining out, Subscriptions)',
-          'Insurance',
-          'Gifts',
+          'Emergency savings',
+          'Wants such as hobbies, dining out, and subscriptions',
+          'Insurance payments',
+          'Charitable contributions',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Wants = Lifestyle. This is the 30% that makes life enjoyable. If you cut this to zero, you might get "budget burnout."',
+            'Wants are optional expenses, not essential obligations or long-term savings.',
         correctExplanation:
-            'The key to being rich isn\'t suffering—it\'s making sure your "fun" stays within its 30% boundary.',
+            'Allowing controlled enjoyment prevents burnout while maintaining financial discipline.',
       ),
       QuizQuestion(
         question: 'In the "50/30/20 Rule," what is the most important 20%?',
         options: [
-          'Clothing',
-          'Financial Priorities (Savings, Investing, Extra debt payments)',
-          'Vacations',
-          'Car maintenance',
+          'Clothing purchases',
+          'Savings, investing, and extra debt payments',
+          'Travel expenses',
+          'Vehicle upkeep',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The 20% is your "Future Self." If you don\'t save this, you will never build wealth or own assets.',
+            'This portion builds financial security rather than short-term comfort.',
         correctExplanation:
-            'By automating this 20% to leave your account on payday, you ensure you get rich "slowly but surely."',
+            'Consistent investment of this portion creates long-term wealth and stability.',
       ),
       QuizQuestion(
         question: 'What is "Lifestyle Creep"?',
         options: [
-          'A suspicious person in your neighborhood',
-          'Increasing your spending every time your income goes up',
-          'Moving to a more expensive city',
-          'Buying things you don\'t like',
+          'Suspicious behavior within a neighborhood',
+          'Increasing spending as income rises',
+          'Relocating for higher-paying work',
+          'Purchasing unnecessary items impulsively',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you get a [GEM]5,000 raise but immediately buy a [GEM]5,000 more expensive car, you are still "broke" at a higher level.',
+            'Higher income does not require matching increases in spending.',
         correctExplanation:
-            'Fighting lifestyle creep allows you to keep your 50/30/20 rule stable while your net worth explodes.',
+            'Controlling lifestyle creep allows savings to grow as income increases.',
       ),
       QuizQuestion(
         question: 'A "Zero-Based Budget" means...',
         options: [
-          'You have zero gems left in your bank',
-          'Every single gem of income has a specific "job" assigned to it',
-          'You spend zero gems for a whole month',
-          'You don\'t believe in budgeting',
+          'Ending the month with no money saved',
+          'Every unit of income is assigned a specific purpose',
+          'Spending nothing for an entire month',
+          'Avoiding budgeting entirely',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It doesn\'t mean you are broke! It means (Income - Expenses = 0). You "assign" your savings just like you assign your rent.',
+            'Zero-based budgeting is about planning, not eliminating spending.',
         correctExplanation:
-            'When every gem has a destination, "mystery spending" disappears and you stay in control.',
+            'Assigning every unit of income prevents waste and improves financial control.',
       ),
     ],
   ),
@@ -4562,152 +4676,151 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Revenue" in a business?',
         options: [
-          'The profit you keep',
-          'The total amount of gems the business brings in from sales',
-          'The taxes you owe',
+          'The profit remaining after expenses',
+          'The total amount of money the business earns from sales',
+          'The amount paid in taxes',
           'The number of employees',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Revenue is "Top Line." If you sell 100 apples for [GEM]1 each, your revenue is [GEM]100. It doesn\'t count your costs yet.',
+            'Revenue measures income before expenses are subtracted.',
         correctExplanation:
-            'High revenue is great, but a business can still fail if its costs are higher than its revenue.',
+            'High revenue does not guarantee success unless expenses are controlled.',
       ),
       QuizQuestion(
         question: 'What is "Net Profit"?',
         options: [
-          'The gems left over after ALL expenses and taxes are paid',
-          'The total gems you spend on advertising',
-          'A type of fishing net',
-          'The amount you pay your boss',
+          'Money remaining after all expenses and taxes are paid',
+          'Advertising spending totals',
+          'Business equipment value',
+          'Management salaries',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'Net Profit is the "Bottom Line." (Revenue - Costs = Profit). This is the actual wealth the business created.',
+            'Net profit reflects actual earnings, not gross income or expenses.',
         correctExplanation:
-            'Smart business owners focus on increasing profit margins, not just total sales numbers.',
+            'It determines whether a business is sustainable long-term.',
       ),
       QuizQuestion(
         question: 'What does "LLC" stand for?',
         options: [
           'Large Local Company',
           'Limited Liability Company',
-          'Long Lasting Capital',
-          'Low Level Corporation',
+          'Long-Term Capital Corporation',
+          'Low-Level Corporate Structure',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The word "Limited" is the key. It protects your PERSONAL gems if your business gets sued or goes into debt.',
+            'LLCs limit personal financial risk from business liabilities.',
         correctExplanation:
-            'Forming an LLC is a standard step for new entrepreneurs to protect their personal life from business risks.',
+            'They separate personal assets from business obligations.',
       ),
       QuizQuestion(
         question: 'What is a "Business Plan"?',
         options: [
-          'A map of the office building',
-          'A document describing a business, its goals, and how it will achieve them',
-          'A requirement for all employees to wear suits',
-          'A type of life insurance',
+          'A map of office layout',
+          'A document outlining goals, strategy, and operations',
+          'A workplace dress requirement',
+          'An insurance policy',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s the "blueprint" of the company. It explains what you sell, who buys it, and how you will make more gems than you spend.',
+            'Business plans guide operations rather than daily workplace rules.',
         correctExplanation:
-            'Banks and investors will almost never lend you gems without a professional business plan.',
+            'They are essential for attracting investors and guiding decisions.',
       ),
       QuizQuestion(
         question: 'What is "Equity Financing"?',
         options: [
-          'Borrowing gems from a bank',
-          'Selling a piece of your business ownership to investors in exchange for gems',
-          'Buying new equipment with cash',
-          'Getting a government grant',
+          'Borrowing money that must be repaid with interest',
+          'Selling ownership in a business in exchange for funding',
+          'Buying equipment using cash',
+          'Receiving a government grant',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Loans (Debt) must be paid back with interest. Equity (Shares) means you give up a piece of the pie forever but you don\'t have a monthly bill.',
+            'Equity financing does not require repayment like loans.',
         correctExplanation:
-            'Many "unicorns" (successful startups) use equity financing to grow extremely fast.',
+            'Investors gain ownership and share both risks and rewards.',
       ),
     ],
   ),
-  // Batch 5 Coming Soon...
   QuizMetadata(
     id: 'l3_q19',
     title: 'Time Value of Money (TVM)',
-    subtitle: 'Why gems today are worth more',
+    subtitle: 'Why [GEM] today are worth more',
     difficulty: QuizDifficulty.hard,
     requiredLevel: 3,
     questions: [
       QuizQuestion(
         question: 'What is the core concept of "Time Value of Money"?',
         options: [
-          'Gems are only valuable in the morning',
-          '[GEM]1 today is worth more than [GEM]1 in the future because of its potential to earn interest',
-          'Wealth is measured by the number of hours you work',
-          'The value of gems never changes',
+          'Money has different emotional value at different points in a person’s life',
+          '1 [GEM] today is worth more than 1 [GEM] in the future because it can earn returns',
+          'Wealth depends entirely on the number of hours a person works over time regardless of investment growth',
+          'The value of money remains constant across time and is unaffected by interest or opportunity cost',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you have [GEM]1,000 today, you can invest it and have [GEM]1,050 next year. If you wait a year to receive it, you lose that growth.',
+            'The time value of money is not based on emotions, working hours, or fixed value assumptions. It specifically recognizes that money can grow through interest, investment returns, or reinvestment opportunities over time.',
         correctExplanation:
-            'Understanding TVM is the reason why lenders charge interest—they are being paid for the "time" they don\'t have their gems.',
+            'The time value of money explains that having money today allows you to invest it, earn interest, and grow wealth. Receiving the same amount later removes that opportunity, making future money less valuable.',
       ),
       QuizQuestion(
         question: 'In TVM, what does "Future Value" (FV) calculate?',
         options: [
-          'The amount of gems an investment will be worth at a specific date in the future',
-          'The price of gasoline in 10 years',
-          'How many years until you retire',
-          'The total amount of gems you have already spent',
+          'The amount of [GEM] an investment will be worth at a specific date in the future',
+          'The expected cost of goods and services many years from now based on inflation estimates',
+          'The number of years required to reach retirement based on current savings behavior',
+          'The total amount of money already spent on investments and expenses',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'It\'s a forward-looking calculation. It answers: "If I invest [GEM]1,000 at 5% for 10 years, how many gems will I have?"',
+            'Future Value does not predict inflation prices, retirement timelines, or past spending. It strictly calculates how much an investment grows over time using interest, compounding periods, and the length of investment.',
         correctExplanation:
-            'FV calculations help you set realistic goals for big purchases like a house or a college degree.',
+            'Future Value helps investors understand how much their current savings or investments will grow over time, allowing better planning for long-term goals such as education, housing, or retirement.',
       ),
       QuizQuestion(
         question: 'What does "Present Value" (PV) tell an investor?',
         options: [
-          'The current price of a movie ticket',
-          'The value TODAY of a specific amount of gems to be received in the future',
-          'How much wealth you have right now',
-          'The number of years it takes to double your gems',
+          'The current market price of everyday consumer goods',
+          'The value today of a future amount of [GEM], adjusted for time and interest',
+          'The total wealth currently held across all financial accounts',
+          'The number of years required for an investment to double',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If someone promises you [GEM]1,000 in five years, it isn\'t worth [GEM]1,000 today. PV "discounts" that future amount back to the present.',
+            'Present Value does not measure spending power, total wealth, or doubling time. It focuses on translating future cash flows into today’s value using discounting and interest assumptions.',
         correctExplanation:
-            'PV is vital for comparing different investments to see which one is actually the "better deal" in today\'s gems.',
+            'Present Value allows investors to compare future payments or investments in today’s terms, making it easier to judge whether an opportunity is worthwhile compared to other available options.',
       ),
       QuizQuestion(
         question: 'How does the "Discount Rate" affect Present Value?',
         options: [
-          'A higher discount rate makes the future gems worth LESS today',
-          'A higher discount rate makes the future gems worth MORE today',
-          'The discount rate only applies to coupons',
-          'It has no effect on gems',
+          'A higher discount rate makes future [GEM] worth less today',
+          'A higher discount rate increases the future purchasing power of money received later',
+          'The discount rate only applies to retail discounts and promotional pricing',
+          'Discount rates do not influence financial calculations or investment decisions',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'Think of it as "opportunity cost." If you could earn 10% elsewhere (the discount rate), waiting for gems becomes much more expensive.',
+            'Discount rates are not related to retail pricing or promotions. They represent opportunity cost and risk, directly influencing how future cash flows are valued in financial decision-making.',
         correctExplanation:
-            'Choosing the right discount rate is one of the most difficult and important parts of professional financial analysis.',
+            'A higher discount rate increases the opportunity cost of waiting, reducing present value. This reflects higher expected returns elsewhere or greater uncertainty about receiving the future money.',
       ),
       QuizQuestion(
         question: 'An "Annuity" is a financial product that...',
         options: [
-          'Pays you a lump sum once',
-          'Provides a series of equal payments at regular intervals over a period of time',
-          'Is used only for buying cars',
-          'Has zero interest',
+          'Pays a single large amount once at the end of a contract',
+          'Provides equal payments at regular intervals over a defined period',
+          'Is limited to short-term consumer purchases only',
+          'Offers no interest or time-based structure',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A lottery prize paid out over 20 years is an annuity. A retirement plan that pays you [GEM]2,000 every month is also an annuity.',
+            'An annuity is not a lump sum or consumer purchase tool. It is structured specifically to distribute payments consistently over time, often used for long-term income planning.',
         correctExplanation:
-            'Annuities are often used in retirement to ensure a person never runs out of gems to live on.',
+            'Annuities are commonly used in retirement planning to provide predictable income streams, helping individuals manage longevity risk and maintain stable cash flow.',
       ),
     ],
   ),
@@ -4721,73 +4834,73 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is the "Risk-Return Tradeoff"?',
         options: [
-          'Higher potential rewards usually come with higher potential risks of losing gems',
-          'You should always take the biggest risk possible',
-          'Risk and reward are not related',
-          'The government guarantees all rewards',
+          'Higher potential returns generally require accepting higher risk',
+          'All investments should prioritize maximum risk to achieve faster wealth',
+          'Risk and return exist independently and do not influence each other',
+          'Government policies eliminate risk from all financial investments',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'If someone offers you a "guaranteed" 50% return, they are lying. To get big growth, you must be willing to accept "volatility" (prices going up and down).',
+            'Risk and return are closely connected in finance. Higher returns are not guaranteed, and extreme risk-taking without strategy often leads to losses rather than long-term success.',
         correctExplanation:
-            'A balanced investor chooses a level of risk they can "stomach" without panicking when the market dips.',
+            'The risk-return tradeoff explains why safer investments offer lower returns while riskier assets require higher potential rewards to justify uncertainty and volatility.',
       ),
       QuizQuestion(
         question: 'What does "Beta" measure in a stock?',
         options: [
-          'How many products the company sells',
-          'The volatility of a stock relative to the overall market',
-          'The total debt of a company',
-          'The age of the CEO',
+          'The volatility of a stock compared to the overall market',
+          'The company’s total revenue growth over multiple years',
+          'The experience level of executive leadership and management',
+          'The amount of outstanding corporate debt',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
-            'Beta looks at "movement." A Beta of 1.0 means the stock moves with the market. A Beta of 2.0 means if the market goes up 10%, your stock might jump 20%.',
+            'Beta does not measure company leadership, revenue, or debt levels. It strictly compares how a stock’s price movements respond relative to overall market changes.',
         correctExplanation:
-            'High-beta stocks (like tech startups) are "riskier" but offer much faster growth in a "Bull" market.',
+            'Beta helps investors understand how sensitive a stock is to market movements, allowing better portfolio risk management and alignment with risk tolerance.',
       ),
       QuizQuestion(
         question: 'What is "Systematic Risk" (Market Risk)?',
         options: [
-          'Risk that only affects one company',
-          'Risk that affects the entire market (like a recession or war) and cannot be avoided by diversifying',
-          'Risk of a fire in a warehouse',
-          'Risk of an employee quitting',
+          'Risk that impacts the entire market and cannot be eliminated through diversification',
+          'Risk specific to one company due to poor management decisions',
+          'Operational risks such as factory shutdowns or strikes',
+          'Risks caused by individual consumer behavior',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
-            'Diversifying (buying 500 stocks) won\'t save you from a global economic collapse. This "system-wide" risk is always present.',
+            'Systematic risk differs from company-specific risk. It affects all assets simultaneously due to economic, political, or global events beyond any single investor’s control.',
         correctExplanation:
-            'Because systematic risk cannot be escaped, investors "demand" a higher return for carrying it.',
+            'Because systematic risk cannot be diversified away, investors require compensation through higher expected returns for holding risky market assets.',
       ),
       QuizQuestion(
         question: 'The "Capital Asset Pricing Model" (CAPM) is used to...',
         options: [
-          'Determine the exact price of a house',
-          'Calculate the "required rate of return" for an investment based on its risk',
-          'Find the cheapest stocks to buy',
-          'Avoid paying taxes',
+          'Estimate the required rate of return for an investment based on risk',
+          'Predict exact future stock prices with certainty',
+          'Identify the cheapest assets available in the market',
+          'Eliminate uncertainty from investment decisions',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
-            'CAPM says: "If this stock is twice as risky as the market, I need a much bigger reward to bother buying it."',
+            'CAPM does not predict prices or remove uncertainty. Instead, it provides a theoretical framework linking risk to expected return.',
         correctExplanation:
-            'While complex, the intuition of CAPM helps professional investors decide if a specific stock is worth its current price.',
+            'CAPM helps investors decide whether an investment offers sufficient return for its level of systematic risk compared to the broader market.',
       ),
       QuizQuestion(
         question:
             'What is the "Standard Deviation" of an investment used to measure?',
         options: [
-          'How many gems it costs',
-          'Total Risk (how much the price varies from the average)',
-          'The name of the fund manager',
-          'The growth rate of the economy',
+          'Total volatility of returns around the average',
+          'The purchase cost of an investment asset',
+          'The economic growth rate of a country',
+          'The reputation of the fund manager',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
-            'If a stock\'s return is usually 8% but sometimes it\'s -20% or +40%, it has a high standard deviation (and high risk).',
+            'Standard deviation does not measure price, management quality, or economic growth. It strictly quantifies how widely returns fluctuate over time.',
         correctExplanation:
-            'Stable investments like bonds have low standard deviation, making them "boring" but safe for short-term goals.',
+            'A higher standard deviation indicates greater volatility and risk, while lower values suggest more stable and predictable investment performance.',
       ),
     ],
   ),
@@ -4806,72 +4919,72 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What is the primary difference between a "C-Corporation" and an "S-Corporation"?',
         options: [
-          'C-Corps are only for small businesses',
-          'S-Corps avoid "Double Taxation" by passing profits directly to shareholders',
-          'C-Corps cannot issue stock',
-          'S-Corps have unlimited liability for owners',
+          'C-Corporations are legally restricted to operating only as small domestic firms with limited growth potential',
+          'S-Corporations avoid double taxation by passing profits directly to shareholders',
+          'C-Corporations are prohibited from issuing equity or raising capital from investors',
+          'S-Corporations expose owners to unlimited personal liability for business obligations',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'C-Corps pay tax at the corporate level AND shareholders pay on dividends. S-Corps are "pass-through" entities that avoid this double hit.',
+            'The defining difference is taxation, not size, fundraising ability, or liability exposure. C-Corporations face taxation at both the corporate and shareholder levels, while S-Corporations pass income directly to owners.',
         correctExplanation:
-            'S-Corps are popular for smaller high-growth companies because they provide corporate protection while maintaining a simple tax structure.',
+            'S-Corporations are structured as pass-through entities, allowing profits to be taxed only at the shareholder level, which simplifies taxation while still preserving corporate liability protections.',
       ),
       QuizQuestion(
         question: 'What does "Limited Liability" actually protect?',
         options: [
-          'The business from losing any gems',
+          'The business itself from experiencing losses or operational failure in competitive markets',
           'The personal assets of the owners from being seized to pay business debts',
-          'The employees from being fired',
-          'The products from being stolen',
+          'Employees from termination or contract disputes during financial downturns',
+          'Company-owned intellectual property from theft or misuse by competitors',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The business can still lose everything. Limited Liability ensures that if the business fails, your personal house and [GEM]1,000 savings stay safe.',
+            'Limited liability does not protect the business, employees, or intellectual property. It specifically separates personal wealth from business obligations, ensuring owners are not personally ruined by corporate failure.',
         correctExplanation:
-            'This legal "shield" is the foundation of modern capitalism, allowing people to take risks without risking their entire life.',
+            'Limited liability shields personal assets such as homes, savings, and investments, allowing entrepreneurs and investors to take calculated risks without exposing their entire personal financial position.',
       ),
       QuizQuestion(
         question: 'A "Partnership" differs from a Corporation because...',
         options: [
-          'It is easier to sell shares',
-          'Partners often have "Unlimited Liability" for the business debts',
-          'It never pays taxes',
-          'It can only have two employees',
+          'Partnerships allow shares to be traded publicly on regulated stock exchanges',
+          'Partners often have unlimited personal liability for business debts',
+          'Partnerships are exempt from all forms of taxation in every jurisdiction',
+          'Partnerships are legally restricted to employing no more than two individuals',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Corporations are separate legal "people." In a general partnership, if your partner makes a [GEM]50,000 mistake, YOU are personally responsible to pay it back.',
+            'Unlike corporations, partnerships generally do not create a separate legal entity that shields owners from liability. Tax exemptions, share trading, and employment limits are not defining characteristics.',
         correctExplanation:
-            'General partnerships are simple to start but carry high personal risk compared to LLCs or Corporations.',
+            'In a general partnership, each partner may be personally responsible for the full amount of business obligations, making partnerships riskier than corporate structures for large or leveraged ventures.',
       ),
       QuizQuestion(
         question: 'What is a "Non-Profit 501(c)(3)" organization?',
         options: [
-          'A business that is banned from making gems',
-          'A corporation that uses all profits for a social or charitable mission and is exempt from most taxes',
-          'A business that doesn\'t have to pay employees',
-          'A government agency',
+          'An organization that is legally prohibited from generating revenue under any circumstances',
+          'A corporation that reinvests surplus income into a charitable or social mission and is tax-exempt',
+          'A business entity that does not pay employees or contractors',
+          'An operational branch of the federal or local government',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'They can make millions in profit! The difference is the profit must be reinvested in the mission, not given to owners.',
+            'Non-profit status does not prohibit revenue or employee compensation. The key distinction is that profits must support the mission rather than be distributed to private owners or shareholders.',
         correctExplanation:
-            'Donors to these organizations can often deduct their gifts from their own personal tax bills.',
+            '501(c)(3) organizations operate for public benefit purposes and receive tax advantages, including eligibility for deductible donations, making them central to education, healthcare, and charitable services.',
       ),
       QuizQuestion(
         question: 'What is a "Publicly Traded" company?',
         options: [
-          'A company owned by the government',
-          'A corporation that has sold shares to the general public on a stock exchange',
-          'A company that gives away free products',
-          'A company where everyone can see the office',
+          'A company owned and operated directly by government authorities',
+          'A corporation that has sold ownership shares to the public through a stock exchange',
+          'A company that distributes free products to customers',
+          'A business whose financial statements are visible inside its office',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Public doesn\'t mean government-owned. It means common people (the public) are allowed to buy "equities" in the business.',
+            'Publicly traded companies are not government-owned or defined by transparency alone. Their defining feature is public ownership through freely traded equity securities.',
         correctExplanation:
-            'Being public allows a company to raise massive amounts of gems, but requires them to follow strict transparency and reporting laws.',
+            'Public companies access large pools of capital by selling shares to investors, but must comply with strict regulatory, reporting, and disclosure requirements.',
       ),
     ],
   ),
@@ -4885,72 +4998,72 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does "Market Volatility" measure?',
         options: [
-          'The total number of stocks sold',
-          'The frequency and size of price movements over a period (the "swing" of the market)',
-          'The speed of the internet at the exchange',
-          'The total profit of all companies',
+          'The total volume of shares exchanged across global markets',
+          'The frequency and magnitude of price movements over time',
+          'The processing speed of electronic trading platforms',
+          'The combined profitability of all listed corporations',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Volatility isn\'t about the direction (Up or Down). It\'s about the "noise." High volatility means prices are jumping wildly in both directions.',
+            'Volatility does not measure trading volume, infrastructure speed, or aggregate profits. It reflects how widely and unpredictably prices fluctuate within a given period.',
         correctExplanation:
-            'Investors use the "VIX" index (the fear gauge) to see how much volatility the market expects in the coming weeks.',
+            'Volatility is a core risk metric used by traders and portfolio managers to assess uncertainty, pricing behavior, and potential short-term instability in financial markets.',
       ),
       QuizQuestion(
         question: 'What is a "Correction" in the stock market?',
         options: [
-          'The government fixing a mistake in the price',
-          'A price drop of 10% or more from a recent peak',
-          'A day where no stocks are traded',
-          'A sudden 50% increase in prices',
+          'A government-mandated adjustment to incorrect asset pricing',
+          'A decline of 10 percent or more from a recent market peak',
+          'A complete suspension of trading activity',
+          'A rapid increase in prices caused by speculation',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A 20% drop is a "Bear Market." a 10% drop is a "Correction." It is considered a normal, healthy part of a functioning market cycle.',
+            'Corrections are market-driven price adjustments, not regulatory actions or trading halts. They occur naturally as prices realign with underlying fundamentals.',
         correctExplanation:
-            'Corrections often provide a "buying opportunity" for long-term investors who believe in the systemic growth of the economy.',
+            'Market corrections are considered normal events that help reset valuations and often present attractive entry points for disciplined, long-term investors.',
       ),
       QuizQuestion(
         question: 'What is "Market Sentiment"?',
         options: [
-          'The total gems in the economy',
-          'The overall attitude or "mood" of investors toward the market',
-          'The specific price of a stock',
-          'A tax on emotional trading',
+          'The total amount of capital circulating in financial markets',
+          'The prevailing emotional and psychological outlook of investors',
+          'The exact valuation of individual securities',
+          'A regulatory tax imposed on speculative behavior',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Sentiment is psychological. If everyone is optimistic, it\'s "Bullish." if everyone is scared, it\'s "Bearish."',
+            'Market sentiment is not a numeric valuation or regulatory mechanism. It reflects collective investor psychology, which can drive prices beyond rational fundamentals.',
         correctExplanation:
-            'Successful investors often act "Contrarian," being greedy when sentiment is fearful and fearful when sentiment is greedy.',
+            'Understanding sentiment helps professionals identify periods of excessive optimism or fear, allowing for more informed risk management and contrarian strategies.',
       ),
       QuizQuestion(
         question: 'What defines a "Recession" (the technical definition)?',
         options: [
-          'When prices for groceries go up',
-          'Two consecutive quarters (6 months) of declining GDP growth',
-          'When the stock market drops on a Monday',
-          'When unemployment is exactly 10%',
+          'A sustained increase in consumer prices',
+          'Two consecutive quarters of negative gross domestic product growth',
+          'A single sharp decline in equity markets',
+          'Unemployment reaching a specific percentage threshold',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s not just one bad day. It is a systematic shrinking of the whole economy\'s value over at least half a year.',
+            'Recessions are defined by broad economic contraction, not isolated market events or inflation levels. GDP decline over multiple quarters signals systemic slowdown.',
         correctExplanation:
-            'During a recession, businesses sell less, fewer people are hired, and gems become harder to earn.',
+            'This definition helps policymakers and analysts distinguish temporary disruptions from genuine economic downturns affecting employment, production, and consumer demand.',
       ),
       QuizQuestion(
         question: 'A "Bubble" occurs when...',
         options: [
-          'Stock prices match the value of the companies',
-          'Prices rise rapidly to levels far above the actual value of the assets',
-          'The government prints new gems',
-          'Interest rates are very high',
+          'Asset prices reflect their underlying intrinsic value',
+          'Prices rise far beyond fundamental value due to speculation',
+          'Central banks expand the money supply',
+          'Interest rates remain elevated for extended periods',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Bubbles are fueled by "irrational exuberance." People buy because they think they can sell to someone else for more, ignoring the "math."',
+            'Bubbles are not caused simply by monetary policy or interest rates. They form when investor behavior detaches prices from realistic earnings or cash-flow expectations.',
         correctExplanation:
-            'When the bubble "pops," prices crash back down to reality, often causing [GEM]billions in losses for late investors.',
+            'Bubbles often collapse suddenly, leading to severe losses for late entrants and broader financial instability when leveraged positions unwind.',
       ),
     ],
   ),
@@ -4964,72 +5077,72 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Marginal Tax Rate"?',
         options: [
-          'The total tax you pay divided by your income',
-          'The tax rate applied ONLY to the last dollar you earned in your highest bracket',
-          'A tax that only applies to banks',
-          'The lowest tax rate in the country',
+          'The average tax paid across total income',
+          'The tax rate applied only to the last portion of income earned',
+          'A special rate imposed exclusively on financial institutions',
+          'The lowest statutory tax rate in the economy',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You don\'t pay your highest rate on ALL your gems! You pay 10% on the first batch, 12% on the next, and so on. The margin is just the "top" slice.',
+            'Marginal tax rate does not represent average taxation or sector-specific rules. It applies only to the highest income bracket reached, not the entire income base.',
         correctExplanation:
-            'Understanding marginal rates prevents the myth that "a raise can make you take home fewer gems" due to higher taxes.',
+            'Understanding marginal tax rates prevents common misconceptions about income increases and clarifies why earning more never reduces total after-tax income.',
       ),
       QuizQuestion(
         question: 'What is an "Effective Tax Rate"?',
         options: [
-          'The rate on your last dollar',
-          'The ACTUAL percentage of your total income paid in taxes (Total Tax / Total Income)',
-          'A tax that works effectively',
-          'The tax rate for corporations only',
+          'The rate applied to the final dollar earned',
+          'The total taxes paid divided by total income',
+          'A measure used exclusively for corporate taxation',
+          'A rate adjusted for inflation annually',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Your effective rate is ALWAYS lower than your marginal rate because of the lower brackets and deductions you used.',
+            'Effective tax rate is not tied to marginal brackets or inflation. It reflects the real percentage of income surrendered after accounting for all tax layers.',
         correctExplanation:
-            'Effective rate is the "true" number that tells you how much of your wealth the government actually took.',
+            'Effective tax rate provides a clearer picture of an individual’s or firm’s true tax burden and is commonly used for financial planning and policy analysis.',
       ),
       QuizQuestion(
         question: 'What is "Taxable Income"?',
         options: [
-          'Every gem you received during the year',
-          'Your Gross Income minus any adjustments, deductions, and exemptions',
-          'The money you have in the bank',
-          'The amount the government owes you',
+          'All income received before any adjustments',
+          'Gross income minus deductions, adjustments, and exemptions',
+          'The balance currently held in bank accounts',
+          'The refund owed by tax authorities',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you earn [GEM]50,000 but have [GEM]12,000 in deductions, the government only looks at [GEM]38,000 when calculating your bill.',
+            'Taxable income excludes protected amounts defined by law. Gross receipts alone do not determine tax liability without accounting for deductions and exclusions.',
         correctExplanation:
-            'Smart tax planning focuses on legally reducing your taxable income so you keep more of your hard-earned gems.',
+            'Reducing taxable income through legitimate deductions and planning strategies is a core objective of effective personal and corporate tax management.',
       ),
       QuizQuestion(
         question: 'A "Regressive Tax" is one where...',
         options: [
-          'Rich people pay a higher percentage',
-          'Lower-income earners pay a HIGHER percentage of their income than the wealthy',
-          'Taxes are going back in time',
-          'No one has to pay',
+          'Higher earners pay progressively higher percentages',
+          'Lower-income individuals pay a higher share of income than wealthier individuals',
+          'Taxes decrease automatically over time',
+          'No enforcement mechanisms exist',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Sales tax is often regressive. A [GEM]1 tax on bread is a tiny slice for a billionaire, but a huge slice for someone earning [GEM]10 a day.',
+            'Regressive taxation is not about rate decline over time or lack of enforcement. It disproportionately impacts lower earners relative to their income.',
         correctExplanation:
-            'Developing a fair tax system requires balancing progressive income taxes with regressive sales or gas taxes.',
+            'Sales and consumption taxes often exhibit regressive characteristics, which policymakers must balance against progressive income taxation to maintain equity.',
       ),
       QuizQuestion(
         question: 'What is "Capital Gains Tax"?',
         options: [
-          'A tax on your paycheck',
-          'A tax on the PROFIT made from selling an investment like stocks or real estate',
-          'A tax on the total value of your car',
-          'A fee for visiting the capital city',
+          'A tax applied to earned wages',
+          'A tax on profits from selling investments such as stocks or property',
+          'A levy on total asset value',
+          'A fee associated with capital cities',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you buy a stock for [GEM]10 and sell for [GEM]15, you only pay tax on the [GEM]5 you "gained," not the whole [GEM]15.',
+            'Capital gains tax applies only to realized profits, not gross sale values or earned income, distinguishing it from standard income taxation.',
         correctExplanation:
-            'Capital gains rates are often LOWER than income tax rates to encourage people to invest their gems in the economy.',
+            'Preferential capital gains rates are often used to encourage long-term investment and economic growth by reducing friction in capital allocation.',
       ),
     ],
   ),
@@ -5043,76 +5156,77 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the primary goal of "Asset Allocation"?',
         options: [
-          'To pick the single best stock to buy',
-          'To balance risk and reward by dividing gems among different categories like stocks, bonds, and cash',
-          'To avoid paying any taxes whatsoever',
-          'To spend all your gems as fast as possible',
+          'To concentrate nearly all investable capital into a single asset believed to outperform others, accepting extreme volatility and the risk of permanent capital loss',
+          'To balance risk and reward by spreading [GEM] across different asset classes',
+          'To completely eliminate taxes through portfolio structure without considering investment risk or market behavior',
+          'To maximize short-term spending efficiency instead of long-term financial stability and growth',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It isn\'t about picking one winner. It\'s about building a "team" of investments that don\'t all crash at the same time.',
+            'Asset allocation is not about concentration or tax avoidance. Overconcentrating capital dramatically increases volatility and exposes investors to large losses when a single asset or sector underperforms unexpectedly.',
         correctExplanation:
-            'How you divide your gems (e.g., 80% stocks, 20% bonds) usually has a bigger impact on your long-term wealth than whether you picked Apple or Microsoft.',
+            'Asset allocation reduces portfolio risk by combining assets with different behaviors. This improves long-term stability and allows investors to pursue growth while controlling downside risk.',
       ),
       QuizQuestion(
         question: 'What does it mean for two investments to be "Uncorrelated"?',
         options: [
-          'They both always go up together',
-          'The price of one doesn\'t move in lockstep with the other',
-          'They are both owned by the same person',
-          'They are both illegal to own',
+          'They consistently move in the same direction because they respond to identical economic forces and investor behavior across multiple market cycles',
+          'The performance of one investment does not reliably move with the other',
+          'They are held within the same brokerage or custodial account',
+          'They operate under identical legal and regulatory frameworks',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If they both go up and down together, your risk is high. True diversification requires "uncorrelated" assets (like Gold vs. Tech Stocks).',
+            'Investments that move together do not provide diversification benefits. High correlation increases portfolio risk and can cause multiple assets to decline simultaneously during market stress.',
         correctExplanation:
-            'In a perfect portfolio, when one asset drops, another stays steady or rises, protecting your total [GEM] levels.',
+            'Uncorrelated assets reduce volatility by offsetting losses. When one asset declines, another may remain stable or rise, helping protect total portfolio value.',
       ),
       QuizQuestion(
         question: 'What is "Rebalancing" a portfolio?',
         options: [
-          'Selling all your stocks to buy a car',
-          'The process of buying and selling assets to return to your original target allocation percentages',
-          'Waiting for the market to fix itself',
-          'Changing your bank password',
+          'Selling profitable investments to fund unrelated personal expenses without regard for long-term risk management or strategic objectives',
+          'Buying and selling assets to restore the original target allocation',
+          'Waiting passively for markets to correct themselves over time',
+          'Changing account providers or security credentials',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Rebalancing forces you to "Sell High" (the assets that grew too much) and "Buy Low" (the assets that lagged), which is a proven wealth secret.',
+            'Rebalancing is not passive behavior or liquidation for consumption. Without rebalancing, portfolios drift into unintended risk profiles that may exceed investor tolerance.',
         correctExplanation:
-            'If your 80/20 split becomes 90/10 because stocks went up, you must rebalance to keep your risk level where you want it.',
+            'Rebalancing maintains consistent risk by trimming outperforming assets and increasing exposure to underperforming ones, reinforcing disciplined long-term investing.',
       ),
       QuizQuestion(
         question: 'What is a "Target Date Fund"?',
         options: [
-          'A fund that only exists for 24 hours',
-          'A mutual fund that automatically shifts from high-risk to low-risk as you get closer to your retirement year',
-          'A fund used to pay for a wedding date',
-          'A type of lottery ticket',
+          'An investment vehicle that exists only briefly before mandatory liquidation based on preset calendar deadlines',
+          'A fund that gradually shifts from higher risk to lower risk as retirement approaches',
+          'A short-term trading product designed for frequent buying and selling',
+          'A fund designed to finance specific personal events',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s for the "Set it and Forget it" investor. It manages the asset allocation for you as you age.',
+            'Target date funds are not short-term or speculative instruments. They are long-term retirement solutions that automatically adjust risk exposure over decades.',
         correctExplanation:
-            'These are very popular in 401k plans because they ensure a 25-year-old takes high risk and a 64-year-old stays safe.',
+            'These funds simplify retirement investing by automatically reducing risk as the target retirement year approaches, aligning investments with changing risk tolerance.',
       ),
       QuizQuestion(
         question:
             'Why does an investor\'s "Time Horizon" matter for allocation?',
         options: [
-          'It tells you what time the market opens',
-          'A longer time horizon allows you to take more risk because you have time to recover from crashes',
-          'It determines which bank you use',
-          'It has no effect on investment choices',
+          'It determines the specific trading hours available to the investor',
+          'A longer time horizon allows greater risk tolerance because recovery time exists',
+          'It dictates which financial institution must be used',
+          'It has no meaningful impact on investment decisions',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you need your gems in 2 years, don\'t put them in the stock market! High risk is only for gems you don\'t need for a decade or more.',
+            'Time horizon has nothing to do with bank selection or market hours. Ignoring it often results in portfolios that are either too risky or overly conservative.',
         correctExplanation:
-            'Time is the "buffer" against volatility. The more time you have, the more aggressive you can be with your asset mix.',
+            'Longer time horizons allow investors to absorb volatility and pursue higher returns, while shorter horizons require more stable, conservative allocations.',
       ),
     ],
   ),
+
   QuizMetadata(
     id: 'l4_q5',
     title: 'Derivatives & Hedging',
@@ -5123,75 +5237,76 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Derivative" in finance?',
         options: [
-          'A type of new bank account',
-          'A financial contract that gets its value from an underlying asset (like a stock or a commodity)',
-          'A way to calculate your taxes',
-          'A loan that never ends',
+          'A banking product designed primarily for storing deposits and earning interest over time',
+          'A financial contract whose value depends on an underlying asset',
+          'A standardized method for calculating personal income taxes',
+          'A perpetual loan with no maturity date',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A derivative isn\'t the asset itself. It\'s a "side bet" or a "promise" based on what that asset does.',
+            'Derivatives are not bank accounts or tax tools. They derive value from another asset and introduce leverage, making them powerful but potentially dangerous instruments.',
         correctExplanation:
-            'Common derivatives include options, futures, and swaps. They are powerful tools but can be very dangerous for beginners.',
+            'Derivatives allow investors to manage risk, speculate, or hedge positions by referencing assets such as stocks, bonds, commodities, or currencies.',
       ),
       QuizQuestion(
         question: 'What is the primary purpose of "Hedging"?',
         options: [
-          'To make the most gems possible',
-          'To reduce or cancel out the risk of a price drop in an investment you already own',
-          'To avoid telling your friends about your losses',
-          'To buy things you don\'t need',
+          'To maximize profits regardless of risk exposure',
+          'To reduce or offset the risk of losses in an existing position',
+          'To hide investment losses from others',
+          'To increase unnecessary portfolio complexity',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Hedging is like "insurance" for your portfolio. You spend a few gems to protect against a catastrophic loss.',
+            'Hedging is not about profit maximization or concealment. It sacrifices some upside potential in exchange for protection against severe downside losses.',
         correctExplanation:
-            'Farmers often use derivatives to hedge the price of their corn so they know exactly how many gems they will have for the harvest.',
+            'Hedging functions like insurance, helping investors manage uncertainty and reduce the financial impact of adverse market movements.',
       ),
       QuizQuestion(
         question: 'In options trading, what is a "Call Option"?',
         options: [
-          'The right to SELL a stock at a specific price',
-          'The right to BUY a stock at a specific price within a certain timeframe',
-          'A phone call from your broker',
-          'An obligation to buy a whole company',
+          'The contractual right to sell shares at a fixed price regardless of market conditions',
+          'The right to buy a stock at a set price within a defined time period',
+          'A communication request initiated by a brokerage firm',
+          'A binding obligation to purchase an entire company',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A Call is a "Bet on Up." You pay for the "option" to buy a stock cheaply even if its price rockets to the moon.',
+            'Call options do not grant selling rights. Confusing calls with puts leads to incorrect strategies and significant financial losses.',
         correctExplanation:
-            'If you don\'t use the option, you only lose the small "premium" (price) you paid for the contract.',
+            'Call options benefit from rising prices, allowing investors to control shares at a fixed price while limiting losses to the premium paid.',
       ),
       QuizQuestion(
         question: 'In options trading, what is a "Put Option"?',
         options: [
-          'The right to SELL a stock at a specific price',
-          'The right to buy 100 shares of a stock',
-          'Putting your gems into a savings account',
-          'A way to cancel your bank account',
+          'The right to sell a stock at a specific price',
+          'The obligation to buy a fixed number of shares',
+          'A deposit into a savings vehicle',
+          'An account cancellation method',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'A Put is a "Bet on Down." It lets you sell a stock for [GEM]100 even if the market price has crashed to [GEM]20.',
+            'Put options are not savings tools or purchase obligations. They provide downside protection by allowing investors to sell at a predetermined price.',
         correctExplanation:
-            'Puts are the most common way professional investors hedge their portfolios against a sudden market crash.',
+            'Puts are commonly used to hedge portfolios, protecting against sharp market declines while limiting potential losses.',
       ),
       QuizQuestion(
         question: 'What occurs during "Short Selling"?',
         options: [
-          'Buying a stock for a short period of time',
-          'Borrowing shares to sell them now, hoping to buy them back later at a lower price',
-          'Selling your assets because you are short on gems',
-          'A way to pay half price for a stock',
+          'Buying shares for temporary ownership',
+          'Borrowing shares to sell now, planning to repurchase them later at a lower price',
+          'Liquidating assets due to cash shortages',
+          'Purchasing shares at a discounted price',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'In a short sale, you want the company to FAIL. You sell "air" now and hope to replace it with cheap shares later.',
+            'Short selling is not discounted buying. It involves borrowing shares and carries unlimited risk if prices rise unexpectedly.',
         correctExplanation:
-            'Shorting is extremely risky! If the stock price goes up, there is no limit to how many gems you could lose.',
+            'Short selling allows investors to profit from declining prices but exposes them to significant losses if markets move upward.',
       ),
     ],
   ),
+
   QuizMetadata(
     id: 'l4_q6',
     title: 'Global Macro & Forex',
@@ -5202,154 +5317,156 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does "Forex" (FX) stand for?',
         options: [
-          'Financial Optional Rewards Exchange',
+          'A specialized system for processing international retail payments',
           'Foreign Exchange Market',
-          'Forward Expense Ratio',
-          'Fast Online Retail Exports',
+          'A fixed accounting expense ratio',
+          'An export licensing framework',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Forex is the largest market in the world, where trillions of [GEM]s worth of different countries\' currencies are traded every day.',
+            'Forex is not an accounting ratio or licensing system. It is the global marketplace where currencies are exchanged continuously.',
         correctExplanation:
-            'Everything you buy from overseas (like a car or a phone) depends on the Forex rates between countries.',
+            'Forex enables international trade and investment by allowing currencies to be exchanged at constantly changing rates.',
       ),
       QuizQuestion(
         question: 'When a currency "Appreciates," what does that mean?',
         options: [
-          'It becomes less valuable',
-          'Its value increases compared to another currency',
-          'The government stops printing it',
-          'It can no longer be used for trade',
+          'Its purchasing power decreases',
+          'Its value increases relative to another currency',
+          'It stops being issued by the government',
+          'It becomes unusable in trade',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Appreciate = Grow. If the Dollar appreciates against the Euro, you can buy more European goods with the same amount of [GEM]s.',
+            'Appreciation does not mean reduced value or discontinued use. It reflects increased demand relative to another currency.',
         correctExplanation:
-            'A strong currency makes imports cheaper but makes it harder for local companies to sell their products to other countries.',
+            'Currency appreciation increases purchasing power for imports but may hurt export competitiveness.',
       ),
       QuizQuestion(
         question: 'What is a "Trade Deficit"?',
         options: [
-          'When a country exports more than it imports',
-          'When a country buys more goods from other countries than it sells to them',
-          'When a country has no gems in the bank',
-          'A type of tax on imports',
+          'When exports exceed imports',
+          'When imports exceed exports',
+          'A situation where a country has no foreign reserves',
+          'A tax applied to imported goods',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s like a family spending more than they earn. The country is "sending" its currency overseas in exchange for more stuff.',
+            'A trade deficit is not a tax or reserve shortage. It occurs when a country purchases more goods from abroad than it sells.',
         correctExplanation:
-            'Continuous trade deficits can lead to a weaker currency over long periods of time.',
+            'Persistent trade deficits can influence currency value and long-term economic balance.',
       ),
       QuizQuestion(
         question: 'What is a "Tariff"?',
         options: [
-          'A gift from one country to another',
-          'A tax imposed by a government on imported goods',
-          'A type of high-speed train',
-          'A special license to trade stocks',
+          'A diplomatic financial gift',
+          'A tax imposed on imported goods',
+          'A transportation infrastructure system',
+          'A securities trading license',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Tariffs make foreign goods more expensive. This is usually done to protect local businesses from being "outsourced" to cheaper countries.',
+            'Tariffs are not gifts or licenses. They are taxes designed to influence trade behavior and protect domestic industries.',
         correctExplanation:
-            'While tariffs protect local jobs, they often lead to higher prices for you, the consumer.',
+            'Tariffs can shield local producers but often raise prices for consumers.',
       ),
       QuizQuestion(
         question: 'What is "Hyperinflation"?',
         options: [
-          'When prices go up by 2% a year',
-          'Extremely rapid, out-of-control price increases (usually over 50% per month)',
-          'When the stock market grows too fast',
-          'A way to save gems faster',
+          'Moderate price increases',
+          'Extremely rapid and uncontrollable price increases',
+          'Fast stock market growth',
+          'An accelerated savings strategy',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Inflation is normal. Hyperinflation is a total system collapse where gems become literally worthless as fast as you earn them.',
+            'Hyperinflation is not normal inflation. It reflects severe monetary collapse where currency rapidly loses value.',
         correctExplanation:
-            'Hyperinflation is almost always caused by governments printing massive amounts of gems to pay off debts they can\'t afford.',
+            'Hyperinflation is usually triggered by excessive money creation and loss of confidence in government finances.',
       ),
     ],
   ),
+
   QuizMetadata(
     id: 'l4_q7',
     title: 'Advanced Mortgages',
-    subtitle: 'The [GEM]100,000 math of a home',
+    subtitle: 'The 100,000 [GEM] math of a home',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
         question: 'What is a "Fixed-Rate Mortgage"?',
         options: [
-          'The price of the house never changes',
-          'A loan where the interest rate stays the same for the entire life of the loan',
-          'A mortgage that must be paid in one year',
-          'A loan only for rich people',
+          'A home whose market value never changes',
+          'A loan with an interest rate that remains constant over the loan term',
+          'A mortgage repayable within one year',
+          'A lending product restricted to wealthy borrowers',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Fixed-rate loans provide "certainty." Even if the world economy changes, your monthly payment will stay exactly the same for 30 years.',
+            'Fixed-rate mortgages do not stabilize home values. They stabilize payments, protecting borrowers from interest rate fluctuations.',
         correctExplanation:
-            'These are very popular when interest rates are LOW, as you "lock in" the cheap price for decades.',
+            'Fixed rates provide long-term predictability, making budgeting easier and reducing exposure to rising rates.',
       ),
       QuizQuestion(
         question: 'How does an "ARM" (Adjustable-Rate Mortgage) work?',
         options: [
-          'The borrower must pay with their physical labor',
-          'The interest rate changes over time based on the market conditions',
-          'The bank can take your house at any time',
-          'A loan that has zero interest for life',
+          'Payments are made through physical labor',
+          'Interest rates change over time based on market benchmarks',
+          'The lender can seize the property at will',
+          'Interest is permanently set to zero',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'ARMs usually start with a "teaser" low rate, but after a few years, the rate can jump, making your monthly bill much more expensive.',
+            'ARMs are not labor-based or zero-interest loans. They adjust periodically, exposing borrowers to payment increases.',
         correctExplanation:
-            'ARMs are risky! If interest rates go up across the whole country, your mortgage payment could suddenly double.',
+            'ARMs may offer lower initial rates but carry higher long-term risk if rates rise significantly.',
       ),
       QuizQuestion(
         question: 'What is a "Mortgage Amortization Schedule"?',
         options: [
-          'A list of the house\'s features',
-          'A table showing how each monthly payment is split between interest and paying down the actual debt (Principal)',
-          'A plan for moving day',
-          'A contract with the neighbors',
+          'A property feature list',
+          'A breakdown of how each payment applies to interest and principal',
+          'A relocation plan',
+          'A neighborhood agreement',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'In the beginning, almost 100% of your payment is just "interest" (the bank\'s profit). You don\'t actually own much more of the house until years later.',
+            'Amortization schedules are not property descriptions. They reveal how interest dominates early payments.',
         correctExplanation:
-            'Looking at an amortization table is the best way to see how much a [GEM]200,000 house actually costs (often [GEM]400,000+ after interest).',
+            'Understanding amortization helps borrowers see the true long-term cost of borrowing.',
       ),
       QuizQuestion(
         question: 'What is "Home Equity"?',
         options: [
-          'The current market price of the house',
-          'The portion of the home\'s value that YOU actually own (Market Value - Remaining Mortgage)',
-          'The size of the backyard',
-          'A type of home insurance',
+          'The home’s market price',
+          'The value owned outright by the homeowner',
+          'Outdoor property size',
+          'Insurance coverage type',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If your house is worth [GEM]300,000 but you owe the bank [GEM]250,000, you only have [GEM]50,000 in equity. The bank owns the rest!',
+            'Equity does not equal market value alone. It reflects ownership after subtracting remaining debt.',
         correctExplanation:
-            'Building equity is the main way middle-class families build long-term wealth over their lifetimes.',
+            'Home equity is a key source of household wealth accumulation over time.',
       ),
       QuizQuestion(
         question: 'What is a "Refinance" (Refi)?',
         options: [
-          'Painting the house to sell it',
-          'Replacing an existing mortgage with a new one, usually to get a lower interest rate',
-          'Buying a second house next door',
-          'Paying the mortgage off early with cash',
+          'Renovating a home',
+          'Replacing an existing mortgage with a new one',
+          'Purchasing additional property',
+          'Paying off debt in cash',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If interest rates drop from 6% to 3%, you "Refi" to lower your monthly bill and save [GEM]thousands in interest over time.',
+            'Refinancing is not renovation or early payoff. It replaces debt to improve terms.',
         correctExplanation:
-            'Refinancing costs gems upfront in fees, so you must calculate if the monthly savings are worth the initial cost.',
+            'Refinancing can reduce interest costs but requires careful cost-benefit analysis.',
       ),
     ],
   ),
+
   QuizMetadata(
     id: 'l4_q8',
     title: 'Corporate Valuation',
@@ -5360,79 +5477,79 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the "P/E Ratio"?',
         options: [
-          'The Price divided by the Earnings per share',
-          'The Profit divided by the Expenses',
-          'The Percentage of Employees',
-          'The Price divided by the Energy used',
+          'Price divided by earnings per share',
+          'Profit divided by expenses across departments',
+          'Employee percentage metric',
+          'Energy cost ratio',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'P/E tells you "how many gems you are paying for every [GEM]1 of profit." A P/E of 20 means you pay [GEM]20 to own [GEM]1 of the company\'s annual earnings.',
+            'P/E does not measure costs or staffing. It reflects how much investors pay for earnings.',
         correctExplanation:
-            'High P/E usually means investors expect the company to grow very fast in the future.',
+            'P/E ratios indicate growth expectations and valuation sensitivity.',
       ),
       QuizQuestion(
         question: 'What does "Market Capitalization" (Market Cap) mean?',
         options: [
-          'The total number of buildings a company owns',
-          'The total market value of all a company\'s outstanding shares (Share Price x Total Shares)',
-          'The city where the company is headquartered',
-          'The amount of gems the company has in the bank',
+          'Total buildings owned',
+          'Total value of outstanding shares',
+          'Headquarters location',
+          'Cash reserves',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Market Cap is the "Price Tag" of the whole company. Small-cap companies are risky but growth-heavy; Large-cap companies (like Walmart) are stable.',
+            'Market cap is not physical assets or cash alone. It reflects total market valuation.',
         correctExplanation:
-            'Don\'t look at share price alone! A [GEM]100 stock might be a "Smaller" company than a [GEM]10 stock if there are few shares.',
+            'Market cap categorizes company size and risk characteristics.',
       ),
       QuizQuestion(
         question: 'What is "EBITDA"?',
         options: [
-          'A type of professional degree',
-          'Earnings Before Interest, Taxes, Depreciation, and Amortization',
-          'A government agency for trade',
-          'The total amount of gems spent on advertising',
+          'A professional qualification',
+          'Earnings before interest, taxes, depreciation, and amortization',
+          'A trade authority',
+          'Marketing expenditure total',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'EBITDA is used to see how "Cash Flow" positive a business is without all the complicated accounting and tax rules getting in the way.',
+            'EBITDA is not a credential or spending metric. It isolates operational performance.',
         correctExplanation:
-            'Investors use EBITDA to compare two different companies in different countries with different tax laws.',
+            'EBITDA allows cross-company comparison by removing accounting distortions.',
       ),
       QuizQuestion(
         question: 'What is a "Dividend Yield"?',
         options: [
-          'The total amount of dividends paid in history',
-          'The annual dividend payment divided by the stock price, shown as a percentage',
-          'The number of people who own the stock',
-          'A way to measure the risk of a stock',
+          'Lifetime dividends paid',
+          'Annual dividend divided by stock price',
+          'Number of shareholders',
+          'Risk measurement',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a [GEM]100 stock pays [GEM]4 a year in dividends, the yield is 4%. It is like the "Interest Rate" of your investment.',
+            'Dividend yield is not historical totals or ownership counts. It represents income return.',
         correctExplanation:
-            'High-dividend stocks (like Utility companies) are favored by retirees who need a steady stream of gems every month.',
+            'Dividend yield helps income-focused investors assess cash flow potential.',
       ),
       QuizQuestion(
         question: 'What is "Book Value"?',
         options: [
-          'The price of a textbook',
-          'The total value of a company\'s physical assets if it were closed down and sold today',
-          'The number of books in the CEO\'s library',
-          'The amount of gems spent on legal fees',
+          'Textbook cost',
+          'Net asset value if liquidated',
+          'Library size',
+          'Legal expense total',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Book value represents the "floor" of a company. Some tech companies have low book value (they only own computers and code) but high market value.',
+            'Book value is not educational cost. It reflects accounting net worth.',
         correctExplanation:
-            'Value investors look for stocks trading BELOW their book value, hoping to find a "bargain" that the market has ignored.',
+            'Book value aids value investors in identifying undervalued firms.',
       ),
     ],
   ),
   QuizMetadata(
     id: 'l4_q9',
     title: 'Monetary Policy & The Fed',
-    subtitle: 'The [GEM]trillion-dollar levers of power',
+    subtitle: 'The trillion-dollar [GEM] levers of power',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
@@ -5440,75 +5557,76 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What is the primary role of the "Federal Reserve" (The Fed)?',
         options: [
-          'To collect taxes for the government',
+          'To administer the national tax system, directly collect revenues from individuals and businesses, and manage all fiscal transfers across government agencies',
           'To manage the nation\'s money supply and set interest rates to control inflation',
-          'To print every gem used in the game',
-          'To provide free insurance to all citizens',
+          'To operate all government payment systems and approve every financial transaction in the economy',
+          'To guarantee financial profits for banks and investment firms regardless of market conditions',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The IRS collects taxes. The Fed is the "Central Bank" that acts like the thermostat of the economy, cooling it down or heating it up.',
+            'The Federal Reserve does not collect taxes or manage government spending. Its role is monetary, not fiscal, and it operates independently from agencies responsible for taxation or direct budgetary decisions.',
         correctExplanation:
-            'By raising or lowering interest rates, The Fed influences how many gems businesses borrow and how much consumers spend.',
+            'The Federal Reserve influences economic activity by controlling interest rates and liquidity. By tightening or loosening monetary conditions, it affects borrowing, spending, inflation, and overall financial stability.',
       ),
       QuizQuestion(
         question: 'What happens when The Fed "Raises" interest rates?',
         options: [
-          'Borrowing becomes cheaper and spending increases',
+          'Borrowing costs fall significantly, encouraging higher consumer spending and rapid credit expansion across households and businesses',
           'Borrowing becomes more expensive, which usually cools down inflation',
-          'The government gives out free gems to everyone',
-          'The stock market always goes up immediately',
+          'Government spending automatically increases to offset higher private borrowing costs',
+          'Asset prices instantly rise across all markets without exception',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Higher rates = Higher cost. If a car loan goes from 3% to 8%, fewer people buy cars, which slows down the flow of gems.',
+            'Raising interest rates increases borrowing costs, not lowers them. This typically slows spending and investment rather than accelerating economic activity or guaranteeing higher asset prices.',
         correctExplanation:
-            'The Fed raises rates when they are worried the economy is "overheating" and prices are rising too fast.',
+            'The Fed raises rates to slow economic demand when inflation is rising too quickly. Higher rates reduce borrowing, discourage excessive spending, and help stabilize prices over time.',
       ),
       QuizQuestion(
         question: 'What is "Quantitative Easing" (QE)?',
         options: [
-          'A way to count all the gems in the country',
-          'When the central bank buys large amounts of government bonds to inject gems into the economy',
-          'A tax on high-income earners',
-          'A rule that limits how many shares you can buy',
+          'A comprehensive process for tracking every unit of currency in circulation to improve accounting transparency across financial institutions',
+          'When the central bank buys large amounts of government bonds to inject [GEM] into the economy',
+          'A targeted tax policy applied only to high-income earners during economic expansions',
+          'A regulatory rule limiting how many financial assets investors may hold',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It isn\'t just "printing money" in the traditional sense. It is a tool used when interest rates are already zero to force gems into the financial system.',
+            'Quantitative easing is not a tax or accounting process. It is a monetary tool used when interest rates are already very low and traditional policy tools become ineffective.',
         correctExplanation:
-            'QE lowers long-term interest rates and encourages banks to lend more gems to businesses and homebuyers.',
+            'QE increases liquidity by purchasing long-term securities, lowering yields and encouraging lending, investment, and economic activity when standard rate cuts are no longer sufficient.',
       ),
       QuizQuestion(
         question: 'What is the "Dual Mandate" of the Federal Reserve?',
         options: [
-          'To protect banks and collect taxes',
+          'To supervise banks while simultaneously collecting taxes and enforcing federal budget laws',
           'Maximum employment and stable prices (low inflation)',
-          'To print gems and stop counterfeiters',
-          'To manage the military and the post office',
+          'To control currency printing and eliminate all financial fraud',
+          'To oversee military funding and national infrastructure projects',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The Fed only has two main "jobs" assigned by law. They want as many people working as possible without causing gems to lose their value.',
+            'The Federal Reserve does not manage taxation, defense spending, or fraud enforcement. Its mandate is narrowly focused on employment levels and price stability within the economy.',
         correctExplanation:
-            'Often these two goals conflict: low unemployment can lead to high inflation, forcing The Fed to make difficult choices.',
+            'The dual mandate requires balancing strong employment with low inflation. These goals often conflict, forcing the Fed to make difficult trade-offs in monetary policy decisions.',
       ),
       QuizQuestion(
         question: 'What are "Reserve Requirements"?',
         options: [
-          'The amount of gems you must have in your savings account',
-          'The percentage of deposits a bank MUST keep in its vaults and not lend out',
-          'A requirement to join the army',
-          'The number of employees a business must have',
+          'The minimum amount of personal savings individuals must maintain in regulated banking institutions',
+          'The percentage of deposits a bank must keep in reserve and not lend out',
+          'A mandatory employment quota imposed on private companies',
+          'A legal requirement for businesses to hold emergency cash funds',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Banks don\'t just "hold" your gems; they lend them to others. Reserve requirements ensure they don\'t lend out every single gem, which prevents bank runs.',
+            'Reserve requirements do not apply to individuals or employment levels. They regulate how much banks can lend to prevent instability and reduce the risk of systemic bank failures.',
         correctExplanation:
-            'By lowering reserve requirements, the government allows banks to create more "credit" (digital gems) in the economy.',
+            'Reserve requirements limit excessive lending and protect financial stability. Lowering them allows banks to expand credit, while raising them restricts money creation.',
       ),
     ],
   ),
+
   QuizMetadata(
     id: 'l4_q10',
     title: 'Fiscal Policy & Debt',
@@ -5520,75 +5638,76 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What is the main difference between Monetary and "Fiscal Policy"?',
         options: [
-          'Fiscal policy is managed by the Central Bank',
+          'Fiscal policy is controlled by the central bank and focuses exclusively on interest rates and liquidity management',
           'Fiscal policy is the use of government spending and taxation to influence the economy',
-          'Monetary policy only affects poor people',
-          'There is no difference between them',
+          'Monetary policy applies only to low-income households and has no effect on corporations or investors',
+          'There is no meaningful distinction between monetary and fiscal policy tools',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Monetary = Interest Rates (The Fed). Fiscal = Spending/Taxes (The President and Congress). Both are huge levers of economic power.',
+            'Fiscal policy is not controlled by the central bank. It is determined by elected officials through government budgets, taxation decisions, and public spending priorities.',
         correctExplanation:
-            'Fiscal policy is often used to build "Public Goods" like roads, schools, and the military using gems collected from citizens.',
+            'Fiscal policy uses taxation and spending to influence economic growth, employment, and public welfare, while monetary policy operates through interest rates and money supply.',
       ),
       QuizQuestion(
         question: 'What is a "Budget Deficit"?',
         options: [
-          'When the government has zero gems',
-          'When the government spends MORE gems in a year than it collects in taxes',
-          'When a person forgets to pay their rent',
-          'A type of tax on imports',
+          'A situation where the government completely runs out of money and cannot fund any public services',
+          'When the government spends more [GEM] in a year than it collects in taxes',
+          'An accounting error caused by inaccurate tax reporting',
+          'A penalty imposed on countries with low economic growth',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Deficit is a yearly number. If you earn [GEM]100 and spend [GEM]120, your deficit for that year is [GEM]20.',
+            'A budget deficit does not mean the government has no money. It simply means spending exceeded revenue during a specific fiscal year.',
         correctExplanation:
-            'To pay for the deficit, the government borrows gems from investors by selling "Treasury Bonds."',
+            'Budget deficits are financed through borrowing, usually by issuing government bonds, allowing governments to fund operations beyond current tax revenues.',
       ),
       QuizQuestion(
         question: 'What is the "National Debt"?',
         options: [
-          'The total amount of gems all citizens owe to banks',
-          'The total accumulation of all past yearly deficits that the government has not yet paid back',
-          'The gems the government gives away as grants',
-          'A tax on the whole country',
+          'The combined personal debt of all citizens and households within a country',
+          'The total accumulation of all past deficits that remain unpaid',
+          'The amount of money distributed as government grants',
+          'A recurring tax imposed on every resident',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The Debt is the "Total Balance" on the country\'s credit card. The Deficit is just the "New spending" added this year.',
+            'National debt is not household debt or grants. It represents outstanding government obligations accumulated over many years of borrowing.',
         correctExplanation:
-            'A high national debt means a large portion of future tax gems must be spent just on paying "interest" to lenders.',
+            'High national debt increases interest costs and reduces fiscal flexibility, as future tax revenues must service existing obligations.',
       ),
       QuizQuestion(
         question: 'What does the "Debt-to-GDP Ratio" measure?',
         options: [
-          'How much every person owes in gems',
-          'A country\'s total debt compared to the total value of everything its economy produces in a year',
-          'The percentage of taxes that go to the military',
-          'The number of years it takes to pay off a loan',
+          'The exact amount of debt owed by each citizen on an individual basis',
+          'Total government debt compared to annual economic output',
+          'The portion of taxes allocated to defense spending',
+          'The repayment period of public loans',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A [GEM]1,000 debt is small for a billionaire but huge for a student. Debt-to-GDP tells you if the "size" of the debt is sustainable for that country.',
+            'Debt-to-GDP does not assign debt per person. It evaluates sustainability by comparing debt size to the economy’s capacity to generate income.',
         correctExplanation:
-            'Economists watch this ratio to see if a country is at risk of "Defaulting" (refusing to pay back) its lenders.',
+            'This ratio helps economists assess whether a country can reasonably service its debt without triggering default or inflation.',
       ),
       QuizQuestion(
         question: 'What is "Discretionary Spending" in a government budget?',
         options: [
-          'Spending that must happen by law (like Social Security)',
-          'Spending that Congress must approve every year (like education or defense)',
-          'Spending on secret government missions',
-          'Spending by private citizens',
+          'Spending legally required under entitlement programs such as pensions and healthcare',
+          'Spending that Congress approves annually through the budget process',
+          'Spending conducted secretly without public oversight',
+          'Private-sector consumer spending',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Most gems go to "Mandatory" spending (programs that the law says MUST be paid). Discretionary gems are the ones the government actually debates and chooses to spend.',
+            'Discretionary spending is not mandatory or secret. It is debated and adjusted yearly, unlike entitlement programs that are automatically funded.',
         correctExplanation:
-            'When the government wants to "balance the budget," they usually look at discretionary spending first because it\'s easier to cut.',
+            'Discretionary spending includes defense, education, and infrastructure, making it the primary area targeted during budget negotiations.',
       ),
     ],
   ),
+
   QuizMetadata(
     id: 'l4_q11',
     title: 'Behavioral Finance',
@@ -5599,75 +5718,76 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Loss Aversion" in psychology?',
         options: [
-          'The fear of being lost in a city',
-          'The tendency for people to feel the pain of a loss twice as strongly as the joy of a gain',
-          'Winning more gems than you lose',
-          'Forgetting about your bank account',
+          'A navigational fear experienced when unfamiliar with physical surroundings in new environments',
+          'The tendency for people to feel losses more intensely than equivalent gains',
+          'A strategy focused on maximizing gains at any cost',
+          'The habit of ignoring financial information entirely',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Losing [GEM]100 "hurts" more than finding [GEM]100 "feels good." This causes investors to make irrational choices, like holding onto a crashing stock for too long.',
+            'Loss aversion is not about physical fear or neglecting information. It describes a psychological bias that distorts rational decision-making in financial contexts.',
         correctExplanation:
-            'Being aware of your loss aversion can help you stick to your long-term plan even when the market is red.',
+            'Loss aversion causes investors to avoid realizing losses, often leading to poor timing decisions and long-term underperformance.',
       ),
       QuizQuestion(
         question: 'What is the "Sunk Cost Fallacy"?',
         options: [
-          'Continuing an investment only because you have already put so many gems into it',
-          'The cost of building a ship',
-          'Thinking that prices will always go up',
-          'Investing only in safe assets',
+          'Continuing an investment because of past [GEM] already spent',
+          'The expense of constructing maritime vessels',
+          'Assuming prices always rise over time',
+          'Investing exclusively in low-risk assets',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'The gems you spent are "sunk"—they are gone forever. You should only stay in an investment if it has a GOOD future, not because of its past cost.',
+            'Sunk costs are unrecoverable and should not influence future decisions. Continuing solely due to past spending often compounds losses.',
         correctExplanation:
-            'Professional investors are willing to "cut their losses" and move their remaining gems to better opportunities.',
+            'Recognizing sunk costs allows investors to reallocate capital toward better opportunities rather than emotionally defending poor decisions.',
       ),
       QuizQuestion(
         question: 'What is "Herd Mentality" in the stock market?',
         options: [
-          'Buying animals for a farm',
-          'Following what everyone else is doing without doing your own research',
-          'Owning many different types of gems',
-          'A requirement to join a professional investment club',
+          'The coordinated purchasing of agricultural assets',
+          'Following the actions of others without independent analysis',
+          'Maintaining a diversified investment portfolio',
+          'Mandatory participation in investment groups',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Just because everyone on social media is buying a stock doesn\'t mean it is a good investment. The "herd" is often the last to know a bubble is popping.',
+            'Herd behavior ignores fundamentals and increases bubble risk. Many investors enter at peak prices and exit during panic-driven declines.',
         correctExplanation:
-            'Successful investors like Warren Buffett often do the OPPOSITE of the herd (the Contrarian approach).',
+            'Avoiding herd mentality encourages independent analysis and disciplined investing, improving long-term outcomes.',
       ),
       QuizQuestion(
         question: 'What is "Confirmation Bias"?',
         options: [
-          'Getting a text when your trade is complete',
-          'Only looking for information that agrees with what you already believe about an investment',
-          'Telling everyone about your wins',
-          'Asking a professional for help',
+          'Receiving notifications after trades are executed',
+          'Seeking information that confirms existing beliefs',
+          'Publicly sharing investment successes',
+          'Consulting professional advisors',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you love a company, you might ignore bad news about them. This "blind spot" leads to huge avoidable losses.',
+            'Confirmation bias filters out contradictory evidence, preventing objective assessment and increasing exposure to avoidable risks.',
         correctExplanation:
-            'To be a pro, you should actively look for reasons why your investment might be WRONG.',
+            'Actively challenging assumptions helps investors identify weaknesses in their strategies and improve decision quality.',
       ),
       QuizQuestion(
         question: 'What is "FOMO" (Fear Of Missing Out)?',
         options: [
-          'A type of high-interest loan',
-          'The anxiety that others are getting rich while you are sitting on the sidelines',
-          'The cost of trading too often',
-          'A law that limits your profit',
+          'A structured high-interest lending product',
+          'Anxiety caused by observing others profit while remaining uninvested',
+          'The cost of excessive trading activity',
+          'A regulatory limit on investment gains',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'FOMO causes people to buy at the "Top" (maximum price) just because they see others making gems.',
+            'FOMO leads to impulsive buying after prices have risen, increasing the likelihood of losses when momentum reverses.',
         correctExplanation:
-            'The best way to fight FOMO is to have a "Rules-Based" system and never chase a stock that has already rocketed.',
+            'Discipline, planning, and valuation-based investing are effective defenses against emotionally driven FOMO decisions.',
       ),
     ],
   ),
+
   QuizMetadata(
     id: 'l4_q12',
     title: 'Advanced Retirement',
@@ -5678,76 +5798,77 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the "4% Rule" in retirement planning?',
         options: [
-          'A rule that says you should save 4% of your income',
-          'A guideline that says you can safely withdraw 4% of your portfolio each year without running out of gems',
-          'The minimum interest you get in a savings account',
-          'The maximum tax you pay when you retire',
+          'A recommendation to save exactly four percent of income annually',
+          'A guideline allowing withdrawal of 4% yearly without depleting assets',
+          'The minimum interest paid on savings accounts',
+          'The maximum retirement tax rate',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you have [GEM]1,000,000, the 4% rule says you can live on [GEM]40,000 a year forever. It assumes your gems keep growing while you spend them.',
+            'The 4% rule does not dictate savings rates or interest guarantees. It estimates sustainable withdrawals based on historical market returns.',
         correctExplanation:
-            'The 4% rule is the gold standard for "Financial Independence" (the point where work becomes optional).',
+            'This rule helps retirees estimate safe spending levels while preserving portfolio longevity under typical market conditions.',
       ),
       QuizQuestion(
         question: 'What is "Sequence of Returns Risk"?',
         options: [
-          'The risk of the stock market closing',
-          'The risk that a market crash happens during the FIRST FEW YEARS of your retirement',
-          'The order in which you pay your bills',
-          'Having too many different bank accounts',
+          'The risk of stock exchanges shutting down',
+          'The risk of poor returns early in retirement',
+          'The order of household bill payments',
+          'Holding multiple accounts',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If the market crashes when you are 30, you don\'t care. If it crashes the year you stop working and you have to sell cheap shares to buy food, your wealth might never recover.',
+            'Early negative returns can permanently damage retirement portfolios because withdrawals occur when asset values are depressed.',
         correctExplanation:
-            'Retirees use "Cash Buckets" to hold 2 years of gems so they never have to sell stocks during a crash.',
+            'Managing this risk involves cash reserves and conservative allocations during early retirement years.',
       ),
       QuizQuestion(
         question: 'What is a "Roth Conversion"?',
         options: [
-          'Changing your name to Roth',
-          'Moving gems from a Traditional 401k to a Roth IRA to ensure all future growth is TAX-FREE',
-          'Selling your house to buy an apartment',
-          'A way to double your gems overnight',
+          'Changing legal identity',
+          'Moving funds from a traditional account to a Roth for tax-free growth',
+          'Selling property assets',
+          'Doubling wealth quickly',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You pay tax now on the gems you move, but you never pay tax on that folder again. It\'s a strategy used when you expect taxes to be higher in the future.',
+            'Roth conversions are not instant wealth strategies. They require paying taxes upfront to reduce future tax exposure.',
         correctExplanation:
-            'Strategic conversions can save [GEM]hundreds of thousands in taxes over a 30-year retirement.',
+            'Strategic conversions can significantly reduce lifetime tax liability when timed correctly.',
       ),
       QuizQuestion(
         question: 'What is a "Required Minimum Distribution" (RMD)?',
         options: [
-          'The smallest paycheck you can receive',
-          'A government rule that forces you to start taking gems out of your 401k/IRA at age 73 (so they can tax it)',
-          'The minimum gems required to open an account',
-          'The least amount you can give to charity',
+          'Minimum wage requirement',
+          'Mandatory withdrawals starting at a certain age',
+          'Account opening minimum',
+          'Charitable giving minimum',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The government gave you a "Tax Break" to save. RMDs are their way of saying: "Time up! We want our tax gems now."',
+            'RMDs are not optional and exist to ensure deferred taxes are eventually collected by the government.',
         correctExplanation:
-            'Planning for RMDs is vital because if you don\'t take them, the penalty is a massive 25% of the gems you were supposed to withdraw.',
+            'Failing to comply with RMD rules results in severe penalties, making proactive planning essential.',
       ),
       QuizQuestion(
         question:
             'What is an "HSA" (Health Savings Account) used as a retirement tool?',
         options: [
-          'It can only be used for band-aids',
-          'A "Triple Tax Advantaged" account where gems go in tax-free, grow tax-free, and come out tax-free for medical needs',
-          'A type of car insurance',
-          'A savings account for buying a gym',
+          'A short-term medical expense fund only',
+          'A triple tax-advantaged account for healthcare costs',
+          'Vehicle insurance',
+          'Fitness-related savings',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'HSAs are the "best" accounts. After age 65, you can use the gems for ANYTHING (paying tax like an IRA), or for medical needs (paying zero tax).',
+            'HSAs are not limited to short-term use. They can function as powerful long-term retirement investment vehicles.',
         correctExplanation:
-            'Treating an HSA as a long-term investment account is an "Advanced Move" for building massive wealth.',
+            'HSAs provide unmatched tax efficiency when used strategically for retirement healthcare expenses.',
       ),
     ],
   ),
+
   QuizMetadata(
     id: 'l4_q13',
     title: 'Economic Indicators',
@@ -5759,633 +5880,633 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What are the four components of "GDP" (Gross Domestic Product)?',
         options: [
-          'Stocks, Bonds, Cash, Real Estate',
-          'Consumption, Investment, Government Spending, and Net Exports',
-          'Taxes, Fees, Fines, and Grants',
-          'Apples, Oranges, Cars, and Planes',
+          'Financial assets, real estate, commodities, and labor',
+          'Consumption, investment, government spending, and net exports',
+          'Taxes, fees, fines, and grants',
+          'Agricultural and industrial output categories',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'GDP measures the "Girth" of the economy. If one of these drops (like consumption during a lockdown), the whole GDP shrinks.',
+            'GDP does not measure asset classes or tax types. It tracks total economic production through spending categories.',
         correctExplanation:
-            'Consumption (people buying things) is usually the largest part of the US economy (about 70%).',
+            'These components together capture the full scope of economic activity within a country.',
       ),
       QuizQuestion(
         question: 'What is the "CPI" (Consumer Price Index)?',
         options: [
-          'A measure of the total number of people in a country',
-          'The weighted average prices of a "basket" of consumer goods (used to calculate inflation)',
-          'The current price of the stock market',
-          'A tax on buying clothes',
+          'A population growth measure',
+          'The weighted average price of a basket of goods',
+          'Stock market pricing index',
+          'Retail sales tax',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Economists "shop" for the same basket of milk, rent, and shoes every month. If the basket price goes from [GEM]100 to [GEM]108, the inflation rate is 8%.',
+            'CPI does not track markets or populations. It measures consumer price changes to estimate inflation.',
         correctExplanation:
-            'The Fed uses "Core CPI" (which ignores food and energy) to get a clearer picture of long-term price trends.',
+            'CPI helps policymakers and investors understand purchasing power trends over time.',
       ),
       QuizQuestion(
         question: 'What is a "Leading Economic Indicator"?',
         options: [
-          'An indicator that tells you what happened last year',
-          'A data point that changes BEFORE the rest of the economy (like New Housing Permits)',
-          'The name of a successful company',
-          'A tax that leads to higher growth',
+          'A historical economic report',
+          'A metric that changes before the broader economy',
+          'A corporate performance award',
+          'A fiscal penalty',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'GDP is a "Lagging" indicator (it tells you where you WERE). Building permits are "Leading" because they show how many houses will be built next year.',
+            'Leading indicators are forward-looking and differ from lagging measures like GDP.',
         correctExplanation:
-            'Investors watch leading indicators to predict when a recession might be coming before it actually starts.',
+            'They help forecast economic turning points and guide investment decisions.',
       ),
       QuizQuestion(
         question: 'What is "Stagflation"?',
         options: [
-          'When the economy grows very fast with zero inflation',
-          'A dangerous combo of "Stagnant" economic growth, high unemployment, and high inflation',
-          'When prices stay the same for 10 years',
-          'A way to measure the height of buildings',
+          'Rapid growth with stable prices',
+          'High inflation combined with stagnant growth',
+          'Long-term price stability',
+          'Urban development measurement',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This is an economic nightmare. Usually, inflation drops during a recession. In stagflation, you are broke AND prices are going up at the same time.',
+            'Stagflation is dangerous because traditional policy tools struggle to address inflation and unemployment simultaneously.',
         correctExplanation:
-            'Stagflation last occurred in the 1970s and required very aggressive interest rate hikes to stop.',
+            'This condition forces central banks to make aggressive and often painful policy adjustments.',
       ),
       QuizQuestion(
         question: 'What is the "Yield Curve" (and why is it a warning)?',
         options: [
-          'The shape of a banana',
-          'A graph showing the interest rates of bonds with different maturity dates',
-          'The path of a stock price over a week',
-          'A way to measure the depth of the ocean',
+          'A graphical commodity pricing pattern',
+          'A graph of bond yields by maturity',
+          'A short-term equity chart',
+          'A geological measurement',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Usually, long-term bonds pay HIGHER interest. If short-term rates become higher (an "Inverted Yield Curve"), it almost always predicts a recession is coming.',
+            'An inverted yield curve signals investor pessimism and has historically preceded recessions.',
         correctExplanation:
-            'An inverted yield curve means investors are more scared of the near future than the long-term future.',
+            'It reflects expectations of economic slowdown and future rate cuts.',
       ),
     ],
   ),
   QuizMetadata(
     id: 'l4_q14',
     title: 'Venture Capital & Equity',
-    subtitle: 'Fueling the next big unicorn',
-    difficulty: QuizDifficulty.medium,
+    subtitle: 'Risk capital and ownership economics',
+    difficulty: QuizDifficulty.hard,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
-        question: 'What is the primary role of a "Venture Capital" (VC) firm?',
+        question: 'What is the primary role of a Venture Capital (VC) firm?',
         options: [
-          'To provide loans to homeowners',
-          'To invest gems in early-stage, high-potential startups in exchange for ownership equity',
-          'To manage the government\'s tax collection',
-          'To sell insurance to small businesses',
+          'To provide collateralized loans to established corporations',
+          'To invest [GEM] in early-stage, high-growth companies in exchange for equity ownership',
+          'To allocate public funds toward regulated infrastructure projects with predictable cash flows',
+          'To underwrite fixed-income securities for conservative institutional investors',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'VCs aren\'t banks. They don\'t want "interest." They want to own 10% of a company that might become the next Google or Amazon.',
+            'Venture capital firms do not function as lenders or underwriters. Their returns depend on equity appreciation, not interest payments or guaranteed income streams.',
         correctExplanation:
-            'VCs take massive risks! 9 out of 10 startups fail, but the one that succeeds can return [GEM]billions to the investors.',
+            'VC firms deploy high-risk capital into young companies with scalable business models, accepting frequent failures in exchange for occasional outsized equity returns.',
       ),
       QuizQuestion(
-        question: 'What happens during a "Series A" funding round?',
+        question: 'What typically occurs during a Series A funding round?',
         options: [
-          'The founder uses their own savings to start the business',
-          'A startup raises its first major round of outside venture capital to scale its operations',
-          'The company goes bankrupt and sells its computers',
-          'The company pays its first dividend to shareholders',
+          'The founders rely exclusively on personal savings and early employee contributions',
+          'A company raises its first institutional venture round to scale operations after product-market validation',
+          'The company distributes retained earnings to shareholders as recurring dividends',
+          'The firm restructures debt obligations following liquidity stress and operational underperformance',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Founders start with "Seed" funding. Series A is when the business is proven and needs [GEM] millions to grow fast.',
+            'Founder capital and seed rounds precede Series A. Dividends and debt restructuring are characteristics of mature or distressed companies, not early-stage growth.',
         correctExplanation:
-            'Each letter (Series A, B, C) usually represents a larger amount of gems and a higher valuation for the company.',
+            'Series A marks the transition from validation to execution, where institutional capital funds hiring, infrastructure, and market expansion at increasing valuations.',
       ),
       QuizQuestion(
-        question: 'What is a "Unicorn" in the business world?',
+        question: 'In finance, what defines a "Unicorn" company?',
         options: [
-          'A company that sells mythical toys',
-          'A private startup company valued at over [GEM]1 Billion',
-          'A company with zero employees',
-          'A business that never pays taxes',
+          'A publicly listed firm with exceptional quarterly revenue growth',
+          'A privately held startup valued at over 1 billion [GEM]',
+          'A multinational corporation operating across more than fifty countries worldwide',
+          'A technology firm generating consistent positive free cash flow before its third year',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It\'s called a unicorn because they used to be rare. Today, there are hundreds of them, though reaching [GEM]1 Billion is still extremely difficult.',
+            'Unicorn status is unrelated to profitability, public listing, or geographic reach. It strictly refers to private valuation exceeding a defined threshold.',
         correctExplanation:
-            'Unicorn status is a major milestone that usually leads to an IPO (going public) or being bought by a larger company.',
+            'The term highlights valuation scale rather than financial maturity, often signaling strong growth expectations and future liquidity events such as IPOs or acquisitions.',
       ),
       QuizQuestion(
-        question: 'What is an "Exit Strategy" for a founder or investor?',
+        question: 'What is an "Exit Strategy" for founders or investors?',
         options: [
-          'A plan to leave the building during a fire',
-          'The method by which they intend to sell their ownership and "cash out" their gems (like an IPO or Merger)',
-          'A way to fire all the employees',
-          'A plan to close the business and move to a new country',
+          'A predefined plan for closing offices and winding down daily operations',
+          'A method to convert illiquid equity into realized [GEM] through events like IPOs or acquisitions',
+          'A contractual obligation to resign from executive management roles',
+          'A regulatory process required to dissolve a corporate legal entity',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Gems in a private company are "illiquid" (you can\'t spend them). The exit is the moment those shares turn back into spendable [GEM]s.',
+            'Exits are not operational shutdowns or regulatory dissolutions. They focus on liquidity realization rather than terminating the business itself.',
         correctExplanation:
-            'Common exits include being bought by a larger company (Acquisition) or selling shares to the public (IPO).',
+            'An exit strategy defines how equity holders ultimately monetize ownership, transforming paper valuations into spendable capital through public or private transactions.',
       ),
       QuizQuestion(
-        question: 'What is "Burn Rate"?',
+        question: 'In startup finance, what does "Burn Rate" measure?',
         options: [
-          'The speed at which a company spends its gems before it becomes profitable',
-          'A measure of how fast a computer runs',
-          'The temperature inside a factory',
-          'The percentage of products that are broken',
+          'The annual depreciation rate of physical and intangible assets',
+          'The pace at which a company spends its available [GEM] before achieving profitability',
+          'The volatility of monthly revenue growth across reporting periods',
+          'The percentage of operating expenses allocated to research and development activities',
         ],
-        correctIndex: 0,
+        correctIndex: 1,
         wrongExplanation:
-            'If a startup has [GEM]1,000,000 in the bank and spends [GEM]100,000 a month, its "runway" is 10 months. If it doesn\'t make profit by then, it dies.',
+            'Burn rate does not measure volatility or accounting depreciation. It specifically reflects cash outflow relative to available reserves.',
         correctExplanation:
-            'Managing burn rate is the #1 job of a startup CEO, ensuring they don\'t run out of gems before reaching success.',
+            'Understanding burn rate allows management to estimate runway, plan fundraising timelines, and avoid insolvency before sustainable revenues are established.',
       ),
     ],
   ),
   QuizMetadata(
     id: 'l4_q15',
     title: 'IPOs & The Public Market',
-    subtitle: 'Ringing the bell on Wall Street',
-    difficulty: QuizDifficulty.medium,
+    subtitle: 'Transitioning from private to public capital',
+    difficulty: QuizDifficulty.hard,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
-        question: 'What is an "IPO" (Initial Public Offering)?',
+        question: 'What is an Initial Public Offering (IPO)?',
         options: [
-          'Choosing a new CEO',
-          'The first time a private company sells its shares to the general public on an exchange',
-          'An Important Price Office',
-          'A way to pay employees with gems instead of cash',
+          'A restructuring process designed to reduce outstanding corporate liabilities',
+          'The first sale of a private company’s shares to the public on a stock exchange',
+          'An internal valuation exercise conducted for executive compensation planning',
+          'A government-mandated conversion of private firms into regulated entities',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'An IPO is the "Graduation Day" of a company. It moves from being owned by founders and VCs to being owned by anyone with [GEM]s.',
+            'An IPO is not an internal or regulatory exercise. It represents a fundamental ownership transition involving public market investors.',
         correctExplanation:
-            'IPOs allow a company to raise massive wealth to build new products and expand globally.',
+            'By going public, companies access broader capital pools, provide liquidity to early investors, and become subject to ongoing disclosure obligations.',
       ),
       QuizQuestion(
-        question: 'What is an "Underwriter" (Investment Bank)?',
+        question: 'What role does an Underwriter play in an IPO?',
         options: [
-          'The person who writes the company\'s ads',
-          'A bank that helps a company prepare for an IPO and finds investors to buy the shares',
-          'A type of insurance agent',
-          'A secret investor who hides their identity',
+          'Drafting marketing campaigns to improve retail investor brand recognition',
+          'Advising the issuer, pricing the offering, and placing shares with institutional investors',
+          'Auditing historical financial statements for regulatory compliance',
+          'Managing post-IPO shareholder communications and dividend distributions',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Underwriters (like Goldman Sachs) act as the "Midwives" of the public market, taking a fee to ensure the IPO is successful.',
+            'While audits and marketing exist, underwriting focuses on pricing risk, demand discovery, and execution of the public offering.',
         correctExplanation:
-            'They often "guarantee" a certain price for the shares, taking on a huge risk to help the company go public.',
+            'Investment banks assume placement risk, stabilize early trading, and coordinate investor demand to ensure an orderly transition into public markets.',
       ),
       QuizQuestion(
-        question: 'What is an "S-1 Filing"?',
+        question: 'What is an S-1 filing?',
         options: [
-          'A tax return for a small business',
-          'The detailed legal document a company must file with the SEC before it can go public',
-          'A secret code used by stock traders',
-          'A form used to hire new employees',
+          'A quarterly earnings disclosure submitted after a company lists publicly',
+          'A comprehensive registration document filed with regulators prior to an IPO',
+          'A confidential agreement between underwriters and cornerstone investors',
+          'A tax declaration used to calculate corporate income liabilities',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The S-1 contains EVERY secret about the company—its risks, its profits, and its plans. Investors read it to decide if the stock is a good deal.',
+            'The S-1 is not post-listing or confidential. It is a public disclosure designed to inform potential investors before trading begins.',
         correctExplanation:
-            'Transparency is a requirement for the public market. You can\'t hide your losses when you want the public\'s gems.',
+            'The document details financials, risks, governance, and business strategy, enabling investors to evaluate the offering with full transparency.',
       ),
       QuizQuestion(
-        question: 'What is a "Lock-up Period" after an IPO?',
+        question: 'What is a Lock-up Period following an IPO?',
         options: [
-          'When the stock exchange is closed for a holiday',
-          'A period (usually 180 days) where insiders/employees are FORBIDDEN from selling their shares',
-          'A time when you can\'t log into your bank app',
-          'A penalty for trading too fast',
+          'A temporary trading halt imposed during periods of extreme volatility',
+          'A restriction preventing insiders from selling shares for a defined time after listing',
+          'A regulatory review phase delaying settlement of public market transactions',
+          'A contractual limit on dividend payments during the first fiscal year',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Lock-ups prevent the price from crashing because everyone tries to sell on day one. It proves the insiders believe in the long-term future.',
+            'Lock-ups do not halt markets or dividends. They specifically restrict insider selling to protect early price stability.',
         correctExplanation:
-            'When the lock-up ends, stock prices often drop because a massive wave of new shares hits the market.',
+            'By limiting insider liquidity, lock-ups reduce immediate supply pressure and signal confidence in the company’s long-term prospects.',
       ),
       QuizQuestion(
-        question: 'What is a "Direct Listing" (compared to a traditional IPO)?',
+        question: 'What distinguishes a Direct Listing from a traditional IPO?',
         options: [
-          'Selling shares only to the government',
-          'Going public without using investment banks or raising new gems—just letting existing shares trade',
-          'Listing products on a website',
-          'A rule that requires you to buy a stock every month',
+          'Shares are allocated exclusively to government-sponsored investment funds',
+          'Existing shares begin trading publicly without issuing new equity or underwriter pricing',
+          'The company delays financial disclosures until after trading begins',
+          'Retail investors are restricted from participating during initial sessions',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Direct listings (like Spotify or Slack) save millions in fees but don\'t give the company "new" gems immediately.',
+            'Direct listings do not restrict retail access or disclosures. They eliminate capital raising and traditional underwriting mechanisms.',
         correctExplanation:
-            'It is considered a "fairest" way to list because it doesn\'t give big banks a "special deal" before the public can buy.',
+            'This approach reduces fees and pricing distortions but provides no immediate fundraising, relying entirely on existing shareholder liquidity.',
       ),
     ],
   ),
   QuizMetadata(
     id: 'l4_q16',
     title: 'Hedge Funds & Investing',
-    subtitle: 'Chasing "Alpha" in the [GEM] market',
-    difficulty: QuizDifficulty.medium,
+    subtitle: 'Active strategies and risk-adjusted returns',
+    difficulty: QuizDifficulty.hard,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
+        question: 'What primarily differentiates hedge funds from index funds?',
+        options: [
+          'Index funds operate under stricter government ownership requirements',
+          'Hedge funds pursue active, leveraged strategies aiming to outperform benchmarks',
+          'Index funds concentrate capital into a small number of high-conviction positions',
+          'Hedge funds are designed to eliminate all forms of investment risk',
+        ],
+        correctIndex: 1,
+        wrongExplanation:
+            'Index funds are diversified and passive, while hedge funds accept complexity, leverage, and active risk-taking to seek excess returns.',
+        correctExplanation:
+            'Hedge funds attempt to generate alpha through strategy, timing, and instruments, though long-term outperformance remains statistically rare.',
+      ),
+      QuizQuestion(
         question:
-            'What is the main difference between an Index Fund and a "Hedge Fund"?',
+            'In investment performance analysis, what does "Alpha" measure?',
         options: [
-          'Index funds are only for poor people',
-          'Hedge funds use aggressive strategies (like shorting and leverage) to try and beat the market, while index funds just follow it',
-          'Index funds charge much higher fees',
-          'Hedge funds are owned by the government',
+          'The total return generated by the overall market',
+          'Return earned above a relevant benchmark after adjusting for market exposure',
+          'The volatility of returns during periods of economic stress',
+          'The liquidity premium associated with alternative asset classes',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Index funds are "Passive" (cheap and easy). Hedge funds are "Active" (expensive and complex). 90% of hedge funds actually FAIL to beat the index over time.',
+            'Alpha does not represent volatility or raw returns. It isolates skill-based performance relative to systematic market movements.',
         correctExplanation:
-            'Hedge funds are usually only for "Accredited Investors" (people who already have [GEM] millions) because they are so risky.',
+            'Positive alpha indicates value added beyond passive exposure, though sustaining it consistently is extremely challenging in competitive markets.',
       ),
       QuizQuestion(
-        question: 'In investing, what does "Alpha" represent?',
+        question: 'What does leverage mean in trading and investing?',
         options: [
-          'The first stock ever traded',
-          'The "Excess Return" of an investment above its benchmark or the overall market',
-          'The total number of employees in a company',
-          'A type of very strong gem',
+          'Allocating capital exclusively into low-risk government securities',
+          'Using borrowed [GEM] to amplify exposure, increasing both potential gains and losses',
+          'Diversifying holdings across multiple uncorrelated asset classes',
+          'Reducing portfolio volatility through active hedging techniques',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If the market goes up 10% and you go up 15%, your "Alpha" is 5%. It is the measure of an investor\'s actual skill.',
+            'Leverage does not inherently diversify or reduce risk. It magnifies outcomes, making drawdowns faster and more severe.',
         correctExplanation:
-            'Chasing Alpha is the goal of every professional trader, but for most people, "Beta" (just matching the market) is the better path.',
+            'While leverage can enhance returns, it introduces nonlinear risk, often leading to forced liquidation during adverse market movements.',
       ),
       QuizQuestion(
-        question: 'What is "Leverage" in trading?',
+        question: 'What does the "2 and 20" hedge fund fee structure describe?',
         options: [
-          'Buying stocks with your own savings',
-          'Using BORROWED gems to increase the size of your investment and potential profit (or loss)',
-          'Asking a manager for a raise',
-          'A way to trade stocks without a phone',
+          'Two annual audits and twenty mandatory regulatory filings',
+          'A 2% management fee plus 20% of profits as performance compensation',
+          'Two investment strategies and twenty portfolio managers per fund',
+          'A twenty-year lock-up period with a two-year redemption window',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Leverage is a double-edged sword. If you use 10x leverage, a 1% gain becomes a 10% profit—but a 10% drop loses 100% of your gems!',
+            'These fees apply regardless of outcomes, often eroding net returns, especially when performance fails to exceed benchmarks.',
         correctExplanation:
-            'Leverage is the primary reason why professional hedge funds sometimes "blow up" and lose everything in a single day.',
+            'High fees reflect operational complexity and talent costs, but they significantly raise the hurdle required to justify hedge fund investing.',
       ),
       QuizQuestion(
-        question: 'What is the "2 and 20" fee structure common in hedge funds?',
+        question: 'What defines a market-neutral investment strategy?',
         options: [
-          ' [GEM] per month and 20% of your total gems',
-          'A 2% management fee and a 20% performance fee (on profits)',
-          '2 employees for every 20 investors',
-          'A 20-year contract and a 2% interest rate',
+          'Avoiding exposure to all equity and credit markets entirely',
+          'Balancing long and short positions to minimize directional market risk',
+          'Holding only cash equivalents during periods of uncertainty',
+          'Tracking a broad market index with minimal tracking error',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'These fees are HUGE! The fund takes 2% of your gems even if they LOSE money, and 20% of any gains they make for you.',
+            'Market neutrality does not eliminate risk. It shifts focus from market direction to relative security performance.',
         correctExplanation:
-            'Because of these high fees, many experts (like Warren Buffett) recommend low-cost index funds for almost everyone.',
-      ),
-      QuizQuestion(
-        question: 'What is a "Market Neutral" strategy?',
-        options: [
-          'Not being interested in the market',
-          'A strategy that tries to make gems whether the market goes UP or DOWN by balancing Long and Short positions',
-          'Investing only in government bonds',
-          'A rule that bans you from selling stocks',
-        ],
-        correctIndex: 1,
-        wrongExplanation:
-            'They "Hedge" their bets. They might buy the best tech stock and short the worst one, hoping to profit on the difference regardless of a crash.',
-        correctExplanation:
-            'True market-neutral funds are very rare and require extremely complex [GEM]trader algorithms to work.',
+            'Such strategies seek consistent returns independent of market trends, but require sophisticated modeling and strict risk controls.',
       ),
     ],
   ),
   QuizMetadata(
     id: 'l4_q17',
     title: 'Bond Markets & Yields',
-    subtitle: 'The [GEM]debt engine of the world',
-    difficulty: QuizDifficulty.medium,
+    subtitle: 'Interest rates and fixed-income risk',
+    difficulty: QuizDifficulty.hard,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
-        question:
-            'What is the inverse relationship between Bond Prices and "Yields"?',
+        question: 'What is the relationship between bond prices and yields?',
         options: [
-          'When prices go up, yields also go up',
-          'When bond prices go UP, the interest rate (yield) they effectively pay goes DOWN',
-          'There is no relationship between them',
-          'Bond prices only move once a year',
+          'Bond prices and yields move in the same direction at all times',
+          'When bond prices rise, their effective yield declines',
+          'Yields remain fixed regardless of secondary market trading',
+          'Bond prices change only at issuance or maturity dates',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Think of a see-saw. If people rush to buy safe bonds (pushing the price up), the new buyers get a smaller "slice" of interest.',
+            'Secondary market dynamics constantly adjust yields based on price movements, reflecting changing interest rate expectations.',
         correctExplanation:
-            'This relationship is vital because it means if the market crashes and people buy bonds for safety, your existing bonds become MORE valuable.',
+            'As prices increase, fixed coupon payments represent a lower return, causing yields to fall inversely.',
       ),
       QuizQuestion(
-        question: 'What are "Junk Bonds" (High-Yield Bonds)?',
+        question: 'What characterizes high-yield or "junk" bonds?',
         options: [
-          'Bonds issued by trash companies',
-          'Bonds from companies with a high risk of "Default," which must pay very high interest to attract lenders',
-          'Bonds that have no value at all',
-          'A type of fake gem used by scammers',
+          'They are issued exclusively by early-stage startup companies',
+          'They offer higher interest to compensate for increased default risk',
+          'They are guaranteed by central banks during economic downturns',
+          'They cannot be traded on secondary bond markets',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'They aren\'t "junk" because they are worthless; they are junk because they are "Higher Risk." You get more gems, but the company might go broke.',
+            'These bonds are not guaranteed and remain tradable. Their yields reflect elevated credit risk.',
         correctExplanation:
-            'Professional investors use junk bonds to "juice" their returns in a strong economy.',
+            'Investors demand higher compensation because issuers have weaker balance sheets or unstable cash flows.',
       ),
       QuizQuestion(
-        question: 'What is "Bond Duration"?',
+        question: 'What does bond duration measure?',
         options: [
-          'How many years until the bond ends',
-          'A measure of how sensitive a bond\'s price is to changes in interest rates',
-          'The length of the bond contract document',
-          'The number of people who own the bond',
+          'The contractual maturity date stated on the bond certificate',
+          'Sensitivity of a bond’s price to changes in interest rates',
+          'The frequency of coupon payments per year',
+          'The average holding period of institutional investors',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It isn\'t just time. High duration means if interest rates rise by 1%, your bond price might drop by 10%. It is a measure of "Interest Rate Risk."',
+            'Duration is not simply time to maturity. It reflects interest rate exposure across all cash flows.',
         correctExplanation:
-            'Long-term bonds (30 years) have much higher duration (risk) than short-term bonds (2 years).',
+            'Higher duration means greater price volatility when rates change, making duration central to fixed-income risk management.',
       ),
       QuizQuestion(
-        question: 'What is a "Treasury Bill" (T-Bill) considered to be?',
+        question: 'Why are Treasury Bills often considered risk-free?',
         options: [
-          'The riskiest investment in the world',
-          'A "Risk-Free Asset" because it is backed by the full power of the government',
-          'A type of paper gems',
-          'A bill you get when you visit a museum',
+          'They provide the highest returns available in global markets',
+          'They are backed by the government’s ability to tax and issue currency',
+          'They cannot lose value under any market conditions',
+          'They are insured by private international rating agencies',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'While nothing is truly 100% safe, T-Bills are the closest thing. Every other investment is compared to the "Risk-Free" rate of a T-Bill.',
+            'Risk-free does not mean price stability. It refers to negligible default risk, not immunity from rate changes.',
         correctExplanation:
-            'When the world is scared, everyone sells everything to hide their gems in T-Bills.',
+            'Government backing makes default extremely unlikely, establishing Treasuries as the benchmark for risk-free returns.',
       ),
       QuizQuestion(
-        question: 'What is "Credit Rating" for a bond?',
+        question: 'What does a bond’s credit rating indicate?',
         options: [
-          'The amount of gems the bond costs',
-          'A grade (like AAA or B-) representing how likely the borrower is to pay back the gems',
-          'A way to pay for things without cash',
-          'A score given to the investor',
+          'The market price investors must pay to acquire the bond',
+          'The issuer’s likelihood of meeting its debt obligations',
+          'The expected inflation rate over the bond’s lifespan',
+          'The historical return of similar bonds in the sector',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'AAA is "Safe" (low interest). C or D is "Dangerous" (high interest). Always check the rating before lending your gems to a company.',
+            'Credit ratings assess default risk, not pricing or inflation expectations.',
         correctExplanation:
-            'Agencies like Moody\'s or S&P are paid to "grade" bonds so you don\'t have to be a detective yourself.',
+            'Lower ratings imply higher risk and require higher yields to compensate investors for potential nonpayment.',
       ),
     ],
   ),
   QuizMetadata(
     id: 'l4_q18',
     title: 'REITs & Alternatives',
-    subtitle: 'Beyond just stocks and bonds',
-    difficulty: QuizDifficulty.medium,
+    subtitle: 'Diversification beyond traditional assets',
+    difficulty: QuizDifficulty.hard,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
-        question: 'What is a "REIT" (Real Estate Investment Trust)?',
+        question: 'What defines a Real Estate Investment Trust (REIT)?',
         options: [
-          'A company that builds houses and sells them',
-          'A company that owns and manages income-producing real estate and pays most profits to shareholders as dividends',
-          'A tax that you pay when you buy a house',
-          'A rule that prevents you from owning land',
+          'A construction firm specializing in residential property development',
+          'An entity that owns income-generating real estate and distributes most earnings as dividends',
+          'A government authority regulating land ownership transactions',
+          'A private partnership focused on speculative property flipping',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'REITs allow you to own pieces of [GEM]100,000,000 malls, hotels, and apartments without ever needing to fix a toilet yourself.',
+            'REITs are not developers or regulators. Their structure prioritizes income distribution from stabilized assets.',
         correctExplanation:
-            'By law, REITs must pay out 90% of their taxable income to you. They are excellent for generating a "passive income" stream.',
+            'Mandatory payout rules make REITs attractive for income-focused investors seeking real estate exposure without direct ownership.',
       ),
       QuizQuestion(
-        question: 'Why is "Gold" often called a "Hedge against Inflation"?',
+        question: 'Why is gold often viewed as a hedge against inflation?',
         options: [
-          'Because its price never changes',
-          'Because it is a physical asset with a limited supply that historically holds value when paper currency is being printed',
-          'Because it is shiny and people like it',
-          'Because the government requires everyone to own it',
+          'Its value increases at a fixed annual percentage',
+          'Its limited supply helps preserve purchasing power during currency debasement',
+          'It generates consistent income through interest payments',
+          'Its price is controlled by central banks',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Gold doesn\'t "grow" or pay dividends. It just "sits there." Its value is that it can\'t be printed out of thin air like gems or dollars.',
+            'Gold does not yield income or grow intrinsically. Its appeal lies in scarcity and historical store-of-value properties.',
         correctExplanation:
-            'Many investors keep 5% of their wealth in Gold as "Insurance" for the end of the world.',
+            'When fiat currency loses purchasing power, gold often retains relative value, providing portfolio protection.',
       ),
       QuizQuestion(
-        question: 'What is "Commodity" investing?',
+        question: 'What is commodity investing?',
         options: [
-          'Buying shares in a clothing company',
-          'Investing in raw materials like Oil, Wheat, Coffee, or Copper',
-          'Buying things you need every day',
-          'Trading items with your neighbors',
+          'Purchasing shares in consumer goods manufacturers',
+          'Investing in raw materials such as energy, metals, and agricultural products',
+          'Trading finished products directly with retailers',
+          'Speculating exclusively on foreign exchange markets',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Commodities are the "fuel" of the world. Their prices are driven by global "Supply and Demand" (like a war in an oil country).',
+            'Commodities are physical inputs, not corporate equity or finished goods.',
         correctExplanation:
-            'Commodity prices are very volatile and usually move differently than stocks, making them good for diversification.',
+            'Commodity prices reflect global supply-demand dynamics and can diversify portfolios due to low correlation with equities.',
       ),
       QuizQuestion(
-        question: 'What is "Cryptocurrency" (at a systemic level)?',
+        question: 'At a systemic level, what is cryptocurrency?',
         options: [
-          'A type of video game gem',
-          'A decentralized digital currency that use cryptography and a blockchain to secure transactions and control the supply',
-          'A secret way to hide gems from the bank',
-          'A new type of computer processor',
+          'A centralized digital payment system managed by commercial banks',
+          'A decentralized digital asset secured by cryptography and distributed ledgers',
+          'A government-issued replacement for physical currency',
+          'A proprietary database controlled by technology corporations',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The key word is "Decentralized." There is no "Fed" or "Government" that can print more Bitcoin or devaluate it.',
+            'Cryptocurrencies operate independently of centralized authorities and rely on consensus mechanisms.',
         correctExplanation:
-            'Crypto is a brand-new "Asset Class" (like a digital version of Gold) but it is extremely high-risk compared to traditional assets.',
+            'Their decentralized nature limits supply manipulation but introduces volatility, regulatory uncertainty, and technological risk.',
       ),
       QuizQuestion(
-        question: 'What is "Liquidity" in an investment?',
+        question: 'What does liquidity mean in an investment context?',
         options: [
-          'How much gems the interest pays',
-          'How quickly and easily an asset can be turned into spendable gems without losing value',
-          'The amount of water a factory uses',
-          'The name of the bank owner',
+          'The total interest income an asset generates annually',
+          'The ease and speed with which an asset can be converted into [GEM] without loss',
+          'The legal protection offered to investors by regulators',
+          'The expected appreciation rate over long holding periods',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Cash is "perfectly liquid." A house is "illiquid" because it takes 6 months to sell. If you have an emergency, you can\'t eat a piece of your house.',
+            'Liquidity concerns convertibility, not returns or regulatory protection.',
         correctExplanation:
-            'Always keep an "Emergency Fund" of highly liquid gems (cash/savings) so you never have to sell your illiquid assets in a panic.',
+            'High liquidity allows rapid access to capital, reducing the need to sell long-term assets under unfavorable conditions.',
       ),
     ],
   ),
   QuizMetadata(
     id: 'l4_q19',
     title: 'DCF & Net Present Value',
-    subtitle: 'The math of legendary investors',
+    subtitle: 'Intrinsic valuation and capital allocation',
     difficulty: QuizDifficulty.hard,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
         question:
-            'What is the goal of a "Discounted Cash Flow" (DCF) analysis?',
+            'What is the primary objective of a Discounted Cash Flow (DCF) analysis?',
         options: [
-          'To count how many gems are currently in the bank',
-          'To estimate the value of an investment today based on projections of how many gems it will generate in the future',
-          'To find out which stock is the most popular',
-          'To calculate the cost of a company\'s products',
+          'To measure the current cash balance reported on a company’s balance sheet at a specific reporting date',
+          'To estimate the present value of an investment by discounting its expected future cash flows',
+          'To compare short-term price momentum between competing publicly traded securities over recent quarters',
+          'To determine product-level pricing strategies based on historical operating margins and cost structures',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'DCF is "intrinsic valuation." It doesn\'t care about the stock market price. It asks: "If I buy this whole business and keep all the gems it makes forever, what is that worth to me right now?"',
+            'DCF analysis is not concerned with short-term market prices, accounting cash balances, or competitive pricing strategies. It focuses on long-term cash generation rather than snapshot financial metrics.',
         correctExplanation:
-            'DCF is the tool used by professionals (like Warren Buffett) to find "Underpriced" stocks that the market hasn\'t noticed yet.',
+            'DCF analysis seeks to determine intrinsic value by translating projected future cash flows into today’s terms, reflecting both time value of money and investment risk.',
       ),
       QuizQuestion(
-        question: 'What is "Net Present Value" (NPV)?',
+        question:
+            'What does Net Present Value (NPV) represent in capital budgeting?',
         options: [
-          'The total amount of gems you have',
-          'the difference between the present value of cash inflows and the present value of cash outflows over a period of time',
-          'A tax on your profits',
-          'The value of a company after it goes bankrupt',
+          'The gross revenue generated by a project before accounting for operating or financing costs',
+          'The difference between the present value of expected cash inflows and outflows over an investment’s life',
+          'The statutory tax liability arising from a profitable long-term investment project',
+          'The accounting value of assets remaining after liquidation of a failed business venture',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'NPV answers: "Is this project worth doing?" If NPV is POSITIVE, it means the investment will create more wealth than it costs (including interest).',
+            'NPV does not measure revenue, taxes, or liquidation value. It evaluates whether future benefits, discounted appropriately, exceed the total economic cost of undertaking the project.',
         correctExplanation:
-            'Companies only build new factories or launch products if the NPV calculation shows they will gain a net profit in today\'s [GEM]s.',
+            'A positive NPV indicates value creation after accounting for opportunity cost of capital, making it a foundational decision metric in corporate finance.',
       ),
       QuizQuestion(
-        question: 'In a DCF, what is the "Terminal Value"?',
+        question: 'Within a DCF framework, what is Terminal Value?',
         options: [
-          'The value of a company when it closes down',
-          'The estimated value of a business beyond the initial projection period (usually assuming it grows forever at a steady rate)',
-          'The gems paid to the CEO',
-          'The total debt of the company',
+          'The estimated recovery value of a business if operations cease at the end of the forecast horizon',
+          'The value assigned to all cash flows beyond the explicit forecast period, typically assuming stable long-term growth',
+          'The cumulative compensation paid to senior executives during the final projection year',
+          'The total outstanding liabilities recorded on the balance sheet at the end of the model period',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You can\'t project every single year for 100 years. You project 5-10 years, and then use a "Terminal Value" formula for the infinite future.',
+            'Terminal Value does not assume shutdown, compensation totals, or debt balances. It approximates the continuing economic value of a business beyond detailed projections.',
         correctExplanation:
-            'Terminal Value often makes up 70% or more of a total DCF valuation, making it a very sensitive and important number.',
+            'Because it often represents a majority of total valuation, small changes in terminal assumptions can significantly impact overall DCF results.',
       ),
       QuizQuestion(
-        question: 'What is "WACC" (Weighted Average Cost of Capital)?',
+        question:
+            'What does WACC (Weighted Average Cost of Capital) represent?',
         options: [
-          'A type of legal contract',
-          'The average interest rate a company pays to all its lenders and investors for the gems they provided',
-          'The cost of running a website',
-          'The percentage of gems spent on advertising',
+          'A legally mandated interest rate applied uniformly across all corporate borrowing arrangements',
+          'The blended required return demanded by both debt and equity providers based on their proportional contribution',
+          'The average operational expense incurred to maintain digital and physical infrastructure',
+          'The percentage of total revenue allocated annually to marketing and brand development initiatives',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Gems aren\'t free! WACC is the "Hurdle Rate." If a business investment doesn\'t earn more than its WACC, it is actually LOSING wealth for its owners.',
+            'WACC is not a regulatory rate or an operating expense metric. It reflects the opportunity cost of capital from all financing sources.',
         correctExplanation:
-            'Valuators use WACC as the "Discount Rate" in their DCF to see if a business is truly profitable.',
+            'WACC serves as a discount rate and investment hurdle, ensuring projects generate returns exceeding the cost of the capital employed.',
       ),
       QuizQuestion(
-        question: 'What is "Free Cash Flow" (FCF)?',
+        question: 'What is Free Cash Flow (FCF) in valuation analysis?',
         options: [
-          'Gems that are given away for free',
-          'The gems a company has left over after paying for all its operating expenses and new equipment (CapEx)',
-          'A loan that has no interest',
-          'The total revenue of a business',
+          'Unrestricted funds available to shareholders after all statutory distributions and dividend payments',
+          'Cash generated by operations after accounting for capital expenditures required to sustain the business',
+          'Total reported net income adjusted for non-recurring accounting items',
+          'Short-term liquidity obtained through revolving credit facilities',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Profit is an accounting number; FCF is "REAL GEMS." You can\'t pay dividends or buy other companies with profit—only with Free Cash Flow.',
+            'FCF is not net income, dividend surplus, or borrowed liquidity. It measures actual cash available after maintaining productive capacity.',
         correctExplanation:
-            'FCF is considered the "Lifeblood" of a corporation. Investors look for companies with "fat" cash flow and low debt.',
+            'Investors value FCF because it represents deployable capital that can fund growth, debt reduction, dividends, or acquisitions.',
       ),
     ],
   ),
   QuizMetadata(
     id: 'l4_q20',
     title: 'Arbitrage & HFT',
-    subtitle: 'The [GEM]speed of light in finance',
+    subtitle: 'Market efficiency and speed-based strategies',
     difficulty: QuizDifficulty.hard,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
-        question: 'What is "Arbitrage"?',
+        question: 'What is arbitrage in financial markets?',
         options: [
-          'A legal rule for resolving disputes',
-          'The simultaneous purchase and sale of the same asset in different markets to profit from tiny price differences',
-          'Buying a stock and holding it for 50 years',
-          'A way to save on your taxes',
+          'A regulatory mechanism used to resolve valuation disputes between institutional counterparties',
+          'The simultaneous buying and selling of identical or equivalent assets to exploit price discrepancies',
+          'A long-term investment strategy focused on dividend income and compounding returns',
+          'A hedging technique designed to reduce portfolio volatility during macroeconomic downturns',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If Gold is [GEM]1,000 in London and [GEM]1,001 in New York, an arbitrageur buys it in London and sells it in NY at the same time for a "Risk-Free" [GEM]1 profit.',
+            'Arbitrage is not regulatory, long-term investing, or volatility hedging. It relies on near-instant execution to capture mispricing.',
         correctExplanation:
-            'Arbitrage is the "Force of Nature" that keeps prices equal across the whole world.',
+            'By eliminating price differences across markets, arbitrage activity enhances efficiency and enforces the law of one price.',
       ),
       QuizQuestion(
-        question: 'What is "High-Frequency Trading" (HFT)?',
+        question: 'What defines High-Frequency Trading (HFT)?',
         options: [
-          'Trading stocks once a day',
-          'Using powerful computers to execute thousands of trades in fractions of a second (milliseconds)',
-          'A way to trade stocks without using a computer',
-          'A rule that limits how fast you can sell',
+          'A discretionary trading approach based on macroeconomic forecasts and human judgment',
+          'The use of ultra-low-latency systems to execute large volumes of trades in extremely short timeframes',
+          'A manual trading style emphasizing reduced transaction frequency and extended holding periods',
+          'A compliance-driven trading restriction imposed during periods of excessive market volatility',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'HFT isn\'t about human thinking. It is about "Latency." The faster your computer and your fiber-optic cables, the more gems you can make.',
+            'HFT does not rely on discretion or infrequent trades. Its advantage stems from speed, automation, and infrastructure investment.',
         correctExplanation:
-            'HFT firms provide "Liquidity" to the market, but they can also cause "Flash Crashes" where the market drops and recovers in seconds.',
+            'HFT strategies profit from microstructure inefficiencies, often holding positions for milliseconds while providing liquidity at scale.',
       ),
       QuizQuestion(
-        question: 'What is a "Market Maker"?',
+        question: 'What is the primary function of a market maker?',
         options: [
-          'The person who invented the stock exchange',
-          'A firm that stands ready to both buy and sell a stock at all times, profiting from the "Bid-Ask Spread"',
-          'A company that sells marketing services',
-          'A government regulator',
+          'Designing new securities for initial public offerings on major exchanges',
+          'Continuously quoting buy and sell prices to facilitate liquidity and earn the bid-ask spread',
+          'Supervising trading activity to ensure regulatory compliance across participants',
+          'Providing advisory services to issuers regarding capital structure optimization',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'They don\'t care if the price goes up or down. They just want the "Spread" (the 1-cent difference between the buy and sell price) on millions of trades.',
+            'Market makers are not regulators or advisors. Their role is transactional, ensuring continuous two-sided markets.',
         correctExplanation:
-            'Without market makers, you wouldn\'t be able to sell your shares instantly when you need gems.',
+            'By absorbing temporary imbalances in supply and demand, market makers enable investors to transact quickly and efficiently.',
       ),
       QuizQuestion(
-        question: 'What is "Dark Pool" trading?',
+        question: 'What characterizes dark pool trading?',
         options: [
-          'Illegal trading of stolen gems',
-          'Private exchanges where large banks and "Whale" investors trade massive blocks of shares without the public seeing the price',
-          'Trading that only happens at night',
-          'A way to trade gems in a swimming pool',
+          'Unauthorized trading venues operating outside financial regulatory frameworks',
+          'Private trading venues allowing large participants to execute block trades with limited pre-trade transparency',
+          'After-hours retail trading sessions restricted to non-institutional investors',
+          'Government-operated exchanges designed to stabilize markets during crises',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a billionaire sells 10,000,000 shares on the public exchange, the price would crash instantly. Dark pools allow them to find a buyer quietly.',
+            'Dark pools are regulated and legal. Their defining feature is reduced transparency, not illegality or retail access.',
         correctExplanation:
-            'While legal, dark pools are controversial because they reduce the "Transparency" of the overall market.',
+            'They minimize market impact for large trades but raise concerns about fairness and price discovery in public markets.',
       ),
       QuizQuestion(
-        question: 'What is "Algorithmic Trading"?',
+        question: 'What is algorithmic trading?',
         options: [
-          'Trading stocks based on what you see in the news',
-          'Using pre-programmed mathematical "Rules" to execute trades automatically based on price, volume, or timing',
-          'A way to avoid using math in finance',
-          'A system where the government picks your stocks',
+          'Discretionary trading based primarily on qualitative news interpretation and analyst opinions',
+          'The automated execution of trades using predefined quantitative rules based on market data',
+          'A centralized system where exchanges determine participant trading strategies',
+          'A method of eliminating mathematical models from investment decision-making',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'An algorithm might say: "If the 50-day average moves above the 200-day average, buy [GEM]10,000 worth of shares." It never gets tired or emotional.',
+            'Algorithmic trading does not remove mathematics or centralize decisions. It codifies logic into repeatable execution rules.',
         correctExplanation:
-            'Today, over 80% of all trading in the stock market is done by algorithms, not humans.',
+            'Automation reduces human bias, increases consistency, and dominates modern market volume across asset classes.',
       ),
     ],
   ),
 ];
-
 final List<QuizMetadata> _level5Quizzes = [
   // Quiz 1-3: Easy (Professional Fundamentals)
   QuizMetadata(
@@ -6400,71 +6521,71 @@ final List<QuizMetadata> _level5Quizzes = [
             'Which of the following is the "strictest" measure of a company\'s immediate liquidity?',
         options: [
           'Current Ratio',
-          'Quick Ratio (Acid-Test Ratio)',
+          'Quick Ratio',
           'Debt-to-Equity Ratio',
           'Total Asset Turnover',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The Current Ratio includes inventory, which might take months to sell. The Quick Ratio subtracts inventory, showing only the gems that are TRULY available right now.',
+            'The Current Ratio includes inventory, which might take months to sell or monetize. The Quick Ratio specifically subtracts inventory, showing only the [GEM] that are truly available right now for immediate obligations.',
         correctExplanation:
-            'A Quick Ratio above 1.0 means the company can pay all its current bills without selling a single piece of inventory—a hallmark of financial strength.',
+            'A Quick Ratio above 1.0 means the company can pay all its current bills without selling any inventory. This is a critical hallmark of financial strength and immediate operational stability for any professional organization.',
       ),
       QuizQuestion(
         question: 'What does a "Current Ratio" of 1.2 mean?',
         options: [
-          'The company has [GEM]1.20 in current assets for every [GEM]1.00 of current liabilities',
-          'The company is bankrupt',
-          'The company has 120 employees',
-          'The company made 20% profit this year',
+          'The company has 1.2 [GEM] in current assets for every 1.0 [GEM] of current liabilities',
+          'The company is facing immediate bankruptcy and requires capital injection',
+          'The company has exactly 120 employees in the core department',
+          'The company achieved a 20% net profit margin this fiscal year',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'Ratio = Division. 1.2 means assets are 20% higher than liabilities. If it drops below 1.0, the company might not be able to pay its short-term debts.',
+            'Ratio calculations represent division between asset and liability accounts. A 1.2 ratio means assets are 20% higher than liabilities. If it drops below 1.0, the company might not be able to pay short-term debts.',
         correctExplanation:
-            'While 1.2 is generally safe, professional analysts compare this to the industry average to see if the company is lagging behind.',
+            'While a 1.2 ratio is generally considered safe, professional financial analysts always compare this figure to the industry average to determine if the company is lagging behind or leading its peers in liquidity.',
       ),
       QuizQuestion(
         question: 'What is "Working Capital" in professional accounting?',
         options: [
-          'The total amount of gems the CEO earns',
+          'The total amount of [GEM] the executive team earns annually',
           'Current Assets minus Current Liabilities',
-          'The value of the company\'s buildings',
-          'The total debt of the company',
+          'The market value of the company\'s physical buildings',
+          'The total long-term debt owed to institutional creditors',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Working capital is the "oil" in the engine. If it is negative, the engine (the business) will likely seize up and stop functioning.',
+            'Working capital represents the operational liquidity available to a business. If this figure becomes negative, the operational engine of the business will likely seize up and stop functioning due to an inability to cover costs.',
         correctExplanation:
-            'Positive working capital ensures that a business can continue its operations and has sufficient gems to meet both short-term debt and upcoming operational expenses.',
+            'Positive working capital ensures that a business can continue its daily operations smoothly and has sufficient [GEM] to meet both short-term debt obligations and upcoming operational expenses without needing external emergency funding.',
       ),
       QuizQuestion(
         question: 'What is the "Debt-to-Equity" ratio used to measure?',
         options: [
-          'How much profit the company makes',
-          'Financial Leverage (how much the company is funded by debt vs. owners)',
-          'The number of shares in the market',
-          'The amount of taxes owed',
+          'The annual net profit margin of the company',
+          'Financial Leverage (funding by debt vs. owners)',
+          'The total number of shares currently in the market',
+          'The amount of corporate taxes owed to the state',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you have [GEM]100 in debt and [GEM]10 in equity, your ratio is 10. This is very "Aggressive" and dangerous if profits drop.',
+            'If you have 100 [GEM] in debt and only 10 [GEM] in equity, your leverage ratio is 10. This is considered very aggressive and dangerous for the company if profits drop even slightly during a downturn.',
         correctExplanation:
-            'Conservative companies keep this ratio low to ensure they can survive economic downturns without the bank taking their assets.',
+            'Conservative companies strive to keep this ratio low to ensure they can survive severe economic downturns without the risk of creditors taking their assets. It measures the balance between borrowed funds and owner capital.',
       ),
       QuizQuestion(
         question: 'What is "Solvency"?',
         options: [
-          'The ability to turn assets into gems quickly',
-          'The ability of a business to meet its long-term financial obligations',
-          'Winning a legal case in court',
-          'A type of cleaning chemical for factories',
+          'The ability to turn assets into [GEM] very quickly',
+          'The ability of a business to meet long-term obligations',
+          'Winning a significant legal case in a high court',
+          'A type of industrial cleaning chemical for factories',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Liquidity is about the next 30 days. Solvency is about the next 30 YEARS. A company can be liquid but insolvent if its total debts are higher than its total assets.',
+            'Liquidity focuses on the next 30 days of operations. Solvency focuses on the next 30 years. A company can be liquid but insolvent if its total debts are significantly higher than its total tangible assets.',
         correctExplanation:
-            'Professional auditors must sign off on a "Going Concern" statement, confirming they believe the company is solvent for at least another year.',
+            'Professional auditors must sign off on a "Going Concern" statement annually, confirming they believe the company is solvent and will remain operational for at least another year. This is vital for long-term investor confidence.',
       ),
     ],
   ),
@@ -6478,72 +6599,72 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Materiality" in auditing?',
         options: [
-          'The physical weight of the gold in the vault',
-          'The threshold above which a financial error or omission would influence the decision of an investor',
-          'The total cost of the audit fee',
-          'A list of all the materials used in a product',
+          'The physical weight of precious metals in the vault',
+          'Threshold for errors impacting investor decisions',
+          'The total cost of the external audit fee',
+          'A list of all raw materials used in production',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Auditors don\'t check every single [GEM]1 transaction. They set a "Materiality" level (e.g., [GEM]50,000). If an error is below that, they might ignore it.',
+            'Auditors do not check every single small transaction because it is inefficient. They set a materiality level, such as 50,000 [GEM]. If an error is below that threshold, they might choose to ignore its impact.',
         correctExplanation:
-            'Materiality is a matter of "Professional Judgment" and varies based on the size and nature of the company.',
+            'Materiality remains a matter of professional judgment and varies significantly based on the size and nature of the company. It defines what information is important enough to potentially change an investor’s economic decision-making process.',
       ),
       QuizQuestion(
         question: 'What is "Professional Skepticism"?',
         options: [
-          'Assuming the client is always lying',
-          'An attitude that includes a questioning mind and a critical assessment of audit evidence',
-          'Being rude to the company management',
-          'A refusal to believe any numbers provided',
+          'Assuming the client management is always lying',
+          'A questioning mind and critical evidence assessment',
+          'Being consistently rude to the company management',
+          'A refusal to believe any financial numbers provided',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Auditors don\'t assume fraud, but they don\'t assume honesty either. They require "Evidence" to back up every claim made by the company.',
+            'Auditors should not assume fraud exists, but they should not assume honesty either. They require verifiable evidence to back up every significant claim made by the company management before forming their final professional audit opinion.',
         correctExplanation:
-            'Skepticism is the most important trait for an auditor to prevent being "fooled" by clever accounting tricks.',
+            'Skepticism remains the most important trait for a professional auditor to prevent being fooled by clever accounting tricks or management bias. It involves being alert to conditions that may indicate possible misstatement due to error.',
       ),
       QuizQuestion(
         question: 'What is an "External Audit"?',
         options: [
-          'An audit of the building\'s exterior',
-          'An independent examination of financial statements by a third-party firm (CPA)',
-          'When the CEO checks their own bank account',
+          'An audit of the building\'s exterior facade',
+          'Independent examination by a third-party firm',
+          'When the CEO checks their own personal account',
           'A review of the company by its own employees',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Internal audits are done by employees. External audits are done by outside firms (like the Big 4) to give "Assurance" to the public.',
+            'Internal audits are performed by company employees to improve operations. External audits are performed by independent firms like the Big 4 to give high-level assurance to the general public and shareholders regarding financial statement accuracy.',
         correctExplanation:
-            'Publicly traded companies are REQUIRED by law to have an external audit every year to protect investors.',
+            'Publicly traded companies are required by law to have an external audit every year to protect investors from fraud. This process ensures that the financial statements present a true and fair view of the company.',
       ),
       QuizQuestion(
         question: 'What does "Audit Independence" mean?',
         options: [
           'The auditor doesn\'t need any help from the client',
-          'The auditor has no financial or personal connection to the client that could bias their report',
-          'The auditor works from home',
-          'The auditor doesn\'t use any standard rules',
+          'No personal or financial connection to the client',
+          'The auditor works from a home office environment',
+          'The auditor doesn\'t use any standard industry rules',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If an auditor owns stock in the company they are auditing, they have a "Conflict of Interest." They might hide bad news to protect their own [GEM]s.',
+            'If an auditor owns stock in the company they are auditing, they have a clear conflict of interest. They might hide bad news to protect their own investment [GEM] instead of reporting the absolute truth.',
         correctExplanation:
-            'Independence is the "Bedrock" of the profession. Without it, the audit report has zero value to the market.',
+            'Independence is the bedrock of the auditing profession. Without it, the audit report has zero value to the market because investors cannot trust that the auditor remained objective and unbiased throughout the entire examination process.',
       ),
       QuizQuestion(
         question: 'What is a "Qualified Opinion"?',
         options: [
-          'An opinion given by a very smart person',
-          'A report stating that the financial statements are mostly fair, EXCEPT for one specific area or issue',
-          'A report that says everything is perfect',
-          'A type of legal certificate',
+          'An opinion given by a very intelligent person',
+          'Fair statements except for one specific issue',
+          'A report stating that everything is perfect',
+          'A type of legal certificate for the board',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A "Clean" opinion is what you want. A "Qualified" opinion is a "Yellow Flag"—it means the auditor found something they don\'t like.',
+            'A clean or "unqualified" opinion is what every company wants. A "qualified" opinion is a yellow flag indicating the auditor found something they do not like, although the rest of the statements are generally acceptable.',
         correctExplanation:
-            'If the auditor finds massive fraud, they give a "Disclaimer" or an "Adverse Opinion," which usually causes the stock price to crash.',
+            'If the auditor finds evidence of massive fraud or systemic errors, they give a disclaimer or an adverse opinion. Such reports usually cause the stock price to crash as they signal deep, unresolved financial reporting problems.',
       ),
     ],
   ),
@@ -6565,65 +6686,65 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'NPV works for projects with the same length. If Project A is 3 years and Project B is 10 years, you must use EAA to see which one creates more wealth PER YEAR.',
+            'Net Present Value works best for projects with the same length. If Project A is 3 years and Project B is 10 years, you must use EAA to see which one creates more wealth per year.',
         correctExplanation:
-            'EAA converts the total NPV of each project into a steady "annual payment" that makes them easy to compare.',
+            'Equivalent Annual Annuity converts the total NPV of each project into a steady annual payment that makes them easy to compare. This allows managers to select the project that maximizes value relative to the time invested.',
       ),
       QuizQuestion(
         question: 'What is "Capital Rationing"?',
         options: [
-          'When a company has too many gems and doesn\'t know what to do',
-          'When a company has limited gems and must choose only the BEST projects from many profitable ones',
-          'A tax on the company\'s capital',
-          'Giving everyone in the company an equal share of profit',
+          'When a company has too many [GEM] and is idling',
+          'Choosing the best projects with limited [GEM]',
+          'A tax on the company\'s total invested capital',
+          'Giving everyone in the company an equal share',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Even a profitable company can\'t do EVERYTHING. If you have [GEM]1,000,000 but three [GEM]500,000 projects, you must "ration" your capital.',
+            'Even a profitable company cannot do everything at once. If you have 1,000,000 [GEM] but three 500,000 [GEM] projects to choose from, you must ration your capital to ensure you select the most profitable combination possible.',
         correctExplanation:
-            'The goal of rationing is to pick the "Combination" of projects that results in the HIGHEST total NPV.',
+            'The goal of capital rationing is to pick the combination of projects that results in the highest total NPV for the company. This process requires careful evaluation of opportunity costs and strategic alignment with long-term goals.',
       ),
       QuizQuestion(
         question: 'What is the "Profitability Index" (PI)?',
         options: [
-          'The total profit of the company',
-          'The Present Value of inflows divided by the Initial Investment',
-          'A list of the company\'s best products',
-          'The amount of gems spent on advertising',
+          'The total net profit margin of the company',
+          'PV of inflows divided by Initial Investment',
+          'A list of the company\'s best performing products',
+          'The amount of [GEM] spent on marketing costs',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'PI shows "Bang for your Buck." A PI of 1.2 means for every [GEM]1 you invest, you get back [GEM]1.20 in present value.',
+            'The Profitability Index shows "Bang for your Buck." A PI of 1.2 means that for every 100 [GEM] you invest today, you get back 120 [GEM] in present value over the life of the project.',
         correctExplanation:
-            'PI is the perfect tool for working under "Capital Rationing" because it ranks projects by their efficiency.',
+            'Profitability Index is the perfect tool for working under capital rationing because it ranks projects by their efficiency. It helps managers identify which investments provide the highest relative return for each unit of [GEM] spent.',
       ),
       QuizQuestion(
         question: 'What is an "Opportunity Cost of Capital"?',
         options: [
-          'The cost of hiring a new manager',
-          'The return that could have been earned by investing the gems in the NEXT BEST alternative',
-          'A fine for missing a business meeting',
-          'The interest rate charged by the bank',
+          'The cost of hiring a new department manager',
+          'Return from the next best alternative investment',
+          'A fine for missing a critical business meeting',
+          'The interest rate charged by the primary bank',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you put gems in a project that earns 5%, but you could have earned 10% in the stock market, your "true" cost is that missing 10%.',
+            'If you put [GEM] in a project that earns 5%, but you could have earned 10% in the stock market instead, your true cost is that missing 10%. This represents the value sacrificed by chosen one path.',
         correctExplanation:
-            'Professionals use the "Hurdle Rate" to ensure they are never doing a project that earns less than their opportunity cost.',
+            'Professionals use the hurdle rate to ensure they are never doing a project that earns less than their opportunity cost. It sets a minimum return threshold that all new investments must exceed to be considered viable.',
       ),
       QuizQuestion(
         question: 'What is "Sensitivity Analysis" in a financial model?',
         options: [
           'Being careful not to hurt the client\'s feelings',
-          'Changing one variable (like sales growth) to see how it affects the total NPV',
-          'Searching for errors in the spreadsheet',
+          'Changing variables to see effects on total NPV',
+          'Searching for clerical errors in the spreadsheet',
           'A review of the company\'s social media accounts',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Models are just guesses. Sensitivity analysis tells you: "If our sales are 10% lower than we think, is the project still worth it?"',
+            'Financial models are just educated guesses about the future. Sensitivity analysis tells you: "If our sales are 10% lower than we predicted, is this project still worth the initial investment of our company [GEM] reserves today?"',
         correctExplanation:
-            'Identifying "Critical Variables" (the ones that change the result the most) is the mark of a pro financial analyst.',
+            'Identifying critical variables, which are the ones that change the final result the most, is the mark of a professional financial analyst. It allows for better risk management and more robust planning for various market scenarios.',
       ),
     ],
   ),
@@ -6636,74 +6757,74 @@ final List<QuizMetadata> _level5Quizzes = [
     questions: [
       QuizQuestion(
         question:
-            'When a Parent company owns 80% of a Subsidiary, what is the remaining 20% called on the balance sheet?',
+            'When a Parent company owns 80% of a Subsidiary, what is the remaining 20% called?',
         options: [
-          'Minority Debt',
+          'Minority Debt Obligations',
           'Non-Controlling Interest (NCI)',
-          'Owners\' Equity',
-          'Retained Earnings',
+          'Owners\' Equity Surplus',
+          'Accumulated Retained Earnings',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It isn\'t "Debt" because the company doesn\'t owe it back. It is the "Ownership" of the other 20% of investors who aren\'t the parent.',
+            'It is not considered debt because the company does not owe it back to anyone. It represents the ownership of the other 20% of investors who are not the parent company in this specific group structure.',
         correctExplanation:
-            'NCI ensures that the consolidated balance sheet accurately shows that while the Parent controls the assets, they don\'t "own" every single gem of the value.',
+            'Non-Controlling Interest ensures that the consolidated balance sheet accurately shows that while the Parent controls the assets, they do not own every single gem of the value. It represents the portion of equity not attributable to parents.',
       ),
       QuizQuestion(
         question: 'How is "Goodwill" calculated in an acquisition?',
         options: [
           'Purchase Price - Book Value of Assets',
-          'Purchase Price - Fair Value of Net Identifiable Assets',
-          'Total Revenue - Total Expenses',
+          'Purchase Price - Fair Value of Net Assets',
+          'Total Revenue - Total Operating Expenses',
           'The value of the company\'s brand name only',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Book Value is just a historical number. You must use "Fair Value" (what the assets are worth today). If you pay [GEM]1,000,000 for [GEM]800,000 in assets, you have [GEM]200,000 in Goodwill.',
+            'Book Value is just a historical number from the past. You must use Fair Value, which is what the assets are worth today. If you pay [GEM]1,000,000 for [GEM]800,000 in fair assets, you have [GEM]200,000 in Goodwill.',
         correctExplanation:
-            'Goodwill represents "unidentifiable" assets like brand reputation, customer loyalty, and synergistic value that cannot be sold separately.',
+            'Goodwill represents unidentifiable assets like brand reputation, customer loyalty, and synergistic value that cannot be sold separately. It is the premium paid for the expectation of future earnings above the fair value of identifiable net assets.',
       ),
       QuizQuestion(
         question: 'What is an "Intra-group Transaction" in consolidation?',
         options: [
           'A trade between two different countries',
-          'Sales or loans between a Parent and its Subsidiary that must be ELIMINATED during consolidation',
-          'A secret deal with a competitor',
-          'Buying shares of your own company',
+          'Sales or loans eliminated during consolidation',
+          'A secret deal made with a direct competitor',
+          'Buying shares of your own parent company',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you sell a pen to yourself for [GEM]100, you haven\'t made [GEM]100. In group accounting, "internal" sales must be erased so only "outside" gems are counted.',
+            'If you sell a pen to yourself for 100 [GEM], you have not actually made any profit. In group accounting, internal sales must be erased so that only transactions with outside parties are counted in the final reports.',
         correctExplanation:
-            'Eliminating these transactions prevents the group from "inflating" its revenue numbers by trading with its own companies.',
+            'Eliminating these transactions prevents the consolidated group from inflating its revenue numbers by trading with its own companies. This ensures that the financial statements reflect the true economic position of the group as a single entity.',
       ),
       QuizQuestion(
         question: 'What is the "Full Goodwill" method?',
         options: [
           'Counting every single asset as goodwill',
-          'A method where goodwill is calculated for both the parent\'s share AND the NCI\'s share',
-          'Spending all your gems on advertising',
+          'Goodwill for both parent\'s and NCI\'s share',
+          'Spending all your [GEM] on advertising',
           'A way to avoid paying taxes on acquisitions',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The alternative is "Partial Goodwill." Full Goodwill provides a more complete picture of what the WHOLE company is worth, including the 20% not owned by the parent.',
+            'The alternative is the partial goodwill method. Full goodwill provides a more complete picture of what the whole company is worth, including the portion that is not owned by the parent company in the acquisition.',
         correctExplanation:
-            'Full Goodwill is required under IFRS standards to ensure transparency for all shareholders.',
+            'The Full Goodwill method is required under IFRS standards to ensure transparency for all shareholders involved. It reflects the total goodwill of the subsidiary at the date of acquisition, regardless of the percentage of ownership acquired.',
       ),
       QuizQuestion(
         question: 'When does "Impairment of Goodwill" occur?',
         options: [
-          'When the company pays a dividend',
-          'When the Fair Value of a reporting unit drops below its Carrying Amount on the books',
-          'When an employee is injured',
+          'When the company pays a large dividend',
+          'Fair Value falls below Carrying Amount',
+          'When an employee is injured on the site',
           'When the stock market closes for a holiday',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Goodwill is never "depreciated." It is only checked once a year for impairment. If the [GEM]200,000 value you paid for "reputation" is now only worth [GEM]100,000, you must record a loss.',
+            'Goodwill is never depreciated over time. It is only checked once a year for impairment. If the value you paid for reputation is now worth less than what is on the books, you must record a loss.',
         correctExplanation:
-            'Impairment tests are high-stakes! A massive impairment charge can wipe out a year\'s worth of profit and crash the stock price.',
+            'Impairment tests are high-stakes events! A massive impairment charge can wipe out a whole year\'s worth of profit and crash the stock price instantly as it signals that a previous acquisition was overvalued or is underperforming.',
       ),
     ],
   ),
@@ -6718,71 +6839,71 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is the "Componentization" of Fixed Assets?',
         options: [
           'Building a product from many small parts',
-          'Treating significant parts of an asset (like an airplane engine) as separate assets with their own depreciation lives',
-          'Selling off pieces of the company to competitors',
-          'Buying parts from different suppliers',
+          'Depreciating significant parts separately',
+          'Selling off pieces of the company to others',
+          'Buying parts from different global suppliers',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'An airplane might last 30 years, but the engine only lasts 10. Professionally, you must depreciate the engine faster than the wings to be accurate.',
+            'An airplane might last for 30 years, but the high-performance engine might only last for 10 years. Professionally, you must depreciate the engine faster than the wings to ensure your financial reporting remains accurate and realistic.',
         correctExplanation:
-            'This provides a much more realistic view of when the company will need to spend massive gems on replacements.',
+            'This approach provides a much more realistic view of when the company will need to spend massive [GEM] reserves on critical replacements. It aligns the expense recognized in the income statement with the actual pattern of economic benefits.',
       ),
       QuizQuestion(
         question: 'What is "Fair Value Hierarchy" Level 1?',
         options: [
-          'Assets that have no value',
-          'Assets with quoted prices in active markets for identical items (like stocks)',
+          'Assets that have no market value at all',
+          'Quoted prices in active markets for identity',
           'Assets that can only be valued by experts',
           'Assets that are owned by the government',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Level 1 is the "Gold Standard." You can look at the screen and see exactly what it\'s worth. Level 3 (the hardest) requires models and "guesses."',
+            'Level 1 is considered the gold standard of valuation. You can look at a market screen and see exactly what an asset is worth. Level 3 is the hardest because it requires complex models and many internal guesses.',
         correctExplanation:
-            'Regulators prefer Level 1 valuations because they are the hardest to manipulate or fake.',
+            'Regulators strongly prefer Level 1 valuations because they are the hardest for management to manipulate or fake. They provide the most objective evidence of value because they are based on actual, observable market transactions for identical items.',
       ),
       QuizQuestion(
         question: 'Under IFRS, what is the "Revaluation Model"?',
         options: [
-          'A way to hide losses from the public',
-          'A method allowing companies to adjust the value of assets UP to their current fair market value',
+          'A way to hide losses from the public eye',
+          'Adjusting assets UP to fair market value',
           'Charging more for products to cover costs',
           'Changing the name of the company\'s brand',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'US GAAP usually forbids this (you stay at historical cost). IFRS allows it, which can make a company\'s [GEM] balance sheet look much stronger if land or buildings go up.',
+            'US GAAP usually forbids this, requiring you to stay at historical cost. IFRS allows it, which can make a company\'s balance sheet look much stronger if their land or buildings have increased in value over time.',
         correctExplanation:
-            'Any gain from revaluation is usually tucked away in "Other Comprehensive Income" (OCI) so it doesn\'t inflate normal profit.',
+            'Any gain from revaluation is usually tucked away in Other Comprehensive Income (OCI) so it does not inflate normal operational profit. This ensures that unrealized gains do not lead to inappropriate dividend payments or executive bonuses.',
       ),
       QuizQuestion(
         question: 'What is "Investment Property" (IAS 40)?',
         options: [
-          'A building where the company holds its meetings',
-          'Property held to earn rentals or for capital appreciation, rather than for the company\'s own use',
+          'A building where the company holds meetings',
+          'Property held for rentals or appreciation',
           'A type of low-cost housing for employees',
           'A property owned by the company\'s bank',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If the company works in the building, it\'s an "Owner-Occupied" asset. If they just rent it out to others, it\'s an Investment Property with different accounting rules.',
+            'If the company works in the building, it is an owner-occupied asset. If they just rent it out to others to earn income, it is an investment property and follows a completely different set of accounting rules.',
         correctExplanation:
-            'Investment properties can often be recorded at Fair Value, with any [GEM] profit going directly to the income statement every year!',
+            'Investment properties can often be recorded at Fair Value under IFRS, with any [GEM] profit or loss going directly to the income statement every year! This allows the company to show the benefit of rising property values.',
       ),
       QuizQuestion(
         question: 'What is the "Impairment Loss" formula for an asset?',
         options: [
-          'Carrying Amount - Net Income',
-          'Carrying Amount - Recoverable Amount',
-          'Total Assets - Total Debt',
-          'Purchase Price - Depreciation',
+          'Carrying Amount minus the Net Income',
+          'Carrying Amount minus Recoverable Amount',
+          'Total Assets minus the Total Group Debt',
+          'Purchase Price minus Annual Depreciation',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Recoverable Amount is the HIGHER of: 1) What you could sell it for today, or 2) The value of the gems it will make you if you keep using it.',
+            'The Recoverable Amount is the higher of what you could sell the asset for today or the value of the [GEM] it will make you if you keep using it in your business operations over time.',
         correctExplanation:
-            'If your factory is on the books for [GEM]1M but it\'s only worth [GEM]600k, you have an impairment loss of [GEM]400k.',
+            'If your factory is on the books for 1 million [GEM] but its recoverable value is only 600,000 [GEM], you must recognize an immediate impairment loss of 400,000 [GEM] to reflect the loss in economic value.',
       ),
     ],
   ),
@@ -6797,71 +6918,71 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is the "Reliability Hierarchy" of audit evidence?',
         options: [
           'Information from the CEO is most reliable',
-          'Evidence obtained directly from external third parties is more reliable than internal company documents',
-          'All information is equal to an auditor',
-          'Photos are the only reliable evidence',
+          'External third-party evidence is more reliable',
+          'All information is equal to a professional',
+          'Photos are the only reliable digital evidence',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Management can print a fake bank statement. A letter SENT DIRECTLY FROM THE BANK to the auditor is much harder to fake.',
+            'Management could potentially print a fake bank statement to mislead auditors. A letter sent directly from the independent bank to the auditor is much harder to manipulate or fake during the verification process.',
         correctExplanation:
-            'External confirmations (like from banks or customers) are the most powerful "weapons" in an auditor\'s arsenal.',
+            'External confirmations, such as those from banks, customers, or suppliers, are the most powerful tools in an auditor\'s arsenal. They provide highly objective and verifiable evidence of the company’s true financial position and account balances.',
       ),
       QuizQuestion(
         question: 'What is "Substantive Testing"?',
         options: [
-          'Testing the company\'s air quality',
-          'Audit procedures designed to detect material misstatements at the assertion level (testing the actual numbers)',
-          'A review of the company\'s mission statement',
-          'Testing how fast employees can work',
+          'Testing the company\'s indoor air quality',
+          'Auditing procedures detecting material errors',
+          'A review of the company\'s core mission statement',
+          'Testing how fast employees can finish their work',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This is the "Digging" phase. You don\'t just ask if the computer works; you check 100 actual receipts to see if the gems were spent correctly.',
+            'This is the intensive digging phase of the audit. You do not just ask if the accounting system works; you check many actual physical receipts to see if the company [GEM] reserves were spent accurately and legally.',
         correctExplanation:
-            'Every audit must include substantive testing to ensure the [GEM] values on the balance sheet actually exist.',
+            'Every professional audit must include substantive testing to ensure that the [GEM] values reported on the balance sheet actually exist in reality. It focuses on finding direct evidence of numerical accuracy at the transaction level.',
       ),
       QuizQuestion(
         question: 'What does "Tolerable Error" mean in audit sampling?',
         options: [
           'The number of typos allowed in a report',
-          'The maximum error in a population that the auditor is willing to accept without concluding it\'s material',
-          'A mistake that the CEO is allowed to make',
-          'The amount of gems a company can lose without closing',
+          'Maximum error accepted without being material',
+          'A mistake that the senior CEO is allowed to make',
+          'The amount of [GEM] a company can safely lose',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you check 100 items and find [GEM]1 missing, is that a problem? Tolerable error is the "Line in the Sand" the auditor draws before sounding the alarm.',
+            'If you check a sample and find one [GEM] missing, is it a systemic problem? Tolerable error is the specific line in the sand the auditor draws before sounding the alarm about potential widespread financial issues.',
         correctExplanation:
-            'If the estimated error from your sample is higher than the tolerable error, you must "Reject" the whole account and dig deeper.',
+            'If the estimated error from your statistical sample is higher than the tolerable error, you must reject the whole account and dig much deeper. It helps auditors manage the risk of not detecting a material misstatement.',
       ),
       QuizQuestion(
         question: 'What is an "Analytical Procedure"?',
         options: [
           'A procedure done by a very analytical person',
-          'Evaluations of financial information through analysis of plausible relationships (like comparing [GEM] revenue to last year)',
-          'A type of computer repair',
-          'A way to train new auditors',
+          'Evaluations through analysis of relationships',
+          'A type of complex computer hardware repair',
+          'A way to train new junior auditors in the field',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If the company says revenue went up 50% but the factory used 10% LESS electricity, something is wrong. The "Relationship" doesn\'t make sense.',
+            'If the company claims revenue increased by 50% but the factory consumes 10% less electricity, something is wrong. The relationship between operations and financial reports does not make sense to a professional auditor investigating the books.',
         correctExplanation:
-            'Analytical procedures help auditors spot "Smell Tests" that don\'t add up before they spend gems on more expensive testing.',
+            'Analytical procedures help auditors spot issues through smell tests that do not add up before they spend company [GEM] on more expensive and time-consuming testing methods. They identify unusual trends or transactions for further investigation.',
       ),
       QuizQuestion(
         question: 'What is "Inherent Risk"?',
         options: [
           'The risk of a building catching fire',
-          'The susceptibility of an account to an error before considering any internal controls (e.g., cash is high risk)',
-          'The risk of the auditor losing their job',
-          'A risk that is required by law',
+          'Account susceptibility before internal controls',
+          'The risk of the lead auditor losing their job',
+          'A risk that is strictly required by federal law',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A [GEM]100,000,000 inventory of Diamonds is "inherently" riskier to lose or steal than a [GEM]100,000,000 inventory of Concrete Pipes.',
+            'An inventory worth 100,000,000 [GEM] in small diamonds is inherently much riskier to lose or have stolen than an inventory of concrete pipes. Some accounts are naturally more prone to errors or fraud than others are.',
         correctExplanation:
-            'Auditors focus most of their gems and time on areas with high inherent risk.',
+            'Professional auditors focus most of their time and [GEM] on areas with the highest inherent risk to maximize efficiency. By identifying high-risk areas first, they can design more effective audit procedures to address specific concerns.',
       ),
     ],
   ),
@@ -6876,71 +6997,71 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'Why do we use the "Post-Tax" cost of debt in WACC?',
         options: [
           'Because the bank requires it',
-          'Because interest payments are tax-deductible, reducing the actual [GEM] cost to the company',
-          'Because taxes are unpaid debt',
+          'Interest payments are tax-deductible',
+          'Because taxes are considered unpaid debt',
           'To make the calculation look more professional',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you pay 10% interest but get a 30% tax break, your "True" cost of debt is only 7%. The government is effectively paying 30% of your interest.',
+            'If you pay 10% interest but get a 30% tax break, your true cost of debt is only 7%. The government is effectively paying 30% of your interest through tax savings.',
         correctExplanation:
-            'This "Tax Shield" is why companies often prefer borrowing gems rather than selling more shares of the company.',
+            'This tax shield is the primary reason why companies often prefer borrowing [GEM] rather than selling more shares of the company. It effectively lowers the weighted average cost of capital and enhances overall shareholder value.',
       ),
       QuizQuestion(
         question: 'What is the "Market Value Weight" rule for WACC?',
         options: [
-          'Weighting assets by how much they weigh in kilograms',
-          'Using the current market price of stocks and bonds to calculate their percentage of the total capital, not their book value',
+          'Weighting assets by how much they weigh in kg',
+          'Using the current market price of stocks',
           'A rule that requires you to trade in the morning',
-          'A tax on the value of the market',
+          'A tax on the total value of the market assets',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Book value represents the past; Market value represents the PRESENT cost of gems. Professional WACC must always use market prices.',
+            'Book value represents the historical past; market value represents the current, present cost of [GEM]. Professional WACC calculations must always use current market prices to stay accurate in today’s financial environment.',
         correctExplanation:
-            'If a company has 1M shares at [GEM]10 and [GEM]5M in debt, the weights are approx 66% Equity and 33% Debt.',
+            'If a company has 1M shares at 10 [GEM] and 5M [GEM] in debt, the weights are approximately 66% Equity and 33% Debt. Using market weights ensures the cost of capital reflects current economic reality.',
       ),
       QuizQuestion(
         question: 'What are "Flotation Costs"?',
         options: [
           'The cost of keeping a boat in the harbor',
-          'The underwriting, legal, and banking fees a company must pay to issue NEW stocks or bonds',
-          'The gems lost to inflation every year',
-          'The cost of moving a factory',
+          'Fees for issuing new stocks or bonds',
+          'The [GEM] lost to inflation every single year',
+          'The cost of moving a factory to a new place',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'New gems aren\'t free to raise. If you want [GEM]1,000,000, the bank might take [GEM]50,000 in fees. You only get [GEM]950,000, which makes your cost of capital higher.',
+            'New capital is not free to raise for a company. If you want 1,000,000 [GEM], the bank might take 50,000 [GEM] in fees. You only get 950,000 [GEM] net, which increases your overall cost.',
         correctExplanation:
-            'Flotation costs are usually included by "Adjusting" the initial investment in an NPV model.',
+            'Flotation costs are usually included by adjusting the initial investment amount in an NPV model. This ensures that the true cost of raising [GEM] is factored into the decision-making process for new major projects.',
       ),
       QuizQuestion(
         question: 'What is the "Marginal Cost of Capital" (MCC)?',
         options: [
-          'The cost of the very first gem the company ever borrowed',
-          'The cost of raising the NEXT additional [GEM]1 of new capital',
-          'The cost of paying for minor repairs',
-          'A cost that is at the margin of error',
+          'The cost of the first gem ever borrowed',
+          'Cost of raising the NEXT additional [GEM]',
+          'The cost of paying for minor office repairs',
+          'A cost that is at the statistical margin of error',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'As a company borrows more and more gems, the bank gets scared and raises the interest rate. The "Last" [GEM]1 you borrow is always more expensive than the "First" [GEM]1.',
+            'As a company borrows more and more [GEM], lenders get more worried and eventually raise the interest rate. The last [GEM] you borrow is almost always more expensive than the first [GEM] you ever borrowed.',
         correctExplanation:
-            'The MCC schedule shows that a company\'s cost of capital increases as it tries to grow too fast.',
+            'The MCC schedule shows that a company\'s cost of capital increases as it tries to grow too fast beyond its current means. Managing this cost is essential for maintaining a healthy balance sheet during expansion.',
       ),
       QuizQuestion(
         question: 'What is "Beta" (β) in the CAPM formula?',
         options: [
-          'A type of software test',
-          'A measure of how much a stock\'s return fluctuates compared to the overall market',
-          'The second best bank in the country',
-          'The amount of profit a company makes',
+          'A type of software beta test',
+          'Measure of stock return fluctuation',
+          'The second best bank in the whole country',
+          'The total amount of profit a company makes',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A Beta of 2.0 means if the market goes up 1%, the stock goes up 2%. If the market drops 1%, the stock drops 2%. It is the measure of "Riskiness."',
+            'A Beta of 2.0 means if the market goes up 1%, the stock goes up 2%. If the market drops, it drops twice as fast. It is a fundamental measure of systematic riskiness in the market.',
         correctExplanation:
-            'In CAPM, the higher the Beta, the more gems investors DEMAND as a return for taking the risk.',
+            'In the CAPM model, the higher the Beta, the more [GEM] investors demand as a return for taking on additional risk. It helps in determining the appropriate required rate of return for an equity investment.',
       ),
     ],
   ),
@@ -6954,72 +7075,72 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "First Step" in the IFRS 15 revenue model?',
         options: [
-          'Calculating the profit',
-          'Identifying the contract(s) with the customer',
-          'Sending an invoice immediately',
-          'Counting the inventory',
+          'Calculating the total annual profit',
+          'Identifying contracts with customers',
+          'Sending an invoice immediately today',
+          'Counting the warehouse inventory items',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You can\'t record a single gem of revenue until you have a valid, legal contract where both sides are committed to the deal.',
+            'You cannot record a single gem of revenue until you have a valid, legal contract where both sides are committed to the deal. This prevents premature revenue recognition before a transaction is truly official and agreed.',
         correctExplanation:
-            'This step ensures that revenue is only recognized when a real transaction has actually been agreed upon.',
+            'This foundational step ensures that revenue is only recognized when a real transaction has actually been agreed upon between two parties. It establishes the legal basis for all subsequent steps in the revenue recognition process.',
       ),
       QuizQuestion(
         question: 'What is a "Performance Obligation" (PO)?',
         options: [
-          'The requirement for employees to wear a uniform',
-          'A promise in a contract to transfer a distinct good or service to a customer',
-          'A type of musical show',
-          'The amount of gems the office rent costs',
+          'The requirement for uniforms at work',
+          'A promise to transfer a distinct good',
+          'A type of musical show for employees',
+          'The amount of [GEM] the office rent costs',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you sell a phone AND a 1-year service plan, you have TWO POs. You must split the gems between them and recognize them at different times.',
+            'If you sell a phone and a one-year service plan together, you have two distinct performance obligations. You must split the [GEM] between them and recognize the revenue at different times as each promise is fulfilled.',
         correctExplanation:
-            'Identifying distinct POs prevents companies from "front-loading" revenue for services they haven\'t yet provided.',
+            'Identifying distinct performance obligations prevents companies from front-loading revenue for services they have not yet provided to customers. It ensures that income matches the actual delivery of goods or services over the contract term.',
       ),
       QuizQuestion(
         question: 'What is "Variable Consideration"?',
         options: [
-          'Being nice to different customers',
-          'Portions of the price that are uncertain (like bonuses, discounts, or refunds)',
-          'A type of changing tax rate',
-          'Buying different types of assets',
+          'Being nice to different types of customers',
+          'Uncertain price portions like bonuses',
+          'A type of changing tax rate from the state',
+          'Buying different types of company assets',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you might get a [GEM]10,000 bonus for finishing early, you can only record it if it is "Highly Probable." You can\'t be an optimist in accounting!',
+            'If you might get a [GEM]10,000 bonus for finishing early, you can only record it if it is highly probable to happen. You cannot be an optimist in professional accounting because it leads to misleading statements.',
         correctExplanation:
-            'Companies must estimate variable gems using either the "Expected Value" or "Most Likely Amount" method.',
+            'Companies must estimate variable [GEM] using either the expected value or the most likely amount method. This ensures that the revenue reported reflects the amount the company expects to be entitled to receive eventually.',
       ),
       QuizQuestion(
         question: 'When is revenue recognized for a "Point in Time" sale?',
         options: [
-          'When the customer pays the gems',
-          'When "Control" of the asset is transferred to the customer (e.g., they walk out with the item)',
-          'Daily for the life of the product',
-          'On the last day of the year',
+          'When the customer pays the final [GEM]',
+          'When "Control" of the asset is transferred',
+          'Daily for the entire life of the product',
+          'On the last day of the current fiscal year',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It isn\'t about the gems; it\'s about the "Control." If you have the item but haven\'t paid yet, the store might already record the revenue.',
+            'It is not strictly about when the [GEM] are paid; it is about who has control. If you have the item but have not paid yet, the store might still be able to record the revenue.',
         correctExplanation:
-            'Transfer of control includes having the right to payment, legal title, and physical possession.',
+            'Transfer of control includes having the legal right to payment, holding the legal title, and possessing the physical asset. It reflects the moment when the risks and rewards of ownership pass from seller to buyer.',
       ),
       QuizQuestion(
         question: 'What is "Revenue Over Time" (Percentage of Completion)?',
         options: [
           'Revenue that is only recorded after 10 years',
-          'Recognizing revenue as the work is performed (common in long-term construction like building a city bridge)',
-          'A way to delay paying your taxes',
-          'Subtracting revenue from expenses',
+          'Recognizing revenue as work is performed',
+          'A way to delay paying your corporate taxes',
+          'Subtracting revenue from total group expenses',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you spend 3 years building a stadium, you don\'t wait until year 3 to record revenue. You record a piece of it as you lay each [GEM] brick.',
+            'If you spend three years building a large stadium, you do not wait until the final year to record any revenue. You record a piece of it as you lay each [GEM] brick during construction.',
         correctExplanation:
-            'This matches the "Effort" with the "Reward," giving a better picture of the company\'s annual progress.',
+            'This method matches the effort with the reward, giving a much better picture of the company\'s annual progress on long-term projects. It provides stakeholders with more timely information about current performance and contract status.',
       ),
     ],
   ),
@@ -7040,65 +7161,65 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 0,
         wrongExplanation:
-            'If you buy a car for 100 Euros today but pay in 30 days, and the Euro gets 50% more expensive, you lose gems. This is a specific transaction risk.',
+            'If you buy a car for 100 Euros today but pay in 30 days, and the Euro gets 50% more expensive, you lose [GEM] in real terms. This is a specific transaction risk that affects cash flow.',
         correctExplanation:
-            'Transaction exposure is "Realized"—it affects the actual gems leaving your bank account.',
+            'Transaction exposure is "Realized"—it affects the actual [GEM] leaving your bank account. Managing it requires hedging strategies like forward contracts to lock in exchange rates and protect future cash flows from volatility.',
       ),
       QuizQuestion(
         question: 'What is "Translation Exposure" (Accounting Exposure)?',
         options: [
           'The cost of hiring a translator',
-          'The risk that a subsidiary\'s financial statements will look worse when converted to the parent\'s [GEM] currency for reporting',
+          'Exchange risk when converting subsidiary statements',
           'Translating documents for an audit',
           'A change in the company\'s brand name',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This is often purely "On Paper." The company hasn\'t actually lost gems yet, but their balance sheet looks smaller because of exchange rates.',
+            'This is often purely "On Paper" and does not immediately affect cash flow. The company hasn\'t actually lost [GEM] yet, but their balance sheet looks significantly smaller because of unfavorable exchange rates during consolidation.',
         correctExplanation:
-            'While it may not affect cash flow today, translation exposure can affect a company\'s credit rating and stock price perceptions.',
+            'While it may not affect cash flow today, translation exposure can affect a company\'s credit rating and stock price perceptions. Investors look at consolidated results, so a weak local currency can make a global giant look weak.',
       ),
       QuizQuestion(
         question: 'What is "Economic Exposure" (Operating Exposure)?',
         options: [
           'When the whole economy goes into a recession',
-          'The risk that exchange rate changes will affect a company\'s long-term competitive position and future [GEM] cash flows',
+          'Risk that exchange rates affect long-term position',
           'A tax on the country\'s total wealth',
           'The cost of running a factory overseas',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This is the deepest risk. If your currency becomes too "Strong," no one overseas can afford your products, and you go broke over several years.',
+            'This is the deepest risk. If your currency becomes too "Strong," no one overseas can afford your products, and you go broke over several years as your competitive edge in the global market is slowly eroded.',
         correctExplanation:
-            'Economic exposure is hard to measure but vital for "Strategic" planning in global companies.',
+            'Economic exposure is hard to measure but vital for "Strategic" planning in global companies. It requires moving production to different countries or changing suppliers to ensure long-term profitability despite currency fluctuations in the market.',
       ),
       QuizQuestion(
         question: 'What is a "Money Market Hedge"?',
         options: [
           'Buying a fence for the bank',
-          'Hedging Forex risk by borrowing or lending gems in the local and foreign markets simultaneously',
+          'Using local and foreign borrowing to lock rates',
           'Buying stocks in different countries',
           'A way to get free interest from the government',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you are owed 100 Euros, you borrow 90 Euros today, convert them to [GEM]s, and invest them. You use the 100 Euros you get later to pay back the loan. No more risk!',
+            'If you are owed 100 Euros, you borrow 90 Euros today, convert them to [GEM]s, and invest them. You use the 100 Euros you get later to pay back the loan, effectively removing any currency risk.',
         correctExplanation:
-            'Money market hedges are a professional alternative to Forward contracts, often used when banks charge too much for Forwards.',
+            'Money market hedges are a professional alternative to Forward contracts, often used when banks charge too much for Forwards. They allow a company to create a synthetic forward position using the domestic and foreign interest rate difference.',
       ),
       QuizQuestion(
         question: 'What is "Netting" in global treasury management?',
         options: [
           'Catching fish for the company cafeteria',
-          'Combining all internal [GEM] flows between subsidiaries and only paying the final "Net" difference',
+          'Combining internal flows to pay only the difference',
           'A tax on the total revenue',
-          'A way to hide gems from the auditor',
+          'A way to hide [GEM] from the auditor',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If Sub A owes Sub B [GEM]100, and Sub B owes Sub A [GEM]80, they only send [GEM]20. This saves massive amounts in bank fees and Forex spreads.',
+            'If Sub A owes Sub B 100 [GEM], and Sub B owes Sub A 80 [GEM], they only send 20 [GEM]. This saves massive amounts in bank transaction fees and reduces foreign exchange exposure for the overall group.',
         correctExplanation:
-            'Large global "whales" use netting to run their entire world empire using the smallest possible amount of liquid gems.',
+            'Large global "whales" use netting to run their entire world empire using the smallest possible amount of liquid [GEM]. It simplifies cash management and allows central treasurers to have better control over the group’s total liquidity.',
       ),
     ],
   ),
@@ -7114,71 +7235,71 @@ final List<QuizMetadata> _level5Quizzes = [
             'What is the primary difference between a "Forward" and a "Future" contract?',
         options: [
           'Forwards are only for the future',
-          'Forwards are customized/private (OTC), while Futures are standardized and traded on an exchange',
-          'Futures are much cheaper',
+          'Forwards are customized (OTC) while Futures are exchange-traded',
+          'Futures are much cheaper for the company',
           'Forwards are illegal for small businesses',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'In a Forward, you and the bank agree on any amount and date. In a Future, you must buy exactly 1 "Contract" (e.g., 2,500 bushels) on a fixed date.',
+            'In a Forward, you and the bank agree on any specific amount and date. In a Future, you must buy exactly one standard "Contract" on a fixed date, such as 2,500 bushels of corn or a fixed amount of currency.',
         correctExplanation:
-            'Because Futures are on an exchange, they are much more "Liquid" (easier to sell) than private Forwards.',
+            'Because Futures are traded on an organized exchange, they are much more "Liquid" and easier to sell than private Forward contracts. This allows investors to exit their positions quickly if the market moves against them unexpectedly.',
       ),
       QuizQuestion(
         question: 'What is "Marking-to-Market" in futures trading?',
         options: [
           'Painting the exchange building',
-          'The daily process of settling profits and losses in a trader\'s account based on the closing price',
+          'Daily settlement of profits and losses in accounts',
           'A way to choose which stocks to buy',
           'A tax on the total number of trades',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You don\'t wait until the end. If you lose [GEM]100 today, the exchange TAKES [GEM]100 from your account TONIGHT. If you run out of gems, you are kicked out.',
+            'You do not wait until the contract expires. If you lose 100 [GEM] today, the exchange takes that 100 [GEM] from your account tonight. If you run out of [GEM] reserves, your position is immediately liquidated by the broker.',
         correctExplanation:
-            'Daily settling prevents "default risk"—it ensures that every loser has enough gems to pay Every day.',
+            'Daily settling prevents "Default Risk" by ensuring that every losing party has enough [GEM] to pay their losses every single day. This maintenance of credit integrity is what makes futures markets so robust and globally trusted.',
       ),
       QuizQuestion(
         question: 'What is a "Maintenance Margin"?',
         options: [
           'The cost of repairing the office',
-          'The minimum amount of gems that MUST remain in a futures account at all times',
-          'The profit made by a bank',
-          'A type of insurance for traders',
+          'The minimum [GEM] amount required in the account',
+          'The profit made by a bank on a trade',
+          'A type of insurance for professional traders',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If your account drops below this level, you get a "Margin Call." You must add more gems immediately or your position is closed at a loss.',
+            'If your account drops below this level, you get a "Margin Call." You must add more [GEM] immediately to reach the initial margin level, or your professional position will be closed at a loss by the exchange.',
         correctExplanation:
-            'Margins allow traders to use "Leverage," controlling large amounts of assets with a small amount of [GEM]s.',
+            'Margins allow traders to use "Leverage," controlling large amounts of assets with a relatively small amount of actual [GEM]s. This magnifies both potential profits and potential losses, making margin management a critical skill for any trader.',
       ),
       QuizQuestion(
         question: 'What does "Contango" mean in the futures market?',
         options: [
-          'A type of dance for CEOs',
-          'When the futures price is HIGHER than the current spot price',
+          'A type of dance for executive teams',
+          'Futures price is HIGHER than current spot price',
           'When the market is closed for a holiday',
-          'A way to save on trading fees',
+          'A way to save on total trading fees',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you want corn in 6 months, it costs more than corn today because of the "Cost of Carry" (storage and interest). This is a normal market.',
+            'If you want corn in 6 months, it usually costs more than corn today because of the "Cost of Carry," which includes storage and interest. This upward-sloping price curve is considered a normal and healthy market condition.',
         correctExplanation:
-            'The opposite of Contango is "Backwardation," which usually happens during a shortage when people need gems or goods RIGHT NOW.',
+            'The opposite of Contango is "Backwardation," which usually happens during a sudden shortage when people need goods or [GEM] right now. In such cases, the spot price is significantly higher than the future delivery price.',
       ),
       QuizQuestion(
         question: 'What is an "Option Premium"?',
         options: [
           'The highest price a stock ever reached',
-          'The non-refundable [GEM] price paid by the buyer to the seller for the rights in an option contract',
-          'A reward for being a good investor',
-          'A tax on the profit from an option',
+          'Non-refundable price paid by buyer to seller',
+          'A reward for being a good junior investor',
+          'A tax on the profit from an option trade',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The premium is the "Cost of the Ticket." Even if the option becomes worthless, you never get your premium gems back.',
+            'The premium is the "Cost of the Ticket." Even if the option becomes worthless and is never exercised, the buyer never gets their initial premium [GEM] back. It represents the value of the potential upside or downside protection.',
         correctExplanation:
-            'The seller (Writer) of the option keeps the premium as their "fee" for taking on the risk.',
+            'The seller (Writer) of the option keeps the premium as their "Fee" for taking on the risk of the contract. This premium consists of both intrinsic value and time value, which decays as the expiration date approaches.',
       ),
     ],
   ),
@@ -7199,65 +7320,65 @@ final List<QuizMetadata> _level5Quizzes = [
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It is the total time from buying a raw [GEM] to getting the final [GEM] from the customer. If inventory takes 60 days and customers take 30 days to pay, your cycle is 90 days.',
+            'It is the total time from buying a raw [GEM] to getting the final [GEM] from the customer. If inventory takes 60 days and customers take 30 days to pay, your cycle is 90 days. This does not account for payment to suppliers.',
         correctExplanation:
-            'Successful companies try to shrink this cycle as much as possible to keep their gems working instead of sitting on a shelf.',
+            'Successful companies try to shrink this cycle as much as possible to keep their [GEM] working instead of sitting on a shelf. A shorter operating cycle improves liquidity and allows the business to reinvest cash into new opportunities faster.',
       ),
       QuizQuestion(
         question: 'What is the "Cash Conversion Cycle" (CCC)?',
         options: [
           'Operating Cycle minus Payable Days',
-          'The amount of gems a company has in cash',
-          'The total profit divided by 365',
-          'A way to turn gold into gems',
+          'Total amount of [GEM] in cash accounts',
+          'Total profit divided by 365 days',
+          'A way to turn gold into [GEM] reserves',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'CCC is the "Gap" where your gems are GONE. If you take 90 days to sell/get paid but pay your own suppliers in 30 days, you are "Out of gems" for 60 days.',
+            'CCC is the "Gap" where your [GEM] are gone. If you take 90 days to sell/get paid but pay your own suppliers in 30 days, you are effectively "Out of [GEM]" for 60 days and need external financing.',
         correctExplanation:
-            'Negative CCC is the "Holy Grail." Companies like Amazon get paid by customers before they pay their suppliers—they are essentially using other people\'s gems for free!',
+            'Negative CCC is the "Holy Grail" of finance. Companies like Amazon get paid by customers before they ever pay their own suppliers, which means they are essentially using other people\'s [GEM] to fund their own growth for free.',
       ),
       QuizQuestion(
         question: 'What is "Factoring" in working capital?',
         options: [
-          'Choosing the best factory to use',
-          'Selling your Accounts Receivable to a third party (a factor) for immediate [GEM]s at a discount',
-          'A way to calculate the cost of a product',
-          'Hiring new employees to count gems',
+          'Choosing the best factory to use in production',
+          'Selling Accounts Receivable for immediate [GEM]',
+          'A way to calculate the cost of a new product',
+          'Hiring new employees to count [GEM] coins',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a customer owes you [GEM]1,000 in 90 days, you sell that debt to a bank for [GEM]950 today. You lose [GEM]50 but get your gems NOW to keep the business running.',
+            'If a customer owes you 1,000 [GEM] in 90 days, you sell that debt to a bank for 950 [GEM] today. You lose 50 [GEM] in fees but get your [GEM] now to keep the business running smoothly.',
         correctExplanation:
-            'Factoring is common for fast-growing small businesses that can\'t wait for slow-paying customers.',
+            'Factoring is common for fast-growing small businesses that cannot afford to wait for slow-paying customers to settle their bills. It provides an immediate injection of liquidity at the expense of a small portion of the total invoice value.',
       ),
       QuizQuestion(
         question: 'What is the "Economic Order Quantity" (EOQ)?',
         options: [
-          'The total amount of gems the government orders',
-          'The ideal order size that MINIMIZES total inventory costs (ordering + holding costs)',
-          'The number of orders a company makes in a year',
-          'A tax on the size of an order',
+          'Total amount of [GEM] the government orders',
+          'Order size minimizing total inventory costs',
+          'Total number of orders a company makes annually',
+          'A tax on the size of an industrial order',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Buying too much cost gems in "Storage." Buying too little costs gems in "Shipping fees." EOQ is the perfect "Sweet Spot" in the middle.',
+            'Buying too much costs [GEM] in storage and insurance. Buying too little costs [GEM] in frequent shipping fees and potential stockouts. EOQ is the perfect "Sweet Spot" in the middle that minimizes the sum of both costs.',
         correctExplanation:
-            'Professional supply chain managers use the EOQ formula to ensure the [GEM] efficiency of the warehouse.',
+            'Professional supply chain managers use the EOQ formula to ensure the absolute [GEM] efficiency of the warehouse. It balances the cost of placing an order against the various costs of holding inventory over a specific period of time.',
       ),
       QuizQuestion(
         question: 'What is "Just-In-Time" (JIT) Inventory?',
         options: [
           'Delivering products just before the store closes',
-          'A strategy to keep inventory levels near zero by receiving goods only as they are needed for production',
-          'Buying index funds at the last minute',
+          'Receiving goods only as needed for production',
+          'Buying index funds at the very last minute',
           'Paying your taxes exactly on the due date',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'JIT is very efficient but "Fragile." If a single truck is late, the whole factory stops. But it saves [GEM] millions in storage costs.',
+            'JIT is very efficient but also very "Fragile." If a single truck is late, the whole factory stops immediately. However, it saves the company millions in storage costs and prevents inventory from becoming obsolete or damaged.',
         correctExplanation:
-            'JIT was pioneered by Toyota and is now a standard for professional manufacturing worldwide.',
+            'JIT was pioneered by Toyota and is now a standard for professional manufacturing worldwide. It requires extremely strong relationships with suppliers and highly reliable logistics systems to ensure that materials arrive exactly when they are needed on the line.',
       ),
     ],
   ),
@@ -7272,71 +7393,71 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is "Modern Portfolio Theory" (MPT)?',
         options: [
           'Investing only in a single tech stock',
-          'A framework for building a portfolio that maximizes expected return for a given level of risk',
-          'A theory that all stocks are equal',
-          'A way to predict the future price of gems',
+          'Framework maximizing return for a given risk',
+          'A theory that all stocks are equal always',
+          'A way to predict the future price of [GEM]',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'MPT proved that you can\'t look at a stock "alone." You must look at how its risk "interacts" with other stocks in the folder.',
+            'MPT proved that you cannot look at a stock "alone" in isolation. You must look at how its risk "interacts" with other stocks in the portfolio folder to understand the total impact on the risk-return profile.',
         correctExplanation:
-            'MPT led to the invention of Index Funds and the idea of wide-scale diversification.',
+            'MPT led directly to the invention of passive Index Funds and the core professional idea of wide-scale diversification. It revolutionized how both individual and institutional investors approach the construction of their investment portfolios for long-term growth.',
       ),
       QuizQuestion(
         question: 'What is the "Efficient Frontier"?',
         options: [
           'The border of a country with a good economy',
-          'The set of optimal portfolios that offer the highest return for each level of risk',
+          'Set of optimal portfolios for risk vs return',
           'A list of the fastest growing companies',
-          'The amount of gems a bank holds in reserve',
+          'The amount of [GEM] a bank holds in reserve',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If your portfolio is "below" the frontier, you are being a "Sucker"—you are taking more risk than you need for the return you are getting.',
+            'If your portfolio is "below" the frontier line, you are effectively being a "Sucker"—you are taking much more risk than you need to for the specific level of return you are currently getting from those assets.',
         correctExplanation:
-            'Professional portfolio managers use software to ensure they are always "On the Frontier."',
+            'Professional portfolio managers use advanced software to ensure they are always positioned "On the Frontier" of efficiency. This optimization process involves constantly rebalancing assets to maintain the best possible risk-adjusted performance over time.',
       ),
       QuizQuestion(
         question: 'What does the "Efficient Market Hypothesis" (EMH) claim?',
         options: [
-          'Every market is equally efficient',
-          'Asset prices fully reflect all available information, making it impossible to "beat the market" consistently',
-          'Gems are the most efficient currency',
-          'Computers will soon do all the trading',
+          'Every market is equally efficient always',
+          'Asset prices reflect all available information',
+          'Gems are the most efficient currency today',
+          'Computers will soon do all the trading work',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If EMH is 100% true, trying to pick "winners" is a waste of time. You should just buy the whole market index and go to the beach.',
+            'If EMH is 100% true, trying to pick "winners" in the stock market is a complete waste of time. You should just buy a whole market index fund and go to the beach to enjoy your life.',
         correctExplanation:
-            'EMH has three forms: Weak, Semi-Strong, and Strong, depending on what types of information are already "priced in."',
+            'EMH has three distinct forms: Weak, Semi-Strong, and Strong, depending on what types of information are believed to be already "priced in." It remains one of the most debated and studied concepts in modern finance and economics.',
       ),
       QuizQuestion(
         question: 'What is "Arbitrage Pricing Theory" (APT)?',
         options: [
-          'A way to set the price of a product',
-          'A multi-factor model for asset pricing that considers several macroeconomic factors (not just one Beta)',
-          'A theory that arbitrage is illegal',
-          'The total cost of trading gems',
+          'A way to set the price of a physical product',
+          'Multi-factor model considering many factors',
+          'A theory that arbitrage is illegal in states',
+          'The total cost of trading [GEM] on an exchange',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'CAPM only uses one Beta. APT uses many (like Inflation Beta, GDP Beta, Interest Rate Beta) to be more accurate.',
+            'The standard CAPM model only uses one Beta (market risk). APT uses many different ones (like Inflation Beta, GDP Beta, and Interest Rate Beta) to be much more accurate in different economic environments.',
         correctExplanation:
-            'APT is favored by professional "Quants" who build complex [GEM] algorithms to find market edge.',
+            'APT is favored by professional "Quants" who build complex [GEM] algorithms to find a subtle market edge over competitors. It provides a more nuanced view of the multiple systemic risks that can affect an asset’s price.',
       ),
       QuizQuestion(
         question: 'What is the "Sharpe Ratio"?',
         options: [
-          'The total profit of the company',
-          'The Excess Return of a portfolio per unit of risk (Volatility)',
-          'The number of people who own a stock',
-          'The amount of gems spent on legal fees',
+          'The total profit of the company this year',
+          'Excess return per unit of portfolio volatility',
+          'The number of people who own a single stock',
+          'The amount of [GEM] spent on annual legal fees',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A high Sharpe ratio means you are getting a lot of gems for every "heart attack" the market gives you. It is the best measure of a manager\'s true skill.',
+            'A high Sharpe ratio means you are getting a lot of [GEM] profit for every "heart attack" the market volatility gives you. It is the best measure of a professional investment manager\'s true skill over time.',
         correctExplanation:
-            'Comparing two managers by return alone is wrong. You must divide their return by their risk—that is the Sharpe Ratio.',
+            'Comparing two managers by return alone is fundamentally wrong in finance. You must divide their excess return by their risk to find the Sharpe Ratio. This allows for a fair comparison of performance regardless of risk levels.',
       ),
     ],
   ),
@@ -7350,72 +7471,72 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What are the three components of the "Fraud Triangle"?',
         options: [
-          'Greed, Fear, and Laziness',
-          'Pressure (Incentive), Opportunity, and Rationalization',
-          'Assets, Liabilities, and Equity',
-          'CEO, CFO, and Auditor',
+          'Greed, Fear, and Laziness in offices',
+          'Pressure, Opportunity, and Rationalization',
+          'Assets, Liabilities, and Equity on paper',
+          'CEO, CFO, and External Auditor roles',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A person only steals if: 1) They need gems (Pressure), 2) No one is watching (Opportunity), and 3) They tell themselves "I\'ll pay it back" (Rationalization).',
+            'A person only steals if: 1) They need [GEM] (Pressure), 2) No one is watching (Opportunity), and 3) They tell themselves "I\'ll pay it back" (Rationalization). All three must usually be present for professional fraud to occur.',
         correctExplanation:
-            'Good management focuses on removing the "Opportunity" to prevent fraud before it starts.',
+            'Good management focuses primarily on removing the "Opportunity" through strong internal controls to prevent fraud before it starts. By implementing systems that make theft difficult or obvious, the company protects its [GEM] assets from bad actors.',
       ),
       QuizQuestion(
         question: 'What is "Segregation of Duties" (SoD)?',
         options: [
           'Giving everyone different tasks in the building',
-          'A control requiring that more than one person is needed to complete a business process (e.g., one to order, one to pay)',
-          'Making sure everyone has their own office',
-          'A way to hire more employees',
+          'Control requiring multiple people for one process',
+          'Making sure everyone has their own private office',
+          'A way to hire more employees for the company',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If the same person writes the checks AND signs them, they can steal [GEM]billions easily. You must split these "Keys to the Vault."',
+            'If the same person writes the checks and also signs them, they can steal [GEM]billions easily without being caught. You must split these "Keys to the Vault" between different employees to ensure that collusion is required for theft.',
         correctExplanation:
-            'SoD is the #1 internal control recommended by professional auditors.',
+            'SoD is the #1 internal control recommended by professional auditors and risk managers worldwide. It ensures that the responsibilities for authorizing transactions, recording them, and handling the related assets are separated to provide a checks-and-balances system.',
       ),
       QuizQuestion(
         question: 'What is the "COSO Framework"?',
         options: [
-          'A type of software for accounting',
-          'A globally recognized framework for designing, implementing, and evaluating internal controls',
-          'A new set of laws from the government',
-          'A special club for financial professionals',
+          'A type of software for financial accounting',
+          'Globally recognized blueprint for internal controls',
+          'A new set of laws from the federal government',
+          'A special club for financial professionals globally',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It isn\'t a law; it\'s a "Blueprint" for a healthy company. It ensures the "Control Environment" (the management culture) is strong.',
+            'It is not a law; it is a "Blueprint" for building a healthy company. It ensures the "Control Environment" (the management culture) is strong and that risks are identified and managed effectively to protect the company’s [GEM] reserves.',
         correctExplanation:
-            'Most public companies use COSO to prove to shareholders that their gems are safe.',
+            'Most public companies use COSO to prove to their shareholders and regulators that their [GEM] and reporting processes are safe and reliable. It provides a common language and structure for discussing and implementing internal control systems.',
       ),
       QuizQuestion(
         question: 'What is an "IT General Control" (ITGC)?',
         options: [
-          'A button that turns off the computers',
-          'Controls over the IT environment, such as passwords, backups, and physical security of servers',
-          'The cost of buying new computers',
-          'Hiring people to fix the printers',
+          'A button that turns off all the computers',
+          'Controls over passwords, backups, and security',
+          'The cost of buying new computers for staff',
+          'Hiring people to fix the printers in the office',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a hacker can change the spreadsheet, the accounting is worth zero. ITGCs are the "Foundation" of digital financial truth.',
+            'If a hacker can change the spreadsheet values, the accounting reports are worth zero. ITGCs are the "Foundation" of digital financial truth in a modern business where almost all [GEM] transactions are recorded and stored electronically today.',
         correctExplanation:
-            'Auditors now spend a huge part of their time checking server rooms and password policies.',
+            'Auditors now spend a huge part of their time checking server rooms, network security, and password policies. These controls ensure that the underlying systems that process financial data are secure, reliable, and working correctly as intended.',
       ),
       QuizQuestion(
         question: 'What is a "Whistleblower Policy"?',
         options: [
-          'A rule that bans loud noises in the office',
-          'A formal system that allows employees to report unethical behavior or fraud without fear of being fired',
-          'A way to reward employees for working hard',
-          'A type of insurance for the CEO',
+          'A rule that bans loud noises in the office site',
+          'Formal system to report fraud without fear',
+          'A way to reward employees for working very hard',
+          'A type of insurance policy for the head CEO',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Most fraud is found by "Tips" from honest employees, not by auditors. A safe reporting system is vital for keeping the [GEM]s safe.',
+            'Most fraud is found by "Tips" from honest employees, not by professional auditors. A safe, anonymous reporting system is vital for keeping the company [GEM]s safe from internal threats and unethical behavior by high-level management members.',
         correctExplanation:
-            'Under laws like Sarbanes-Oxley, companies are REQIURED to have a way for people to report fraud privately.',
+            'Under laws like Sarbanes-Oxley, public companies are REQUIRED to have a formal way for people to report fraud privately. This encourages a culture of integrity and helps identify problems early before they become catastrophic for the business.',
       ),
     ],
   ),
@@ -7430,71 +7551,71 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is the "Gordon Growth Model" (GGM) used for?',
         options: [
           'Calculating how fast a company\'s employees grow',
-          'A Dividend Discount Model that values a stock assuming dividends grow at a constant rate forever',
-          'A way to predict the next recession',
-          'The total cost of a company\'s debt',
+          'Dividend model assuming constant growth forever',
+          'A way to predict the next economic recession',
+          'The total cost of a company\'s debt this year',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'GGM says: Value = D1 / (k - g). It is perfect for "Boring" stable companies that pay steady dividends every year.',
+            'GGM says: Value = D1 / (k - g). It is perfect for "Boring" stable companies that pay steady dividends every year. However, it fails for high-growth firms where the growth rate (g) is higher than the required return (k).',
         correctExplanation:
-            'Professional analysts use GGM as a baseline to see if a stable company is fairly priced compared to its [GEM] payout.',
+            'Professional analysts use GGM as a baseline to see if a stable company is fairly priced compared to its expected [GEM] payout. It assumes that a company will continue to grow at a sustainable rate indefinitely into the future.',
       ),
       QuizQuestion(
         question: 'What is an "EV/EBITDA" multiple used to compare?',
         options: [
-          'The size of two different buildings',
-          'The total value of the company (Enterprise Value) relative to its operational gems, regardless of its debt levels',
-          'How many products a company sells',
-          'The amount of taxes paid by two companies',
+          'The size of two different buildings on site',
+          'Enterprise Value relative to operational [GEM]',
+          'How many products a company sells in a year',
+          'The amount of taxes paid by two companies today',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Price/Earnings (P/E) can be "distorted" by debt. EV/EBITDA is "Capital Structure Neutral"—it allows you to compare a debt-heavy company to a cash-rich one fairly.',
+            'Price/Earnings (P/E) can be significantly "distorted" by high debt levels. EV/EBITDA is "Capital Structure Neutral"—it allows you to compare a debt-heavy company to a cash-rich one fairly based on their actual business operations.',
         correctExplanation:
-            'EV/EBITDA is the #1 multiple used by Wall Street for valuing businesses for sale or merger.',
+            'EV/EBITDA is the #1 multiple used by Wall Street for valuing businesses for sale or merger. It provides a clearer picture of the company’s ability to generate cash from its core business before accounting for financing and tax variables.',
       ),
       QuizQuestion(
         question: 'What is a "Control Premium" in valuation?',
         options: [
-          'The cost of hiring a new security guard',
-          'The extra price paid above the market value to acquire enough shares to control the company\'s decisions',
-          'A tax on the company\'s profits',
-          'A reward for the CEO staying for 10 years',
+          'The cost of hiring a new security guard team',
+          'Extra price paid to acquire controlling shares',
+          'A tax on the company\'s annual net profits',
+          'A reward for the CEO staying for ten years',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a stock is [GEM]10, you might pay [GEM]13 to buy the WHOLE company. That [GEM]3 (30%) is the price of "Power"—the right to fire the board and change the strategy.',
+            'If a stock is 10 [GEM], you might pay 13 [GEM] to buy the WHOLE company. That 3 [GEM] (30%) is the price of "Power"—the right to fire the board and change the strategic direction of the business.',
         correctExplanation:
-            'Calculating the control premium is a vital skill for mergers and acquisitions (M&A) professionals.',
+            'Calculating the control premium is a vital skill for mergers and acquisitions (M&A) professionals. It represents the value of being able to control the [GEM] cash flows and strategic decisions of the target entity as a whole.',
       ),
       QuizQuestion(
         question: 'What is "Asset-Based Valuation"?',
         options: [
-          'Valuing a company based on what its buildings are made of',
-          'Valuing a business by totaling the fair market value of all its individual assets and subtracting its liabilities',
-          'A way to choose which stocks to buy',
-          'The total revenue of a company',
+          'Valuing a company based on its building materials',
+          'Totaling fair value of assets minus liabilities',
+          'A way to choose which stocks to buy on Monday',
+          'The total revenue of a company in one cycle',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This is used for "Liquidating" companies or holding companies. It ignores future profit and asks: "If we sold everything today, how many gems would we have?"',
+            'This is used for "Liquidating" companies or holding companies. It ignores future profit potential and simply asks: "If we sold everything today, how many [GEM] would we have left after paying all our debts to creditors?"',
         correctExplanation:
-            'Asset valuation provides the "Floor" price—a company should rarely sell for less than its net assets.',
+            'Asset valuation provides the "Floor" price for a business—a healthy company should rarely sell for less than its net assets. It is most useful for companies with significant tangible property, machinery, or investment holdings in their portfolio.',
       ),
       QuizQuestion(
         question: 'What is "Discount for Lack of Marketability" (DLOM)?',
         options: [
           'A discount on products that aren\'t selling well',
-          'A reduction in the value of shares that cannot be easily sold or traded on a public exchange',
-          'A tax on properties in rural areas',
-          'The cost of advertising a business',
+          'Reduces value of shares not easily sold publicly',
+          'A tax on properties in very rural regions',
+          'The cost of advertising a business to users',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you own 10% of a private "Mom & Pop" store, you can\'t sell it in 1 second like a stock. Professionals "Discount" the value by 15-30% because your gems are "Trapped."',
+            'If you own 10% of a private "Mom & Pop" store, you cannot sell it in 1 second like a public stock. Professionals "Discount" the value by 15-30% because your [GEM] are "Trapped" in an illiquid investment.',
         correctExplanation:
-            'DLOM is a critical adjustment in the valuation of private businesses and family-owned firms.',
+            'DLOM is a critical adjustment in the valuation of private businesses and family-owned firms. It reflects the extra risk and cost that an investor faces when they cannot easily convert their ownership into [GEM] cash on demand.',
       ),
     ],
   ),
@@ -7508,72 +7629,72 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is an "Operating Lease" under modern IFRS 16 rules?',
         options: [
-          'A lease for a car',
-          'A lease that is now recorded on the balance sheet as a "Right of Use" asset and a liability (mostly ending the era of hidden leases)',
-          'When you rent a building for one day',
-          'A secret contract between two companies',
+          'A lease for a company car package',
+          'Lease recorded as a ROU asset and a liability',
+          'When you rent a building for one day only',
+          'A secret contract between two global firms',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'In the old days, companies hid [GEM]billions in debt by "Renting" airplanes instead of buying them. Now, those rentals MUST be shown as debt.',
+            'In the old days, companies hid billions of [GEM] in debt by "Renting" airplanes instead of buying them. Now, those rental agreements MUST be shown as debt on the balance sheet, providing more transparency for all stakeholders in the market.',
         correctExplanation:
-            'IFRS 16 brought massive transparency to the market, forcing companies to admit their true long-term [GEM] obligations.',
+            'IFRS 16 brought massive transparency to the global financial market, forcing companies to admit their true long-term [GEM] obligations. It ensures that any significant right to use an asset is reflected as both an asset and a financial obligation.',
       ),
       QuizQuestion(
         question: 'Why might a company choose to LEASE instead of BUY?',
         options: [
-          'Because they don\'t like owning things',
-          'To avoid the risk of "Obsolescence" (the machine becoming old/useless) and to preserve upfront gems',
-          'Because it is always cheaper than buying',
-          'To hide the assets from the government',
+          'Because they don\'t like owning anything',
+          'To avoid obsolescence and preserve [GEM] funds',
+          'Because it is always cheaper than buying now',
+          'To hide the assets from the government team',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If technology changes every 2 years, buying is a bad move. Leasing lets you "Trade In" for the new model easily.',
+            'If technology changes every 2 years, buying is a very poor strategic move. Leasing lets you "Trade In" for the newest model easily, ensuring your business stays competitive without wasting [GEM] on machines that will soon be worthless.',
         correctExplanation:
-            'Leasing is a "Financing" decision, often used to help a company grow without using all its cash at once.',
+            'Leasing is primarily a "Financing" decision, often used to help a company grow its operations without using all its cash reserves at once. It can also provide tax advantages depending on the local jurisdiction’s specific accounting rules.',
       ),
       QuizQuestion(
-        question: 'What is the "Nal" (Net Advantage to Leasing)?',
+        question: 'What is the "NAL" (Net Advantage to Leasing)?',
         options: [
-          'The number of people who rent vs buy',
-          'A formula that compares the NPV of leasing versus the NPV of borrowing gems to buy the asset',
-          'The total profit from a rental',
-          'A type of insurance for leased equipment',
+          'Number of people who rent vs buy globally',
+          'Formula comparing NPV of leasing vs buying',
+          'The total profit from a rental agreement',
+          'Insurance for leased equipment in the office',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If NAL is POSITIVE, you should lease. It factors in tax shields, depreciation and the [GEM] cost of borrowing.',
+            'If the NAL calculation results in a POSITIVE number, it means that the company should lean towards leasing the asset. It factors in tax shields, depreciation benefits, and the [GEM] cost of borrowing to buy the asset outright.',
         correctExplanation:
-            'Professional CFOs run NAL models for every major piece of equipment or real estate a company needs.',
+            'Professional CFOs run detailed NAL models for every major piece of equipment or real estate a company needs to acquire. This ensures that the capital allocation decision is based on objective mathematical analysis of the net cash flows.',
       ),
       QuizQuestion(
         question: 'What is a "Sale and Leaseback" transaction?',
         options: [
           'Selling a product and buying it back later',
-          'Selling an asset (like a headquarters) to a bank and then immediately leasing it back to get instant gems while still using the building',
-          'A way to avoid paying rent',
-          'Trading old assets for new ones',
+          'Selling an asset to a bank and then leasing it',
+          'A way to avoid paying rent in the long run',
+          'Trading old assets for new ones on the site',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This is a way to unlock "Dead Gems" trapped in a building. You get [GEM]100M today to invest in growth, and just pay rent every month.',
+            'This is a clever way to unlock "Dead Gems" that are currently trapped in a building. You get 100M [GEM] in cash today to invest in business growth, and simply pay rent every month to continue using the building.',
         correctExplanation:
-            'Leasebacks are common when a company is growing fast but needs more liquid cash for its daily operations.',
+            'Leasebacks are very common when a company is growing fast but needs more liquid cash for its daily operations or new investments. It allows a firm to monetize its fixed assets while maintaining uninterrupted use of the facilities.',
       ),
       QuizQuestion(
         question: 'What is a "Finance Lease" (Capital Lease)?',
         options: [
-          'A lease for a bank',
-          'A lease where the tenant effectively takes on all the risks and rewards of ownership (treated exactly like a loan and purchase)',
-          'When the CEO rents a car',
-          'A type of low-interest loan',
+          'A lease for a bank to use as an office',
+          'Lease where tenant takes all risks and rewards',
+          'When the CEO rents a car for a weekend',
+          'A type of low-interest loan for employees',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Even if the contract says "Rent," if you use it for 95% of its life, it is a purchase in the eyes of the law.',
+            'Even if the legal contract says "Rent," if you use the asset for 95% of its useful life, it is treated as a purchase. You are effectively paying off a loan to own the asset, so the [GEM] must be reported correctly.',
         correctExplanation:
-            'Finance leases are "Debt" in every way that matters to professional analysts.',
+            'Finance leases are considered "Debt" in every way that matters to professional financial analysts and creditors. They represent a long-term commitment that has a direct impact on the company’s solvency and future cash flow requirements.',
       ),
     ],
   ),
@@ -7587,72 +7708,72 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What does "Interest Rate Parity" (IRP) state?',
         options: [
-          'All interest rates should be the same across the world',
-          'The difference in interest rates between two countries should equal the difference between the spot and forward exchange rates',
-          'The bank is always right',
-          'High interest rates lead to zero inflation',
+          'All interest rates should be identical globally',
+          'Interest and Forex differentials should be equal',
+          'The bank is always right in every case',
+          'High interest rates lead to zero inflation now',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If [GEM]s earn 10% in India and 2% in the US, IRP says the Indian Rupee MUST get cheaper in the future to prevent people from getting "free" money.',
+            'If [GEM]s earn 10% in India and 2% in the US, IRP says the Indian Rupee MUST get cheaper in the future to prevent people from getting "Free Money" easily. This adjustment ensures that the total return is balanced across different currencies and markets.',
         correctExplanation:
-            'IRP is the force that prevents "Risk-Free" arbitrage across international borders.',
+            'IRP is the fundamental force that prevents "Risk-Free" arbitrage across international borders. It ensures that the forward exchange rate of a currency reflects the difference in interest rates between the two countries, maintaining a fair global equilibrium.',
       ),
       QuizQuestion(
         question: 'What is "Purchasing Power Parity" (PPP)?',
         options: [
-          'A list of the richest people in the world',
-          'The idea that exchange rates should adjust so that a "Basket of Goods" costs the same in every country',
-          'How much power the CEO has',
-          'A tax on buying products overseas',
+          'A list of the richest people in the world today',
+          'Exchange rates adjust so goods cost the same',
+          'How much power the CEO has over the team',
+          'A tax on buying products overseas on site',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The "Big Mac Index" is a famous example. If a burger is [GEM]5 in NY but [GEM]2 in London, PPP says the Pound is "Underpriced" and will eventually go up.',
+            'The "Big Mac Index" is a famous example. If a burger is [GEM]5 in NY but [GEM]2 in London, PPP theory says the Pound is "Underpriced" and will eventually go up in value as the market corrects the imbalance over time.',
         correctExplanation:
-            'While it rarely works in the short term, PPP is the best tool for "Long-Term" Forex prediction.',
+            'While it rarely works perfectly in the short term, PPP remains one of the best professional tools for "Long-Term" Forex prediction. It helps economists understand which currencies are overvalued or undervalued based on the actual cost of living.',
       ),
       QuizQuestion(
         question: 'What is the "International Fisher Effect"?',
         options: [
-          'A way to catch more fish globally',
-          'The theory that differences in nominal interest rates reflect differences in expected inflation',
-          'A set of rules for international banks',
-          'The total amount of gems in the world',
+          'A way to catch more fish globally for sale',
+          'Nominal interest rates reflect expected inflation',
+          'A set of rules for international banks to follow',
+          'The total amount of [GEM] in the entire world',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a bank pays 15% interest, it usually means everybody expects 10-12% inflation. You aren\'t actually getting "richer." ',
+            'If a bank pays 15% interest, it usually means everybody expects 10-12% inflation in that country. You aren\'t actually getting much "richer" [GEM]-wise; you are just being compensated for the loss in the currency\'s purchasing power over the next year.',
         correctExplanation:
-            'Investors look at "Real" interest rates (Nominal minus Inflation) to decide where to move their gems.',
+            'Professional investors look at the "Real" interest rates (Nominal minus Inflation) to decide where to move their [GEM] capital. This helps them identify countries where they can achieve true economic growth rather than just inflationary gains.',
       ),
       QuizQuestion(
         question: 'What is a "Currency Swap"?',
         options: [
-          'Trading one coin for another at a shop',
-          'A professional contract where two parties exchange interest and principal payments in different currencies',
-          'A type of illegal gamble',
-          'A way to hide your nationality',
+          'Trading one coin for another at a local shop',
+          'Contract exchanging interest and principal payments',
+          'A type of illegal gamble on a street corner',
+          'A way to hide your true nationality today',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a US company needs Euros and a German company needs gems, they "Swap" loans. This can lower the interest and Forex risk for both sides.',
+            'If a US company needs Euros and a German company needs [GEM], they "Swap" loans with each other. This can significantly lower the interest costs and Forex risk for both sides by matching their currency needs and borrowing strengths.',
         correctExplanation:
-            'Large global "Whales" use currency swaps to manage their [GEM] billon-dollar global debt.',
+            'Large global "Whales" use currency swaps to manage their [GEM] billion-dollar global debt portfolios efficiently. It allows them to convert debt into a different currency without having to go through the expensive and volatile spot markets.',
       ),
       QuizQuestion(
         question: 'What is "Country Risk"?',
         options: [
-          'The risk of a country losing a sports game',
-          'The risk that political, economic, or социал changes in a nation will impact the value of your investment there',
-          'The risk of traveling to a new place',
-          'A tax on international flights',
+          'The risk of a country losing a sports match',
+          'Political or economic risk impacting investments',
+          'The risk of traveling to a new foreign place',
+          'A tax on international flights to the region',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Even if a company is great, if the country\'s government suddenly takes away all their factories, your investment is zero. This is "Expropriation Risk."',
+            'Even if a company is great, if the country\'s government suddenly takes away all their factories, your investment is worth zero. This is known as "Expropriation Risk," and it is a major factor when investing in developing nations today.',
         correctExplanation:
-            'Professional investors demand a "Risk Premium" (more gems) for putting their wealth into countries with unstable governments.',
+            'Professional investors demand a significant "Risk Premium" (more [GEM]) for putting their wealth into countries with unstable governments. This extra return compensates them for the possibility of civil unrest, sudden law changes, or economic collapses.',
       ),
     ],
   ),
@@ -7666,73 +7787,72 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Benford\'s Law" used for in forensic audit?',
         options: [
-          'A law that requires auditors to wear suits',
-          'The mathematical observation that in many real-life datasets, the number "1" appears as the leading digit more often than "9"',
-          'A way to calculate interest rates',
-          'A rule that prevents people from stealing gems',
+          'A law that requires auditors to wear dark suits',
+          'Leading digits are not distributed uniformly',
+          'A way to calculate interest rates on a loan',
+          'A rule that prevents people from stealing [GEM]',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If a human makes up fake [GEM] receipts, they naturally use "1" through "9" equally. A computer can spot this "unnatural" pattern instantly.',
+            'If a human makes up fake [GEM] receipts, they naturally use digits "1" through "9" equally. However, in nature, "1" is the leader 30% of the time, while "9" only 5%. A computer can instantly spot this "unnatural" human-made pattern.',
         correctExplanation:
-            'Benford\'s Law is a powerful digital tool for finding hidden patterns of fraud in millions of transactions.',
+            'Benford\'s Law is a powerful digital tool for finding hidden patterns of fraud in millions of transactions. It is used by investigators to identify which vendor accounts or expense reports deserve a much deeper manual inspection.',
       ),
       QuizQuestion(
         question: 'What is "Window Dressing"?',
         options: [
-          'Cleaning the office windows before an audit',
-          'Making the financial statements look better than they are at the very end of the year (e.g., delaying expenses)',
-          'A type of marketing show',
-          'Selling more products to customers',
+          'Cleaning the office windows before a big audit',
+          'Making accounts look better at year-end',
+          'A type of marketing show for new products',
+          'Selling more products to customers on site',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'A company might pay off its debt on Dec 31st and borrow it back on Jan 1st just to show "Zero Debt" on its annual report. This is misleading!',
+            'A company might pay off its total debt on Dec 31st and then borrow the [GEM] back on Jan 1st just to show "Zero Debt" on its published annual report. This is highly misleading and can result in severe penalties if uncovered.',
         correctExplanation:
-            'Forensic auditors look for "Large suspicious transactions" right before and after the year ends.',
+            'Forensic auditors look for "Large suspicious transactions" that occur right before and after the fiscal year ends. They trace these [GEM] flows to ensure that the financial statements represent the underlying economic reality of the business fairly.',
       ),
       QuizQuestion(
         question: 'What is "Lapping" in accounts receivable fraud?',
         options: [
-          'Running around the office',
-          'Stealing a payment from Customer A and covering it up with a later payment from Customer B',
-          'A way to calculate the cost of a product',
-          'A type of bank insurance',
+          'Running laps around the office for fitness',
+          'Using Customer B funds to cover Customer A theft',
+          'A way to calculate the cost of a product now',
+          'A type of bank insurance for small businesses',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'The thief must keep a secret book of who they stole from. They have to keep "lapping" payments forever to stay ahead of the audit.',
+            'The thief must keep a secret book of who they stole from every day. They have to keep "lapping" new payments forever to stay ahead of the audit, creating a complex web of lies that eventually collapses under its own weight.',
         correctExplanation:
-            'Forcing every employee to take a 1-week mandatory vacation is the #1 way to catch lapping fraud.',
+            'Forcing every employee to take a one-week mandatory vacation is the #1 way to catch lapping fraud. When the thief is gone, the "juggling" stops, and Customer A suddenly complains that their paid [GEM] haven\'t been credited to their account.',
       ),
       QuizQuestion(
-        question:
-            'What is a "Bribe" in the context of the FCPA (Foreign Corrupt Practices Act)?',
+        question: 'What is a "Bribe" under the FCPA?',
         options: [
-          'A tip for a waiter',
-          'Giving gems or gifts to foreign government officials to win business—which is highly illegal for US companies',
-          'Buying a gift for a friend',
-          'The cost of doing business',
+          'A small tip for a waiter in a restaurant',
+          'Gifts to foreign officials to win business',
+          'Buying a birthday gift for a close friend',
+          'The standard cost of doing business today',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'It doesn\'t matter if it\'s "legal" in the other country. If a US company pays a bribe, it can face [GEM]billions in fines and jail time.',
+            'It does not matter if it is considered "legal" or "normal" in the foreign country. If a US company pays a bribe, it can face billions of [GEM] in fines and prison time. The law focuses on the intent to gain an unfair advantage.',
         correctExplanation:
-            'The FCPA is the "World Cop" of business ethics, ensuring fair competition based on quality, not bribes.',
+            'The Foreign Corrupt Practices Act (FCPA) is the "World Cop" of business ethics, ensuring that companies compete based on the quality and price of their products rather than the size of their illegal [GEM] payments to officials.',
       ),
       QuizQuestion(
         question: 'What is an "Audit Trail"?',
         options: [
-          'A path in the woods near the office',
-          'A step-by-step record (paper or digital) that allows a transaction to be traced from the final report back to the original source',
-          'A list of all the employees in the company',
-          'The total profit made by the company',
+          'A path in the woods near the office site',
+          'A step-by-step record of a transaction',
+          'A list of all the employees in the company today',
+          'The total profit made by the company this year',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you see [GEM]100,000 on the report, but there is no record of where it came from, that is a "Broken Trail" and a major sign of fraud.',
+            'If you see a total of 100,000 [GEM] on the final report, but there is no record of where it came from or who authorized it, that is a "Broken Trail" and a major warning sign of potential embezzlement or fraud.',
         correctExplanation:
-            'Maintaining a secure audit trail is a legal requirement for all public companies.',
+            'Maintaining a secure and unalterable audit trail is a strict legal requirement for all public companies. It allows auditors to trace every [GEM] from the final balance sheet all the way back to the original source document or digital log.',
       ),
     ],
   ),
@@ -7746,72 +7866,72 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What are the four perspectives of the "Balanced Scorecard"?',
         options: [
-          'Past, Present, Future, and CEO',
-          'Financial, Customer, Internal Process, and Learning & Growth',
-          'Assets, Liabilities, Equity, and Revenue',
-          'Sales, Marketing, HR, and IT',
+          'Past, Present, Future, and CEO perspective',
+          'Financial, Customer, Process, and Growth',
+          'Assets, Liabilities, Equity, and Revenue now',
+          'Sales, Marketing, HR, and IT departments',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Being "Rich" (Financial) today isn\'t enough. If your customers hate you and your staff is quitting (Learning), you will be "Poor" tomorrow.',
+            'Being "Rich" (Financial) today isn\'t enough for long-term survival. If your customers hate you and your staff is quitting (Learning & Growth), you will be "Poor" [GEM]-wise tomorrow regardless of your current bank balance.',
         correctExplanation:
-            'The scorecard ensures management doesn\'t sacrifice the future of the company for short-term gems.',
+            'The scorecard ensures management does not sacrifice the future of the company for short-term [GEM] gains. It provides a holistic view of performance, linking day-to-day operations with the long-term strategic goals and vision of the organization.',
       ),
       QuizQuestion(
         question: 'What is "Activity-Based Costing" (ABC)?',
         options: [
-          'Counting how many activities employees do',
-          'Allocating overhead costs to products based on the specific activities they consume, rather than just using a simple percentage',
-          'A way to choose which stocks to buy',
-          'The total cost of running a website',
+          'Counting how many activities employees do daily',
+          'Allocating overhead based on consumed activities',
+          'A way to choose which stocks to buy on Friday',
+          'The total cost of running a website for users',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Old accounting might say: "Every product pays 10% for rent." ABC says: "Product A uses 50 hours of machine time, so IT should pay more for the factory gems."',
+            'Old accounting might say: "Every product pays 10% for rent." ABC says: "Product A uses 50 hours of machine time, so it should pay more for the factory [GEM] costs than Product B which uses only 5 hours."',
         correctExplanation:
-            'ABC reveals which products are TRULY profitable and which ones are "stealing" gems from others.',
+            'ABC reveals which products are truly profitable and which ones are "stealing" [GEM] from others by consuming more resources than they are being charged for. This allows managers to make better pricing and production decisions based on real data.',
       ),
       QuizQuestion(
         question: 'What is a "Value Chain Analysis"?',
         options: [
           'Looking at the chain on the company\'s front door',
-          'Examining every step of the business (from raw materials to after-sales service) to find where to create more value or save gems',
-          'A way to calculate interest rates',
-          'A set of rules for competitive markets',
+          'Examining every step to create value or save [GEM]',
+          'A way to calculate interest rates on a bank loan',
+          'A set of rules for competitive global markets',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Does our shipping create value? Does our packaging? If a step doesn\'t make the customer more "Happy" or the product "Better," it should be cut.',
+            'Does our shipping create value? Does our packaging? If a step does not make the customer more "Happy" or the product "Better," it should be cut to save precious [GEM] resources and improve the overall efficiency of the business.',
         correctExplanation:
-            'Mastering the value chain is how companies like Apple or Amazon stay ahead of all their competitors.',
+            'Mastering the value chain is how companies like Apple or Amazon stay ahead of all their competitors. They optimize every link in the chain—from raw material sourcing to final delivery—to maximize the value delivered to the end consumer.',
       ),
       QuizQuestion(
         question: 'What is "Kaizen" Costing?',
         options: [
-          'A type of food in the cafeteria',
-          'A Japanese philosophy of "Continuous Improvement" focused on making tiny, daily changes to reduce costs and waste',
-          'A rule that limits how much you can sell',
-          'A tax on high-profit companies',
+          'A type of food in the company cafeteria today',
+          'Japanese philosophy of "Continuous Improvement"',
+          'A rule that limits how much you can sell each year',
+          'A tax on high-profit companies in the region',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You don\'t wait for a miracle. You aim to save 1 cent today, half a cent tomorrow. Over a million gems, this adds up to a massive advantage.',
+            'You do not wait for a miracle or a huge breakthrough. You aim to save 1 cent today, half a cent tomorrow. Over a million [GEM] transactions, this tiny daily progress adds up to a massive and sustainable competitive advantage.',
         correctExplanation:
-            'Kaizen requires "Everyone" in the building to be involved in saving [GEM]s and improving quality.',
+            'Kaizen requires "Everyone" in the building to be actively involved in saving [GEM]s and improving quality. It creates a culture where every employee is an innovator looking for ways to reduce waste and improve the manufacturing or service process.',
       ),
       QuizQuestion(
         question: 'What is "Total Quality Management" (TQM)?',
         options: [
-          'A way to manage the total number of employees',
-          'A management approach where "Quality" is the goal of every single employee and business process',
-          'A type of software test',
-          'A rule that prevents bad products from being sold',
+          'Managing the total number of employees in a lab',
+          'Quality is the goal of every single employee',
+          'A type of software test for the dev team',
+          'A rule that prevents bad products in the market',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Quality isn\'t checked at the end. It is built in starting from the very first [GEM] brick. It turns out, doing it right the first time is actually CHEAPER than fixing mistakes.',
+            'Quality isn\'t checked at the end by an inspector. It is built in starting from the very first [GEM] brick. It turns out, doing it right the first time is actually much CHEAPER than fixing expensive mistakes after the product is finished.',
         correctExplanation:
-            'TQM companies have higher customer loyalty and spend far fewer gems on repairs and refunds.',
+            'TQM companies have higher customer loyalty and spend far fewer [GEM] on repairs, refunds, and warranty claims. It is a long-term commitment to excellence that permeates every level of the organization and every interaction with the customer.',
       ),
     ],
   ),
@@ -7823,75 +7943,74 @@ final List<QuizMetadata> _level5Quizzes = [
     requiredLevel: 5,
     questions: [
       QuizQuestion(
-        question: 'What is a "Step Acquisition" (Acheived in Stages)?',
+        question: 'What is a "Step Acquisition" (Achieved in Stages)?',
         options: [
-          'Buying the building next door',
-          'When a company increases its ownership in another firm from a non-controlling share (e.g., 20%) to a controlling share (e.g., 60%)',
-          'A way to pay for a company in monthly installments',
-          'A tax on buying more shares',
+          'Buying the building next door to the office',
+          'Increasing ownership to a controlling share',
+          'A way to pay for a company in monthly steps',
+          'A tax on buying more shares in the market',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You don\'t just add the new cost. You must "Revalue" your old 20% to its current Fair Market Value today and record a [GEM] profit or loss BEFORE consolidating.',
+            'You do not just add the new cost to the old one. You must "Revalue" your old non-controlling interest to its current Fair Market Value today and record a significant [GEM] profit or loss before you can begin the consolidation process.',
         correctExplanation:
-            'Step acquisitions require professional "Remeasurement" of previous equity interests, which is a high-level CA exam topic.',
+            'Step acquisitions require professional "Remeasurement" of all previously held equity interests at their current fair value. This ensured that the consolidated financial statements reflect the true value of the entire entity at the date control was actually achieved.',
       ),
       QuizQuestion(
-        question:
-            'What is the "Current Rate Method" for foreign subsidiary translation?',
+        question: 'What is the "Current Rate Method" for translation?',
         options: [
           'Charging customers the current interest rate',
-          'Translating all balance sheet items at the year-end exchange rate and income items at the average rate',
-          'Using the exchange rate from the day the company was founded',
-          'A way to avoid using foreign currency',
+          'Translating BS at year-end and IS at average',
+          'Using the exchange rate from the founding day',
+          'A way to avoid using any foreign currency now',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This method is used when the subsidiary is "Independent." Any [GEM] gains or losses from translation go to the CTA (Cumulative Translation Adjustment) in equity.',
+            'This method is used when the subsidiary is "Independent" and operates in its own local environment. Any [GEM] gains or losses from translation are reported in the Cumulative Translation Adjustment (CTA) within the equity section of the balance sheet.',
         correctExplanation:
-            'The Current Rate method ensures the subsidiary\'s financial ratios (like Current Ratio) stay the same after translation.',
+            'The Current Rate method ensures that the subsidiary\'s key financial ratios, such as the current ratio, remain the same after translation as they were in the local currency. This provides a more accurate view of the subsidiary’s local performance for the group.',
       ),
       QuizQuestion(
         question: 'What is "Temporal Method" translation?',
         options: [
-          'A temporary way to count gems',
-          'A method where non-monetary assets (like inventory) are translated at their historical exchange rates, used when a subsidiary is an extension of the parent',
-          'Trading gems only during certain times of the year',
-          'A tax on temporary companies',
+          'A temporary way to count [GEM] in a bank',
+          'Monetary items at current, non-monetary at history',
+          'Trading [GEM] only during certain times of year',
+          'A tax on temporary companies in the state',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This is used for "Dependent" subsidiaries. Any [GEM] gains or losses go directly to the Income Statement, which makes the parent\'s profit very volatile.',
+            'This is used for "Dependent" subsidiaries that are effectively an extension of the parent. Any [GEM] translation gains or losses go directly to the Income Statement, which can create significant volatility in the parent\'s reported net profit.',
         correctExplanation:
-            'Professional accountants choose between Current and Temporal methods based on the "Functional Currency" of the subsidiary.',
+            'Professional accountants choose between the Current and Temporal methods based on the "Functional Currency" of the subsidiary. The Temporal method is designed to reflect the subsidiary’s transactions as if they had been carried out by the parent company itself.',
       ),
       QuizQuestion(
         question: 'What is a "Bargain Purchase" (Negative Goodwill)?',
         options: [
-          'Buying a product on sale',
-          'When you buy a company for LESS than the fair value of its net assets, resulting in an immediate [GEM] gain on the income statement',
-          'A company that is going bankrupt',
-          'A secret deal with a supplier',
+          'Buying a product on sale at a local store',
+          'Buying a company for LESS than net asset value',
+          'A company that is going bankrupt very fast',
+          'A secret deal with a local building supplier',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'This is the opposite of Goodwill. It usually happens in "Fire Sales." If a company has [GEM]100M in assets but you pay [GEM]80M, you "made" [GEM]20M profit on Day 1.',
+            'This is the opposite of Goodwill and usually occurs in "Fire Sales" or distressed situations. If a company has 100M [GEM] in net assets but you only pay 80M [GEM], you effectively "made" an immediate 20M [GEM] profit on the acquisition date.',
         correctExplanation:
-            'Auditors check bargain purchases very strictly to ensure the assets aren\'t overvalued on the books.',
+            'Auditors check bargain purchases very strictly to ensure that the fair values of the acquired assets haven\'t been overvalued and that all liabilities have been correctly identified. Any gain from a bargain purchase is recognized immediately in the income statement.',
       ),
       QuizQuestion(
         question: 'What is "Equity Method" vs "Consolidation"?',
         options: [
-          ' Konsolidation is only for small businesses',
-          'Equity method is used for "Significant Influence" (20-50% ownership) where you only record your share of the profit, not every asset',
-          ' консолидация means selling the company',
-          'A way to hide debt from the public',
+          'One is only used for very small businesses',
+          'Equity records share of profit; Consolidation adds all',
+          'One means selling the company for assets',
+          'A way to hide total debt from the public team',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If you own 30%, you don\'t put their factory on your balance sheet. You just increase your initial [GEM] investment by 30% of their annual profit.',
+            'If you own 30%, you do not put their factory on your balance sheet. You just increase your initial [GEM] investment by 30% of their annual profit and decrease it by any dividends you receive during the period.',
         correctExplanation:
-            'Distinguishing between "Influence" and "Control" is the foundation of professional group reporting.',
+            'Distinguishing between "Significant Influence" and "Full Control" is the foundation of professional group reporting standards. The Equity method reflects your economic interest in the associate, while Consolidation reflects your control over the entire subsidiary’s resources.',
       ),
     ],
   ),
@@ -7905,72 +8024,72 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Delta Neutral" hedging?',
         options: [
-          'A way to stay neutral in a political debate',
-          'Building a portfolio so that the total Delta is zero, meaning the [GEM] value doesn\'t change if the stock price moves slightly',
+          'A way to stay neutral in a political debate now',
+          'Portfolio value doesn\'t change with small price moves',
           'Buying equal amounts of every stock in the market',
-          'A hedge made with zero gems',
+          'A hedge made with zero [GEM] initial investment',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'If your stock goes up [GEM]1, your option might go down [GEM]1. You are "Immune" to small price swings.',
+            'If your stock goes up 1 [GEM], your offsetting option position might go down 1 [GEM]. You are effectively "Immune" to small price swings, protecting your capital from the noise of daily market fluctuations in the short term.',
         correctExplanation:
-            'Banks and Market Makers use Delta Neutral strategies to earn gems from "Spreads" without caring about where the stock price goes.',
+            'Banks and professional Market Makers use Delta Neutral strategies to earn [GEM] from the "Bid-Ask Spreads" without caring about where the underlying stock price goes. They constantly rebalance their positions to maintain this neutrality as prices move.',
       ),
       QuizQuestion(
         question: 'What is "Gamma" in option Greeks?',
         options: [
-          'A type of radiation',
-          'The rate of change in Delta as the stock price moves',
-          'The third best option in the market',
-          'A tax on huge profits',
+          'A type of radiation used in a hospital lab',
+          'The rate of change in Delta as stock price moves',
+          'The third best option available in the market',
+          'A tax on huge profits made in a single trade',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Delta is "Speed." Gamma is "Acceleration." If Gamma is high, your Delta (and your risk) can change very fast, requiring you to trade more gems to stay hedged.',
+            'If Delta is considered "Speed," then Gamma is "Acceleration." If Gamma is high, your Delta (and thus your risk) can change very fast, requiring you to trade more [GEM] and frequently to stay properly hedged against market moves.',
         correctExplanation:
-            'Gamma risk is what causes "Hedgers" to panic and buy/sell rapidly during market crashes.',
+            'Gamma risk is what often causes professional "Hedgers" to panic and buy or sell rapidly during sudden market crashes. Understanding and managing Gamma is crucial for anyone maintaining a Delta-hedged portfolio in a volatile market environment.',
       ),
       QuizQuestion(
         question: 'What is a "Bull Call Spread"?',
         options: [
-          'A type of farm animal',
-          'Buying one Call option and selling another Call at a higher strike price to lower the [GEM] cost of the trade',
-          'Telling everyone a stock is going up',
-          'A way to borrow gems from a bull',
+          'A type of farm animal found in the rural area',
+          'Buying one Call and selling another at higher strike',
+          'Telling everyone a stock is certainly going up',
+          'A way to borrow [GEM] from a bull at low cost',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'You pay less gems for the trade, but you also cap your profit. It is a "Cost-Efficient" professional way to bet on a stock going up.',
+            'You pay less [GEM] for the overall trade, but you also cap your maximum potential profit. It is a "Cost-Efficient" professional way to bet on a stock going up while strictly limiting the initial capital you have at risk.',
         correctExplanation:
-            'Spreads are the basic "building blocks" of professional CAIA-level trading strategies.',
+            'Spreads are the basic "building blocks" of professional CAIA-level trading strategies. They allow investors to customize their risk-return profile based on their specific market outlook and the amount of [GEM] they are willing to risk.',
       ),
       QuizQuestion(
         question: 'What is "Theta" decay?',
         options: [
-          'A type of brain wave',
-          'The loss in value of an option every day as it gets closer to its expiration date',
-          'A way to make gems slowly',
-          'A tax on holding stocks for too long',
+          'A type of brain wave found in deep sleep',
+          'Loss in option value as expiration date near',
+          'A way to make [GEM] slowly over many cycles',
+          'A tax on holding stocks for too long in one account',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'Options are "Wasting Assets." Every night while you sleep, an option loses more gems in value. This is the "Time Decay."',
+            'Options are true "Wasting Assets." Every night while you sleep, an option loses some [GEM] in value simply because time has passed. This is the "Time Decay" that all option buyers must overcome to make a profit.',
         correctExplanation:
-            'Professional "Sellers" of options earn their gems by harvesting this Theta decay from people who buy options.',
+            'Professional "Sellers" of options earn their [GEM] by consistently harvesting this Theta decay from people who buy options for speculation or hedging. They act like the "House" in a casino, benefiting from the unavoidable passage of time.',
       ),
       QuizQuestion(
         question: 'What is "Value at Risk" (VaR)?',
         options: [
-          'The total amount of gems the company owns',
-          'A statistical measure of the maximum [GEM] amount you could lose in a portfolio over a specific time with a certain confidence (e.g., 95%)',
-          'A way to calculate interest on a loan',
-          'A list of the riskiest stocks in the country',
+          'The total amount of [GEM] the company owns now',
+          'Max potential loss over time with certain confidence',
+          'A way to calculate interest on a large bank loan',
+          'A list of the riskiest stocks in the whole country',
         ],
         correctIndex: 1,
         wrongExplanation:
-            'VaR says: "There is a 95% chance we won\'t lose more than [GEM]1M today." It helps CEOs sleep at night, but it can fail during "Black Swan" events.',
+            'VaR says: "There is a 95% chance we will not lose more than 1M [GEM] today." It helps CEOs sleep at night by quantifying risk, but it can fail catastrophically during extreme "Black Swan" events that fall outside normal distributions.',
         correctExplanation:
-            'VaR is the standard risk reporting tool for every major investment bank and hedge fund in the world.',
+            'VaR is the universal standard risk reporting tool for every major investment bank, hedge fund, and pension fund in the world. It provides a single, easy-to-understand [GEM] number that summarizes the total risk exposure of a complex portfolio.',
       ),
     ],
   ),

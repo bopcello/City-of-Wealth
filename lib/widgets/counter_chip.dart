@@ -17,15 +17,19 @@ class CounterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Chip(
-      avatar: Icon(icon, size: 18, color: color),
+      avatar: Icon(
+        icon,
+        size: 18,
+        color: color ?? Theme.of(context).colorScheme.primary,
+      ),
       label: Text(
         "$label: $value",
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       backgroundColor: Theme.of(
         context,
-      ).colorScheme.surfaceVariant.withOpacity(0.5),
-      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      ).colorScheme.surfaceVariant.withValues(alpha: 0.2),
+      side: BorderSide(color: Theme.of(context).colorScheme.outline),
     );
   }
 }

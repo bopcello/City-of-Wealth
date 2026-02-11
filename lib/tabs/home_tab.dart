@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
+import '../theme/app_colors.dart';
+import '../services/sfx_manager.dart';
 
 class HomeTab extends StatelessWidget {
   final int kp;
@@ -11,6 +13,7 @@ class HomeTab extends StatelessWidget {
   final TransportType? transportChoice;
   final AssetInventory assets;
   final VoidCallback onClearEvents;
+  final SfxManager sfx;
 
   // [DEBUG: PAUSE_INCOME] properties
   final bool incomePaused;
@@ -27,6 +30,7 @@ class HomeTab extends StatelessWidget {
     required this.transportChoice,
     required this.assets,
     required this.onClearEvents,
+    required this.sfx,
     // [DEBUG: PAUSE_INCOME] parameters
     this.incomePaused = false,
     required this.onPauseToggled,
@@ -51,7 +55,13 @@ class HomeTab extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text("Pause Income Cycles (Debug): "),
-                Switch(value: incomePaused, onChanged: onPauseToggled),
+                Switch(
+                  value: incomePaused,
+                  onChanged: (val) {
+                    sfx.playClick();
+                    onPauseToggled(val);
+                  },
+                ),
               ],
             ),
           ),
@@ -73,7 +83,7 @@ class HomeTab extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 30,
-            backgroundColor: Colors.amber.shade700,
+            backgroundColor: AppColors.of(context, 'kp'),
             child: const Icon(Icons.person, color: Colors.white, size: 30),
           ),
           const SizedBox(width: 16),
@@ -89,7 +99,9 @@ class HomeTab extends StatelessWidget {
               ),
               Text(
                 "(Level: ${career.level})",
-                style: TextStyle(color: Colors.grey.shade700),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
@@ -111,7 +123,10 @@ class HomeTab extends StatelessWidget {
             ),
             if (events.isNotEmpty)
               TextButton(
-                onPressed: onClearEvents,
+                onPressed: () {
+                  sfx.playClick();
+                  onClearEvents();
+                },
                 child: const Text("Clear Log"),
               ),
           ],
@@ -181,13 +196,13 @@ class HomeTab extends StatelessWidget {
               icon: Icons.home,
               label: "Rent",
               value: rentChoice != null ? rentData[rentChoice!]!.label : "None",
-              color: Colors.blue.shade100,
+              color: AppColors.of(context, 'rent'),
             ),
             _SummaryChip(
               icon: Icons.restaurant,
               label: "Food",
               value: foodChoice != null ? foodData[foodChoice!]!.label : "None",
-              color: Colors.green.shade100,
+              color: AppColors.of(context, 'food'),
             ),
             _SummaryChip(
               icon: Icons.directions_car,
@@ -195,7 +210,7 @@ class HomeTab extends StatelessWidget {
               value: transportChoice != null
                   ? transportData[transportChoice!]!.label
                   : "None",
-              color: Colors.purple.shade100,
+              color: AppColors.of(context, 'transport'),
             ),
           ],
         ),

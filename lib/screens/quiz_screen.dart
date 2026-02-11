@@ -1,33 +1,42 @@
 import 'package:flutter/material.dart';
 import '../data/quiz_data.dart';
 import '../widgets/icon_text.dart';
+import '../theme/app_colors.dart';
+import '../services/music_manager.dart';
+import '../services/sfx_manager.dart';
 
 class QuizMenuScreen extends StatelessWidget {
+  final MusicManager music;
+  final SfxManager sfx;
   final int currentKp;
   final int currentLevel;
   final Set<String> completedQuizzes;
   final void Function(int) onKpChange;
   final void Function(String) onQuizComplete;
   final Listenable? refreshListenable;
+  final String playerName;
 
   const QuizMenuScreen({
     super.key,
+    required this.music,
+    required this.sfx,
     required this.currentKp,
     required this.currentLevel,
     required this.completedQuizzes,
     required this.onKpChange,
     required this.onQuizComplete,
     this.refreshListenable,
+    required this.playerName,
   });
 
-  Color _getDifficultyColor(QuizDifficulty difficulty) {
+  Color _getDifficultyColor(BuildContext context, QuizDifficulty difficulty) {
     switch (difficulty) {
       case QuizDifficulty.easy:
-        return Colors.green;
+        return AppColors.of(context, 'success');
       case QuizDifficulty.medium:
-        return Colors.orange;
+        return AppColors.of(context, 'warning');
       case QuizDifficulty.hard:
-        return Colors.red;
+        return AppColors.of(context, 'error');
     }
   }
 
@@ -71,7 +80,7 @@ class QuizMenuScreen extends StatelessWidget {
                         Icon(
                           Icons.construction,
                           size: 64,
-                          color: Colors.orange.shade300,
+                          color: AppColors.of(context, 'warning'),
                         ),
                         const SizedBox(height: 24),
                         const Text(
@@ -85,18 +94,20 @@ class QuizMenuScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         Text(
                           'We apologize for the inconvenience.\nOur quiz database for this level is still being curated.',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
                         Text(
                           'Please check back soon!',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
-                            color: Colors.white70,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                             fontStyle: FontStyle.italic,
                           ),
                           textAlign: TextAlign.center,
@@ -119,21 +130,24 @@ class QuizMenuScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: isCompleted
-                                ? Colors.green
-                                : _getDifficultyColor(quiz.difficulty),
+                                ? AppColors.of(context, 'success')
+                                : _getDifficultyColor(context, quiz.difficulty),
                             width: 3,
                           ),
                           borderRadius: BorderRadius.circular(12),
                           color: isCompleted
-                              ? Colors.green.withOpacity(0.1)
-                              : null,
+                              ? AppColors.of(
+                                  context,
+                                  'success',
+                                ).withValues(alpha: 0.1)
+                              : Theme.of(context).colorScheme.surfaceVariant,
                         ),
                         child: ListTile(
                           leading: Icon(
                             isCompleted ? Icons.check_circle : Icons.quiz,
                             color: isCompleted
-                                ? Colors.green
-                                : _getDifficultyColor(quiz.difficulty),
+                                ? AppColors.of(context, 'success')
+                                : _getDifficultyColor(context, quiz.difficulty),
                           ),
                           title: Text(
                             quiz.title,
@@ -142,8 +156,9 @@ class QuizMenuScreen extends StatelessWidget {
                                   ? TextDecoration.lineThrough
                                   : null,
                               color: isCompleted
-                                  ? Colors.white.withOpacity(0.5)
-                                  : Colors.white,
+                                  ? Theme.of(context).colorScheme.onSurface
+                                        .withValues(alpha: 0.5)
+                                  : Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           subtitle: Text(
@@ -155,7 +170,7 @@ class QuizMenuScreen extends StatelessWidget {
                                   ? Theme.of(context)
                                         .colorScheme
                                         .onSurfaceVariant
-                                        .withOpacity(0.7)
+                                        .withValues(alpha: 0.7)
                                   : null,
                             ),
                           ),
@@ -166,12 +181,15 @@ class QuizMenuScreen extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => QuizScreen(
+                                  music: music,
+                                  sfx: sfx,
                                   quiz: quiz,
                                   currentKp: currentKp,
                                   onKpChange: onKpChange,
                                   onQuizComplete: onQuizComplete,
                                   completedQuizzes: completedQuizzes,
                                   isCompleted: isCompleted,
+                                  playerName: playerName,
                                 ),
                               ),
                             );
@@ -188,21 +206,27 @@ class QuizMenuScreen extends StatelessWidget {
 }
 
 class QuizScreen extends StatefulWidget {
+  final MusicManager music;
+  final SfxManager sfx;
   final QuizMetadata quiz;
   final int currentKp;
   final void Function(int) onKpChange;
   final void Function(String) onQuizComplete;
   final Set<String> completedQuizzes;
   final bool isCompleted;
+  final String playerName;
 
   const QuizScreen({
     super.key,
+    required this.music,
+    required this.sfx,
     required this.quiz,
     required this.currentKp,
     required this.onKpChange,
     required this.onQuizComplete,
     required this.completedQuizzes,
     this.isCompleted = false,
+    required this.playerName,
   });
 
   @override
@@ -216,30 +240,50 @@ class _QuizScreenState extends State<QuizScreen> {
   int correctCount = 0;
   List<bool> results = [];
 
-  void selectAnswer(int index) {
+  // Stores a shuffled list of indices [0, 1, 2, 3] for each question
+  late List<List<int>> _shuffledIndicesMap;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeShuffledIndices();
+    widget.music.playQuizMusic();
+  }
+
+  void _initializeShuffledIndices() {
+    _shuffledIndicesMap = widget.quiz.questions.map((q) {
+      final indices = List.generate(q.options.length, (index) => index);
+      indices.shuffle();
+      return indices;
+    }).toList();
+  }
+
+  @override
+  void dispose() {
+    widget.music.playHomeMusic();
+    super.dispose();
+  }
+
+  void selectAnswer(int uiIndex) {
     if (selected != null) return;
 
     final question = widget.quiz.questions[current];
-    final correct = index == question.correctIndex;
-    if (correct) correctCount++;
+    final originalIndex = _shuffledIndicesMap[current][uiIndex];
+    final correct = originalIndex == question.correctIndex;
 
-    // Immediate feedback KP change (removed or kept? User said "change award to...". Usually this implies the END award for the quiz, but existing code changes KP on every answer. The prompt says "change award to 0kp...". Only end reward? Or per question?
-    // Existing code: `widget.onKpChange(kpChange);` per answer.
-    // If I change the award logic, I should probably disable per-question KP updates if the user wants fixed awards for the *quiz*.
-    // However, the prompt says "award to 0 KP for easy quiz...". This phrasing suggests the TOTAL award.
-    // I will comment out per-question KP updates and move all KP updates to the end to control the exact amount.
-    // Or I can keep per-question updates if they sum up to the target?
-    // Easy: 0 KP. So per question = 0?
-    // Medium: 10 KP. If there are 5 questions, 2 KP per question?
-    // Repeat: 15 KP.
-    // It's safer to move the award to the END to be precise.
-    // So I will REMOVE `widget.onKpChange(kpChange);` here.
+    if (correct) correctCount++;
 
     results.add(correct);
 
     setState(() {
-      selected = index;
+      selected = uiIndex;
     });
+
+    if (correct) {
+      widget.sfx.playCorrect();
+    } else {
+      widget.sfx.playIncorrect();
+    }
 
     // Show explanation popup
     _showExplanationDialog(correct, question);
@@ -251,7 +295,7 @@ class _QuizScreenState extends State<QuizScreen> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(
-          wasCorrect ? '✅ Correct!' : '❌ Incorrect',
+          wasCorrect ? 'Correct!' : 'Incorrect',
           style: TextStyle(
             color: wasCorrect ? Colors.green : Colors.red,
             fontWeight: FontWeight.bold,
@@ -285,6 +329,7 @@ class _QuizScreenState extends State<QuizScreen> {
         actions: [
           TextButton(
             onPressed: () {
+              widget.sfx.playClick();
               Navigator.pop(context);
               nextQuestion();
             },
@@ -335,16 +380,6 @@ class _QuizScreenState extends State<QuizScreen> {
         debugPrint('✨ FIRST-TIME QUIZ: ${widget.quiz.title}, Award: $award');
       }
 
-      // Only award if they passed? Or just for completing?
-      // "mark the quizzes completed as done" implies completion.
-      // I'll assume if they finish the quiz, they get the award.
-      // But usually "quiz" implies passing.
-      // I'll apply the award if correctCount > total/2 (50%).
-      // Or just apply it. The prompt is simple. "mark the quizzes completed... change award...".
-      // I'll apply it if they get > 0 correct?
-      // I'll apply it unconditionally for now upon finishing, as "completing" usually means reaching the end in these casual games, or maybe 50%.
-      // I'll stick to: if correctCount >= total * 0.5.
-
       int finalKpDelta = 0;
       final bool passed = correctCount >= widget.quiz.questions.length * 0.5;
 
@@ -358,6 +393,8 @@ class _QuizScreenState extends State<QuizScreen> {
         context,
         MaterialPageRoute(
           builder: (_) => QuizAnalysisScreen(
+            music: widget.music,
+            sfx: widget.sfx,
             score: correctCount,
             total: widget.quiz.questions.length,
             currentKp: widget
@@ -372,6 +409,7 @@ class _QuizScreenState extends State<QuizScreen> {
             onQuizComplete: widget.onQuizComplete,
             isCompleted: widget.isCompleted,
             passed: passed,
+            playerName: widget.playerName,
           ),
         ),
       );
@@ -395,7 +433,6 @@ class _QuizScreenState extends State<QuizScreen> {
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 10,
-                backgroundColor: Colors.grey.shade300,
                 color: Colors.amber.shade600,
               ),
             ),
@@ -410,49 +447,46 @@ class _QuizScreenState extends State<QuizScreen> {
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: const [
-                          BoxShadow(
-                            blurRadius: 10,
-                            offset: Offset(0, 6),
-                            color: Colors.black12,
-                          ),
-                        ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "Question ${current + 1}",
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           IconText(
                             q.question,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 24),
-                    ...List.generate(q.options.length, (i) {
+                    ...List.generate(q.options.length, (uiIndex) {
+                      final originalIndex =
+                          _shuffledIndicesMap[current][uiIndex];
                       Color bg = Theme.of(context).colorScheme.surfaceVariant;
 
                       if (selected != null) {
-                        if (i == q.correctIndex) {
-                          bg = Colors.green.withOpacity(0.3);
-                        } else if (i == selected) {
-                          bg = Colors.red.withOpacity(0.3);
+                        if (originalIndex == q.correctIndex) {
+                          bg = Colors.green.withValues(alpha: 0.3);
+                        } else if (uiIndex == selected) {
+                          bg = Colors.red.withValues(alpha: 0.3);
                         }
                       }
 
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: InkWell(
-                          onTap: () => selectAnswer(i),
+                          onTap: () => selectAnswer(uiIndex),
                           borderRadius: BorderRadius.circular(16),
                           child: Container(
                             width: double.infinity,
@@ -460,19 +494,12 @@ class _QuizScreenState extends State<QuizScreen> {
                             decoration: BoxDecoration(
                               color: bg,
                               borderRadius: BorderRadius.circular(16),
-                              boxShadow: const [
-                                BoxShadow(
-                                  blurRadius: 6,
-                                  offset: Offset(0, 3),
-                                  color: Colors.black12,
-                                ),
-                              ],
                             ),
                             child: IconText(
-                              q.options[i],
-                              style: const TextStyle(
+                              q.options[originalIndex],
+                              style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -491,6 +518,8 @@ class _QuizScreenState extends State<QuizScreen> {
 }
 
 class QuizAnalysisScreen extends StatelessWidget {
+  final MusicManager music;
+  final SfxManager sfx;
   final int score;
   final int total;
   final int currentKp;
@@ -503,9 +532,12 @@ class QuizAnalysisScreen extends StatelessWidget {
   final void Function(String) onQuizComplete;
   final bool isCompleted;
   final bool passed;
+  final String playerName;
 
   const QuizAnalysisScreen({
     super.key,
+    required this.music,
+    required this.sfx,
     required this.score,
     required this.total,
     required this.currentKp,
@@ -518,6 +550,7 @@ class QuizAnalysisScreen extends StatelessWidget {
     required this.onQuizComplete,
     required this.isCompleted,
     required this.passed,
+    required this.playerName,
   });
 
   String get message {
@@ -532,7 +565,7 @@ class QuizAnalysisScreen extends StatelessWidget {
       case 3:
         return "Good job, you got this!";
       case 4:
-        return "Almost there user! Next one is in the bag, isn't it?";
+        return "Almost there ${playerName}! Next one is in the bag, isn't it?";
       case 5:
         return "Perfection!";
       default:
@@ -565,15 +598,14 @@ class QuizAnalysisScreen extends StatelessWidget {
                         CircularProgressIndicator(
                           value: progress,
                           strokeWidth: 50,
-                          backgroundColor: Colors.grey.shade300,
                           color: _getScoreColor(progress),
                         ),
                         Text(
                           "$score/$total",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -643,6 +675,8 @@ class QuizAnalysisScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (_) => QuizScreen(
+                                music: music,
+                                sfx: sfx,
                                 quiz: nextQuiz,
                                 currentKp: currentKp + deltaKp,
                                 onKpChange: onKpChange,
@@ -651,10 +685,12 @@ class QuizAnalysisScreen extends StatelessWidget {
                                 isCompleted: completedQuizzes.contains(
                                   nextQuiz.id,
                                 ),
+                                playerName: playerName,
                               ),
                             ),
                           );
                         } else {
+                          music.playHomeMusic();
                           Navigator.pop(context);
                         }
                       },
@@ -664,6 +700,7 @@ class QuizAnalysisScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () {
+                      music.playHomeMusic();
                       Navigator.popUntil(context, (r) => r.isFirst);
                     },
                     child: const Text("Back to quizzes"),

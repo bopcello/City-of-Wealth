@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'game_state.dart';
 import 'logic/game_manager.dart';
+import 'services/music_manager.dart';
+import 'services/sfx_manager.dart';
+import 'services/sfx_navigator_observer.dart';
+import 'widgets/name_entry_dialog.dart';
 import 'tabs/home_tab.dart';
 import 'tabs/city_tab.dart';
 import 'tabs/money_tab.dart';
 import 'tabs/settings_tab.dart';
+import 'theme/app_colors.dart';
 import 'widgets/counter_chip.dart';
 
 void main() {
@@ -21,10 +26,47 @@ class CityOfWealthApp extends StatefulWidget {
 
 class _CityOfWealthAppState extends State<CityOfWealthApp> {
   final GameManager game = GameManager();
+  final MusicManager music = MusicManager();
+  final SfxManager sfx = SfxManager();
+  late final AppLifecycleListener _lifecycleListener;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Start music after the first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      music.playHomeMusic();
+    });
+
+    // Listen to app lifecycle to stop/resume music when app state changes
+    _lifecycleListener = AppLifecycleListener(
+      onStateChange: (AppLifecycleState state) {
+        if (state == AppLifecycleState.paused ||
+            state == AppLifecycleState.detached) {
+          music.pauseMusic();
+        } else if (state == AppLifecycleState.resumed) {
+          music.resumeMusic();
+        }
+      },
+    );
+
+    // Initial volume apply after load
+    game.addListener(_syncVolume);
+  }
+
+  void _syncVolume() {
+    music.setVolume(game.musicVolume);
+    sfx.setVolume(game.sfxVolume);
+  }
 
   @override
   void dispose() {
+    _lifecycleListener.dispose();
+    game.removeListener(_syncVolume);
     game.dispose();
+    music.dispose();
+    sfx.dispose();
     super.dispose();
   }
 
@@ -35,25 +77,11 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
       builder: (context, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorSchemeSeed: Colors.amber,
-            useMaterial3: true,
-            brightness: Brightness.light,
-          ),
-          darkTheme: ThemeData(
-            useMaterial3: true,
-            brightness: Brightness.dark,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.amber,
-              brightness: Brightness.dark,
-              surface: const Color(0xFF1A1C1E),
-              onSurface: Colors.white,
-              surfaceVariant: const Color(0xFF2C2E33),
-              onSurfaceVariant: Colors.white,
-            ),
-          ),
+          theme: AppColors.lightTheme,
+          darkTheme: AppColors.darkTheme,
           themeMode: game.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          home: MainScreen(game: game),
+          navigatorObservers: [SfxNavigatorObserver(sfx)],
+          home: MainScreen(game: game, music: music, sfx: sfx),
         );
       },
     );
@@ -62,7 +90,14 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
 
 class MainScreen extends StatefulWidget {
   final GameManager game;
-  const MainScreen({super.key, required this.game});
+  final MusicManager music;
+  final SfxManager sfx;
+  const MainScreen({
+    super.key,
+    required this.game,
+    required this.music,
+    required this.sfx,
+  });
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -87,6 +122,7 @@ class _MainScreenState extends State<MainScreen> {
           onClearEvents: game.clearEvents,
           incomePaused: game.incomePaused,
           onPauseToggled: game.togglePause,
+          sfx: widget.sfx,
         );
       case 1:
         return CityTab(
@@ -97,6 +133,7 @@ class _MainScreenState extends State<MainScreen> {
           insurances: game.insurances,
           activePassiveIncomes: game.activePassiveIncomes,
           hasWall: game.hasWall,
+          sfx: widget.sfx,
           onBuyAsset: (AssetType type, int amount) {
             game.buyAsset(type, amount, context);
           },
@@ -107,7 +144,10 @@ class _MainScreenState extends State<MainScreen> {
       case 2:
         return MoneyTab(
           game: game,
+          music: widget.music,
+          sfx: widget.sfx,
           currentKp: game.kp,
+          playerName: game.playerName,
           career: game.career,
           gems: game.gems,
           assets: game.assets,
@@ -138,7 +178,11 @@ class _MainScreenState extends State<MainScreen> {
         return SettingsTab(
           career: game.career,
           isDarkMode: game.isDarkMode,
+          musicVolume: game.musicVolume,
+          sfxVolume: game.sfxVolume,
           onThemeToggle: game.toggleTheme,
+          onMusicVolumeChanged: game.updateMusicVolume,
+          onSfxVolumeChanged: game.updateSfxVolume,
           onDebugAdd: game.debugAdd,
           onDebugLevelUp: game.debugLevelUp,
           onDebugReset: game.debugReset,
@@ -159,6 +203,7 @@ class _MainScreenState extends State<MainScreen> {
     if (game.pendingDisasterResults.isNotEmpty) {
       final results = List<DisasterResult>.from(game.pendingDisasterResults);
       game.clearDisasterResults();
+      widget.sfx.playDisaster();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showDialog(
           context: context,
@@ -168,43 +213,75 @@ class _MainScreenState extends State<MainScreen> {
       });
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("City of Wealth"),
-        actions: [
-          CounterChip(label: "KP", value: game.kp, icon: Icons.school),
-          const SizedBox(width: 8),
-          CounterChip(
-            label: "Gems",
-            value: game.gems,
-            icon: Icons.diamond,
-            color: Colors.blue,
+    // Handle Name Entry
+    if (game.playerName == "User") {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => NameEntryDialog(
+            onConfirm: (name) {
+              game.setPlayerName(name);
+            },
           ),
-          const SizedBox(width: 12),
-        ],
-      ),
-      body: _buildBody(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: (index) {
-          setState(() => selectedIndex = index);
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: game.isDarkMode ? Colors.grey.shade900 : Colors.white,
-        selectedItemColor: Colors.amber.shade700,
-        unselectedItemColor: Colors.grey.shade600,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_city),
-            label: "City",
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.work), label: "Money"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Settings",
-          ),
-        ],
+        );
+      });
+    }
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        widget.sfx.playBack();
+        // Hardware back button should exit or go back.
+        // For simplicity, we just allow the default behavior after sound.
+        // But since canPop is false, we might need a way to actually pop if nested.
+        // However, usually Top Level back button exits app or does nothing.
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("City of Wealth"),
+          actions: [
+            CounterChip(
+              label: "KP",
+              value: game.kp,
+              icon: Icons.school,
+              color: AppColors.of(context, 'kp'),
+            ),
+            const SizedBox(width: 8),
+            CounterChip(
+              label: "Gems",
+              value: game.gems,
+              icon: Icons.diamond,
+              color: AppColors.of(context, 'gem'),
+            ),
+            const SizedBox(width: 12),
+          ],
+        ),
+        body: _buildBody(),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: selectedIndex,
+          onTap: (index) {
+            widget.sfx.playClick();
+            setState(() => selectedIndex = index);
+          },
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.location_city),
+              label: "City",
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.work), label: "Money"),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: "Settings",
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -321,14 +398,14 @@ class DisasterReportDialog extends StatelessWidget {
                   Text(
                     "Insurance Protection Applied! ✅",
                     style: TextStyle(
-                      color: Colors.green.shade700,
+                      color: AppColors.of(context, 'success'),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   ...result.insurancePayouts.entries.map(
                     (e) => Text(
                       "• ${assetLabel(e.key)} payout: ${e.value} Gems",
-                      style: TextStyle(color: Colors.green.shade700),
+                      style: TextStyle(color: AppColors.of(context, 'success')),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -337,13 +414,13 @@ class DisasterReportDialog extends StatelessWidget {
                   Text(
                     "NO INSURANCE PENALTY! ❌",
                     style: TextStyle(
-                      color: Colors.red.shade700,
+                      color: AppColors.of(context, 'error'),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     "• Deducted ${result.kpPenalty} KP for lack of insurance.",
-                    style: TextStyle(color: Colors.red.shade700),
+                    style: TextStyle(color: AppColors.of(context, 'error')),
                   ),
                   const SizedBox(height: 8),
                 ],
@@ -351,13 +428,13 @@ class DisasterReportDialog extends StatelessWidget {
                   Text(
                     "Passive Income Impact:",
                     style: TextStyle(
-                      color: Colors.red.shade900,
+                      color: AppColors.of(context, 'error'),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     "• ${result.passiveIncomeReduction}",
-                    style: TextStyle(color: Colors.red.shade900),
+                    style: TextStyle(color: AppColors.of(context, 'error')),
                   ),
                   const SizedBox(height: 8),
                 ],
@@ -365,7 +442,7 @@ class DisasterReportDialog extends StatelessWidget {
                   Text(
                     "Passive Incomes Deactivated (Reinvest required):",
                     style: TextStyle(
-                      color: Colors.orange.shade900,
+                      color: AppColors.of(context, 'warning'),
                       fontWeight: FontWeight.bold,
                     ),
                   ),

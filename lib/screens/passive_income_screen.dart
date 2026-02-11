@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import '../widgets/icon_text.dart';
 import '../game_state.dart';
 import 'dart:math';
+import '../services/sfx_manager.dart';
 
 import '../logic/game_manager.dart';
 
 class PassiveIncomeScreen extends StatelessWidget {
   final GameManager game;
+  final SfxManager sfx;
 
-  const PassiveIncomeScreen({super.key, required this.game});
+  const PassiveIncomeScreen({super.key, required this.game, required this.sfx});
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +59,10 @@ class PassiveIncomeScreen extends StatelessWidget {
                   multiplier: multiplier,
                   activeDisaster: activeDisaster,
                   gems: game.gems,
-                  onInvest: () => game.investInPassiveIncome(assetType),
+                  onInvest: () {
+                    sfx.playBuy();
+                    game.investInPassiveIncome(assetType);
+                  },
                 );
               }),
             ],
@@ -151,7 +156,7 @@ class _PassiveIncomeCard extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: Colors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.orange, width: 2),
                 ),
@@ -191,7 +196,7 @@ class _PassiveIncomeCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.green),
                 ),

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
 import '../widgets/icon_text.dart';
+import '../theme/app_colors.dart';
+import '../services/sfx_manager.dart';
 
 import '../logic/game_manager.dart';
 
 class CareerScreen extends StatefulWidget {
   final GameManager game;
+  final SfxManager sfx;
 
-  const CareerScreen({super.key, required this.game});
+  const CareerScreen({super.key, required this.game, required this.sfx});
 
   @override
   State<CareerScreen> createState() => _CareerScreenState();
@@ -37,6 +40,7 @@ class _CareerScreenState extends State<CareerScreen> {
                 '${widget.game.career.track}-${widget.game.career.level}',
               ),
               career: widget.game.career,
+              sfx: widget.sfx,
               currentKp: widget.game.kp,
               cityLayout: widget.game.cityLayout,
               onCareerChange: widget.game.updateCareer,
@@ -67,6 +71,7 @@ class _CareerScreenState extends State<CareerScreen> {
 
 class _CareerHeroCard extends StatelessWidget {
   final CareerState career;
+  final SfxManager sfx;
   final int currentKp;
   final List<PlacedBuilding> cityLayout;
   final void Function(CareerState) onCareerChange;
@@ -77,6 +82,7 @@ class _CareerHeroCard extends StatelessWidget {
   const _CareerHeroCard({
     super.key,
     required this.career,
+    required this.sfx,
     required this.currentKp,
     required this.cityLayout,
     required this.onCareerChange,
@@ -125,6 +131,7 @@ class _CareerHeroCard extends StatelessWidget {
       countCompletedHardQuizzes(completedQuizzes, career.level);
 
   void _advance() {
+    sfx.playLevelUp();
     onCareerChange(CareerState(track: career.track, level: career.level + 1));
   }
 
@@ -149,7 +156,9 @@ class _CareerHeroCard extends StatelessWidget {
                 title: "Business",
                 subtitle: "High risk, high reward",
                 onTap: () {
+                  sfx.playClick();
                   Navigator.pop(context);
+                  sfx.playLevelUp();
                   onCareerChange(
                     const CareerState(track: CareerTrack.business, level: 2),
                   );
@@ -160,7 +169,9 @@ class _CareerHeroCard extends StatelessWidget {
                 title: "Job",
                 subtitle: "Stable growth, steady income",
                 onTap: () {
+                  sfx.playClick();
                   Navigator.pop(context);
+                  sfx.playLevelUp();
                   onCareerChange(
                     const CareerState(track: CareerTrack.job, level: 2),
                   );
@@ -208,10 +219,10 @@ class _CareerHeroCard extends StatelessWidget {
                 : career.track == CareerTrack.business
                 ? "Business career"
                 : "Job career",
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               letterSpacing: 1.2,
-              color: Colors.white70,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
@@ -226,10 +237,10 @@ class _CareerHeroCard extends StatelessWidget {
               const Spacer(),
               IconText(
                 "[GEM] ${info.dailyIncome}",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: AppColors.of(context, 'gem'),
                 ),
               ),
             ],
@@ -240,7 +251,7 @@ class _CareerHeroCard extends StatelessWidget {
               children: [
                 const Text(
                   "Required KP",
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(fontWeight: FontWeight.w500),
                 ),
                 const Spacer(),
                 Text(
@@ -257,9 +268,9 @@ class _CareerHeroCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red.withOpacity(0.5)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,7 +287,10 @@ class _CareerHeroCard extends StatelessWidget {
                     ...missingBuildings.map(
                       (b) => Text(
                         "• $b",
-                        style: const TextStyle(fontSize: 12, color: Colors.red),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.of(context, 'error'),
+                        ),
                       ),
                     ),
                   ],
@@ -288,9 +302,9 @@ class _CareerHeroCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red.withOpacity(0.5)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,11 +320,17 @@ class _CareerHeroCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       "• Medium Quizzes: ${_getMediumQuizCount()}/10",
-                      style: const TextStyle(fontSize: 12, color: Colors.red),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.of(context, 'error'),
+                      ),
                     ),
                     Text(
                       "• Hard Quizzes: ${_getHardQuizCount()}/1",
-                      style: const TextStyle(fontSize: 12, color: Colors.red),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.of(context, 'error'),
+                      ),
                     ),
                   ],
                 ),
@@ -351,7 +371,12 @@ class _CareerHeroCard extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  onPressed: isWorkingOvertime ? null : onWorkOvertime,
+                  onPressed: isWorkingOvertime
+                      ? null
+                      : () {
+                          sfx.playClick();
+                          onWorkOvertime();
+                        },
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
                       color: isWorkingOvertime
@@ -421,8 +446,8 @@ class _CareerProgress extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? Colors.green.shade400
-                      : Colors.grey.shade300,
+                      ? AppColors.of(context, 'success')
+                      : AppColors.of(context, 'outline'),
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
@@ -476,11 +501,7 @@ class _CareerCard extends StatelessWidget {
         children: [
           const Text(
             "Next Level",
-            style: TextStyle(
-              fontSize: 14,
-              letterSpacing: 1.2,
-              color: Colors.white70,
-            ),
+            style: TextStyle(fontSize: 14, letterSpacing: 1.2),
           ),
           const SizedBox(height: 8),
           Text(
@@ -494,10 +515,10 @@ class _CareerCard extends StatelessWidget {
               const Spacer(),
               IconText(
                 "[GEM] ${info.dailyIncome}",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: AppColors.of(context, 'gem'),
                 ),
               ),
             ],
@@ -505,13 +526,18 @@ class _CareerCard extends StatelessWidget {
           const SizedBox(height: 16),
           const Text(
             "Unlocked in your city",
-            style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+            style: TextStyle(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           ...info.unlockedBuildings.map(
             (b) => Padding(
               padding: const EdgeInsets.only(bottom: 6),
-              child: Text("• $b", style: TextStyle(color: Colors.white70)),
+              child: Text(
+                "• $b",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
           ),
         ],
@@ -556,7 +582,12 @@ class _TrackChoiceTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: const TextStyle(color: Colors.white70)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),

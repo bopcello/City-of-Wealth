@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
+import '../services/music_manager.dart';
+import '../services/sfx_manager.dart';
 import '../screens/quiz_screen.dart';
 import '../screens/career_screen.dart';
 import '../screens/assets_screen.dart';
@@ -10,6 +12,8 @@ import '../logic/game_manager.dart';
 
 class MoneyTab extends StatelessWidget {
   final GameManager game;
+  final MusicManager music;
+  final SfxManager sfx;
   final int currentKp;
   final void Function(int) onKpChange;
   final CareerState career;
@@ -34,14 +38,17 @@ class MoneyTab extends StatelessWidget {
   final Map<AssetType, int> activePassiveIncomes;
   final void Function(AssetType) onInvestInPassiveIncome;
   final Listenable? gameListenable;
+  final String playerName;
 
   const MoneyTab({
     super.key,
     required this.game,
+    required this.music,
+    required this.sfx,
     required this.currentKp,
-    // ... (rest of the props)
     required this.onKpChange,
     required this.career,
+    required this.playerName,
     required this.gems,
     required this.assets,
     required this.onCareerChange,
@@ -90,17 +97,21 @@ class MoneyTab extends StatelessWidget {
           return _MoneyTile(
             data: item,
             onTap: () {
+              sfx.playClick();
               if (item.title == "Quiz") {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => QuizMenuScreen(
+                      music: music,
+                      sfx: sfx,
                       currentKp: currentKp,
                       currentLevel: career.level,
                       onKpChange: onKpChange,
                       completedQuizzes: completedQuizzes,
                       onQuizComplete: onQuizComplete,
                       refreshListenable: gameListenable,
+                      playerName: playerName,
                     ),
                   ),
                 );
@@ -108,7 +119,9 @@ class MoneyTab extends StatelessWidget {
               if (item.title == "Career") {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => CareerScreen(game: game)),
+                  MaterialPageRoute(
+                    builder: (_) => CareerScreen(game: game, sfx: sfx),
+                  ),
                 );
               }
               if (item.title == "Assets") {
@@ -120,6 +133,7 @@ class MoneyTab extends StatelessWidget {
                       gems: gems,
                       onBuyAsset: (type) => onBuyAsset(type, 1),
                       onSellAsset: onSellAsset,
+                      sfx: sfx,
                     ),
                   ),
                 );
@@ -134,6 +148,7 @@ class MoneyTab extends StatelessWidget {
                       currentFood: food,
                       currentTransport: transport,
                       onSelectionChanged: onLiabilitiesChange,
+                      sfx: sfx,
                     ),
                   ),
                 );
@@ -142,7 +157,7 @@ class MoneyTab extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => PassiveIncomeScreen(game: game),
+                    builder: (_) => PassiveIncomeScreen(game: game, sfx: sfx),
                   ),
                 );
               }
@@ -176,14 +191,12 @@ class _MoneyTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceVariant,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
           boxShadow: [
             BoxShadow(
               blurRadius: 4,
               offset: const Offset(1, 2),
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.0),
             ),
           ],
         ),

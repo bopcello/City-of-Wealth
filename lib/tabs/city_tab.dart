@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:math' as math;
 import '../widgets/icon_text.dart';
+import '../theme/app_colors.dart';
+import '../services/sfx_manager.dart';
 import '../game_state.dart';
 
 class CityTab extends StatefulWidget {
@@ -17,6 +19,7 @@ class CityTab extends StatefulWidget {
   final void Function(PlacedBuilding building) onPlaceBuilding;
   final void Function(PlacedBuilding building) onRemoveBuilding;
   final VoidCallback onBuyWall;
+  final SfxManager sfx;
 
   const CityTab({
     super.key,
@@ -31,6 +34,7 @@ class CityTab extends StatefulWidget {
     required this.onPlaceBuilding,
     required this.onRemoveBuilding,
     required this.onBuyWall,
+    required this.sfx,
   });
 
   @override
@@ -40,39 +44,13 @@ class CityTab extends StatefulWidget {
 class _CityTabState extends State<CityTab> {
   Building? _selectedBuilding;
   bool _isEditMode = false; // Track edit mode state
-  final ValueNotifier<int?> _hoveredX = ValueNotifier(null);
-  final ValueNotifier<int?> _hoveredY = ValueNotifier(null);
-  final ValueNotifier<Offset> _mousePos = ValueNotifier(Offset.zero);
-  double _zoomScale = 1.0;
+  final TransformationController _transformationController =
+      TransformationController();
 
   @override
-  void initState() {
-    super.initState();
-    _updateAutoZoom();
-  }
-
-  @override
-  void didUpdateWidget(CityTab oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.career.level != widget.career.level) {
-      _updateAutoZoom();
-    }
-  }
-
-  void _updateAutoZoom() {
-    final int gridSize = (widget.career.level - 1) * 2 + 1;
-    if (gridSize >= 9) {
-      _zoomScale = 0.6; // Level 5+
-    } else if (gridSize >= 7) {
-      _zoomScale = 0.8; // Level 4
-    } else {
-      _zoomScale = 1.0;
-    }
-  }
-
-  void _onTileHover(int? x, int? y) {
-    _hoveredX.value = x;
-    _hoveredY.value = y;
+  void dispose() {
+    _transformationController.dispose();
+    super.dispose();
   }
 
   void _clearSelection() {
@@ -80,8 +58,6 @@ class _CityTabState extends State<CityTab> {
       _selectedBuilding = null;
       _isEditMode = false;
     });
-    _hoveredX.value = null;
-    _hoveredY.value = null;
   }
 
   void _toggleEditMode() {
@@ -98,111 +74,103 @@ class _CityTabState extends State<CityTab> {
     };
     final int gridSize = (widget.career.level - 1) * 2 + 1;
 
-    return Listener(
-      onPointerSignal: (pointerSignal) {
-        if (pointerSignal is PointerScrollEvent) {
-          setState(() {
-            _zoomScale = (_zoomScale - pointerSignal.scrollDelta.dy / 1000)
-                .clamp(0.3, 2.0);
-          });
+    return GestureDetector(
+      onTap: () {
+        if (_selectedBuilding != null && !_isEditMode) {
+          _clearSelection();
         }
       },
-      child: MouseRegion(
-        onHover: (event) {
-          _mousePos.value = event.localPosition;
-        },
-        child: GestureDetector(
-          onTap: () {
-            if (_isEditMode) {
-              // Edit mode: select building to move it
-              final hX = _hoveredX.value;
-              final hY = _hoveredY.value;
-              if (hX != null && hY != null) {
-                final buildingKey = "$hX,$hY";
-                if (cityMap.containsKey(buildingKey)) {
-                  // Select the building and remove it from current position
-                  final building = cityMap[buildingKey]!;
-                  debugPrint(
-                    "✏️ SELECTING ${building.name} at ($hX, $hY) for move",
-                  );
-                  setState(() {
-                    _selectedBuilding = buildings.firstWhere(
-                      (b) => b.name == building.name,
-                    );
-                  });
-                  widget.onRemoveBuilding(building);
-                } else if (_selectedBuilding != null) {
-                  // Place the selected building at new location
-                  debugPrint(
-                    "🏗️ PLACING ${_selectedBuilding!.name} at ($hX, $hY)",
-                  );
-                  widget.onPlaceBuilding(
-                    PlacedBuilding(name: _selectedBuilding!.name, x: hX, y: hY),
-                  );
-                  // Clear only the selection, stay in edit mode
-                  setState(() {
-                    _selectedBuilding = null;
-                  });
-                }
-              }
-            } else if (_selectedBuilding != null) {
-              // Placement mode: place building
-              final hX = _hoveredX.value;
-              final hY = _hoveredY.value;
-              if (hX != null && hY != null) {
-                final hasBuilding = cityMap.containsKey("$hX,$hY");
-                if (!hasBuilding) {
-                  debugPrint(
-                    "🏗️ PLACING ${_selectedBuilding!.name} at ($hX, $hY)",
-                  );
-                  widget.onPlaceBuilding(
-                    PlacedBuilding(name: _selectedBuilding!.name, x: hX, y: hY),
-                  );
-                } else {
-                  debugPrint("🚫 Cell occupied");
-                }
-              } else {
-                debugPrint("❌ Placement cancelled");
-              }
-              _clearSelection();
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_transformationController.value == Matrix4.identity()) {
+              final double vw = constraints.maxWidth;
+              final double vh = constraints.maxHeight;
+
+              final double side = gridSize * 52.0;
+              final double rotatedSide = side * math.sqrt(2);
+              final double squashFactor = math.cos(math.pi / 3.5);
+
+              final double finalWidth = rotatedSide;
+              final double finalHeight = rotatedSide * squashFactor;
+
+              final double tx = (vw - finalWidth) / 2;
+              final double ty = (vh - finalHeight) / 2;
+
+              _transformationController.value = Matrix4.identity()
+                ..translate(tx, ty);
             }
-          },
-          child: Stack(
+          });
+
+          return Stack(
             children: [
-              Container(color: Colors.transparent), // Catch all taps
-              Center(
+              Container(color: Colors.transparent),
+              InteractiveViewer(
+                transformationController: _transformationController,
+                constrained: false,
+                boundaryMargin: const EdgeInsets.all(500),
+                minScale: 0.1,
+                maxScale: 2.5,
                 child: RepaintBoundary(
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Wall image with independent transform tied to zoom
                       if (widget.hasWall)
                         Transform.translate(
-                          offset: const Offset(0, 45) * _zoomScale,
+                          offset: const Offset(0, 45),
                           child: Transform.scale(
-                            scale: 1.8 * _zoomScale,
+                            scale: 1.8,
                             child: Image.asset(
                               "lib/assets/The Keystone.png",
                               fit: BoxFit.contain,
                             ),
                           ),
                         ),
-                      // Isometric grid with its own transform
                       Transform(
                         alignment: Alignment.center,
                         transform: Matrix4.identity()
                           ..rotateX(-math.pi / 3.5)
-                          ..rotateZ(math.pi / 4)
-                          ..scaleByDouble(_zoomScale, _zoomScale, 1.0, 1.0),
+                          ..rotateZ(math.pi / 4),
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
                             _IsometricGrid(
                               gridSize: gridSize,
                               cityMap: cityMap,
-                              hoveredXNotifier: _hoveredX,
-                              hoveredYNotifier: _hoveredY,
-                              onHover: _onTileHover,
+                              selectedBuilding: _selectedBuilding,
+                              isEditMode: _isEditMode,
+                              onTileTap: (x, y) {
+                                final buildingKey = "$x,$y";
+                                final hasBuilding = cityMap.containsKey(
+                                  buildingKey,
+                                );
+
+                                if (_selectedBuilding != null) {
+                                  if (!hasBuilding) {
+                                    widget.sfx.playBuy();
+                                    widget.onPlaceBuilding(
+                                      PlacedBuilding(
+                                        name: _selectedBuilding!.name,
+                                        x: x,
+                                        y: y,
+                                      ),
+                                    );
+                                    if (_isEditMode) {
+                                      setState(() => _selectedBuilding = null);
+                                    } else {
+                                      _clearSelection();
+                                    }
+                                  }
+                                } else if (_isEditMode && hasBuilding) {
+                                  final building = cityMap[buildingKey]!;
+                                  setState(() {
+                                    _selectedBuilding = buildings.firstWhere(
+                                      (b) => b.name == building.name,
+                                    );
+                                  });
+                                  widget.onRemoveBuilding(building);
+                                }
+                              },
                             ),
                             Positioned(child: _Palace()),
                           ],
@@ -213,55 +181,55 @@ class _CityTabState extends State<CityTab> {
                 ),
               ),
               if (_selectedBuilding != null)
-                ValueListenableBuilder<Offset>(
-                  valueListenable: _mousePos,
-                  builder: (context, pos, child) {
-                    final size = 50 * _zoomScale;
-                    return Positioned(
-                      left: pos.dx - size / 2,
-                      top: pos.dy - size / 2,
-                      child: Transform.scale(scale: _zoomScale, child: child!),
-                    );
-                  },
-                  child: IgnorePointer(
-                    child: Opacity(
-                      opacity: 0.7,
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.amber.shade200,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Image.asset(
-                            _selectedBuilding!.iconPath,
-                            width: 40,
-                            height: 40,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
+                Positioned(
+                  left: 16,
+                  top: 16,
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.of(context, 'kp').withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.of(context, 'success'),
+                        width: 2,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      _selectedBuilding!.iconPath,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
-              // Edit button (bottom right, above Add buildings button)
               Positioned(
                 right: 16,
-                bottom: 90, // Position above the "Add buildings" button
+                bottom: 90,
                 child: FloatingActionButton.extended(
-                  onPressed: _toggleEditMode,
+                  onPressed: () {
+                    widget.sfx.playClick();
+                    _toggleEditMode();
+                  },
                   label: Text(_isEditMode ? "Done" : "Edit layout"),
                   icon: Icon(_isEditMode ? Icons.check : Icons.edit),
-                  backgroundColor: _isEditMode ? Colors.green : null,
+                  backgroundColor: _isEditMode
+                      ? AppColors.of(context, 'success')
+                      : null,
                 ),
               ),
-              // Add buildings button
               Positioned(
                 right: 16,
                 bottom: 16,
                 child: FloatingActionButton.extended(
                   onPressed: () {
+                    widget.sfx.playClick();
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
@@ -273,15 +241,19 @@ class _CityTabState extends State<CityTab> {
                       builder: (_) {
                         return _BuildingsBottomSheet(
                           career: widget.career,
+                          gems: widget.gems,
                           assets: widget.assets,
                           insurances: widget.insurances,
                           activePassiveIncomes: widget.activePassiveIncomes,
                           hasWall: widget.hasWall,
+                          sfx: widget.sfx,
                           onSelect: (building) {
                             if (building.name == "The Keystone") {
+                              widget.sfx.playBuy();
                               widget.onBuyWall();
                               Navigator.pop(context);
                             } else {
+                              widget.sfx.playClick();
                               Navigator.pop(context);
                               setState(() {
                                 _selectedBuilding = building;
@@ -300,8 +272,8 @@ class _CityTabState extends State<CityTab> {
                 ),
               ),
             ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -309,19 +281,23 @@ class _CityTabState extends State<CityTab> {
 
 class _BuildingsBottomSheet extends StatelessWidget {
   final CareerState career;
+  final int gems;
   final AssetInventory assets;
   final Set<AssetType> insurances;
   final Map<AssetType, int> activePassiveIncomes;
   final bool hasWall;
+  final SfxManager sfx;
   final Function(Building) onSelect;
   final VoidCallback onClose;
 
   const _BuildingsBottomSheet({
     required this.career,
+    required this.gems,
     required this.assets,
     required this.insurances,
     required this.activePassiveIncomes,
     required this.hasWall,
+    required this.sfx,
     required this.onSelect,
     required this.onClose,
   });
@@ -337,9 +313,6 @@ class _BuildingsBottomSheet extends StatelessWidget {
         return true;
       }
 
-      // Show if it matches career track OR if it's an invested passive income building
-      if (b.track == career.track) return true;
-
       final isPassiveIncomeBuilding = passiveIncomeData.values.any(
         (info) => info.buildingName == b.name,
       );
@@ -351,7 +324,8 @@ class _BuildingsBottomSheet extends StatelessWidget {
         return investedCount > 0;
       }
 
-      return false;
+      // Show if it matches career track and level
+      return b.track == career.track && career.level >= b.requiredLevel;
     });
 
     return Container(
@@ -360,7 +334,14 @@ class _BuildingsBottomSheet extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: const [BoxShadow(blurRadius: 20, color: Colors.black26)],
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 20,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.black54
+                : Colors.black12,
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -377,11 +358,14 @@ class _BuildingsBottomSheet extends StatelessWidget {
           const SizedBox(height: 12),
           Expanded(
             child: available.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       "No buildings available yet.\nAdvance your career to unlock construction.",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   )
                 : ListView(
@@ -390,6 +374,7 @@ class _BuildingsBottomSheet extends StatelessWidget {
                           (b) => _BuildingCard(
                             building: b,
                             career: career,
+                            gems: gems,
                             assets: assets,
                             insurances: insurances,
                             onSelect: () => onSelect(b),
@@ -407,6 +392,7 @@ class _BuildingsBottomSheet extends StatelessWidget {
 class _BuildingCard extends StatelessWidget {
   final Building building;
   final CareerState career;
+  final int gems;
   final AssetInventory assets;
   final Set<AssetType> insurances;
   final VoidCallback onSelect;
@@ -414,6 +400,7 @@ class _BuildingCard extends StatelessWidget {
   const _BuildingCard({
     required this.building,
     required this.career,
+    required this.gems,
     required this.assets,
     required this.insurances,
     required this.onSelect,
@@ -430,15 +417,22 @@ class _BuildingCard extends StatelessWidget {
 
     // Keystone Requirements: Level 5 + 5 Insurances (simplified check)
     bool canBuild = false;
+    final hasAssetRequirements = building.requirements.entries.every(
+      (e) => assets.count(e.key) >= e.value,
+    );
+
     if (isKeystone) {
       canBuild = isLevel5 && hasAllInsurances;
     } else {
-      canBuild =
-          career.level >= building.requiredLevel &&
-          building.requirements.entries.every(
-            (e) => assets.count(e.key) >= e.value,
-          );
+      canBuild = career.level >= building.requiredLevel && hasAssetRequirements;
     }
+
+    final hasPassiveInvestment =
+        isPassive &&
+        gems >=
+            passiveIncomeData.values
+                .firstWhere((e) => e.buildingName == building.name)
+                .investmentCost;
 
     final hasLevel = isKeystone
         ? isLevel5
@@ -451,7 +445,9 @@ class _BuildingCard extends StatelessWidget {
         color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: canBuild ? Colors.green : Colors.red,
+          color: canBuild
+              ? AppColors.of(context, 'success')
+              : AppColors.of(context, 'error'),
           width: 2,
         ),
       ),
@@ -460,7 +456,7 @@ class _BuildingCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Image.asset(
@@ -486,36 +482,52 @@ class _BuildingCard extends StatelessWidget {
                   "Level: ${building.requiredLevel}",
                   style: TextStyle(
                     fontSize: 12,
-                    color: hasLevel ? Colors.green : Colors.red,
+                    color: hasLevel
+                        ? AppColors.of(context, 'success')
+                        : AppColors.of(context, 'error'),
                   ),
                 ),
                 if (building.requirements.isNotEmpty) ...[
                   IconText(
                     "Requires: ${building.requirements.entries.map((e) => "${e.value} ${assetLabel(e.key)}").join(", ")}",
                     style: const TextStyle(fontSize: 12),
+                    color: hasAssetRequirements
+                        ? Theme.of(context).colorScheme.onSurfaceVariant
+                        : AppColors.of(context, 'error'),
                   ),
                   if (building.name == "The Keystone")
-                    const IconText(
+                    IconText(
                       "Special: Requires all 5 Insurances",
-                      style: TextStyle(fontSize: 12, color: Colors.blue),
+                      style: const TextStyle(fontSize: 12),
+                      color: hasAllInsurances
+                          ? AppColors.of(context, 'gem')
+                          : AppColors.of(context, 'error'),
                     ),
                 ] else if (isPassive) ...[
-                  const IconText(
+                  IconText(
                     "Passive Income Building",
-                    style: TextStyle(fontSize: 12, color: Colors.green),
+                    style: const TextStyle(fontSize: 12),
+                    color: AppColors.of(context, 'success'),
                   ),
                   IconText(
                     "Cost: ${passiveIncomeData.values.firstWhere((e) => e.buildingName == building.name).investmentCost} [GEM]",
                     style: const TextStyle(fontSize: 12),
+                    color: hasPassiveInvestment
+                        ? AppColors.of(context, 'gem')
+                        : AppColors.of(context, 'error'),
                   ),
                 ],
               ],
             ),
           ),
           if (canBuild)
-            const Icon(Icons.check_circle, color: Colors.blue)
+            Icon(Icons.check_circle, color: AppColors.of(context, 'success'))
           else
-            const Icon(Icons.lock, color: Colors.grey, size: 16),
+            Icon(
+              Icons.lock,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              size: 16,
+            ),
         ],
       ),
     );
@@ -531,16 +543,16 @@ class _BuildingCard extends StatelessWidget {
 class _IsometricGrid extends StatelessWidget {
   final int gridSize;
   final Map<String, PlacedBuilding> cityMap;
-  final ValueNotifier<int?> hoveredXNotifier;
-  final ValueNotifier<int?> hoveredYNotifier;
-  final Function(int?, int?) onHover;
+  final Building? selectedBuilding;
+  final bool isEditMode;
+  final Function(int, int) onTileTap;
 
   const _IsometricGrid({
     required this.gridSize,
     required this.cityMap,
-    required this.hoveredXNotifier,
-    required this.hoveredYNotifier,
-    required this.onHover,
+    required this.selectedBuilding,
+    required this.isEditMode,
+    required this.onTileTap,
   });
 
   @override
@@ -564,43 +576,57 @@ class _IsometricGrid extends StatelessWidget {
                 ? buildings.firstWhere((b) => b.name == placedBuilding.name)
                 : null;
 
-            return MouseRegion(
-              onEnter: (_) => onHover(x, y),
-              onExit: (_) => onHover(null, null),
-              child: ValueListenableBuilder2<int?, int?>(
-                first: hoveredXNotifier,
-                second: hoveredYNotifier,
-                builder: (context, hoveredX, hoveredY, child) {
-                  final isHovered = x == hoveredX && y == hoveredY;
+            return GestureDetector(
+              onTap: () => onTileTap(x, y),
+              child: Builder(
+                builder: (context) {
+                  Color cellColor;
+
+                  if (selectedBuilding != null) {
+                    // Building is selected for placement
+                    if (!hasBuilding) {
+                      // Empty cells highlighted in blue
+                      cellColor = AppColors.of(
+                        context,
+                        'gem',
+                      ).withValues(alpha: 0.6);
+                    } else {
+                      // Occupied cells highlighted in red
+                      cellColor = AppColors.of(
+                        context,
+                        'error',
+                      ).withValues(alpha: 0.6);
+                    }
+                  } else {
+                    // No building selected - show default green grid
+                    cellColor = AppColors.of(
+                      context,
+                      'gridGreen',
+                    ).withValues(alpha: 0.5);
+                  }
+
                   return Container(
                     width: tileSize,
                     height: tileSize,
                     margin: const EdgeInsets.all(1),
                     decoration: BoxDecoration(
-                      color: isHovered
-                          ? (hasBuilding
-                                ? Colors
-                                      .blue
-                                      .shade200 // Blue for occupied in edit mode
-                                : Colors
-                                      .red
-                                      .shade200) // Red for empty in edit mode
-                          : Colors.green.shade300,
-                      border: Border.all(color: Colors.green.shade700),
+                      color: cellColor,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
                     ),
-                    child: child,
+                    child: hasBuilding
+                        ? Center(
+                            child: Image.asset(
+                              building!.iconPath,
+                              width: tileSize * 0.8,
+                              height: tileSize * 0.8,
+                              fit: BoxFit.contain,
+                            ),
+                          )
+                        : null,
                   );
                 },
-                child: hasBuilding
-                    ? Center(
-                        child: Image.asset(
-                          building!.iconPath,
-                          width: tileSize * 0.8,
-                          height: tileSize * 0.8,
-                          fit: BoxFit.contain,
-                        ),
-                      )
-                    : null,
               ),
             );
           }),
@@ -608,31 +634,6 @@ class _IsometricGrid extends StatelessWidget {
       }),
     );
   }
-}
-
-/// A helper class to listen to two [ValueListenable]s.
-class ValueListenableBuilder2<A, B> extends StatelessWidget {
-  final ValueListenable<A> first;
-  final ValueListenable<B> second;
-  final Widget? child;
-  final Widget Function(BuildContext context, A a, B b, Widget? child) builder;
-
-  const ValueListenableBuilder2({
-    super.key,
-    required this.first,
-    required this.second,
-    required this.builder,
-    this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) => ValueListenableBuilder<A>(
-    valueListenable: first,
-    builder: (context, a, _) => ValueListenableBuilder<B>(
-      valueListenable: second,
-      builder: (context, b, _) => builder(context, a, b, child),
-    ),
-  );
 }
 
 class _Palace extends StatelessWidget {

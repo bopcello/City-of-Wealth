@@ -420,7 +420,10 @@ const _completedQuizzesKey = 'completedQuizzes';
 const _isWorkingOvertimeKey = 'isWorkingOvertime';
 const _overtimeStreakKey = 'overtimeStreak';
 const _activePassiveIncomesKey = 'activePassiveIncomes';
+const _playerNameKey = 'playerName';
 const _isDarkModeKey = 'isDarkMode';
+const _musicVolumeKey = 'musicVolume';
+const _sfxVolumeKey = 'sfxVolume';
 
 class PlacedBuilding {
   final String name;
@@ -512,7 +515,10 @@ Future<void> saveGameState({
   required int overtimeStreak,
   required Map<AssetType, int> activePassiveIncomes,
   required Map<DisasterType, int> activeDisasterEffects,
+  required String playerName,
   required bool isDarkMode,
+  required double musicVolume,
+  required double sfxVolume,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   debugPrint("💾 SAVING GAME");
@@ -525,6 +531,7 @@ Future<void> saveGameState({
   await prefs.setInt(_careerLevelKey, career.level);
   await prefs.setInt(_lastIncomeTimeKey, lastIncomeTime.millisecondsSinceEpoch);
   await prefs.setInt(_bankruptcyCountKey, bankruptcyCount);
+  await prefs.setString(_playerNameKey, playerName);
 
   final layoutJson = jsonEncode(layout.map((b) => b.toJson()).toList());
   await prefs.setString(_cityLayoutKey, layoutJson);
@@ -587,6 +594,8 @@ Future<void> saveGameState({
     jsonEncode(disasterEffectsMap),
   );
   await prefs.setBool(_isDarkModeKey, isDarkMode);
+  await prefs.setDouble(_musicVolumeKey, musicVolume);
+  await prefs.setDouble(_sfxVolumeKey, sfxVolume);
 }
 
 Future<
@@ -611,7 +620,10 @@ Future<
     int,
     Map<AssetType, int>,
     Map<DisasterType, int>,
+    String,
     bool,
+    double,
+    double,
   )
 >
 loadGameState() async {
@@ -627,6 +639,9 @@ loadGameState() async {
       ? prefs.getInt(_nextDisasterCycleKey)
       : null;
   final isDarkMode = prefs.getBool(_isDarkModeKey) ?? false;
+  final playerName = prefs.getString(_playerNameKey) ?? "User";
+  final musicVolume = prefs.getDouble(_musicVolumeKey) ?? 0.7;
+  final sfxVolume = prefs.getDouble(_sfxVolumeKey) ?? 1.0;
 
   final trackName = prefs.getString(_careerTrackKey);
   final level = prefs.getInt(_careerLevelKey) ?? 1;
@@ -743,7 +758,10 @@ loadGameState() async {
     overtimeStreak,
     activePassiveIncomes,
     activeDisasterEffects,
+    playerName,
     isDarkMode,
+    musicVolume,
+    sfxVolume,
   );
 }
 
@@ -837,22 +855,22 @@ const Map<int, CareerLevelInfo> businessCareerInfo = {
   2: CareerLevelInfo(
     name: "Idea",
     dailyIncome: 50,
-    unlockedBuildings: ["💡 Idea Hub"],
+    unlockedBuildings: ["Idea Hub"],
   ),
   3: CareerLevelInfo(
     name: "Bootstrap",
     dailyIncome: 100,
-    unlockedBuildings: ["🏭 Workshop", "📦 Storage Unit"],
+    unlockedBuildings: ["Workshop", "Storage Unit"],
   ),
   4: CareerLevelInfo(
     name: "Funded",
     dailyIncome: 250,
-    unlockedBuildings: ["🏢 Office Building", "📊 Analytics Center"],
+    unlockedBuildings: ["Office Building", "Analytics Center"],
   ),
   5: CareerLevelInfo(
     name: "Unicorn",
     dailyIncome: 600,
-    unlockedBuildings: ["🏙️ R&D Center", "🌐 Global Operations"],
+    unlockedBuildings: ["R&D Center", "Global Operations"],
   ),
 };
 
@@ -860,22 +878,22 @@ const Map<int, CareerLevelInfo> jobCareerInfo = {
   2: CareerLevelInfo(
     name: "Employee",
     dailyIncome: 40,
-    unlockedBuildings: ["🪑 Office Desk", "☕ Coffee Stand"],
+    unlockedBuildings: ["Office Desk", "Coffee Stand"],
   ),
   3: CareerLevelInfo(
     name: "Supervisor",
     dailyIncome: 80,
-    unlockedBuildings: ["👥 Team Office", "🚗 Logistics Garage"],
+    unlockedBuildings: ["Team Office", "Logistics Garage"],
   ),
   4: CareerLevelInfo(
     name: "Manager",
     dailyIncome: 160,
-    unlockedBuildings: ["🏬 Department Office", "🤝 Conference Center"],
+    unlockedBuildings: ["Department Office", "Conference Center"],
   ),
   5: CareerLevelInfo(
     name: "CEO",
     dailyIncome: 400,
-    unlockedBuildings: ["🏢 Company Headquarters", "🏛️ Boardroom Pavilion"],
+    unlockedBuildings: ["Company Headquarters", "Boardroom Pavilion"],
   ),
 };
 

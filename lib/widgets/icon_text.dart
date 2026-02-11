@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class IconText extends StatelessWidget {
   final String text;
   final TextStyle? style;
   final TextAlign textAlign;
+  final Color? color;
 
   const IconText(
     this.text, {
     super.key,
     this.style,
     this.textAlign = TextAlign.start,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    final defaultStyle = style ?? DefaultTextStyle.of(context).style;
+    var defaultStyle = style ?? DefaultTextStyle.of(context).style;
+    if (color != null) {
+      defaultStyle = defaultStyle.copyWith(color: color);
+    }
     final inlineSpans = <InlineSpan>[];
 
     // Split by placeholders [GEM] and [KP]
@@ -37,7 +43,7 @@ class IconText extends StatelessWidget {
                 child: Icon(
                   Icons.diamond,
                   size: (defaultStyle.fontSize ?? 14) * 1.2,
-                  color: Colors.blue.shade400,
+                  color: AppColors.of(context, 'gem'),
                 ),
               ),
             ),
@@ -51,7 +57,7 @@ class IconText extends StatelessWidget {
                 child: Icon(
                   Icons.school,
                   size: (defaultStyle.fontSize ?? 14) * 1.2,
-                  color: Colors.orange.shade400,
+                  color: AppColors.of(context, 'kp'),
                 ),
               ),
             ),

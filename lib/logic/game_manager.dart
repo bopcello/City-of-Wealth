@@ -29,6 +29,9 @@ class GameManager extends ChangeNotifier {
   Map<AssetType, int> activePassiveIncomes = {};
   Map<DisasterType, int> activeDisasterEffects = {};
   bool isDarkMode = false;
+  double musicVolume = 0.7;
+  double sfxVolume = 1.0;
+  String playerName = "User";
 
   bool loaded = false;
   bool incomePaused = false;
@@ -71,7 +74,10 @@ class GameManager extends ChangeNotifier {
       savedOvertimeStreak,
       savedActivePassiveIncomes,
       savedActiveDisasterEffects,
+      savedPlayerName,
       savedIsDarkMode,
+      savedMusicVolume,
+      savedSfxVolume,
     ) = await loadGameState();
 
     kp = savedKp;
@@ -94,7 +100,10 @@ class GameManager extends ChangeNotifier {
     overtimeStreak = savedOvertimeStreak;
     activePassiveIncomes = savedActivePassiveIncomes;
     activeDisasterEffects = savedActiveDisasterEffects;
+    playerName = savedPlayerName;
     isDarkMode = savedIsDarkMode;
+    musicVolume = savedMusicVolume;
+    sfxVolume = savedSfxVolume;
     loaded = true;
 
     notifyListeners();
@@ -123,7 +132,10 @@ class GameManager extends ChangeNotifier {
       overtimeStreak: overtimeStreak,
       activePassiveIncomes: activePassiveIncomes,
       activeDisasterEffects: activeDisasterEffects,
+      playerName: playerName,
       isDarkMode: isDarkMode,
+      musicVolume: musicVolume,
+      sfxVolume: sfxVolume,
     );
   }
 
@@ -383,8 +395,26 @@ class GameManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateMusicVolume(double val) {
+    musicVolume = val;
+    save();
+    notifyListeners();
+  }
+
+  void updateSfxVolume(double val) {
+    sfxVolume = val;
+    save();
+    notifyListeners();
+  }
+
   void togglePause(bool val) {
     incomePaused = val;
+    notifyListeners();
+  }
+
+  void setPlayerName(String name) {
+    playerName = name;
+    save();
     notifyListeners();
   }
 
