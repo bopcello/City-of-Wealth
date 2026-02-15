@@ -9,11 +9,10 @@ class MusicManager {
   String? _currentTrack;
 
   MusicManager() {
-    // audioplayers 6.x defaults prefix to 'assets/'.
-    // Since our assets are in 'lib/assets/', we set prefix to empty.
+    // prefix is empty since we use lib/assets/...
     _player.audioCache.prefix = '';
 
-    // Enable infinite looping and set appropriate mode for music
+    // Use native looping for background music.
     _player.setReleaseMode(ReleaseMode.loop);
     _player.setPlayerMode(PlayerMode.mediaPlayer);
 
@@ -24,15 +23,11 @@ class MusicManager {
           android: const AudioContextAndroid(
             contentType: AndroidContentType.music,
             usageType: AndroidUsageType.media,
-            audioFocus: AndroidAudioFocus.none, // Allow parallel playback
+            audioFocus: AndroidAudioFocus.gain, // Request focus for music
           ),
           iOS: AudioContextIOS(
-            category:
-                AVAudioSessionCategory.playback, // Required for mixWithOthers
-            options: {
-              AVAudioSessionOptions.mixWithOthers,
-              AVAudioSessionOptions.duckOthers,
-            },
+            category: AVAudioSessionCategory.playback,
+            options: {AVAudioSessionOptions.mixWithOthers},
           ),
         ),
       );
@@ -42,35 +37,35 @@ class MusicManager {
   }
 
   /// Play home background music
-  Future<void> playHomeMusic() async {
+  void playHomeMusic() {
     if (_isDisposed) return;
-    await _playTrack('lib/assets/music/Home_music.mp3');
+    _playTrack('lib/assets/music/Home_music.mp3');
   }
 
   /// Play quiz background music
-  Future<void> playQuizMusic() async {
+  void playQuizMusic() {
     if (_isDisposed) return;
-    await _playTrack('lib/assets/music/Quiz_music.mp3');
+    _playTrack('lib/assets/music/Quiz_music.mp3');
   }
 
   /// Stop all music
-  Future<void> stopAllMusic() async {
-    await _player.stop();
+  void stopAllMusic() {
+    _player.stop();
     _currentTrack = null;
   }
 
   /// Pause music playback
-  Future<void> pauseMusic() async {
+  void pauseMusic() {
     if (_isDisposed) return;
-    await _player.pause();
+    _player.pause();
     debugPrint('[MUSIC_SYSTEM] Playback paused');
   }
 
   /// Resume music playback
-  Future<void> resumeMusic() async {
+  void resumeMusic() {
     if (_isDisposed) return;
     if (_currentTrack != null) {
-      await _player.resume();
+      _player.resume();
       debugPrint('[MUSIC_SYSTEM] Playback resumed');
     }
   }

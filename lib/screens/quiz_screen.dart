@@ -260,7 +260,6 @@ class _QuizScreenState extends State<QuizScreen> {
 
   @override
   void dispose() {
-    widget.music.playHomeMusic();
     super.dispose();
   }
 
@@ -329,9 +328,16 @@ class _QuizScreenState extends State<QuizScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              widget.sfx.playClick();
+              // Click sound disabled here as per user request for QuizScreen
+              // widget.sfx.playClick();
               Navigator.pop(context);
-              nextQuestion();
+              if (current < widget.quiz.questions.length - 1) {
+                nextQuestion();
+              } else {
+                // Mark quiz as completed as soon as "Finish" is pressed
+                widget.onQuizComplete(widget.quiz.id);
+                nextQuestion();
+              }
             },
             child: Text(
               current < widget.quiz.questions.length - 1 ? 'Next' : 'Finish',
@@ -386,7 +392,6 @@ class _QuizScreenState extends State<QuizScreen> {
       if (passed) {
         finalKpDelta = award;
         widget.onKpChange(finalKpDelta);
-        widget.onQuizComplete(widget.quiz.id);
       }
 
       Navigator.pushReplacement(
@@ -421,96 +426,106 @@ class _QuizScreenState extends State<QuizScreen> {
     final q = widget.quiz.questions[current];
     final progress = (current + 1) / widget.quiz.questions.length;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(title: Text(widget.quiz.title)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: LinearProgressIndicator(
-                value: progress,
-                minHeight: 10,
-                color: Colors.amber.shade600,
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) return;
+        widget.music.playHomeMusic();
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        appBar: AppBar(title: Text(widget.quiz.title)),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 10,
+                  color: Colors.amber.shade600,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceVariant,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Question ${current + 1}",
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          IconText(
-                            q.question,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    ...List.generate(q.options.length, (uiIndex) {
-                      final originalIndex =
-                          _shuffledIndicesMap[current][uiIndex];
-                      Color bg = Theme.of(context).colorScheme.surfaceVariant;
-
-                      if (selected != null) {
-                        if (originalIndex == q.correctIndex) {
-                          bg = Colors.green.withValues(alpha: 0.3);
-                        } else if (uiIndex == selected) {
-                          bg = Colors.red.withValues(alpha: 0.3);
-                        }
-                      }
-
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: InkWell(
-                          onTap: () => selectAnswer(uiIndex),
-                          borderRadius: BorderRadius.circular(16),
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: bg,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: IconText(
-                              q.options[originalIndex],
+              const SizedBox(height: 16),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Question ${current + 1}",
                               style: TextStyle(
-                                fontSize: 16,
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
-                          ),
+                            const SizedBox(height: 12),
+                            IconText(
+                              q.question,
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
                         ),
-                      );
-                    }),
-                  ],
+                      ),
+                      const SizedBox(height: 24),
+                      ...List.generate(q.options.length, (uiIndex) {
+                        final originalIndex =
+                            _shuffledIndicesMap[current][uiIndex];
+                        Color bg = Theme.of(context).colorScheme.surfaceVariant;
+
+                        if (selected != null) {
+                          if (originalIndex == q.correctIndex) {
+                            bg = Colors.green.withValues(alpha: 0.3);
+                          } else if (uiIndex == selected) {
+                            bg = Colors.red.withValues(alpha: 0.3);
+                          }
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: InkWell(
+                            onTap: () => selectAnswer(uiIndex),
+                            // Click sound disabled for quiz options as per user request
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: bg,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: IconText(
+                                q.options[originalIndex],
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -578,138 +593,148 @@ class QuizAnalysisScreen extends StatelessWidget {
     final progress = score / total;
     final newKp = currentKp + deltaKp;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Stack(
-        children: [
-          // Confetti removed
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 140,
-                    height: 140,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        CircularProgressIndicator(
-                          value: progress,
-                          strokeWidth: 50,
-                          color: _getScoreColor(progress),
-                        ),
-                        Text(
-                          "$score/$total",
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) return;
+        music.playHomeMusic();
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: Stack(
+          children: [
+            // Confetti removed
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 140,
+                      height: 140,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            value: progress,
+                            strokeWidth: 50,
+                            color: _getScoreColor(progress),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    message,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Results Summary
-                  Wrap(
-                    spacing: 8,
-                    children: List.generate(results.length, (index) {
-                      final isCorrect = results[index];
-                      return Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: isCorrect ? Colors.green : Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          isCorrect ? Icons.check : Icons.close,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      );
-                    }),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceVariant,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outlineVariant,
+                          Text(
+                            "$score/$total",
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Text(
-                      "KP: $currentKp ${deltaKp < 0 ? ' ' : '+ '}$deltaKp = $newKp",
-                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                    const SizedBox(height: 24),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final quizzes = getQuizzesForLevel(level);
-                        final currentIndex = quizzes.indexWhere(
-                          (q) => q.id == currentQuizId,
-                        );
+                    const SizedBox(height: 16),
 
-                        if (currentIndex != -1 &&
-                            currentIndex < quizzes.length - 1) {
-                          final nextQuiz = quizzes[currentIndex + 1];
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => QuizScreen(
-                                music: music,
-                                sfx: sfx,
-                                quiz: nextQuiz,
-                                currentKp: currentKp + deltaKp,
-                                onKpChange: onKpChange,
-                                onQuizComplete: onQuizComplete,
-                                completedQuizzes: completedQuizzes,
-                                isCompleted: completedQuizzes.contains(
-                                  nextQuiz.id,
-                                ),
-                                playerName: playerName,
-                              ),
-                            ),
-                          );
-                        } else {
-                          music.playHomeMusic();
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: const Text("Next Quiz"),
+                    // Results Summary
+                    Wrap(
+                      spacing: 8,
+                      children: List.generate(results.length, (index) {
+                        final isCorrect = results[index];
+                        return Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: isCorrect ? Colors.green : Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            isCorrect ? Icons.check : Icons.close,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        );
+                      }),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () {
-                      music.playHomeMusic();
-                      Navigator.popUntil(context, (r) => r.isFirst);
-                    },
-                    child: const Text("Back to quizzes"),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceVariant,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                        ),
+                      ),
+                      child: Text(
+                        "KP: $currentKp ${deltaKp < 0 ? ' ' : '+ '}$deltaKp = $newKp",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final quizzes = getQuizzesForLevel(level);
+                          final currentIndex = quizzes.indexWhere(
+                            (q) => q.id == currentQuizId,
+                          );
+
+                          if (currentIndex != -1 &&
+                              currentIndex < quizzes.length - 1) {
+                            final nextQuiz = quizzes[currentIndex + 1];
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => QuizScreen(
+                                  music: music,
+                                  sfx: sfx,
+                                  quiz: nextQuiz,
+                                  currentKp: currentKp + deltaKp,
+                                  onKpChange: onKpChange,
+                                  onQuizComplete: onQuizComplete,
+                                  completedQuizzes: completedQuizzes,
+                                  isCompleted: completedQuizzes.contains(
+                                    nextQuiz.id,
+                                  ),
+                                  playerName: playerName,
+                                ),
+                              ),
+                            );
+                          } else {
+                            music.playHomeMusic();
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text("Next Quiz"),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () {
+                        music.playHomeMusic();
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Back to quizzes"),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../game_state.dart';
 import '../theme/app_colors.dart';
 import '../services/sfx_manager.dart';
+import '../widgets/icon_text.dart';
 
 class HomeTab extends StatelessWidget {
   final int kp;
@@ -15,10 +16,6 @@ class HomeTab extends StatelessWidget {
   final VoidCallback onClearEvents;
   final SfxManager sfx;
 
-  // [DEBUG: PAUSE_INCOME] properties
-  final bool incomePaused;
-  final ValueChanged<bool> onPauseToggled;
-
   const HomeTab({
     super.key,
     required this.kp,
@@ -31,9 +28,6 @@ class HomeTab extends StatelessWidget {
     required this.assets,
     required this.onClearEvents,
     required this.sfx,
-    // [DEBUG: PAUSE_INCOME] parameters
-    this.incomePaused = false,
-    required this.onPauseToggled,
   });
 
   @override
@@ -49,23 +43,6 @@ class HomeTab extends StatelessWidget {
           const SizedBox(height: 24),
           _buildSummarySection(context),
           const SizedBox(height: 32),
-          // [DEBUG: PAUSE_INCOME] START
-          Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text("Pause Income Cycles (Debug): "),
-                Switch(
-                  value: incomePaused,
-                  onChanged: (val) {
-                    sfx.playClick();
-                    onPauseToggled(val);
-                  },
-                ),
-              ],
-            ),
-          ),
-          // [DEBUG: PAUSE_INCOME] END
         ],
       ),
     );
@@ -98,7 +75,7 @@ class HomeTab extends StatelessWidget {
                 ),
               ),
               Text(
-                "(Level: ${career.level})",
+                "Level: ${career.level}",
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -164,9 +141,14 @@ class HomeTab extends StatelessWidget {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Expanded(
-                            child: Text(
+                            child: IconText(
                               event,
-                              style: const TextStyle(fontSize: 13),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                             ),
                           ),
                         ],

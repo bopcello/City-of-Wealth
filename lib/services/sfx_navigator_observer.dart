@@ -10,6 +10,8 @@ class SfxNavigatorObserver extends NavigatorObserver {
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didPop(route, previousRoute);
-    sfx.playBack();
+    if (route.settings.name != 'mute_back_sound') {
+      sfx.playBack();
+    }
   }
 }

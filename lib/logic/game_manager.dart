@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../game_state.dart';
+import '../services/notification_service.dart';
 
 class GameManager extends ChangeNotifier {
   int kp = 0;
@@ -34,7 +35,6 @@ class GameManager extends ChangeNotifier {
   String playerName = "User";
 
   bool loaded = false;
-  bool incomePaused = false;
   final List<String> pendingEvents = [];
 
   Timer? _cycleTimer;
@@ -105,9 +105,13 @@ class GameManager extends ChangeNotifier {
     musicVolume = savedMusicVolume;
     sfxVolume = savedSfxVolume;
     loaded = true;
-
     notifyListeners();
-    _checkDailyCycle();
+
+    // Only start cycles if the player has already set their name.
+    // This allows the NameEntryDialog to be the first thing the user sees.
+    if (playerName != "User") {
+      _checkDailyCycle();
+    }
   }
 
   void save() {
@@ -137,18 +141,15 @@ class GameManager extends ChangeNotifier {
       musicVolume: musicVolume,
       sfxVolume: sfxVolume,
     );
+    NotificationService().scheduleInactivityNotification();
   }
 
   void _checkDailyCycle() {
     final now = DateTime.now();
     final difference = now.difference(lastIncomeTime);
 
-    const int cycleSeconds = 10;
+    const int cycleSeconds = 86400; // 24 hours
     if (difference.inSeconds >= cycleSeconds) {
-      if (incomePaused) {
-        lastIncomeTime = now;
-        return;
-      }
       final cycles = difference.inSeconds ~/ cycleSeconds;
       _applyCycles(cycles);
     }
@@ -282,6 +283,7 @@ class GameManager extends ChangeNotifier {
                 events.add(
                   "${removed.name} was foreclosed/destroyed due to unpaid maintainance costs since you were in debt for more than 30 days!",
                 );
+                NotificationService().showForeclosureNotification(removed.name);
                 nextDestructionCycle = dayNumber + rng.nextInt(6);
               }
             }
@@ -407,13 +409,23 @@ class GameManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void togglePause(bool val) {
-    incomePaused = val;
-    notifyListeners();
-  }
-
   void setPlayerName(String name) {
     playerName = name;
+
+    // Add welcome message to events
+    pendingEvents.add(
+      "Welcome $playerName!\n\n"
+      "In the top panel you can see your KP ([KP]). KP stands for knowledge points. This is your performace rating. "
+      "If you make well-informed financial decisions, your KP will increase, making bad financial decisions will reduce your KP. You'll learn the mechanics of the game as you go. "
+      "Beside that you have your gems ([GEM]). This is the currency in this game. To begin earning your salary, go to the Money tab and open the \"Liabilities\" tile to select your Shelter, Food and Transport. "
+      "One income cycle is 24 hours. There are requirements to level up which are shown in the Career tile in Money tab. "
+      "Occasionally disasters will strike your city, be prepared! As a last resort, you can declare bankruptcy to restart the game with a small bonus equal to 20% of the resale value of all assets you own.\n\n"
+      "Explore everything and have as much fun as you can. Learning must never be boring.\n\n"
+      "Hope you enjoy!",
+    );
+
+    // Trigger cycles now that the player has entered their name
+    _checkDailyCycle();
     save();
     notifyListeners();
   }
@@ -665,30 +677,14 @@ class GameManager extends ChangeNotifier {
       if (penalty > 1000) penalty = 1000;
     }
 
-    kp -= penalty;
-    if (kp < 0) kp = 0;
+    // Skip KP deduction only for students
+    if (career.track != CareerTrack.student) {
+      kp -= penalty;
+      if (kp < 0) kp = 0;
+    }
+
     isWorkingOvertime = true;
 
-    save();
-    notifyListeners();
-  }
-
-  void debugAdd() {
-    kp += 1000;
-    gems += 1000;
-    save();
-    notifyListeners();
-  }
-
-  void debugReset() {
-    career = const CareerState(track: CareerTrack.student, level: 1);
-    cityLayout = [];
-    assets = const AssetInventory({});
-    rentChoice = null;
-    foodChoice = null;
-    transportChoice = null;
-    completedQuizzes = {};
-    pendingEvents.clear();
     save();
     notifyListeners();
   }
@@ -839,6 +835,8 @@ class GameManager extends ChangeNotifier {
       ),
     );
 
+    NotificationService().showDisasterNotification(disasterType);
+
     pendingEvents.add(
       "DISASTER: ${disasterLabel(disasterType)}! Check the detail report for losses and insurance coverage.",
     );
@@ -871,16 +869,5 @@ class GameManager extends ChangeNotifier {
   void clearDisasterResults() {
     pendingDisasterResults.clear();
     notifyListeners();
-  }
-
-  void debugLevelUp({CareerTrack? track}) {
-    if (career.track == CareerTrack.student) {
-      updateCareer(CareerState(track: track ?? CareerTrack.business, level: 2));
-    } else if (career.level < 5) {
-      updateCareer(career.copyWith(level: career.level + 1));
-    } else {
-      // If already level 5, maybe just add some resources
-      debugAdd();
-    }
   }
 }

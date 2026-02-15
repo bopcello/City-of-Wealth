@@ -66,9 +66,10 @@ class IconText extends StatelessWidget {
       }
     }
 
-    return RichText(
+    return Text.rich(
+      TextSpan(children: inlineSpans),
       textAlign: textAlign,
-      text: TextSpan(children: inlineSpans),
+      style: defaultStyle,
     );
   }
 }

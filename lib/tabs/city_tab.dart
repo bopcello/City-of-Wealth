@@ -82,25 +82,17 @@ class _CityTabState extends State<CityTab> {
       },
       child: LayoutBuilder(
         builder: (context, constraints) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_transformationController.value == Matrix4.identity()) {
-              final double vw = constraints.maxWidth;
-              final double vh = constraints.maxHeight;
+          if (_transformationController.value == Matrix4.identity()) {
+            final double vw = constraints.maxWidth;
+            final double vh = constraints.maxHeight;
 
-              final double side = gridSize * 52.0;
-              final double rotatedSide = side * math.sqrt(2);
-              final double squashFactor = math.cos(math.pi / 3.5);
+            final double side = gridSize * 52.0;
+            final double tx = (vw - side) / 2;
+            final double ty = (vh - side) / 2;
 
-              final double finalWidth = rotatedSide;
-              final double finalHeight = rotatedSide * squashFactor;
-
-              final double tx = (vw - finalWidth) / 2;
-              final double ty = (vh - finalHeight) / 2;
-
-              _transformationController.value = Matrix4.identity()
-                ..translate(tx, ty);
-            }
-          });
+            _transformationController.value = Matrix4.identity()
+              ..translate(tx, ty);
+          }
 
           return Stack(
             children: [

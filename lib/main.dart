@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'game_state.dart';
 import 'logic/game_manager.dart';
@@ -12,8 +13,11 @@ import 'tabs/money_tab.dart';
 import 'tabs/settings_tab.dart';
 import 'theme/app_colors.dart';
 import 'widgets/counter_chip.dart';
+import 'services/notification_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().initialize();
   runApp(const CityOfWealthApp());
 }
 
@@ -37,6 +41,7 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
     // Start music after the first frame is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       music.playHomeMusic();
+      NotificationService().scheduleInactivityNotification();
     });
 
     // Listen to app lifecycle to stop/resume music when app state changes
@@ -104,6 +109,51 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  bool _nameDialogShown = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.game.addListener(_handleGameStateChange);
+    // Check immediately in case it's already loaded
+    _handleGameStateChange();
+  }
+
+  @override
+  void dispose() {
+    widget.game.removeListener(_handleGameStateChange);
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(MainScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.game != widget.game) {
+      oldWidget.game.removeListener(_handleGameStateChange);
+      widget.game.addListener(_handleGameStateChange);
+    }
+  }
+
+  void _handleGameStateChange() {
+    if (widget.game.loaded &&
+        widget.game.playerName == "User" &&
+        !_nameDialogShown) {
+      _nameDialogShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => NameEntryDialog(
+            onConfirm: (name) {
+              widget.game.setPlayerName(name);
+            },
+          ),
+        );
+      });
+    }
+  }
+
   int selectedIndex = 0;
 
   Widget _buildBody() {
@@ -120,8 +170,6 @@ class _MainScreenState extends State<MainScreen> {
           transportChoice: game.transportChoice,
           assets: game.assets,
           onClearEvents: game.clearEvents,
-          incomePaused: game.incomePaused,
-          onPauseToggled: game.togglePause,
           sfx: widget.sfx,
         );
       case 1:
@@ -183,9 +231,6 @@ class _MainScreenState extends State<MainScreen> {
           onThemeToggle: game.toggleTheme,
           onMusicVolumeChanged: game.updateMusicVolume,
           onSfxVolumeChanged: game.updateSfxVolume,
-          onDebugAdd: game.debugAdd,
-          onDebugLevelUp: game.debugLevelUp,
-          onDebugReset: game.debugReset,
         );
       default:
         return const SizedBox.shrink();
@@ -213,31 +258,16 @@ class _MainScreenState extends State<MainScreen> {
       });
     }
 
-    // Handle Name Entry
-    if (game.playerName == "User") {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => NameEntryDialog(
-            onConfirm: (name) {
-              game.setPlayerName(name);
-            },
-          ),
-        );
-      });
-    }
-
     return PopScope(
-      canPop: false,
+      canPop: selectedIndex == 0,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         widget.sfx.playBack();
-        // Hardware back button should exit or go back.
-        // For simplicity, we just allow the default behavior after sound.
-        // But since canPop is false, we might need a way to actually pop if nested.
-        // However, usually Top Level back button exits app or does nothing.
+        if (selectedIndex != 0) {
+          setState(() => selectedIndex = 0);
+        }
       },
+
       child: Scaffold(
         appBar: AppBar(
           title: const Text("City of Wealth"),

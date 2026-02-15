@@ -141,6 +141,7 @@ class _CareerHeroCard extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      routeSettings: const RouteSettings(name: 'mute_back_sound'),
       builder: (_) {
         return Padding(
           padding: const EdgeInsets.all(20),
@@ -156,7 +157,6 @@ class _CareerHeroCard extends StatelessWidget {
                 title: "Business",
                 subtitle: "High risk, high reward",
                 onTap: () {
-                  sfx.playClick();
                   Navigator.pop(context);
                   sfx.playLevelUp();
                   onCareerChange(
@@ -169,7 +169,6 @@ class _CareerHeroCard extends StatelessWidget {
                 title: "Job",
                 subtitle: "Stable growth, steady income",
                 onTap: () {
-                  sfx.playClick();
                   Navigator.pop(context);
                   sfx.playLevelUp();
                   onCareerChange(
@@ -366,55 +365,59 @@ class _CareerHeroCard extends StatelessWidget {
                 ),
               ),
             ),
-            if (career.track != CareerTrack.student) ...[
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: isWorkingOvertime
-                      ? null
-                      : () {
-                          sfx.playClick();
-                          onWorkOvertime();
-                        },
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: isWorkingOvertime
-                          ? Colors.grey.shade400
-                          : Colors.amber.shade700,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: isWorkingOvertime
+                    ? null
+                    : () {
+                        sfx.playClick();
+                        onWorkOvertime();
+                      },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: isWorkingOvertime
+                        ? Colors.grey.shade400
+                        : Colors.amber.shade700,
                   ),
-                  child: Column(
-                    children: [
-                      Text(
-                        isWorkingOvertime
-                            ? "Working overtime"
-                            : "Work overtime",
-                        style: TextStyle(
-                          color: isWorkingOvertime
-                              ? Colors.grey.shade600
-                              : Colors.amber.shade900,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "boost income by 50% at the cost of health and time",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: isWorkingOvertime
-                              ? Colors.grey.shade500
-                              : Colors.brown.shade400,
-                        ),
-                      ),
-                    ],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      isWorkingOvertime
+                          ? (career.track == CareerTrack.student
+                                ? "Extra pocket money!"
+                                : "Working overtime")
+                          : (career.track == CareerTrack.student
+                                ? "Ask for extra pocket money"
+                                : "Work overtime"),
+                      style: TextStyle(
+                        color: isWorkingOvertime
+                            ? Colors.grey.shade600
+                            : Colors.amber.shade900,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      career.track == CareerTrack.student
+                          ? "Ask parents for more allowance"
+                          : "Boost income by 50% at the cost of health and time",
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: isWorkingOvertime
+                            ? Colors.grey.shade500
+                            : Colors.brown.shade400,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ],
         ],
       ),

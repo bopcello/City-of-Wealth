@@ -20,7 +20,7 @@ class AppColors {
     'gem': Colors.blue.shade700,
     'kp': Colors.amber.shade800,
     'passive': Colors.teal.shade600,
-    'gridGreen': Colors.green.shade200,
+    'gridGreen': Colors.green.shade800,
     'rent': Colors.blue.shade100,
     'food': Colors.green.shade100,
     'transport': Colors.purple.shade100,
@@ -42,7 +42,7 @@ class AppColors {
     'gem': Colors.blue.shade300,
     'kp': Colors.amber.shade400,
     'passive': Colors.teal.shade400,
-    'gridGreen': Colors.green.shade800,
+    'gridGreen': Colors.green.shade200,
     'rent': Colors.indigo.shade900.withValues(alpha: 0.5),
     'food': Colors.green.shade900.withValues(alpha: 0.5),
     'transport': Colors.deepPurple.shade900.withValues(alpha: 0.5),
@@ -52,7 +52,7 @@ class AppColors {
   static Color of(BuildContext context, String key) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return (isDark ? dark[key] : light[key]) ??
-        const Color.fromARGB(255, 100, 192, 40);
+        const Color.fromARGB(255, 72, 180, 0);
   }
 
   // ThemeData Builders
