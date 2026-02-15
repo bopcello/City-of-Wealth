@@ -6,6 +6,7 @@ import '../widgets/icon_text.dart';
 import '../theme/app_colors.dart';
 import '../services/sfx_manager.dart';
 import '../game_state.dart';
+import '../logic/game_manager.dart';
 
 class CityTab extends StatefulWidget {
   final CareerState career;
@@ -20,6 +21,7 @@ class CityTab extends StatefulWidget {
   final void Function(PlacedBuilding building) onRemoveBuilding;
   final VoidCallback onBuyWall;
   final SfxManager sfx;
+  final GameManager game;
 
   const CityTab({
     super.key,
@@ -35,6 +37,7 @@ class CityTab extends StatefulWidget {
     required this.onRemoveBuilding,
     required this.onBuyWall,
     required this.sfx,
+    required this.game,
   });
 
   @override
@@ -42,8 +45,6 @@ class CityTab extends StatefulWidget {
 }
 
 class _CityTabState extends State<CityTab> {
-  Building? _selectedBuilding;
-  bool _isEditMode = false; // Track edit mode state
   final TransformationController _transformationController =
       TransformationController();
 
@@ -54,17 +55,11 @@ class _CityTabState extends State<CityTab> {
   }
 
   void _clearSelection() {
-    setState(() {
-      _selectedBuilding = null;
-      _isEditMode = false;
-    });
+    widget.game.clearSelection();
   }
 
   void _toggleEditMode() {
-    setState(() {
-      _isEditMode = !_isEditMode;
-      _selectedBuilding = null; // Clear any building selection
-    });
+    widget.game.toggleEditMode();
   }
 
   @override
@@ -76,8 +71,12 @@ class _CityTabState extends State<CityTab> {
 
     return GestureDetector(
       onTap: () {
-        if (_selectedBuilding != null && !_isEditMode) {
-          _clearSelection();
+        if (widget.game.selectedBuilding != null) {
+          if (widget.game.isEditMode) {
+            widget.game.setBuildingSelection(null);
+          } else {
+            _clearSelection();
+          }
         }
       },
       child: LayoutBuilder(
@@ -129,37 +128,51 @@ class _CityTabState extends State<CityTab> {
                             _IsometricGrid(
                               gridSize: gridSize,
                               cityMap: cityMap,
-                              selectedBuilding: _selectedBuilding,
-                              isEditMode: _isEditMode,
+                              selectedBuilding: widget.game.selectedBuilding,
+                              isEditMode: widget.game.isEditMode,
                               onTileTap: (x, y) {
                                 final buildingKey = "$x,$y";
                                 final hasBuilding = cityMap.containsKey(
                                   buildingKey,
                                 );
 
-                                if (_selectedBuilding != null) {
-                                  if (!hasBuilding) {
-                                    widget.sfx.playBuy();
-                                    widget.onPlaceBuilding(
-                                      PlacedBuilding(
-                                        name: _selectedBuilding!.name,
-                                        x: x,
-                                        y: y,
-                                      ),
-                                    );
-                                    if (_isEditMode) {
-                                      setState(() => _selectedBuilding = null);
-                                    } else {
-                                      _clearSelection();
+                                if (widget.game.selectedBuilding != null) {
+                                  if (hasBuilding) {
+                                    if (widget.game.isEditMode) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Cell is already occupied",
+                                          ),
+                                          duration: Duration(seconds: 1),
+                                        ),
+                                      );
                                     }
+                                    return;
                                   }
-                                } else if (_isEditMode && hasBuilding) {
+                                  widget.sfx.playBuy();
+                                  widget.onPlaceBuilding(
+                                    PlacedBuilding(
+                                      name: widget.game.selectedBuilding!.name,
+                                      x: x,
+                                      y: y,
+                                    ),
+                                  );
+                                  if (widget.game.isEditMode) {
+                                    widget.game.setBuildingSelection(null);
+                                  } else {
+                                    _clearSelection();
+                                  }
+                                } else if (widget.game.isEditMode &&
+                                    hasBuilding) {
                                   final building = cityMap[buildingKey]!;
-                                  setState(() {
-                                    _selectedBuilding = buildings.firstWhere(
+                                  widget.game.setBuildingSelection(
+                                    buildings.firstWhere(
                                       (b) => b.name == building.name,
-                                    );
-                                  });
+                                    ),
+                                  );
                                   widget.onRemoveBuilding(building);
                                 }
                               },
@@ -172,7 +185,7 @@ class _CityTabState extends State<CityTab> {
                   ),
                 ),
               ),
-              if (_selectedBuilding != null)
+              if (widget.game.selectedBuilding != null)
                 Positioned(
                   left: 16,
                   top: 16,
@@ -196,7 +209,7 @@ class _CityTabState extends State<CityTab> {
                       ],
                     ),
                     child: Image.asset(
-                      _selectedBuilding!.iconPath,
+                      widget.game.selectedBuilding!.iconPath,
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -209,9 +222,9 @@ class _CityTabState extends State<CityTab> {
                     widget.sfx.playClick();
                     _toggleEditMode();
                   },
-                  label: Text(_isEditMode ? "Done" : "Edit layout"),
-                  icon: Icon(_isEditMode ? Icons.check : Icons.edit),
-                  backgroundColor: _isEditMode
+                  label: Text(widget.game.isEditMode ? "Done" : "Edit layout"),
+                  icon: Icon(widget.game.isEditMode ? Icons.check : Icons.edit),
+                  backgroundColor: widget.game.isEditMode
                       ? AppColors.of(context, 'success')
                       : null,
                 ),
@@ -222,6 +235,10 @@ class _CityTabState extends State<CityTab> {
                 child: FloatingActionButton.extended(
                   onPressed: () {
                     widget.sfx.playClick();
+                    // Close edit mode if it's on
+                    if (widget.game.isEditMode) {
+                      widget.game.toggleEditMode();
+                    }
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
@@ -248,7 +265,7 @@ class _CityTabState extends State<CityTab> {
                               widget.sfx.playClick();
                               Navigator.pop(context);
                               setState(() {
-                                _selectedBuilding = building;
+                                widget.game.setBuildingSelection(building);
                               });
                             }
                           },
@@ -500,13 +517,6 @@ class _BuildingCard extends StatelessWidget {
                     "Passive Income Building",
                     style: const TextStyle(fontSize: 12),
                     color: AppColors.of(context, 'success'),
-                  ),
-                  IconText(
-                    "Cost: ${passiveIncomeData.values.firstWhere((e) => e.buildingName == building.name).investmentCost} [GEM]",
-                    style: const TextStyle(fontSize: 12),
-                    color: hasPassiveInvestment
-                        ? AppColors.of(context, 'gem')
-                        : AppColors.of(context, 'error'),
                   ),
                 ],
               ],

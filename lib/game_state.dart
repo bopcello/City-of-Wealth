@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'services/firestore_service.dart';
 
 enum CareerTrack { student, job, business }
 
@@ -162,7 +163,7 @@ String assetLabel(AssetType type) {
     case AssetType.land:
       return "Land";
     case AssetType.properties:
-      return "Properties";
+      return "Buildings";
     case AssetType.machinery:
       return "Machinery";
     case AssetType.vehicles:
@@ -495,6 +496,8 @@ String levelName(CareerTrack track, int level) {
 }
 
 Future<void> saveGameState({
+  String? uid,
+  bool syncToCloud = false,
   required int kp,
   required int gems,
   required CareerState career,
@@ -521,10 +524,41 @@ Future<void> saveGameState({
   required double sfxVolume,
 }) async {
   final prefs = await SharedPreferences.getInstance();
-  debugPrint("💾 SAVING GAME");
-  debugPrint(
-    "KP: $kp, Gems: $gems, Track: ${career.track}, Level: ${career.level}, Assets: ${assets.items.length}, Bankruptcy: $bankruptcyCount",
-  );
+  debugPrint("💾 SAVING GAME LOCALLY");
+
+  final data = {
+    _kpKey: kp,
+    _gemsKey: gems,
+    _careerTrackKey: career.track.name,
+    _careerLevelKey: career.level,
+    _lastIncomeTimeKey: lastIncomeTime.millisecondsSinceEpoch,
+    _bankruptcyCountKey: bankruptcyCount,
+    _playerNameKey: playerName,
+    _cityLayoutKey: jsonEncode(layout.map((b) => b.toJson()).toList()),
+    _assetsKey: jsonEncode(assets.toJson()),
+    _rentChoiceKey: rent?.name,
+    _foodChoiceKey: food?.name,
+    _transportChoiceKey: transport?.name,
+    _insurancesKey: insurances.map((e) => e.name).toList(),
+    _debtCycleCountKey: debtCycleCount,
+    _nextDestructionCycleKey: nextDestructionCycle,
+    _nextDisasterCycleKey: nextDisasterCycle,
+    'hasWall': wall,
+    _completedQuizzesKey: completedQuizzes.toList(),
+    _isWorkingOvertimeKey: isWorkingOvertime,
+    _overtimeStreakKey: overtimeStreak,
+    _activePassiveIncomesKey: jsonEncode(
+      activePassiveIncomes.map((k, v) => MapEntry(k.name, v)),
+    ),
+    'activeDisasterEffects': jsonEncode(
+      activeDisasterEffects.map((k, v) => MapEntry(k.name, v)),
+    ),
+    _isDarkModeKey: isDarkMode,
+    _musicVolumeKey: musicVolume,
+    _sfxVolumeKey: sfxVolume,
+  };
+
+  // Local Save
   await prefs.setInt(_kpKey, kp);
   await prefs.setInt(_gemsKey, gems);
   await prefs.setString(_careerTrackKey, career.track.name);
@@ -532,70 +566,63 @@ Future<void> saveGameState({
   await prefs.setInt(_lastIncomeTimeKey, lastIncomeTime.millisecondsSinceEpoch);
   await prefs.setInt(_bankruptcyCountKey, bankruptcyCount);
   await prefs.setString(_playerNameKey, playerName);
+  await prefs.setString(_cityLayoutKey, data[_cityLayoutKey] as String);
+  await prefs.setString(_assetsKey, data[_assetsKey] as String);
 
-  final layoutJson = jsonEncode(layout.map((b) => b.toJson()).toList());
-  await prefs.setString(_cityLayoutKey, layoutJson);
-
-  final assetsJson = jsonEncode(assets.toJson());
-  await prefs.setString(_assetsKey, assetsJson);
-
-  if (rent != null) {
+  if (rent != null)
     await prefs.setString(_rentChoiceKey, rent.name);
-  } else {
+  else
     await prefs.remove(_rentChoiceKey);
-  }
-  if (food != null) {
+  if (food != null)
     await prefs.setString(_foodChoiceKey, food.name);
-  } else {
+  else
     await prefs.remove(_foodChoiceKey);
-  }
-  if (transport != null) {
+  if (transport != null)
     await prefs.setString(_transportChoiceKey, transport.name);
-  } else {
+  else
     await prefs.remove(_transportChoiceKey);
-  }
 
-  final insuranceNames = insurances.map((e) => e.name).toList();
-  await prefs.setStringList(_insurancesKey, insuranceNames);
-
+  await prefs.setStringList(
+    _insurancesKey,
+    data[_insurancesKey] as List<String>,
+  );
   await prefs.setInt(_debtCycleCountKey, debtCycleCount);
-  if (nextDestructionCycle != null) {
+  if (nextDestructionCycle != null)
     await prefs.setInt(_nextDestructionCycleKey, nextDestructionCycle);
-  } else {
+  else
     await prefs.remove(_nextDestructionCycleKey);
-  }
-
-  if (nextDisasterCycle != null) {
+  if (nextDisasterCycle != null)
     await prefs.setInt(_nextDisasterCycleKey, nextDisasterCycle);
-  } else {
+  else
     await prefs.remove(_nextDisasterCycleKey);
-  }
 
-  if (wall != null) {
+  if (wall != null)
     await prefs.setBool('hasWall', wall);
-  } else {
+  else
     await prefs.remove('hasWall');
-  }
 
-  await prefs.setStringList(_completedQuizzesKey, completedQuizzes.toList());
+  await prefs.setStringList(
+    _completedQuizzesKey,
+    data[_completedQuizzesKey] as List<String>,
+  );
   await prefs.setBool(_isWorkingOvertimeKey, isWorkingOvertime);
   await prefs.setInt(_overtimeStreakKey, overtimeStreak);
-
-  final passiveIncomeMap = activePassiveIncomes.map(
-    (k, v) => MapEntry(k.name, v),
-  );
-  await prefs.setString(_activePassiveIncomesKey, jsonEncode(passiveIncomeMap));
-
-  final disasterEffectsMap = activeDisasterEffects.map(
-    (k, v) => MapEntry(k.name, v),
+  await prefs.setString(
+    _activePassiveIncomesKey,
+    data[_activePassiveIncomesKey] as String,
   );
   await prefs.setString(
     'activeDisasterEffects',
-    jsonEncode(disasterEffectsMap),
+    data['activeDisasterEffects'] as String,
   );
   await prefs.setBool(_isDarkModeKey, isDarkMode);
   await prefs.setDouble(_musicVolumeKey, musicVolume);
   await prefs.setDouble(_sfxVolumeKey, sfxVolume);
+
+  // Cloud Save
+  if (syncToCloud && uid != null) {
+    await FirestoreService().savePlayerProgress(uid, data);
+  }
 }
 
 Future<
@@ -626,25 +653,47 @@ Future<
     double,
   )
 >
-loadGameState() async {
+loadGameState({String? uid}) async {
   final prefs = await SharedPreferences.getInstance();
-  final kp = prefs.getInt(_kpKey) ?? 0;
-  final gems = prefs.getInt(_gemsKey) ?? 0;
-  final bankruptcyCount = prefs.getInt(_bankruptcyCountKey) ?? 0;
-  final debtCycleCount = prefs.getInt(_debtCycleCountKey) ?? 0;
-  final nextDestructionCycle = prefs.containsKey(_nextDestructionCycleKey)
-      ? prefs.getInt(_nextDestructionCycleKey)
-      : null;
-  final nextDisasterCycle = prefs.containsKey(_nextDisasterCycleKey)
-      ? prefs.getInt(_nextDisasterCycleKey)
-      : null;
-  final isDarkMode = prefs.getBool(_isDarkModeKey) ?? false;
-  final playerName = prefs.getString(_playerNameKey) ?? "User";
-  final musicVolume = prefs.getDouble(_musicVolumeKey) ?? 0.7;
-  final sfxVolume = prefs.getDouble(_sfxVolumeKey) ?? 1.0;
 
-  final trackName = prefs.getString(_careerTrackKey);
-  final level = prefs.getInt(_careerLevelKey) ?? 1;
+  Map<String, dynamic>? cloudData;
+  if (uid != null) {
+    cloudData = await FirestoreService().getPlayerProgress(uid);
+  }
+
+  // Use cloud data if it exists and is newer (or just exists for simplicity now)
+  // For now, if cloud data exists, we prioritize it.
+  final data = cloudData ?? {};
+
+  final kp = data[_kpKey] ?? prefs.getInt(_kpKey) ?? 0;
+  final gems = data[_gemsKey] ?? prefs.getInt(_gemsKey) ?? 0;
+  final bankruptcyCount =
+      data[_bankruptcyCountKey] ?? prefs.getInt(_bankruptcyCountKey) ?? 0;
+  final debtCycleCount =
+      data[_debtCycleCountKey] ?? prefs.getInt(_debtCycleCountKey) ?? 0;
+  final nextDestructionCycle =
+      data[_nextDestructionCycleKey] ??
+      (prefs.containsKey(_nextDestructionCycleKey)
+          ? prefs.getInt(_nextDestructionCycleKey)
+          : null);
+  final nextDisasterCycle =
+      data[_nextDisasterCycleKey] ??
+      (prefs.containsKey(_nextDisasterCycleKey)
+          ? prefs.getInt(_nextDisasterCycleKey)
+          : null);
+  final isDarkMode =
+      data[_isDarkModeKey] ?? prefs.getBool(_isDarkModeKey) ?? false;
+  final playerName =
+      data[_playerNameKey] ?? prefs.getString(_playerNameKey) ?? "User";
+  final musicVolume =
+      data[_musicVolumeKey]?.toDouble() ??
+      prefs.getDouble(_musicVolumeKey) ??
+      0.7;
+  final sfxVolume =
+      data[_sfxVolumeKey]?.toDouble() ?? prefs.getDouble(_sfxVolumeKey) ?? 1.0;
+
+  final trackName = data[_careerTrackKey] ?? prefs.getString(_careerTrackKey);
+  final level = data[_careerLevelKey] ?? prefs.getInt(_careerLevelKey) ?? 1;
 
   final track = CareerTrack.values.firstWhere(
     (e) => e.name == trackName,
@@ -652,37 +701,45 @@ loadGameState() async {
   );
 
   final lastIncomeMillis =
-      prefs.getInt(_lastIncomeTimeKey) ?? DateTime.now().millisecondsSinceEpoch;
+      data[_lastIncomeTimeKey] ??
+      prefs.getInt(_lastIncomeTimeKey) ??
+      DateTime.now().millisecondsSinceEpoch;
 
-  final layoutJson = prefs.getString(_cityLayoutKey);
+  final layoutJson = data[_cityLayoutKey] ?? prefs.getString(_cityLayoutKey);
   List<PlacedBuilding> layout = [];
   if (layoutJson != null) {
-    final List<dynamic> decoded = jsonDecode(layoutJson);
+    final List<dynamic> decoded = layoutJson is String
+        ? jsonDecode(layoutJson)
+        : layoutJson;
     layout = decoded.map((item) => PlacedBuilding.fromJson(item)).toList();
   }
 
-  final assetsJson = prefs.getString(_assetsKey);
+  final assetsJson = data[_assetsKey] ?? prefs.getString(_assetsKey);
   AssetInventory assets = const AssetInventory({});
   if (assetsJson != null) {
-    assets = AssetInventory.fromJson(jsonDecode(assetsJson));
+    assets = AssetInventory.fromJson(
+      assetsJson is String ? jsonDecode(assetsJson) : assetsJson,
+    );
   }
 
-  final rentName = prefs.getString(_rentChoiceKey);
+  final rentName = data[_rentChoiceKey] ?? prefs.getString(_rentChoiceKey);
   final rent = rentName != null
       ? RentType.values.firstWhere((e) => e.name == rentName)
       : null;
 
-  final foodName = prefs.getString(_foodChoiceKey);
+  final foodName = data[_foodChoiceKey] ?? prefs.getString(_foodChoiceKey);
   final food = foodName != null
       ? FoodType.values.firstWhere((e) => e.name == foodName)
       : null;
 
-  final transportName = prefs.getString(_transportChoiceKey);
+  final transportName =
+      data[_transportChoiceKey] ?? prefs.getString(_transportChoiceKey);
   final transport = transportName != null
       ? TransportType.values.firstWhere((e) => e.name == transportName)
       : null;
 
-  final insuranceNames = prefs.getStringList(_insurancesKey) ?? [];
+  final List<dynamic> insuranceNames =
+      data[_insurancesKey] ?? prefs.getStringList(_insurancesKey) ?? [];
   final insurances = insuranceNames
       .map(
         (name) => AssetType.values.firstWhere(
@@ -692,17 +749,30 @@ loadGameState() async {
       )
       .toSet();
 
-  final savedWall = prefs.getBool('hasWall');
-  final completedQuizzes = (prefs.getStringList(_completedQuizzesKey) ?? [])
+  final savedWall = data['hasWall'] ?? prefs.getBool('hasWall');
+  final List<dynamic> completedQuizzesList =
+      data[_completedQuizzesKey] ??
+      prefs.getStringList(_completedQuizzesKey) ??
+      [];
+  final completedQuizzes = completedQuizzesList
+      .map((e) => e.toString())
       .toSet();
 
-  final isWorkingOvertime = prefs.getBool(_isWorkingOvertimeKey) ?? false;
-  final overtimeStreak = prefs.getInt(_overtimeStreakKey) ?? 0;
+  final isWorkingOvertime =
+      data[_isWorkingOvertimeKey] ??
+      prefs.getBool(_isWorkingOvertimeKey) ??
+      false;
+  final overtimeStreak =
+      data[_overtimeStreakKey] ?? prefs.getInt(_overtimeStreakKey) ?? 0;
 
-  final passiveIncomeJson = prefs.getString(_activePassiveIncomesKey);
+  final passiveIncomeJson =
+      data[_activePassiveIncomesKey] ??
+      prefs.getString(_activePassiveIncomesKey);
   Map<AssetType, int> activePassiveIncomes = {};
   if (passiveIncomeJson != null) {
-    final Map<String, dynamic> decoded = jsonDecode(passiveIncomeJson);
+    final Map<String, dynamic> decoded = passiveIncomeJson is String
+        ? jsonDecode(passiveIncomeJson)
+        : passiveIncomeJson;
     activePassiveIncomes = decoded.map(
       (k, v) => MapEntry(
         AssetType.values.firstWhere(
@@ -714,10 +784,13 @@ loadGameState() async {
     );
   }
 
-  final disasterEffectsJson = prefs.getString('activeDisasterEffects');
+  final disasterEffectsJson =
+      data['activeDisasterEffects'] ?? prefs.getString('activeDisasterEffects');
   Map<DisasterType, int> activeDisasterEffects = {};
   if (disasterEffectsJson != null) {
-    final Map<String, dynamic> decoded = jsonDecode(disasterEffectsJson);
+    final Map<String, dynamic> decoded = disasterEffectsJson is String
+        ? jsonDecode(disasterEffectsJson)
+        : disasterEffectsJson;
     activeDisasterEffects = decoded.map(
       (k, v) => MapEntry(
         DisasterType.values.firstWhere(
@@ -738,30 +811,30 @@ loadGameState() async {
   debugPrint("Loaded Bankruptcy: $bankruptcyCount");
 
   return (
-    kp,
-    gems,
-    CareerState(track: track, level: level),
-    DateTime.fromMillisecondsSinceEpoch(lastIncomeMillis),
+    kp as int,
+    gems as int,
+    CareerState(track: track, level: level as int),
+    DateTime.fromMillisecondsSinceEpoch(lastIncomeMillis as int),
     layout,
     assets,
     rent,
     food,
     transport,
     insurances,
-    bankruptcyCount,
-    debtCycleCount,
-    nextDestructionCycle,
-    nextDisasterCycle,
-    savedWall,
+    bankruptcyCount as int,
+    debtCycleCount as int,
+    nextDestructionCycle as int?,
+    nextDisasterCycle as int?,
+    savedWall as bool?,
     completedQuizzes,
-    isWorkingOvertime,
-    overtimeStreak,
+    isWorkingOvertime as bool,
+    overtimeStreak as int,
     activePassiveIncomes,
     activeDisasterEffects,
-    playerName,
-    isDarkMode,
-    musicVolume,
-    sfxVolume,
+    playerName as String,
+    isDarkMode as bool,
+    musicVolume as double,
+    sfxVolume as double,
   );
 }
 

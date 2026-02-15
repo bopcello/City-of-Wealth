@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../game_state.dart';
 import '../services/notification_service.dart';
@@ -33,6 +34,40 @@ class GameManager extends ChangeNotifier {
   double musicVolume = 0.7;
   double sfxVolume = 1.0;
   String playerName = "User";
+  int _selectedIndex = 0;
+
+  int get selectedIndex => _selectedIndex;
+  set selectedIndex(int value) {
+    if (_selectedIndex != value) {
+      _selectedIndex = value;
+      // Close edit mode if switching away from City tab (index 1)
+      if (_selectedIndex != 1) {
+        isEditMode = false;
+        selectedBuilding = null;
+      }
+      notifyListeners();
+    }
+  }
+
+  bool isEditMode = false;
+  Building? selectedBuilding;
+
+  void toggleEditMode() {
+    isEditMode = !isEditMode;
+    selectedBuilding = null;
+    notifyListeners();
+  }
+
+  void setBuildingSelection(Building? building) {
+    selectedBuilding = building;
+    notifyListeners();
+  }
+
+  void clearSelection() {
+    selectedBuilding = null;
+    isEditMode = false;
+    notifyListeners();
+  }
 
   bool loaded = false;
   final List<String> pendingEvents = [];
@@ -44,15 +79,29 @@ class GameManager extends ChangeNotifier {
     _cycleTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (loaded) _checkDailyCycle();
     });
+
+    // Listen to Auth state changes to reload data on login
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null && loaded) {
+        // Trigger a reload when a user signs in
+        _loadGame();
+      }
+    });
   }
 
   @override
   void dispose() {
     _cycleTimer?.cancel();
+    syncWithCloud(); // Final sync on app exit
     super.dispose();
   }
 
   Future<void> _loadGame() async {
+    if (loaded) {
+      loaded = false;
+      notifyListeners();
+    }
+    final uid = FirebaseAuth.instance.currentUser?.uid;
     final (
       savedKp,
       savedGems,
@@ -78,7 +127,9 @@ class GameManager extends ChangeNotifier {
       savedIsDarkMode,
       savedMusicVolume,
       savedSfxVolume,
-    ) = await loadGameState();
+    ) = await loadGameState(
+      uid: uid,
+    );
 
     kp = savedKp;
     gems = savedGems;
@@ -114,8 +165,47 @@ class GameManager extends ChangeNotifier {
     }
   }
 
+  Future<void> forceCloudLoad() async {
+    loaded = false;
+    notifyListeners();
+    await _loadGame();
+  }
+
+  void syncWithCloud() {
+    saveGameState(
+      uid: FirebaseAuth.instance.currentUser?.uid,
+      syncToCloud: true,
+      kp: kp,
+      gems: gems,
+      career: career,
+      lastIncomeTime: lastIncomeTime,
+      layout: cityLayout,
+      assets: assets,
+      rent: rentChoice,
+      food: foodChoice,
+      transport: transportChoice,
+      insurances: insurances,
+      bankruptcyCount: bankruptcyCount,
+      debtCycleCount: debtCycleCount,
+      nextDestructionCycle: nextDestructionCycle,
+      nextDisasterCycle: nextDisasterCycle,
+      wall: hasWall,
+      completedQuizzes: completedQuizzes,
+      isWorkingOvertime: isWorkingOvertime,
+      overtimeStreak: overtimeStreak,
+      activePassiveIncomes: activePassiveIncomes,
+      activeDisasterEffects: activeDisasterEffects,
+      playerName: playerName,
+      isDarkMode: isDarkMode,
+      musicVolume: musicVolume,
+      sfxVolume: sfxVolume,
+    );
+  }
+
   void save() {
     saveGameState(
+      uid: FirebaseAuth.instance.currentUser?.uid,
+      syncToCloud: false,
       kp: kp,
       gems: gems,
       career: career,
@@ -397,15 +487,15 @@ class GameManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateMusicVolume(double val) {
+  void updateMusicVolume(double val, {bool saveToDisk = true}) {
     musicVolume = val;
-    save();
+    if (saveToDisk) save();
     notifyListeners();
   }
 
-  void updateSfxVolume(double val) {
+  void updateSfxVolume(double val, {bool saveToDisk = true}) {
     sfxVolume = val;
-    save();
+    if (saveToDisk) save();
     notifyListeners();
   }
 

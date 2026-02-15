@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 import '../game_state.dart';
 
 class SettingsTab extends StatelessWidget {
@@ -7,8 +8,8 @@ class SettingsTab extends StatelessWidget {
   final double musicVolume;
   final double sfxVolume;
   final void Function(bool) onThemeToggle;
-  final void Function(double) onMusicVolumeChanged;
-  final void Function(double) onSfxVolumeChanged;
+  final void Function(double, {bool saveToDisk}) onMusicVolumeChanged;
+  final void Function(double, {bool saveToDisk}) onSfxVolumeChanged;
 
   const SettingsTab({
     super.key,
@@ -19,7 +20,10 @@ class SettingsTab extends StatelessWidget {
     required this.onThemeToggle,
     required this.onMusicVolumeChanged,
     required this.onSfxVolumeChanged,
+    required this.onCloudSync,
   });
+
+  final VoidCallback onCloudSync;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +54,8 @@ class SettingsTab extends StatelessWidget {
             title: const Text("Music Volume"),
             subtitle: Slider(
               value: musicVolume,
-              onChanged: onMusicVolumeChanged,
+              onChanged: (val) => onMusicVolumeChanged(val, saveToDisk: false),
+              onChangeEnd: (val) => onMusicVolumeChanged(val, saveToDisk: true),
               min: 0.0,
               max: 1.0,
             ),
@@ -60,10 +65,53 @@ class SettingsTab extends StatelessWidget {
             title: const Text("Sound Effects Volume"),
             subtitle: Slider(
               value: sfxVolume,
-              onChanged: onSfxVolumeChanged,
+              onChanged: (val) => onSfxVolumeChanged(val, saveToDisk: false),
+              onChangeEnd: (val) => onSfxVolumeChanged(val, saveToDisk: true),
               min: 0.0,
               max: 1.0,
             ),
+          ),
+          const SizedBox(height: 32),
+          const Text("Cloud Progress", style: TextStyle(color: Colors.grey)),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.cloud_sync, color: Colors.blue),
+            title: const Text("Sync with Cloud"),
+            subtitle: const Text(
+              "Manually save/load your progress from Firestore",
+            ),
+            onTap: onCloudSync,
+          ),
+          const SizedBox(height: 32),
+          const Text("Account", style: TextStyle(color: Colors.grey)),
+          const Divider(),
+          ListTile(
+            leading: Icon(Icons.logout, color: Colors.red.shade400),
+            title: const Text("Logout", style: TextStyle(color: Colors.red)),
+            subtitle: const Text("Sign out of your account"),
+            onTap: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Logout"),
+                  content: const Text("Are you sure you want to logout?"),
+                  actions: [
+                    TextButton(
+                      child: const Text("Cancel"),
+                      onPressed: () => Navigator.pop(context, false),
+                    ),
+                    TextButton(
+                      child: const Text("Logout"),
+                      onPressed: () => Navigator.pop(context, true),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirm == true) {
+                await AuthService().signOut();
+              }
+            },
           ),
         ],
       ),

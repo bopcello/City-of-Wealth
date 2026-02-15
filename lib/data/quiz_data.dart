@@ -303,14 +303,14 @@ final List<QuizMetadata> _mediumQuizzes = [
       QuizQuestion(
         question: 'What is a credit card?',
         options: [
-          'Free money',
-          'A card that you can use to buy anything',
-          'A savings account',
-          'Borrowed money for later',
+          'A card to show to your friends to show off',
+          'A card that you can use to buy anything for free',
+          'A card for playing video games',
+          'A card to buy things using borrowed money',
         ],
         correctIndex: 3,
         wrongExplanation:
-            'Credit cards are not gifts, free money from the government, or a place to store your own savings. Using one means you are taking a loan.',
+            'Credit cards are not for playing video games, free money to buy anything, or something to show off. Using a credit card means you are taking a loan.',
         correctExplanation:
             'A credit card allows you to buy things now using the bank\'s money. You must pay this money back later, often with extra interest if late.',
       ),
@@ -1227,8 +1227,8 @@ final List<QuizMetadata> _mediumQuizzes = [
         question: 'What is a debit card?',
         options: [
           'Borrowed money',
-          'Your own bank money',
-          'A gift card which you can use to buy anything',
+          'Acard to buy things using your own money',
+          'A card which you can use to buy anything for free',
           'A library card',
         ],
         correctIndex: 1,

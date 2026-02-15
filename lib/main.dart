@@ -14,9 +14,15 @@ import 'tabs/settings_tab.dart';
 import 'theme/app_colors.dart';
 import 'widgets/counter_chip.dart';
 import 'services/notification_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
+import 'services/auth_service.dart';
+import 'screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService().initialize();
   runApp(const CityOfWealthApp());
 }
@@ -44,12 +50,13 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
       NotificationService().scheduleInactivityNotification();
     });
 
-    // Listen to app lifecycle to stop/resume music when app state changes
+    // Listen to app lifecycle to stop/resume music and sync cloud
     _lifecycleListener = AppLifecycleListener(
       onStateChange: (AppLifecycleState state) {
         if (state == AppLifecycleState.paused ||
             state == AppLifecycleState.detached) {
           music.pauseMusic();
+          game.syncWithCloud(); // Sync clearly on close/minimize
         } else if (state == AppLifecycleState.resumed) {
           music.resumeMusic();
         }
@@ -68,6 +75,7 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
   @override
   void dispose() {
     _lifecycleListener.dispose();
+    game.syncWithCloud(); // Final sync on app exit
     game.removeListener(_syncVolume);
     game.dispose();
     music.dispose();
@@ -79,15 +87,46 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: game,
-      builder: (context, child) {
+      builder: (context, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: AppColors.lightTheme,
           darkTheme: AppColors.darkTheme,
           themeMode: game.isDarkMode ? ThemeMode.dark : ThemeMode.light,
           navigatorObservers: [SfxNavigatorObserver(sfx)],
-          home: MainScreen(game: game, music: music, sfx: sfx),
+          home: AuthWrapper(game: game, music: music, sfx: sfx),
         );
+      },
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  final GameManager game;
+  final MusicManager music;
+  final SfxManager sfx;
+
+  const AuthWrapper({
+    super.key,
+    required this.game,
+    required this.music,
+    required this.sfx,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: AuthService().authStateChanges,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasData) {
+          return MainScreen(game: game, music: music, sfx: sfx);
+        }
+        return const LoginScreen();
       },
     );
   }
@@ -154,89 +193,6 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  int selectedIndex = 0;
-
-  Widget _buildBody() {
-    final game = widget.game;
-    switch (selectedIndex) {
-      case 0:
-        return HomeTab(
-          kp: game.kp,
-          gems: game.gems,
-          career: game.career,
-          events: game.pendingEvents,
-          rentChoice: game.rentChoice,
-          foodChoice: game.foodChoice,
-          transportChoice: game.transportChoice,
-          assets: game.assets,
-          onClearEvents: game.clearEvents,
-          sfx: widget.sfx,
-        );
-      case 1:
-        return CityTab(
-          career: game.career,
-          gems: game.gems,
-          assets: game.assets,
-          cityLayout: game.cityLayout,
-          insurances: game.insurances,
-          activePassiveIncomes: game.activePassiveIncomes,
-          hasWall: game.hasWall,
-          sfx: widget.sfx,
-          onBuyAsset: (AssetType type, int amount) {
-            game.buyAsset(type, amount, context);
-          },
-          onPlaceBuilding: game.placeBuilding,
-          onRemoveBuilding: game.removeBuilding,
-          onBuyWall: game.buyWall,
-        );
-      case 2:
-        return MoneyTab(
-          game: game,
-          music: widget.music,
-          sfx: widget.sfx,
-          currentKp: game.kp,
-          playerName: game.playerName,
-          career: game.career,
-          gems: game.gems,
-          assets: game.assets,
-          rent: game.rentChoice,
-          food: game.foodChoice,
-          transport: game.transportChoice,
-          cityLayout: game.cityLayout,
-          insurances: game.insurances,
-          bankruptcyCount: game.bankruptcyCount,
-          completedQuizzes: game.completedQuizzes,
-          onKpChange: game.updateKp,
-          onInsuranceToggle: game.toggleInsurance,
-          onSellAsset: game.sellAsset,
-          onBankruptcy: () => game.declareBankruptcy(context),
-          onCareerChange: game.updateCareer,
-          onBuyAsset: (type, amount) {
-            game.buyAsset(type, amount, context);
-          },
-          onLiabilitiesChange: game.updateLiabilities,
-          onQuizComplete: game.markQuizCompleted,
-          isWorkingOvertime: game.isWorkingOvertime,
-          onWorkOvertime: game.workOvertime,
-          activePassiveIncomes: game.activePassiveIncomes,
-          onInvestInPassiveIncome: game.investInPassiveIncome,
-          gameListenable: game,
-        );
-      case 3:
-        return SettingsTab(
-          career: game.career,
-          isDarkMode: game.isDarkMode,
-          musicVolume: game.musicVolume,
-          sfxVolume: game.sfxVolume,
-          onThemeToggle: game.toggleTheme,
-          onMusicVolumeChanged: game.updateMusicVolume,
-          onSfxVolumeChanged: game.updateSfxVolume,
-        );
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final game = widget.game;
@@ -259,12 +215,12 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     return PopScope(
-      canPop: selectedIndex == 0,
+      canPop: game.selectedIndex == 0,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         widget.sfx.playBack();
-        if (selectedIndex != 0) {
-          setState(() => selectedIndex = 0);
+        if (game.selectedIndex != 0) {
+          setState(() => game.selectedIndex = 0);
         }
       },
 
@@ -288,12 +244,116 @@ class _MainScreenState extends State<MainScreen> {
             const SizedBox(width: 12),
           ],
         ),
-        body: _buildBody(),
+        body: IndexedStack(
+          index: game.selectedIndex,
+          children: [
+            HomeTab(
+              kp: game.kp,
+              gems: game.gems,
+              career: game.career,
+              events: game.pendingEvents,
+              rentChoice: game.rentChoice,
+              foodChoice: game.foodChoice,
+              transportChoice: game.transportChoice,
+              assets: game.assets,
+              onClearEvents: game.clearEvents,
+              sfx: widget.sfx,
+            ),
+            CityTab(
+              career: game.career,
+              gems: game.gems,
+              assets: game.assets,
+              cityLayout: game.cityLayout,
+              insurances: game.insurances,
+              activePassiveIncomes: game.activePassiveIncomes,
+              hasWall: game.hasWall,
+              sfx: widget.sfx,
+              onBuyAsset: (AssetType type, int amount) {
+                game.buyAsset(type, amount, context);
+              },
+              onPlaceBuilding: game.placeBuilding,
+              onRemoveBuilding: game.removeBuilding,
+              onBuyWall: game.buyWall,
+              game: game,
+            ),
+            MoneyTab(
+              game: game,
+              music: widget.music,
+              sfx: widget.sfx,
+              currentKp: game.kp,
+              playerName: game.playerName,
+              career: game.career,
+              gems: game.gems,
+              assets: game.assets,
+              rent: game.rentChoice,
+              food: game.foodChoice,
+              transport: game.transportChoice,
+              cityLayout: game.cityLayout,
+              insurances: game.insurances,
+              bankruptcyCount: game.bankruptcyCount,
+              completedQuizzes: game.completedQuizzes,
+              onKpChange: game.updateKp,
+              onInsuranceToggle: game.toggleInsurance,
+              onSellAsset: game.sellAsset,
+              onBankruptcy: () => game.declareBankruptcy(context),
+              onCareerChange: game.updateCareer,
+              onBuyAsset: (type, amount) {
+                game.buyAsset(type, amount, context);
+              },
+              onLiabilitiesChange: game.updateLiabilities,
+              onQuizComplete: game.markQuizCompleted,
+              isWorkingOvertime: game.isWorkingOvertime,
+              onWorkOvertime: game.workOvertime,
+              activePassiveIncomes: game.activePassiveIncomes,
+              onInvestInPassiveIncome: game.investInPassiveIncome,
+              gameListenable: game,
+            ),
+            SettingsTab(
+              career: game.career,
+              isDarkMode: game.isDarkMode,
+              musicVolume: game.musicVolume,
+              sfxVolume: game.sfxVolume,
+              onThemeToggle: game.toggleTheme,
+              onMusicVolumeChanged: game.updateMusicVolume,
+              onSfxVolumeChanged: game.updateSfxVolume,
+              onCloudSync: () async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("Cloud Sync"),
+                    content: const Text(
+                      "Do you want to reload your progress from the cloud? This will overwrite your current local session data.",
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text("Cancel"),
+                        onPressed: () => Navigator.pop(context, false),
+                      ),
+                      TextButton(
+                        child: const Text("Reload from Cloud"),
+                        onPressed: () => Navigator.pop(context, true),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirm == true) {
+                  await game.forceCloudLoad();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Cloud progress loaded!")),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
+        ),
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: selectedIndex,
+          currentIndex: game.selectedIndex,
           onTap: (index) {
             widget.sfx.playClick();
-            setState(() => selectedIndex = index);
+            game.selectedIndex = index;
           },
           type: BottomNavigationBarType.fixed,
           backgroundColor: Theme.of(context).colorScheme.surface,
@@ -426,7 +486,7 @@ class DisasterReportDialog extends StatelessWidget {
                 ],
                 if (result.insurancePayouts.isNotEmpty) ...[
                   Text(
-                    "Insurance Protection Applied! ✅",
+                    "Insurance Protection Applied!",
                     style: TextStyle(
                       color: AppColors.of(context, 'success'),
                       fontWeight: FontWeight.bold,
@@ -442,7 +502,7 @@ class DisasterReportDialog extends StatelessWidget {
                 ],
                 if (result.kpPenalty > 0) ...[
                   Text(
-                    "NO INSURANCE PENALTY! ❌",
+                    "NO INSURANCE PENALTY!",
                     style: TextStyle(
                       color: AppColors.of(context, 'error'),
                       fontWeight: FontWeight.bold,

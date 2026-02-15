@@ -21,7 +21,7 @@ Rise from a **Student** to the top of your field.
 
 ### 2. Assets & Financial Management
 Manage your net worth across five asset categories:
-- **Land**, **Properties**, **Vehicles**, **Machinery**, and **Office Equipment**.
+- **Land**, **Buildings**, **Vehicles**, **Machinery**, and **Office Equipment**.
 - **Expenses**: Balance your lifestyle with Rent, Food, and Transport choices. Be careful—unnecessary assets at lower levels incur KP penalties!
 - **Debt & Bankruptcy**: If your Gems fall below zero, you enter debt. Fail to clear it in 30 cycles, and your buildings will be foreclosed. Bankruptcy resets progress but clears your debts.
 
@@ -29,7 +29,7 @@ Manage your net worth across five asset categories:
 Invest your hard-earned assets into specialized buildings to generate recurring wealth:
 - **Farms**: Requires Land.
 - **Factories**: Requires Machinery.
-- **Apartments**: Requires Properties.
+- **Apartments**: Requires Buildings.
 - **Distribution Center**: Requires Vehicles.
 - **IT Service Centers**: Requires Office Equipment.
 *Buildings will only generate income if you own enough raw assets to support the investment!*

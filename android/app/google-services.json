@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "390785055286",
+    "project_id": "city-of-wealth",
+    "storage_bucket": "city-of-wealth.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390785055286:android:55fc0d8ad5273a8f563697",
+        "android_client_info": {
+          "package_name": "com.city_of_wealth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "390785055286-r5osgc6fupk8sfrjn7ggbhbcoiqgid20.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.city_of_wealth",
+            "certificate_hash": "209963055b76542c892af457d2b7f8fbddaa3430"
+          }
+        },
+        {
+          "client_id": "390785055286-s3ushsr836vj5i61uk3obtljgvm09i1o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBieTycJvZxIzasz3-2AuiJuiU2Mj7UMJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "390785055286-s3ushsr836vj5i61uk3obtljgvm09i1o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
