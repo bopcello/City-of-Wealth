@@ -112,6 +112,17 @@ class _CareerHeroCard extends StatelessWidget {
     return missing;
   }
 
+  List<String> _getRequiredBuildings() {
+    if (career.level == 1) return [];
+    final info = getCareerLevelInfo(career);
+    if (info == null) return [];
+    return info.unlockedBuildings;
+  }
+
+  bool _isBuildingBuilt(String buildingName) {
+    return cityLayout.any((pb) => pb.name == buildingName);
+  }
+
   bool _hasMetQuizRequirements() {
     // Current level requirements: 10 Medium, 1 Hard
     final mediumCount = countCompletedMediumQuizzes(
@@ -257,63 +268,94 @@ class _CareerHeroCard extends StatelessWidget {
                   "$requiredKpValue",
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: canAdvance ? Colors.green : Colors.red,
+                    color: currentKp >= requiredKpValue
+                        ? AppColors.of(context, 'success')
+                        : AppColors.of(context, 'error'),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            if (hasNextLevel && !hasAllBuildings) ...[
+            if (hasNextLevel && _getRequiredBuildings().isNotEmpty) ...[
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: hasAllBuildings
+                      ? AppColors.of(context, 'success').withValues(alpha: 0.1)
+                      : AppColors.of(context, 'error').withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
+                  border: Border.all(
+                    color: hasAllBuildings
+                        ? AppColors.of(
+                            context,
+                            'success',
+                          ).withValues(alpha: 0.5)
+                        : AppColors.of(context, 'error').withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "To advance, build at least one of each:",
+                    Text(
+                      hasAllBuildings
+                          ? "Required Buildings (Complete):"
+                          : "Required Buildings:",
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Colors.red,
+                        color: hasAllBuildings
+                            ? AppColors.of(context, 'success')
+                            : AppColors.of(context, 'error'),
                       ),
                     ),
                     const SizedBox(height: 4),
-                    ...missingBuildings.map(
-                      (b) => Text(
+                    ..._getRequiredBuildings().map((b) {
+                      final isBuilt = _isBuildingBuilt(b);
+                      return Text(
                         "• $b",
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.of(context, 'error'),
+                          color: isBuilt
+                              ? AppColors.of(context, 'success')
+                              : AppColors.of(context, 'error'),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                   ],
                 ),
               ),
               const SizedBox(height: 12),
             ],
-            if (hasNextLevel && !isQuizRequirementMet) ...[
+            if (hasNextLevel) ...[
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: isQuizRequirementMet
+                      ? AppColors.of(context, 'success').withValues(alpha: 0.1)
+                      : AppColors.of(context, 'error').withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
+                  border: Border.all(
+                    color: isQuizRequirementMet
+                        ? AppColors.of(
+                            context,
+                            'success',
+                          ).withValues(alpha: 0.5)
+                        : AppColors.of(context, 'error').withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Required Quizzes:",
+                    Text(
+                      isQuizRequirementMet
+                          ? "Required Quizzes (Complete):"
+                          : "Required Quizzes:",
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Colors.red,
+                        color: isQuizRequirementMet
+                            ? AppColors.of(context, 'success')
+                            : AppColors.of(context, 'error'),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -321,14 +363,18 @@ class _CareerHeroCard extends StatelessWidget {
                       "• Medium Quizzes: ${_getMediumQuizCount()}/10",
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.of(context, 'error'),
+                        color: _getMediumQuizCount() >= 10
+                            ? AppColors.of(context, 'success')
+                            : AppColors.of(context, 'error'),
                       ),
                     ),
                     Text(
                       "• Hard Quizzes: ${_getHardQuizCount()}/1",
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.of(context, 'error'),
+                        color: _getHardQuizCount() >= 1
+                            ? AppColors.of(context, 'success')
+                            : AppColors.of(context, 'error'),
                       ),
                     ),
                   ],

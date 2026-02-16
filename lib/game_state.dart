@@ -450,9 +450,14 @@ String trackLabel(CareerTrack track) {
   }
 }
 
-const Map<int, int> businessKpRequirements = {2: 5000, 3: 10000, 4: 20000};
+const Map<int, int> businessKpRequirements = {
+  2: 5000,
+  3: 10000,
+  4: 20000,
+  5: 50000,
+};
 
-const Map<int, int> jobKpRequirements = {2: 5000, 3: 10000, 4: 20000};
+const Map<int, int> jobKpRequirements = {2: 5000, 3: 10000, 4: 20000, 5: 50000};
 
 const int studentNextLevelKp = 2000;
 

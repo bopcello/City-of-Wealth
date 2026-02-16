@@ -21,6 +21,19 @@ class IconText extends StatelessWidget {
     if (color != null) {
       defaultStyle = defaultStyle.copyWith(color: color);
     }
+
+    return Text.rich(
+      TextSpan(children: parseText(text, defaultStyle, context)),
+      textAlign: textAlign,
+      style: defaultStyle,
+    );
+  }
+
+  static List<InlineSpan> parseText(
+    String text,
+    TextStyle style,
+    BuildContext context,
+  ) {
     final inlineSpans = <InlineSpan>[];
 
     // Split by placeholders [GEM] and [KP]
@@ -30,7 +43,7 @@ class IconText extends StatelessWidget {
 
     for (int i = 0; i < parts.length; i++) {
       if (parts[i].isNotEmpty) {
-        inlineSpans.add(TextSpan(text: parts[i], style: defaultStyle));
+        inlineSpans.add(TextSpan(text: parts[i], style: style));
       }
       if (i < matches.length) {
         final match = matches[i].group(0);
@@ -42,7 +55,7 @@ class IconText extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 2),
                 child: Icon(
                   Icons.diamond,
-                  size: (defaultStyle.fontSize ?? 14) * 1.2,
+                  size: (style.fontSize ?? 14) * 1.2,
                   color: AppColors.of(context, 'gem'),
                 ),
               ),
@@ -56,7 +69,7 @@ class IconText extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 2),
                 child: Icon(
                   Icons.school,
-                  size: (defaultStyle.fontSize ?? 14) * 1.2,
+                  size: (style.fontSize ?? 14) * 1.2,
                   color: AppColors.of(context, 'kp'),
                 ),
               ),
@@ -65,11 +78,6 @@ class IconText extends StatelessWidget {
         }
       }
     }
-
-    return Text.rich(
-      TextSpan(children: inlineSpans),
-      textAlign: textAlign,
-      style: defaultStyle,
-    );
+    return inlineSpans;
   }
 }

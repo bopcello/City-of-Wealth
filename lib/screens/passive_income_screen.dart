@@ -3,6 +3,7 @@ import '../widgets/icon_text.dart';
 import '../game_state.dart';
 import 'dart:math';
 import '../services/sfx_manager.dart';
+import '../theme/app_colors.dart';
 
 import '../logic/game_manager.dart';
 
@@ -28,9 +29,11 @@ class PassiveIncomeScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 "Each investment unlocks a building. Once built, it generates passive income based on your assets.",
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 24),
               ...passiveIncomeData.entries.map((entry) {
@@ -59,6 +62,7 @@ class PassiveIncomeScreen extends StatelessWidget {
                   multiplier: multiplier,
                   activeDisaster: activeDisaster,
                   gems: game.gems,
+                  game: game,
                   onInvest: () {
                     sfx.playBuy();
                     game.investInPassiveIncome(assetType);
@@ -82,6 +86,7 @@ class _PassiveIncomeCard extends StatelessWidget {
   final double multiplier;
   final DisasterType? activeDisaster;
   final int gems;
+  final GameManager game;
   final VoidCallback onInvest;
 
   const _PassiveIncomeCard({
@@ -93,6 +98,7 @@ class _PassiveIncomeCard extends StatelessWidget {
     required this.multiplier,
     this.activeDisaster,
     required this.gems,
+    required this.game,
     required this.onInvest,
   });
 
@@ -103,6 +109,7 @@ class _PassiveIncomeCard extends StatelessWidget {
         : 0;
 
     return Card(
+      color: Theme.of(context).colorScheme.surfaceVariant,
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -126,12 +133,15 @@ class _PassiveIncomeCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.green,
+                      color: AppColors.of(context, 'success'),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       "$investedCount Invested",
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
               ],
@@ -139,7 +149,10 @@ class _PassiveIncomeCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               "Based on: ${assetLabel(info.assetType)}",
-              style: const TextStyle(color: Colors.grey, fontSize: 14),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 14,
+              ),
             ),
             const SizedBox(height: 8),
             IconText("Investment: ${info.investmentCost} [GEM]"),
@@ -156,25 +169,28 @@ class _PassiveIncomeCard extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.1),
+                  color: AppColors.of(context, 'surfaceVariant'),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange, width: 2),
+                  border: Border.all(
+                    color: AppColors.of(context, 'warning'),
+                    width: 2,
+                  ),
                 ),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.error_outline,
-                          color: Colors.orange,
+                          color: AppColors.of(context, 'warning'),
                           size: 20,
                         ),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           "MISSING BUILDING",
                           style: TextStyle(
-                            color: Colors.orange,
+                            color: AppColors.of(context, 'warning'),
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
@@ -196,15 +212,18 @@ class _PassiveIncomeCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.1),
+                  color: AppColors.of(
+                    context,
+                    'success',
+                  ).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green),
+                  border: Border.all(color: AppColors.of(context, 'success')),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.check_circle,
-                      color: Colors.green,
+                      color: AppColors.of(context, 'success'),
                       size: 16,
                     ),
                     const SizedBox(width: 8),
@@ -223,20 +242,30 @@ class _PassiveIncomeCard extends StatelessWidget {
                             if (multiplier < 1.0)
                               TextSpan(
                                 text: "$potentialIncome",
-                                style: const TextStyle(
+                                style: TextStyle(
                                   decoration: TextDecoration.lineThrough,
-                                  color: Colors.grey,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
-                            TextSpan(
-                              text:
-                                  " ${(potentialIncome * multiplier).round()} [GEM] per cycle!",
+                            ...IconText.parseText(
+                              " ${(potentialIncome * multiplier).round()} [GEM] per cycle!",
+                              TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.color,
+                              ),
+                              context,
                             ),
                             if (multiplier < 1.0 && activeDisaster != null)
                               TextSpan(
-                                text: " (due to ${activeDisaster!.name})",
+                                text:
+                                    " (due to ${game.disasterLabel(activeDisaster!)})",
                                 style: TextStyle(
-                                  color: Colors.red.shade900,
+                                  color: AppColors.of(context, 'error'),
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -255,10 +284,14 @@ class _PassiveIncomeCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: canInvest ? onInvest : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: canInvest ? Colors.green : Colors.grey,
-                    foregroundColor: Colors.white,
+                    backgroundColor: canInvest
+                        ? AppColors.of(context, 'success')
+                        : Theme.of(
+                            context,
+                          ).colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   ),
-                  child: Text(
+                  child: IconText(
                     canInvest
                         ? (investedCount == 0
                               ? "Invest (${info.investmentCost} [GEM])"

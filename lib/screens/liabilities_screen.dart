@@ -530,7 +530,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
               return SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text("${assetLabel(type)} Insurance"),
-                subtitle: const Text(
+                subtitle: const IconText(
                   "Cost: 5 [GEM]/cycle, 80% protection",
                   style: TextStyle(fontSize: 12),
                 ),

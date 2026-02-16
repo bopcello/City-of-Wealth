@@ -290,12 +290,12 @@ class GameManager extends ChangeNotifier {
     for (int i = 0; i < cycles; i++) {
       cycleTracker++;
       if (nextDisasterCycle == null) {
-        nextDisasterCycle = 20 + Random().nextInt(20);
+        nextDisasterCycle = 15 + Random().nextInt(5);
       } else {
         nextDisasterCycle = nextDisasterCycle! - 1;
         if (nextDisasterCycle! <= 0) {
           _triggerNaturalDisaster();
-          nextDisasterCycle = 20 + Random().nextInt(20);
+          nextDisasterCycle = 15 + Random().nextInt(5);
         }
       }
 

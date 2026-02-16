@@ -1,6 +1,6 @@
 # City of Wealth 💎
 
-A premium isometric idle-simulation game built with Flutter. Manage your career, build a sprawling city, and navigate the risks of a dynamic economy.
+A premium idle-simulation game built with Flutter. Manage your career, build a sprawling city, and navigate the risks of a dynamic economy.
 
 ## 🚀 How to Run
 To run this game on any device (Android, iOS, or Web):
