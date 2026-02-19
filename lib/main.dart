@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'logic/game_manager.dart';
 import 'services/music_manager.dart';
@@ -11,8 +12,14 @@ import 'theme/app_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await NotificationService().initialize();
+
+  // Parallel initialization for faster startup
+  await Future.wait([
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    NotificationService().initialize(),
+    SharedPreferences.getInstance(), // Pre-warm the cache
+  ]);
+
   runApp(const CityOfWealthApp());
 }
 
@@ -41,11 +48,11 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
 
     // Listen to app lifecycle to stop/resume music and sync cloud
     _lifecycleListener = AppLifecycleListener(
-      onStateChange: (AppLifecycleState state) {
+      onStateChange: (AppLifecycleState state) async {
         if (state == AppLifecycleState.paused ||
             state == AppLifecycleState.detached) {
           music.pauseMusic();
-          game.syncWithCloud();
+          await game.syncWithCloud();
         } else if (state == AppLifecycleState.resumed) {
           music.resumeMusic();
         }

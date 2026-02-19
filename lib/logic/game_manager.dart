@@ -35,6 +35,7 @@ class GameManager extends ChangeNotifier {
   double sfxVolume = 1.0;
   String playerName = "User";
   int _selectedIndex = 0;
+  String? _currentUid;
 
   int get selectedIndex => _selectedIndex;
   set selectedIndex(int value) {
@@ -75,16 +76,23 @@ class GameManager extends ChangeNotifier {
   Timer? _cycleTimer;
 
   GameManager() {
-    _loadGame();
+    _currentUid = FirebaseAuth.instance.currentUser?.uid;
+    _loadGame(useCloud: false);
     _cycleTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (loaded) _checkDailyCycle();
     });
 
     // Listen to Auth state changes to reload data on login
     FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null && loaded) {
-        // Trigger a reload when a user signs in
-        _loadGame();
+      if (user != null) {
+        if (_currentUid == null || _currentUid != user.uid) {
+          // Trigger a cloud reload ONLY when a new user signs in
+          // or the user changes, not on every app start if already logged in.
+          _currentUid = user.uid;
+          _loadGame(useCloud: true);
+        }
+      } else {
+        _currentUid = null;
       }
     });
   }
@@ -92,11 +100,11 @@ class GameManager extends ChangeNotifier {
   @override
   void dispose() {
     _cycleTimer?.cancel();
-    syncWithCloud(); // Final sync on app exit
+    syncWithCloud(); // Final sync on app exit (fire and forget in dispose)
     super.dispose();
   }
 
-  Future<void> _loadGame() async {
+  Future<void> _loadGame({bool useCloud = false}) async {
     if (loaded) {
       loaded = false;
       notifyListeners();
@@ -129,6 +137,7 @@ class GameManager extends ChangeNotifier {
       savedSfxVolume,
     ) = await loadGameState(
       uid: uid,
+      useCloud: useCloud,
     );
 
     kp = savedKp;
@@ -168,11 +177,11 @@ class GameManager extends ChangeNotifier {
   Future<void> forceCloudLoad() async {
     loaded = false;
     notifyListeners();
-    await _loadGame();
+    await _loadGame(useCloud: true);
   }
 
-  void syncWithCloud() {
-    saveGameState(
+  Future<void> syncWithCloud() async {
+    await saveGameState(
       uid: FirebaseAuth.instance.currentUser?.uid,
       syncToCloud: true,
       kp: kp,

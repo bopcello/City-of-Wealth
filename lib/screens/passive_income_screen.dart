@@ -110,6 +110,8 @@ class _PassiveIncomeCard extends StatelessWidget {
 
     return Card(
       color: Theme.of(context).colorScheme.surfaceVariant,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),

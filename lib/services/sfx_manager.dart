@@ -11,8 +11,14 @@ class SfxManager {
   bool _isDisposed = false;
 
   SfxManager() {
-    // Initialize a pool of players.
-    // We use mediaPlayer mode for both Music and SFX to avoid SoundPool/MediaPlayer conflicts on Android during loops.
+    // We will initialize the pool lazily when the first sound is played
+    // to avoid heavy work during cold start.
+  }
+
+  Future<void> _ensurePoolInitialized() async {
+    if (_pool.isNotEmpty) return;
+
+    debugPrint('[SFX_SYSTEM] Initializing sound pool...');
     for (int i = 0; i < _poolSize; i++) {
       final player = AudioPlayer();
       player.audioCache.prefix = '';
@@ -40,6 +46,7 @@ class SfxManager {
 
   Future<void> _playSound(String assetPath) async {
     if (_isDisposed) return;
+    await _ensurePoolInitialized();
     try {
       // Rotate through the pool to allow overlapping sounds
       final player = _pool[_poolIndex];

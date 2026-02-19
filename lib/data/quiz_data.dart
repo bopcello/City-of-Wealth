@@ -5864,7 +5864,7 @@ final List<QuizMetadata> _level4Quizzes = [
     id: 'l4_q14',
     title: 'Venture Capital & Equity',
     subtitle: 'Risk capital and ownership economics',
-    difficulty: QuizDifficulty.hard,
+    difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
@@ -5943,7 +5943,7 @@ final List<QuizMetadata> _level4Quizzes = [
     id: 'l4_q15',
     title: 'IPOs & The Public Market',
     subtitle: 'Transitioning from private to public capital',
-    difficulty: QuizDifficulty.hard,
+    difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
@@ -6022,7 +6022,7 @@ final List<QuizMetadata> _level4Quizzes = [
     id: 'l4_q16',
     title: 'Hedge Funds & Investing',
     subtitle: 'Active strategies and risk-adjusted returns',
-    difficulty: QuizDifficulty.hard,
+    difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
@@ -6102,7 +6102,7 @@ final List<QuizMetadata> _level4Quizzes = [
     id: 'l4_q17',
     title: 'Bond Markets & Yields',
     subtitle: 'Interest rates and fixed-income risk',
-    difficulty: QuizDifficulty.hard,
+    difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
       QuizQuestion(
@@ -6181,7 +6181,7 @@ final List<QuizMetadata> _level4Quizzes = [
     id: 'l4_q18',
     title: 'REITs & Alternatives',
     subtitle: 'Diversification beyond traditional assets',
-    difficulty: QuizDifficulty.hard,
+    difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
       QuizQuestion(

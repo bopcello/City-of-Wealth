@@ -74,11 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Logo/Icon
-              Icon(
-                Icons.location_city,
-                size: 100,
-                color: AppColors.of(context, 'kp'),
-              ),
+              Image.asset('lib/assets/app_icon.png', height: 120),
               const SizedBox(height: 16),
               Text(
                 "City of Wealth",
@@ -86,6 +82,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   fontWeight: FontWeight.bold,
                   color: AppColors.of(context, 'onBackground'),
                 ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Master your Money",
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: AppColors.of(context, 'onSurfaceVariant'),
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
@@ -127,19 +134,32 @@ class _LoginScreenState extends State<LoginScreen> {
               // Auth Button
               SizedBox(
                 width: double.infinity,
-                height: 50,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _handleEmailAuth,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.of(context, 'kp'),
-                    foregroundColor: Colors.white,
+                    backgroundColor: AppColors.of(context, 'primary'),
+                    foregroundColor: AppColors.of(context, 'onPrimary'),
+                    padding: const EdgeInsets.all(16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : Text(_isSignUp ? "Register" : "Sign In"),
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(
+                          _isSignUp ? "Create account" : "Sign in",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 16),

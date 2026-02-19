@@ -7,6 +7,7 @@ import '../theme/app_colors.dart';
 import '../widgets/counter_chip.dart';
 import '../widgets/name_entry_dialog.dart';
 import '../widgets/disaster_report_dialog.dart';
+import '../screens/loading_screen.dart';
 import '../tabs/home_tab.dart';
 import '../tabs/city_tab.dart';
 import '../tabs/money_tab.dart';
@@ -97,7 +98,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final game = widget.game;
     if (!game.loaded) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const LoadingScreen();
     }
 
     return PopScope(

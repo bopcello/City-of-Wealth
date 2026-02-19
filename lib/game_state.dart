@@ -373,7 +373,7 @@ const buildings = [
   Building(
     name: "The Keystone",
     track: CareerTrack.business,
-    requiredLevel: 99, // Hidden from normal lists
+    requiredLevel: 5,
     requirements: {},
   ),
 ];
@@ -528,7 +528,7 @@ Future<void> saveGameState({
   required double musicVolume,
   required double sfxVolume,
 }) async {
-  final prefs = await SharedPreferences.getInstance();
+  final prefs = await _getPrefs();
   debugPrint("💾 SAVING GAME LOCALLY");
 
   final data = {
@@ -630,6 +630,13 @@ Future<void> saveGameState({
   }
 }
 
+SharedPreferences? _prefsCache;
+
+Future<SharedPreferences> _getPrefs() async {
+  _prefsCache ??= await SharedPreferences.getInstance();
+  return _prefsCache!;
+}
+
 Future<
   (
     int,
@@ -658,11 +665,11 @@ Future<
     double,
   )
 >
-loadGameState({String? uid}) async {
-  final prefs = await SharedPreferences.getInstance();
+loadGameState({String? uid, bool useCloud = false}) async {
+  final prefs = await _getPrefs();
 
   Map<String, dynamic>? cloudData;
-  if (uid != null) {
+  if (uid != null && useCloud) {
     cloudData = await FirestoreService().getPlayerProgress(uid);
   }
 

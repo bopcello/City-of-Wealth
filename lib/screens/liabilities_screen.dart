@@ -392,7 +392,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
 
     return Card(
       color: Theme.of(context).colorScheme.surfaceVariant,
-      elevation: 2,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -504,7 +505,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
 
     return Card(
       color: Theme.of(context).colorScheme.surfaceVariant,
-      elevation: 2,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -552,7 +554,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     final isAvailable = remaining > 0;
 
     return Card(
-      elevation: 2,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: Theme.of(context).colorScheme.surfaceVariant,
       child: Padding(
@@ -678,7 +681,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
   }) {
     bool isLocked = selectedValue != null;
     return Card(
-      elevation: 2,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
       color: Theme.of(context).colorScheme.surfaceVariant,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(

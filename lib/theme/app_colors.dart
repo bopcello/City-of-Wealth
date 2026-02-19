@@ -7,7 +7,7 @@ class AppColors {
   // --- LIGHT MODE COLORS ---
   static final Map<String, Color> light = {
     'primary': primarySeed,
-    'background': const Color(0xFFF8F9FA),
+    'background': const Color.fromARGB(255, 255, 255, 255),
     'surface': Colors.white,
     'surfaceVariant': Colors.amber.shade800.withValues(alpha: 0.2),
     'onBackground': const Color(0xFF202124),
