@@ -393,7 +393,6 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     return Card(
       color: Theme.of(context).colorScheme.surfaceVariant,
       elevation: 0,
-      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -748,7 +747,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                             onSelected(val);
                           }
                         },
-                  selectedColor: Theme.of(context).colorScheme.surfaceVariant,
+                  selectedColor: Colors.amber.withValues(alpha: 0.1),
                 );
               }).toList(),
             ),

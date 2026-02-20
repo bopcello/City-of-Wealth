@@ -43,9 +43,9 @@ class AppColors {
     'kp': Colors.amber.shade400,
     'passive': Colors.teal.shade400,
     'gridGreen': Colors.green.shade200,
-    'rent': Colors.indigo.shade900.withValues(alpha: 0.5),
-    'food': Colors.green.shade900.withValues(alpha: 0.5),
-    'transport': Colors.deepPurple.shade900.withValues(alpha: 0.5),
+    'rent': Colors.blue.shade800.withValues(alpha: 0.5),
+    'food': Colors.green.shade800.withValues(alpha: 0.5),
+    'transport': Colors.purple.shade800.withValues(alpha: 0.5),
   };
 
   // Helper to get color based on context

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'logic/game_manager.dart';
 import 'services/music_manager.dart';
@@ -12,14 +11,8 @@ import 'theme/app_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Parallel initialization for faster startup
-  await Future.wait([
-    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
-    NotificationService().initialize(),
-    SharedPreferences.getInstance(), // Pre-warm the cache
-  ]);
-
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await NotificationService().initialize();
   runApp(const CityOfWealthApp());
 }
 
@@ -50,9 +43,12 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
     _lifecycleListener = AppLifecycleListener(
       onStateChange: (AppLifecycleState state) async {
         if (state == AppLifecycleState.paused ||
-            state == AppLifecycleState.detached) {
+            state == AppLifecycleState.detached ||
+            state == AppLifecycleState.inactive ||
+            state == AppLifecycleState.hidden) {
           music.pauseMusic();
           await game.syncWithCloud();
+          await NotificationService().scheduleInactivityNotification();
         } else if (state == AppLifecycleState.resumed) {
           music.resumeMusic();
         }
@@ -71,7 +67,6 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
   @override
   void dispose() {
     _lifecycleListener.dispose();
-    game.syncWithCloud();
     game.removeListener(_syncVolume);
     game.dispose();
     music.dispose();

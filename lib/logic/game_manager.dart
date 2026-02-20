@@ -36,6 +36,7 @@ class GameManager extends ChangeNotifier {
   String playerName = "User";
   int _selectedIndex = 0;
   String? _currentUid;
+  DateTime? _lastSyncTime;
 
   int get selectedIndex => _selectedIndex;
   set selectedIndex(int value) {
@@ -76,8 +77,9 @@ class GameManager extends ChangeNotifier {
   Timer? _cycleTimer;
 
   GameManager() {
-    _currentUid = FirebaseAuth.instance.currentUser?.uid;
-    _loadGame(useCloud: false);
+    final user = FirebaseAuth.instance.currentUser;
+    _currentUid = user?.uid;
+    _loadGame(useCloud: user != null);
     _cycleTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (loaded) _checkDailyCycle();
     });
@@ -100,77 +102,91 @@ class GameManager extends ChangeNotifier {
   @override
   void dispose() {
     _cycleTimer?.cancel();
-    syncWithCloud(); // Final sync on app exit (fire and forget in dispose)
     super.dispose();
   }
 
   Future<void> _loadGame({bool useCloud = false}) async {
-    if (loaded) {
-      loaded = false;
+    try {
+      if (loaded) {
+        loaded = false;
+        notifyListeners();
+      }
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      final (
+        savedKp,
+        savedGems,
+        savedCareer,
+        savedIncomeTime,
+        savedLayout,
+        savedAssets,
+        savedRent,
+        savedFood,
+        savedTransport,
+        savedInsurances,
+        savedBankruptcyCount,
+        savedDebtCycleCount,
+        savedNextDestructionCycle,
+        savedNextDisasterCycle,
+        savedWall,
+        savedCompletedQuizzes,
+        savedIsWorkingOvertime,
+        savedOvertimeStreak,
+        savedActivePassiveIncomes,
+        savedActiveDisasterEffects,
+        savedPlayerName,
+        savedIsDarkMode,
+        savedMusicVolume,
+        savedSfxVolume,
+        savedPendingDisasterResults,
+      ) = await loadGameState(
+        uid: uid,
+        useCloud: useCloud,
+      );
+
+      kp = savedKp;
+      gems = savedGems;
+      career = savedCareer;
+      lastIncomeTime = savedIncomeTime;
+      cityLayout = savedLayout;
+      assets = savedAssets;
+      rentChoice = savedRent;
+      foodChoice = savedFood;
+      transportChoice = savedTransport;
+      insurances = savedInsurances;
+      bankruptcyCount = savedBankruptcyCount;
+      debtCycleCount = savedDebtCycleCount;
+      nextDestructionCycle = savedNextDestructionCycle;
+      nextDisasterCycle = savedNextDisasterCycle;
+      hasWall = savedWall ?? false;
+      completedQuizzes = savedCompletedQuizzes;
+      isWorkingOvertime = savedIsWorkingOvertime;
+      overtimeStreak = savedOvertimeStreak;
+      activePassiveIncomes = savedActivePassiveIncomes;
+      activeDisasterEffects = savedActiveDisasterEffects;
+      playerName = savedPlayerName;
+      isDarkMode = savedIsDarkMode;
+      musicVolume = savedMusicVolume;
+      sfxVolume = savedSfxVolume;
+      pendingDisasterResults = savedPendingDisasterResults;
+      loaded = true;
       notifyListeners();
-    }
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    final (
-      savedKp,
-      savedGems,
-      savedCareer,
-      savedIncomeTime,
-      savedLayout,
-      savedAssets,
-      savedRent,
-      savedFood,
-      savedTransport,
-      savedInsurances,
-      savedBankruptcyCount,
-      savedDebtCycleCount,
-      savedNextDestructionCycle,
-      savedNextDisasterCycle,
-      savedWall,
-      savedCompletedQuizzes,
-      savedIsWorkingOvertime,
-      savedOvertimeStreak,
-      savedActivePassiveIncomes,
-      savedActiveDisasterEffects,
-      savedPlayerName,
-      savedIsDarkMode,
-      savedMusicVolume,
-      savedSfxVolume,
-    ) = await loadGameState(
-      uid: uid,
-      useCloud: useCloud,
-    );
 
-    kp = savedKp;
-    gems = savedGems;
-    career = savedCareer;
-    lastIncomeTime = savedIncomeTime;
-    cityLayout = savedLayout;
-    assets = savedAssets;
-    rentChoice = savedRent;
-    foodChoice = savedFood;
-    transportChoice = savedTransport;
-    insurances = savedInsurances;
-    bankruptcyCount = savedBankruptcyCount;
-    debtCycleCount = savedDebtCycleCount;
-    nextDestructionCycle = savedNextDestructionCycle;
-    nextDisasterCycle = savedNextDisasterCycle;
-    hasWall = savedWall ?? false;
-    completedQuizzes = savedCompletedQuizzes;
-    isWorkingOvertime = savedIsWorkingOvertime;
-    overtimeStreak = savedOvertimeStreak;
-    activePassiveIncomes = savedActivePassiveIncomes;
-    activeDisasterEffects = savedActiveDisasterEffects;
-    playerName = savedPlayerName;
-    isDarkMode = savedIsDarkMode;
-    musicVolume = savedMusicVolume;
-    sfxVolume = savedSfxVolume;
-    loaded = true;
-    notifyListeners();
-
-    // Only start cycles if the player has already set their name.
-    // This allows the NameEntryDialog to be the first thing the user sees.
-    if (playerName != "User") {
-      _checkDailyCycle();
+      // Only start cycles if the player has already set their name.
+      // This allows the NameEntryDialog to be the first thing the user sees.
+      if (playerName != "User") {
+        _checkDailyCycle();
+        NotificationService().scheduleDailyNotifications();
+      }
+    } catch (e) {
+      debugPrint("❌ Error loading game: $e");
+      // Fallback to local if cloud fails?
+      if (useCloud) {
+        debugPrint("🔄 Attempting fallback to local load...");
+        await _loadGame(useCloud: false);
+      } else {
+        loaded = true; // Ensure we stop the loading state
+        notifyListeners();
+      }
     }
   }
 
@@ -181,6 +197,14 @@ class GameManager extends ChangeNotifier {
   }
 
   Future<void> syncWithCloud() async {
+    final now = DateTime.now();
+    if (_lastSyncTime != null &&
+        now.difference(_lastSyncTime!) < const Duration(seconds: 5)) {
+      debugPrint("⏳ Skipping cloud sync (already synced recently)");
+      return;
+    }
+    _lastSyncTime = now;
+
     await saveGameState(
       uid: FirebaseAuth.instance.currentUser?.uid,
       syncToCloud: true,
@@ -208,6 +232,7 @@ class GameManager extends ChangeNotifier {
       isDarkMode: isDarkMode,
       musicVolume: musicVolume,
       sfxVolume: sfxVolume,
+      pendingDisasterResults: pendingDisasterResults,
     );
   }
 
@@ -239,6 +264,7 @@ class GameManager extends ChangeNotifier {
       isDarkMode: isDarkMode,
       musicVolume: musicVolume,
       sfxVolume: sfxVolume,
+      pendingDisasterResults: pendingDisasterResults,
     );
     NotificationService().scheduleInactivityNotification();
   }
@@ -483,6 +509,11 @@ class GameManager extends ChangeNotifier {
 
     notifyListeners();
     save();
+
+    // Trigger debt notification if in debt after cycles
+    if (gems < 0 && cycles > 0) {
+      NotificationService().showDebtNotification();
+    }
   }
 
   void clearEvents() {
@@ -934,7 +965,41 @@ class GameManager extends ChangeNotifier {
       ),
     );
 
-    NotificationService().showDisasterNotification(disasterType);
+    // Determine insurance status for the notification variant
+    bool isInsuredForDisaster = false;
+    if (assetDisasters.contains(disasterType)) {
+      if (disasterType == DisasterType.flood) {
+        isInsuredForDisaster = insurances.contains(AssetType.land);
+      } else if (disasterType == DisasterType.fire) {
+        isInsuredForDisaster =
+            insurances.contains(AssetType.properties) ||
+            insurances.contains(AssetType.vehicles);
+      } else if (disasterType == DisasterType.earthquake) {
+        isInsuredForDisaster =
+            insurances.contains(AssetType.officeEquipment) ||
+            insurances.contains(AssetType.machinery);
+      }
+    } else {
+      // Passive income disaster mapping
+      AssetType? target;
+      if (disasterType == DisasterType.drought) target = AssetType.land;
+      if (disasterType == DisasterType.landslide) target = AssetType.vehicles;
+      if (disasterType == DisasterType.economyCrash)
+        target = AssetType.machinery;
+      if (disasterType == DisasterType.massEmigration)
+        target = AssetType.properties;
+      if (disasterType == DisasterType.pandemic)
+        target = AssetType.officeEquipment;
+
+      if (target != null) {
+        isInsuredForDisaster = insurances.contains(target);
+      }
+    }
+
+    NotificationService().showDisasterNotification(
+      disasterType,
+      isInsuredForDisaster,
+    );
 
     pendingEvents.add(
       "DISASTER: ${disasterLabel(disasterType)}! Check the detail report for losses and insurance coverage.",
@@ -967,6 +1032,7 @@ class GameManager extends ChangeNotifier {
 
   void clearDisasterResults() {
     pendingDisasterResults.clear();
+    save();
     notifyListeners();
   }
 }

@@ -222,7 +222,6 @@ class _CityTabState extends State<CityTab> {
                 right: 16,
                 bottom: 90,
                 child: FloatingActionButton.extended(
-                  heroTag: 'editLayoutFab',
                   onPressed: () {
                     widget.sfx.playClick();
                     _toggleEditMode();
@@ -238,7 +237,6 @@ class _CityTabState extends State<CityTab> {
                 right: 16,
                 bottom: 16,
                 child: FloatingActionButton.extended(
-                  heroTag: 'addBuildingsFab',
                   onPressed: () {
                     widget.sfx.playClick();
                     // Close edit mode if it's on

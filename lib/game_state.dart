@@ -527,8 +527,9 @@ Future<void> saveGameState({
   required bool isDarkMode,
   required double musicVolume,
   required double sfxVolume,
+  required List<DisasterResult> pendingDisasterResults,
 }) async {
-  final prefs = await _getPrefs();
+  final prefs = await SharedPreferences.getInstance();
   debugPrint("💾 SAVING GAME LOCALLY");
 
   final data = {
@@ -561,6 +562,9 @@ Future<void> saveGameState({
     _isDarkModeKey: isDarkMode,
     _musicVolumeKey: musicVolume,
     _sfxVolumeKey: sfxVolume,
+    'pendingDisasterResults': jsonEncode(
+      pendingDisasterResults.map((e) => e.toJson()).toList(),
+    ),
   };
 
   // Local Save
@@ -623,18 +627,15 @@ Future<void> saveGameState({
   await prefs.setBool(_isDarkModeKey, isDarkMode);
   await prefs.setDouble(_musicVolumeKey, musicVolume);
   await prefs.setDouble(_sfxVolumeKey, sfxVolume);
+  await prefs.setString(
+    'pendingDisasterResults',
+    data['pendingDisasterResults'] as String,
+  );
 
   // Cloud Save
   if (syncToCloud && uid != null) {
     await FirestoreService().savePlayerProgress(uid, data);
   }
-}
-
-SharedPreferences? _prefsCache;
-
-Future<SharedPreferences> _getPrefs() async {
-  _prefsCache ??= await SharedPreferences.getInstance();
-  return _prefsCache!;
 }
 
 Future<
@@ -663,10 +664,11 @@ Future<
     bool,
     double,
     double,
+    List<DisasterResult>,
   )
 >
 loadGameState({String? uid, bool useCloud = false}) async {
-  final prefs = await _getPrefs();
+  final prefs = await SharedPreferences.getInstance();
 
   Map<String, dynamic>? cloudData;
   if (uid != null && useCloud) {
@@ -814,6 +816,19 @@ loadGameState({String? uid, bool useCloud = false}) async {
     );
   }
 
+  final disasterResultsJson =
+      data['pendingDisasterResults'] ??
+      prefs.getString('pendingDisasterResults');
+  List<DisasterResult> pendingDisasterResults = [];
+  if (disasterResultsJson != null) {
+    final List<dynamic> decoded = disasterResultsJson is String
+        ? jsonDecode(disasterResultsJson)
+        : disasterResultsJson;
+    pendingDisasterResults = decoded
+        .map((item) => DisasterResult.fromJson(item))
+        .toList();
+  }
+
   debugPrint("Loaded KP: $kp");
   debugPrint("Loaded Gems: $gems");
   debugPrint("Loaded Track: ${track.name}");
@@ -847,6 +862,7 @@ loadGameState({String? uid, bool useCloud = false}) async {
     isDarkMode as bool,
     musicVolume as double,
     sfxVolume as double,
+    pendingDisasterResults,
   );
 }
 

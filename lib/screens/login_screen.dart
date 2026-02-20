@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/notification_service.dart';
 import '../theme/app_colors.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -29,6 +30,8 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordController.text.trim(),
         );
       }
+      // Request notifications permission only once on login/signup
+      await NotificationService().requestPermissions();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -47,6 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
     try {
       await AuthService().signInWithGoogle();
+      // Request notifications permission only once on login
+      await NotificationService().requestPermissions();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -134,32 +139,19 @@ class _LoginScreenState extends State<LoginScreen> {
               // Auth Button
               SizedBox(
                 width: double.infinity,
+                height: 50,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _handleEmailAuth,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.of(context, 'primary'),
-                    foregroundColor: AppColors.of(context, 'onPrimary'),
-                    padding: const EdgeInsets.all(16),
+                    backgroundColor: AppColors.of(context, 'kp'),
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          _isSignUp ? "Create account" : "Sign in",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(_isSignUp ? "Register" : "Sign In"),
                 ),
               ),
               const SizedBox(height: 16),
