@@ -15,20 +15,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Debug Info
+        run: |
+          echo "Current working directory: $(pwd)"
+          ls -R ..
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: scripts/package-lock.json
 
       - name: Install Dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+        run: npm install
 
       - name: Run Generator Script
         run: node daily_quiz_generator.js
