@@ -32,12 +32,16 @@ async function generateDailyQuiz() {
   console.log(`Fetched ${recentHashes.length} recent hashes.`);
 
   // 2. Prepare Prompt
+  const hashConstraint = recentHashes.length > 0 
+    ? `AVOID topics related to these hashes to ensure uniqueness: ${recentHashes.join(', ')}` 
+    : "This is the first question, so you have full creative freedom!";
+
   const prompt = `
 Generate ONE unique financial quiz question for a mobile app "City of Wealth".
 The question should be related to current affairs, the stock market, or general knowledge in the finance world.
 The user base ranges from students to business owners, so make it informative and engaging.
 
-AVOID topics related to these hashes: ${recentHashes.join(', ')}
+${hashConstraint}
 
 Return the output in EXACTLY this JSON format:
 {
@@ -57,12 +61,13 @@ Ensure the explanations are thorough (at least 2-3 sentences).
   // 3. Call Gemini AI
   try {
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         contents: [{ parts: [{ text: prompt }] }]
       }
     );
 
+    const content = response.data.candidates[0].content.parts[0].text;
     console.log('Raw Gemini Response:', content);
     
     // Extract JSON from potential markdown code block
@@ -106,7 +111,7 @@ Ensure the explanations are thorough (at least 2-3 sentences).
     console.log('Updated recent hashes metadata.');
 
   } catch (error) {
-    console.error('Error in quiz generation:', error.response ? error.response.data : error.message);
+    console.error('Error in quiz generation:', error.response ? JSON.stringify(error.response.data, null, 2) : error.message);
     process.exit(1);
   }
 }
