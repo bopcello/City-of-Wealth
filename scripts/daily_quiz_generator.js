@@ -23,7 +23,7 @@ async function generateDailyQuiz() {
   }
 
   // 1. Fetch recent hashes to avoid repetition
-  const metadataDoc = await db.collection('Daily questions metadata').doc('recent_hashes').get();
+  const metadataDoc = await db.collection('daily_quizzes_metadata').doc('recent_hashes').get();
   let recentHashes = [];
   if (metadataDoc.exists) {
     recentHashes = metadataDoc.data().hashes || [];
@@ -80,14 +80,15 @@ Ensure the explanations are thorough (at least 2-3 sentences).
     const quizData = JSON.parse(jsonMatch[0]);
     console.log('Successfully parsed quiz data for topic:', quizData.title);
 
-    // 4. Generate Hash (15 chars)
+    // 4. Generate Hash (Topic-based to avoid repetition)
+    // We hash the lowercase title to use as a deduplication key.
     const topicHash = crypto.createHash('md5').update(quizData.title.toLowerCase()).digest('hex').substring(0, 15);
     
-    // 5. Save to Firestore
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    // 5. Save to Firestore (using IST date to match daily cron)
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }); // YYYY-MM-DD
     const quizId = `daily_${today}`;
 
-    await db.collection('Daily questions').doc(quizId).set({
+    await db.collection('daily_quizzes').doc(quizId).set({
       ...quizData,
       id: quizId,
       hash: topicHash,
@@ -102,7 +103,7 @@ Ensure the explanations are thorough (at least 2-3 sentences).
     recentHashes.unshift(topicHash);
     if (recentHashes.length > 30) recentHashes.pop();
 
-    await db.collection('Daily questions metadata').doc('recent_hashes').set({
+    await db.collection('daily_quizzes_metadata').doc('recent_hashes').set({
       hashes: recentHashes,
       lastUpdated: admin.firestore.FieldValue.serverTimestamp()
     });
