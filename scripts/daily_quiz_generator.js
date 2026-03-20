@@ -37,9 +37,8 @@ async function generateDailyQuiz() {
     : "This is the first question, so you have full creative freedom!";
 
   const prompt = `
-Generate ONE unique financial quiz question for a mobile app "City of Wealth".
-The question should be related to current affairs, the stock market, or general knowledge in the finance world.
-The user base ranges from students to business owners, so make it informative and engaging.
+Generate ONE unique financial quiz question which is very difficult to answer for the average person.
+The question should be related to current affairs or general knowledge in the finance world.
 
 ${hashConstraint}
 
