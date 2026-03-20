@@ -63,11 +63,18 @@ Ensure the explanations are thorough (at least 2-3 sentences).
       }
     );
 
-    const content = response.data.candidates[0].content.parts[0].text;
+    console.log('Raw Gemini Response:', content);
+    
     // Extract JSON from potential markdown code block
     const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('No JSON found in response');
+    if (!jsonMatch) {
+      console.error('Full response text:', content);
+      throw new Error('No JSON found in response');
+    }
+    
+    console.log('Extracted JSON string:', jsonMatch[0]);
     const quizData = JSON.parse(jsonMatch[0]);
+    console.log('Successfully parsed quiz data for topic:', quizData.title);
 
     // 4. Generate Hash (15 chars)
     const topicHash = crypto.createHash('md5').update(quizData.title.toLowerCase()).digest('hex').substring(0, 15);
