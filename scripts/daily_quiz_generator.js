@@ -33,9 +33,8 @@ async function generateDailyQuiz() {
 
   // 2. Prepare Prompt
   const prompt = `
-Generate ONE unique financial quiz question for a mobile app "City of Wealth".
-The question should be related to current affairs, the stock market, or general knowledge in the finance world.
-The user base ranges from students to business owners, so make it informative and engaging.
+Generate ONE unique financial quiz question which is very difficult to answer for the average person.
+The question should be related to current affairs or general knowledge in the finance world.
 
 AVOID topics related to these hashes: ${recentHashes.join(', ')}
 
@@ -57,7 +56,7 @@ Ensure the explanations are thorough (at least 2-3 sentences).
   // 3. Call Gemini AI
   try {
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         contents: [{ parts: [{ text: prompt }] }]
       }
