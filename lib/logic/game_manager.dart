@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../game_state.dart';
 import '../services/notification_service.dart';
+import '../services/firestore_service.dart';
 
 class GameManager extends ChangeNotifier {
   int kp = 0;
@@ -34,6 +35,8 @@ class GameManager extends ChangeNotifier {
   double musicVolume = 0.7;
   double sfxVolume = 1.0;
   String playerName = "User";
+  int dailyQuizStreak = 0;
+  String lastDailyQuizDate = "";
   int _selectedIndex = 0;
   String? _currentUid;
   DateTime? _lastSyncTime;
@@ -105,7 +108,7 @@ class GameManager extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<void> _loadGame({bool useCloud = false}) async {
+  Future<void> _loadGame({bool useCloud = false, bool force = false}) async {
     try {
       if (loaded) {
         loaded = false;
@@ -138,9 +141,12 @@ class GameManager extends ChangeNotifier {
         savedMusicVolume,
         savedSfxVolume,
         savedPendingDisasterResults,
+        savedDailyQuizStreak,
+        savedLastDailyQuizDate,
       ) = await loadGameState(
         uid: uid,
         useCloud: useCloud,
+        force: force,
       );
 
       kp = savedKp;
@@ -168,6 +174,8 @@ class GameManager extends ChangeNotifier {
       musicVolume = savedMusicVolume;
       sfxVolume = savedSfxVolume;
       pendingDisasterResults = savedPendingDisasterResults;
+      dailyQuizStreak = savedDailyQuizStreak;
+      lastDailyQuizDate = savedLastDailyQuizDate;
       loaded = true;
       notifyListeners();
 
@@ -193,20 +201,35 @@ class GameManager extends ChangeNotifier {
   Future<void> forceCloudLoad() async {
     loaded = false;
     notifyListeners();
-    await _loadGame(useCloud: true);
+    await _loadGame(useCloud: true, force: true);
   }
 
-  Future<void> syncWithCloud() async {
+  Future<void> syncWithCloud({bool force = false}) async {
+    if (!loaded) {
+      debugPrint("⚠️ Skipping cloud sync: Game manager not yet loaded");
+      return;
+    }
+
     final now = DateTime.now();
-    if (_lastSyncTime != null &&
+    if (!force &&
+        _lastSyncTime != null &&
         now.difference(_lastSyncTime!) < const Duration(seconds: 5)) {
       debugPrint("⏳ Skipping cloud sync (already synced recently)");
       return;
     }
+
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      debugPrint("⚠️ Skipping cloud sync: No authenticated user");
+      return;
+    }
+
     _lastSyncTime = now;
+    final context = force ? " (Forced Sync)" : "";
+    debugPrint("🔄 Triggering cloud sync for user $uid$context");
 
     await saveGameState(
-      uid: FirebaseAuth.instance.currentUser?.uid,
+      uid: uid,
       syncToCloud: true,
       kp: kp,
       gems: gems,
@@ -233,10 +256,17 @@ class GameManager extends ChangeNotifier {
       musicVolume: musicVolume,
       sfxVolume: sfxVolume,
       pendingDisasterResults: pendingDisasterResults,
+      dailyQuizStreak: dailyQuizStreak,
+      lastDailyQuizDate: lastDailyQuizDate,
     );
   }
 
   void save() {
+    if (!loaded) {
+      debugPrint("⚠️ Skipping local save: Game manager not yet loaded");
+      return;
+    }
+
     saveGameState(
       uid: FirebaseAuth.instance.currentUser?.uid,
       syncToCloud: false,
@@ -265,6 +295,8 @@ class GameManager extends ChangeNotifier {
       musicVolume: musicVolume,
       sfxVolume: sfxVolume,
       pendingDisasterResults: pendingDisasterResults,
+      dailyQuizStreak: dailyQuizStreak,
+      lastDailyQuizDate: lastDailyQuizDate,
     );
     NotificationService().scheduleInactivityNotification();
   }
@@ -285,6 +317,8 @@ class GameManager extends ChangeNotifier {
     int totalGemChange = 0;
     List<String> events = [];
 
+    final streakRewards = getStreakRewards(dailyQuizStreak);
+
     final hasAllEssentials =
         rentChoice != null && foodChoice != null && transportChoice != null;
     int income = dailyIncome(career.track, career.level);
@@ -300,8 +334,12 @@ class GameManager extends ChangeNotifier {
         final ownedCount = assets.count(assetType);
         final eligibleCount = min(ownedCount, investedCount);
 
-        passiveIncomeTotal += (eligibleCount * info.incomePerAsset * multiplier)
-            .round();
+        passiveIncomeTotal +=
+            (eligibleCount *
+                    info.incomePerAsset *
+                    multiplier *
+                    streakRewards.passiveIncomeMultiplier)
+                .round();
       }
     });
 
@@ -709,6 +747,8 @@ class GameManager extends ChangeNotifier {
     activePassiveIncomes = {};
     activeDisasterEffects = {};
     completedQuizzes = {};
+    dailyQuizStreak = 0;
+    lastDailyQuizDate = "";
 
     save();
     notifyListeners();
@@ -732,12 +772,34 @@ class GameManager extends ChangeNotifier {
     );
   }
 
+  void addKp(int delta) {
+    kp += delta;
+    if (kp < 0) kp = 0;
+    save();
+    notifyListeners();
+  }
+
   void markQuizCompleted(String quizId) {
-    if (!completedQuizzes.contains(quizId)) {
-      completedQuizzes.add(quizId);
-      save();
-      notifyListeners();
+    completedQuizzes.add(quizId);
+    save();
+    notifyListeners();
+  }
+
+  void completeDailyQuiz(bool correct, String date) {
+    if (lastDailyQuizDate == date) return;
+
+    if (correct) {
+      dailyQuizStreak++;
+    } else {
+      dailyQuizStreak = 0;
     }
+    lastDailyQuizDate = date;
+
+    save();
+    if (_currentUid != null) {
+      FirestoreService().updatePlayerStreak(_currentUid!, dailyQuizStreak, date);
+    }
+    notifyListeners();
   }
 
   void investInPassiveIncome(AssetType assetType) {
@@ -794,6 +856,8 @@ class GameManager extends ChangeNotifier {
         activeDisasterEffects.containsKey(DisasterType.pandemic)) {
       multiplier *= 0.10;
     }
+    final rewards = getStreakRewards(dailyQuizStreak);
+    multiplier *= rewards.passiveIncomeMultiplier;
     return multiplier;
   }
 
@@ -886,7 +950,7 @@ class GameManager extends ChangeNotifier {
 
     if (passiveIncomeDisasters.contains(disasterType)) {
       // PASSIVE INCOME DISASTERS: Reduce yield and deactivate units
-      const duration = 30;
+      const duration = 20;
       activeDisasterEffects[disasterType] = duration;
 
       switch (disasterType) {

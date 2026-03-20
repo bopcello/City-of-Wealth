@@ -262,6 +262,11 @@ class _PassiveIncomeCard extends StatelessWidget {
                               ),
                               context,
                             ),
+                            if (getStreakRewards(game.dailyQuizStreak).passiveIncomeMultiplier > 1.0)
+                              TextSpan(
+                                text: " (incl. ${((getStreakRewards(game.dailyQuizStreak).passiveIncomeMultiplier - 1.0) * 100).toInt()}% streak bonus)",
+                                style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.normal),
+                              ),
                             if (multiplier < 1.0 && activeDisaster != null)
                               TextSpan(
                                 text:

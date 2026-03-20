@@ -43,12 +43,14 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
     _lifecycleListener = AppLifecycleListener(
       onStateChange: (AppLifecycleState state) async {
         if (state == AppLifecycleState.paused ||
-            state == AppLifecycleState.detached ||
-            state == AppLifecycleState.inactive ||
-            state == AppLifecycleState.hidden) {
+            state == AppLifecycleState.detached) {
           music.pauseMusic();
-          await game.syncWithCloud();
+          await game.syncWithCloud(force: true);
           await NotificationService().scheduleInactivityNotification();
+        } else if (state == AppLifecycleState.inactive ||
+            state == AppLifecycleState.hidden) {
+          // Just pause music, don't trigger expensive cloud syncs for every focus change on Windows
+          music.pauseMusic();
         } else if (state == AppLifecycleState.resumed) {
           music.resumeMusic();
         }

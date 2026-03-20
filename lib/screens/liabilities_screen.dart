@@ -339,9 +339,9 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.5),
+        color: Colors.red.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -681,7 +681,6 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     bool isLocked = selectedValue != null;
     return Card(
       elevation: 0,
-      surfaceTintColor: Colors.transparent,
       color: Theme.of(context).colorScheme.surfaceVariant,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(

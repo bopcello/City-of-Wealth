@@ -155,7 +155,12 @@ const Map<AssetType, int> assetSellingPrices = {
   AssetType.officeEquipment: 100,
 };
 
-int assetCost(AssetType type) => assetCosts[type]!;
+int assetCost(AssetType type, {int streak = 0}) {
+  final baseCost = assetCosts[type] ?? 0;
+  final rewards = getStreakRewards(streak);
+  return (baseCost * (1.0 - rewards.assetDiscount)).round();
+}
+
 int assetSellPrice(AssetType type) => assetSellingPrices[type]!;
 
 String assetLabel(AssetType type) {
@@ -425,6 +430,40 @@ const _playerNameKey = 'playerName';
 const _isDarkModeKey = 'isDarkMode';
 const _musicVolumeKey = 'musicVolume';
 const _sfxVolumeKey = 'sfxVolume';
+const _lastUpdatedKey = 'lastUpdated';
+const _dailyQuizStreakKey = 'dailyQuizStreak';
+const _lastDailyQuizDateKey = 'lastDailyQuizDate';
+
+class StreakRewards {
+  final double assetDiscount; // e.g. 0.05 for 5%
+  final double passiveIncomeMultiplier; // e.g. 1.05 for 5% increase
+  final String label;
+
+  const StreakRewards({
+    this.assetDiscount = 0.0,
+    this.passiveIncomeMultiplier = 1.0,
+    this.label = "",
+  });
+}
+
+StreakRewards getStreakRewards(int streak) {
+  if (streak >= 100) {
+    return const StreakRewards(
+      assetDiscount: 0.10,
+      passiveIncomeMultiplier: 1.10,
+      label: "Master of Consistency",
+    );
+  } else if (streak >= 30) {
+    return const StreakRewards(
+      assetDiscount: 0.10,
+      passiveIncomeMultiplier: 1.05,
+      label: "Regular Customer",
+    );
+  } else if (streak >= 10) {
+    return const StreakRewards(assetDiscount: 0.05, label: "Regular Customer");
+  }
+  return const StreakRewards();
+}
 
 class PlacedBuilding {
   final String name;
@@ -528,9 +567,13 @@ Future<void> saveGameState({
   required double musicVolume,
   required double sfxVolume,
   required List<DisasterResult> pendingDisasterResults,
+  required int dailyQuizStreak,
+  required String lastDailyQuizDate,
 }) async {
   final prefs = await SharedPreferences.getInstance();
-  debugPrint("💾 SAVING GAME LOCALLY");
+  debugPrint(
+    "💾 SAVING GAME LOCALLY (Gems: $gems, KP: $kp, Layout: ${layout.length} buildings)",
+  );
 
   final data = {
     _kpKey: kp,
@@ -575,45 +618,55 @@ Future<void> saveGameState({
   await prefs.setInt(_lastIncomeTimeKey, lastIncomeTime.millisecondsSinceEpoch);
   await prefs.setInt(_bankruptcyCountKey, bankruptcyCount);
   await prefs.setString(_playerNameKey, playerName);
+  await prefs.setInt(_dailyQuizStreakKey, dailyQuizStreak);
+  await prefs.setString(_lastDailyQuizDateKey, lastDailyQuizDate);
   await prefs.setString(_cityLayoutKey, data[_cityLayoutKey] as String);
   await prefs.setString(_assetsKey, data[_assetsKey] as String);
+  await prefs.setInt(_lastUpdatedKey, data[_lastUpdatedKey] as int);
 
-  if (rent != null)
+  if (rent != null) {
     await prefs.setString(_rentChoiceKey, rent.name);
-  else
+  } else {
     await prefs.remove(_rentChoiceKey);
-  if (food != null)
+  }
+
+  if (food != null) {
     await prefs.setString(_foodChoiceKey, food.name);
-  else
+  } else {
     await prefs.remove(_foodChoiceKey);
-  if (transport != null)
+  }
+
+  if (transport != null) {
     await prefs.setString(_transportChoiceKey, transport.name);
-  else
+  } else {
     await prefs.remove(_transportChoiceKey);
+  }
 
   await prefs.setStringList(
     _insurancesKey,
-    data[_insurancesKey] as List<String>,
+    insurances.map((e) => e.name).toList(),
   );
   await prefs.setInt(_debtCycleCountKey, debtCycleCount);
-  if (nextDestructionCycle != null)
+
+  if (nextDestructionCycle != null) {
     await prefs.setInt(_nextDestructionCycleKey, nextDestructionCycle);
-  else
+  } else {
     await prefs.remove(_nextDestructionCycleKey);
-  if (nextDisasterCycle != null)
+  }
+
+  if (nextDisasterCycle != null) {
     await prefs.setInt(_nextDisasterCycleKey, nextDisasterCycle);
-  else
+  } else {
     await prefs.remove(_nextDisasterCycleKey);
+  }
 
-  if (wall != null)
+  if (wall != null) {
     await prefs.setBool('hasWall', wall);
-  else
+  } else {
     await prefs.remove('hasWall');
+  }
 
-  await prefs.setStringList(
-    _completedQuizzesKey,
-    data[_completedQuizzesKey] as List<String>,
-  );
+  await prefs.setStringList(_completedQuizzesKey, completedQuizzes.toList());
   await prefs.setBool(_isWorkingOvertimeKey, isWorkingOvertime);
   await prefs.setInt(_overtimeStreakKey, overtimeStreak);
   await prefs.setString(
@@ -665,9 +718,11 @@ Future<
     double,
     double,
     List<DisasterResult>,
+    int,
+    String,
   )
 >
-loadGameState({String? uid, bool useCloud = false}) async {
+loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
   final prefs = await SharedPreferences.getInstance();
 
   Map<String, dynamic>? cloudData;
@@ -675,12 +730,44 @@ loadGameState({String? uid, bool useCloud = false}) async {
     cloudData = await FirestoreService().getPlayerProgress(uid);
   }
 
-  // Use cloud data if it exists and is newer (or just exists for simplicity now)
-  // For now, if cloud data exists, we prioritize it.
-  final data = cloudData ?? {};
+  final localLastUpdated = prefs.getInt(_lastUpdatedKey) ?? 0;
+  final cloudLastUpdated = cloudData?[_lastUpdatedKey] is int
+      ? cloudData![_lastUpdatedKey] as int
+      : (cloudData?[_lastUpdatedKey] != null
+            ? (cloudData![_lastUpdatedKey] as dynamic).millisecondsSinceEpoch
+            : 0);
 
-  final kp = data[_kpKey] ?? prefs.getInt(_kpKey) ?? 0;
-  final gems = data[_gemsKey] ?? prefs.getInt(_gemsKey) ?? 0;
+  // For completedQuizzes, we always merge them to avoid losing progress.
+  final List<dynamic> localQuizzes =
+      prefs.getStringList(_completedQuizzesKey) ?? [];
+  final List<dynamic> cloudQuizzes = cloudData?[_completedQuizzesKey] ?? [];
+  final mergedQuizzes = {
+    ...localQuizzes.map((e) => e.toString()),
+    ...cloudQuizzes.map((e) => e.toString()),
+  };
+
+  // Decide whether to use cloud data for other fields
+  bool preferCloud = false;
+  if (cloudData != null) {
+    if (force) {
+      debugPrint("🔄 FORCING cloud data overwrite (user triggered)");
+      preferCloud = true;
+    } else if (cloudLastUpdated > localLastUpdated) {
+      debugPrint(
+        "🔄 Cloud data is newer ($cloudLastUpdated > $localLastUpdated). Using cloud.",
+      );
+      preferCloud = true;
+    } else {
+      debugPrint(
+        "ℹ️ Local data is newer or equal ($localLastUpdated >= $cloudLastUpdated). Skipping cloud overwrite.",
+      );
+    }
+  }
+
+  final data = preferCloud ? cloudData! : {};
+
+  final int kp = data[_kpKey] ?? prefs.getInt(_kpKey) ?? 0;
+  final int gems = data[_gemsKey] ?? prefs.getInt(_gemsKey) ?? 0;
   final bankruptcyCount =
       data[_bankruptcyCountKey] ?? prefs.getInt(_bankruptcyCountKey) ?? 0;
   final debtCycleCount =
@@ -705,6 +792,12 @@ loadGameState({String? uid, bool useCloud = false}) async {
       0.7;
   final sfxVolume =
       data[_sfxVolumeKey]?.toDouble() ?? prefs.getDouble(_sfxVolumeKey) ?? 1.0;
+  final int dailyQuizStreak =
+      data[_dailyQuizStreakKey] ?? prefs.getInt(_dailyQuizStreakKey) ?? 0;
+  final String lastDailyQuizDate =
+      data[_lastDailyQuizDateKey] ??
+      prefs.getString(_lastDailyQuizDateKey) ??
+      "";
 
   final trackName = data[_careerTrackKey] ?? prefs.getString(_careerTrackKey);
   final level = data[_careerLevelKey] ?? prefs.getInt(_careerLevelKey) ?? 1;
@@ -764,13 +857,7 @@ loadGameState({String? uid, bool useCloud = false}) async {
       .toSet();
 
   final savedWall = data['hasWall'] ?? prefs.getBool('hasWall');
-  final List<dynamic> completedQuizzesList =
-      data[_completedQuizzesKey] ??
-      prefs.getStringList(_completedQuizzesKey) ??
-      [];
-  final completedQuizzes = completedQuizzesList
-      .map((e) => e.toString())
-      .toSet();
+  final completedQuizzes = mergedQuizzes;
 
   final isWorkingOvertime =
       data[_isWorkingOvertimeKey] ??
@@ -791,7 +878,7 @@ loadGameState({String? uid, bool useCloud = false}) async {
       (k, v) => MapEntry(
         AssetType.values.firstWhere(
           (e) => e.name == k,
-          orElse: () => AssetType.land,
+          orElse: () => AssetType.properties,
         ),
         v as int,
       ),
@@ -816,32 +903,24 @@ loadGameState({String? uid, bool useCloud = false}) async {
     );
   }
 
-  final disasterResultsJson =
+  final pendingResultsJson =
       data['pendingDisasterResults'] ??
       prefs.getString('pendingDisasterResults');
   List<DisasterResult> pendingDisasterResults = [];
-  if (disasterResultsJson != null) {
-    final List<dynamic> decoded = disasterResultsJson is String
-        ? jsonDecode(disasterResultsJson)
-        : disasterResultsJson;
+  if (pendingResultsJson != null) {
+    final List<dynamic> decoded = pendingResultsJson is String
+        ? jsonDecode(pendingResultsJson)
+        : pendingResultsJson;
     pendingDisasterResults = decoded
-        .map((item) => DisasterResult.fromJson(item))
+        .map((e) => DisasterResult.fromJson(e))
         .toList();
   }
 
-  debugPrint("Loaded KP: $kp");
-  debugPrint("Loaded Gems: $gems");
-  debugPrint("Loaded Track: ${track.name}");
-  debugPrint("Loaded Level: $level");
-  debugPrint("Loaded Buildings: ${layout.length}");
-  debugPrint("Loaded Assets: ${assets.items.length}");
-  debugPrint("Loaded Bankruptcy: $bankruptcyCount");
-
   return (
-    kp as int,
-    gems as int,
-    CareerState(track: track, level: level as int),
-    DateTime.fromMillisecondsSinceEpoch(lastIncomeMillis as int),
+    kp,
+    gems,
+    CareerState(track: track, level: level),
+    DateTime.fromMillisecondsSinceEpoch(lastIncomeMillis),
     layout,
     assets,
     rent,
@@ -863,6 +942,8 @@ loadGameState({String? uid, bool useCloud = false}) async {
     musicVolume as double,
     sfxVolume as double,
     pendingDisasterResults,
+    dailyQuizStreak,
+    lastDailyQuizDate,
   );
 }
 

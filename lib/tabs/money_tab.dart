@@ -103,15 +103,9 @@ class MoneyTab extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) => QuizMenuScreen(
+                      game: game,
                       music: music,
                       sfx: sfx,
-                      currentKp: currentKp,
-                      currentLevel: career.level,
-                      onKpChange: onKpChange,
-                      completedQuizzes: completedQuizzes,
-                      onQuizComplete: onQuizComplete,
-                      refreshListenable: gameListenable,
-                      playerName: playerName,
                     ),
                   ),
                 );
@@ -129,10 +123,11 @@ class MoneyTab extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) => AssetsScreen(
-                      assets: assets,
-                      gems: gems,
-                      onBuyAsset: (type) => onBuyAsset(type, 1),
-                      onSellAsset: onSellAsset,
+                      assets: game.assets,
+                      gems: game.gems,
+                      streak: game.dailyQuizStreak,
+                      onBuyAsset: (type) => game.buyAsset(type, 1, context),
+                      onSellAsset: (type) => game.sellAsset(type),
                       sfx: sfx,
                     ),
                   ),

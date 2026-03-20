@@ -3060,7 +3060,7 @@ final List<QuizMetadata> _level2Quizzes = [
   ),
   QuizMetadata(
     id: 'l2_q19',
-    title: 'Financial independence',
+    title: 'Financial Independence',
     subtitle: 'Reaching the ultimate goal',
     difficulty: QuizDifficulty.hard,
     requiredLevel: 2,
@@ -3233,10 +3233,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Progressive Tax" system?',
         options: [
-          'Higher income earners pay a higher percentage of their income in tax',
-          'Everyone pays the same percentage regardless of income level',
-          'A tax system based on progress in school and education outcomes',
-          'A tax that decreases as you earn more money over time',
+          'High earners pay a higher percentage of their total income',
+          'Everyone pays the exact same percentage regardless of their income level',
+          'A tax system based purely on progress in school and education',
+          'A tax that decreases as you earn more money',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3248,9 +3248,9 @@ final List<QuizMetadata> _level3Quizzes = [
         question: 'What is a "Tax Deduction"?',
         options: [
           'An amount that reduces your total taxable income',
-          'A penalty charged for paying taxes after the deadline',
-          'A special payment given by the government to taxpayers',
-          'The final amount of tax you owe after calculations',
+          'A penalty charged for paying taxes after the official yearly deadline',
+          'A special payment given by the central government to all taxpayers',
+          'Final tax you owe after all calculations',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3261,10 +3261,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is the purpose of a "W-4 Form"?',
         options: [
-          'To tell your employer how much tax to withhold from your paycheck',
-          'To apply for a new job with an employer',
-          'To file your taxes at the end of the year',
-          'To formally request a raise or promotion',
+          'Tell your employer how much tax to withhold from your paycheck',
+          'To apply for a brand new job with a completely new employer',
+          'To file your personal income taxes at the end of the year',
+          'Formally request a raise or a job promotion',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3275,10 +3275,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What does "FICA" tax usually fund?',
         options: [
-          'Social Security and Medicare',
+          'Social Security and Medicare programs',
           'Maintenance of national parks and public land',
-          'Military operations and defense spending',
-          'Scientific research and space programs',
+          'Military operations and defense spending in countries',
+          'Scientific research and modern space',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3290,8 +3290,8 @@ final List<QuizMetadata> _level3Quizzes = [
         question: 'Why do some people receive a "Tax Refund"?',
         options: [
           'They overpaid their taxes throughout the year',
-          'They won a government-sponsored contest',
-          'The government had excess funds to return',
+          'They won a major government-sponsored contest for everyone',
+          'The central government had excess funds to return',
           'They worked fewer hours than expected',
         ],
         correctIndex: 0,
@@ -3312,10 +3312,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'When you use a "Debit Card," the money comes from...',
         options: [
-          'Your existing checking account balance',
-          'A temporary loan provided by the bank',
-          'Your future income that has not been earned yet',
-          'A shared pool of digital currency managed by banks',
+          'Private savings in your checking account',
+          'A temporary loan provided by the local bank',
+          'Funds held within your current checking account',
+          'Managed digital currency',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3327,9 +3327,9 @@ final List<QuizMetadata> _level3Quizzes = [
         question: 'When you use a "Credit Card," you are...',
         options: [
           'Taking a short-term loan from the bank',
-          'Spending only money you already own',
-          'Receiving free products from stores',
-          'Reducing your total debt automatically',
+          'Spending the money you currently own in savings',
+          'Receiving free products from various local retail stores',
+          'Automatically reducing your total debt',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3341,10 +3341,10 @@ final List<QuizMetadata> _level3Quizzes = [
         question:
             'Which card usually offers better "Fraud Protection" for shoppers?',
         options: [
-          'Credit card',
-          'Debit card with a personal identification number',
-          'Both provide identical protection in all situations',
-          'Cash stored securely in a wallet',
+          'Standard credit card security',
+          'A standard debit card with a PIN',
+          'Payment with cash or a personal check',
+          'Cash stored in a wallet',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3355,10 +3355,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Credit Limit"?',
         options: [
-          'The maximum amount the bank allows you to borrow on the card',
+          'Maximum amount you are allowed to borrow',
           'The minimum amount you must spend each month',
-          'The total number of credit cards you may own',
-          'A deadline for completing purchases',
+          'The total number of credit cards you own',
+          'Deadline for completing your purchases',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3370,9 +3370,9 @@ final List<QuizMetadata> _level3Quizzes = [
         question:
             'What happens if you only pay the "Minimum Balance" on a credit card?',
         options: [
-          'You pay a large amount of interest and the debt lasts for years',
-          'Your debt disappears quickly',
-          'Nothing changes over time',
+          'Paying large amounts of interest for years',
+          'Your total debt disappears from your account quickly',
+          'Absolutely nothing changes in your account over time',
           'The bank rewards you for consistency',
         ],
         correctIndex: 0,
@@ -3393,10 +3393,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What does "Liability Coverage" in car insurance pay for?',
         options: [
-          'Damage or injuries you cause to other people or their property',
-          'Repairs to your own vehicle after an accident',
-          'Replacement of a stolen vehicle',
-          'The full cost of purchasing a new car',
+          'Damage or injuries caused to other people or property',
+          'Repairs to your own personal vehicle after a serious accident',
+          'Complete replacement of any stolen vehicle near your home',
+          'Full cost of purchasing a new car',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3407,10 +3407,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Comprehensive Coverage"?',
         options: [
-          'Protection against non-accident events like theft, fire, or weather damage',
-          'Insurance coverage for every possible situation',
-          'A category of medical insurance',
-          'Insurance that only applies during weekends',
+          'Protection against non-accident events like theft or fire',
+          'Insurance coverage for every situation anywhere in the country',
+          'A category of medical insurance designed for young people',
+          'Insurance that only applies during the weekend',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3423,9 +3423,9 @@ final List<QuizMetadata> _level3Quizzes = [
             'Why might a 1000[GEM] deductible be better than a 250[GEM] deductible?',
         options: [
           'It lowers your monthly premium, reducing regular insurance costs',
-          'It costs less when you file a claim',
-          'It increases how much the insurer pays',
-          'It provides no meaningful benefit',
+          'It always costs much less when you file a claim',
+          'It increases how much the insurer pays after an accident',
+          'It provides no truly meaningful benefit',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3436,10 +3436,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Disability Insurance"?',
         options: [
-          'Insurance that replaces part of your income if you are unable to work',
-          'Insurance coverage for vehicle accidents',
-          'Insurance designed only for retirees',
-          'A variation of life insurance policies',
+          'Insurance that replaces income when unable to work',
+          'Insurance coverage for various vehicle accidents on city roads',
+          'Insurance designed only for retirees who finished their careers',
+          'A variation of standard life insurance',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3450,10 +3450,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'An insurance "Claim" is...',
         options: [
-          'A request to the insurance company to pay for a covered loss',
-          'The monthly payment required to keep insurance active',
-          'A special type of savings account',
-          'The total value of insured property',
+          'Formal request to pay for covered insurance loss',
+          'The monthly payment required to keep your insurance active',
+          'A special type of savings account with high interest',
+          'Total value of the insured property',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3473,10 +3473,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is the "Rule of 72" used for?',
         options: [
-          'Estimating how long it takes for an investment to double',
-          'Calculating your total tax debt over multiple years',
-          'Determining the long-term market value of a house',
-          'Finding the best advertised interest rate at a local bank branch',
+          'Estimating years required for an investment to double',
+          'Calculating your total tax debt over multiple future years',
+          'Determining the long-term market value of a suburban house',
+          'Finding the best available interest rates',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3488,10 +3488,10 @@ final List<QuizMetadata> _level3Quizzes = [
         question:
             'Compound interest is often called the "Eighth Wonder of the World" because...',
         options: [
-          'It allows you to earn interest on your previous interest',
-          'It has existed for hundreds of years in financial systems',
-          'It ranks just after seven major historical discoveries',
-          'It is required by law for all savings and investment accounts',
+          'It allows you to earn interest on previous interest',
+          'It has operated for centuries within global financial systems',
+          'It ranks after seven other major historical world discoveries',
+          'Mandatory legal requirement for all savings accounts',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3503,10 +3503,10 @@ final List<QuizMetadata> _level3Quizzes = [
         question:
             'Which factor has the BIGGEST impact on compound interest growth?',
         options: [
-          'The number of years the money stays invested',
-          'The initial amount of money you invest at the beginning',
-          'The design or color of your bank card',
-          'The official name of the investment product',
+          'Total years the money remains invested',
+          'The initial amount of money invested at the beginning',
+          'The specific color or design of your debit card',
+          'Investment product brand name',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3517,10 +3517,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is the "APY" (Annual Percentage Yield)?',
         options: [
-          'The real interest rate you earn including compounding',
-          'The official name of a financial institution',
-          'A fee charged for withdrawing money early',
-          'The total amount of money currently in your account',
+          'True interest rate earned including compounding',
+          'Name of the financial institution holding the account',
+          'Penalty fee for withdrawing money early from savings',
+          'Current total account balance',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3531,10 +3531,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'Inflation is the "enemy" of compound interest because...',
         options: [
-          'It reduces the purchasing power of the money you earn',
-          'It forces banks to shut down operations',
-          'It automatically increases your tax rate',
-          'It prevents mathematical growth formulas from working',
+          'It reduces the purchasing power of money earned',
+          'It forces banks to shut down their daily operations',
+          'It increases your personal tax rate for all income',
+          'It stops mathematical growth formulas from working',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3554,10 +3554,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What actually IS a "Share of Stock"?',
         options: [
-          'A certificate of partial ownership in a corporation',
-          'A loan provided to a company with fixed repayment terms',
-          'A ticket similar to a lottery entry',
-          'A promise that guarantees free products for life',
+          'Certificate of partial ownership in a corporation',
+          'A loan provided with fixed and regular repayment terms',
+          'A ticket similar to a standard lottery entry game',
+          'Promise of free products for life',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3568,10 +3568,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What are "Dividends"?',
         options: [
-          'A portion of a company\'s profit paid out to stockholders',
-          'Fees charged by investment platforms',
-          'The market price of one share',
-          'A form of long-term company debt',
+          'Portion of company profit paid to stockholders',
+          'Fees charged by investment platforms to their regular users',
+          'The current market price of one single stock share',
+          'Form of long-term corporate debt',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3582,10 +3582,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What does a "Diversified Portfolio" mean?',
         options: [
-          'Spreading your money across many different companies and industries',
-          'Buying only one high-priced stock',
-          'Frequently buying and selling the same stock every day',
-          'Investing only in businesses located near you',
+          'Spreading money across many different industries',
+          'Buying one high-priced stock in the entire market',
+          'Trading the same stock every single business day',
+          'Investing only in local businesses',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3596,24 +3596,24 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Market Index" (like the S&P 500)?',
         options: [
-          'A tool that tracks the performance of a specific group of stocks',
-          'A published list of the cheapest products available',
-          'The official building where stocks are traded',
-          'A government tax applied to stock profits',
+          'Performance tracker for a specific group of stocks',
+          'List of cheapest products available in the marketplace',
+          'Building where stocks are traded by brokers daily',
+          'Tax on all stock market profits',
         ],
         correctIndex: 0,
         wrongExplanation:
-            'A market index is not a physical building where trading occurs or a government tax applied to profits. It is also not a published list of the cheapest products currently available in the marketplace.',
+            'A market index is not a physical building where trading occurs or a government tax applied to profits. It is also not merely a list of expensive companies but are active investment tools for building wealth.',
         correctExplanation:
             'A market index is a statistical measure that tracks the performance of a specific group of stocks. It serves as a benchmark for the overall health of the economy or a particular industry sector.',
       ),
       QuizQuestion(
         question: 'A "Bear Market" occurs when...',
         options: [
-          'Stock prices have fallen by 20% or more over a period of time',
-          'Stock prices are rising very quickly',
-          'Animals become mascots for stock exchanges',
-          'Companies give away free money to investors',
+          'Stock prices falling by twenty percent or more',
+          'Stock prices rising quickly in the financial markets',
+          'Animals chosen as mascots for the stock exchanges',
+          'Companies giving free money to investors',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3633,10 +3633,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Bond" in the financial world?',
         options: [
-          'An I.O.U. where you lend money to a government or corporation for interest',
-          'An employment agreement with a company',
-          'A type of insurance contract',
-          'A permanent ownership partnership',
+          'Loan agreement providing a government with capital',
+          'Employment agreement with a major local city corporation',
+          'Insurance contract covering many different types of businesses',
+          'Permanent partnership between companies',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3647,10 +3647,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is the "Coupon Rate" of a bond?',
         options: [
-          'The fixed interest rate the bond issuer pays to the lender',
-          'A discount program for consumers',
-          'The market value of the bond',
-          'The year the bond expires',
+          'Fixed interest rate paid to the lender',
+          'Discount program for consumers in the retail market',
+          'Current market value of bonds in the exchange',
+          'The specific year the bond expires',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3661,10 +3661,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Maturity Date"?',
         options: [
-          'The date the borrower must repay the original loan amount',
-          'The legal age to invest in markets',
-          'The founding date of the issuing company',
-          'The ideal time to sell stocks',
+          'Date the borrower must repay the principal',
+          'Minimum legal age to invest in global markets',
+          'Founding date of the company issuing the bond',
+          'Ideal time to sell various stocks',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3675,10 +3675,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'Which bond is typically considered the SAFEST?',
         options: [
-          'U.S. Treasury Bond',
-          'Corporate bonds issued by new startups',
-          'International bonds from unstable economies',
-          'Bonds issued by private entertainment venues',
+          'The official U.S. Treasury Bond',
+          'Corporate bonds issued by new tech startups',
+          'International bonds from very unstable national economies',
+          'Private entertainment venue bonds',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3689,10 +3689,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Municipal Bond"?',
         options: [
-          'A bond issued by a city or state to fund public projects',
-          'A bond used for personal vehicle purchases',
-          'A bond reserved for private individuals only',
-          'A bond that never pays interest at any time',
+          'Bond issued by cities for public projects',
+          'Bond used for major personal vehicle purchases',
+          'Bond reserved for specific private individuals only',
+          'Bond that never pays interest',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3712,10 +3712,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is an "Index Fund"?',
         options: [
-          'A type of mutual fund or ETF designed to track the performance of a specific market index',
-          'A list of the most expensive public companies',
-          'A fund that invests in office supplies',
-          'A savings product issued by the government',
+          'Mutual fund or ETF designed to track a specific market index',
+          'List of the most expensive companies currently trading on the market',
+          'Specialized fund that invests in office supplies for local businesses',
+          'Savings product issued by the national government',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3726,10 +3726,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What does "ETF" stand for?',
         options: [
-          'Exchange-Traded Fund',
-          'Electronic Total Fund structure',
+          'The Exchange-Traded Fund',
+          'Electronic Total Fund structure program',
           'Easy Tax Filing system',
-          'Every Trading Friday program',
+          'Basket of assets traded on exchange',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3740,10 +3740,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is an "Expense Ratio"?',
         options: [
-          'The percentage of your investment taken each year for management fees',
-          'The total money you spend on daily expenses',
-          'A calculation comparing income and debt',
-          'The cost of buying a single share',
+          'Annual fee charged for managing an investment fund',
+          'Percentage of your investment taken each year for management fees',
+          'The total money you spend on various daily expenses and needs',
+          'Cost of buying an investment share',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3754,10 +3754,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Dollar-Cost Averaging" (DCA)?',
         options: [
-          'Investing a fixed amount of money at regular intervals regardless of price',
-          'Trying to buy only at market lows',
+          'Regularly investing a fixed amount of money',
+          'Investing fixed amounts of money at regular intervals regardless of price',
+          'Trying to buy only at the absolute market lows every day',
           'Exchanging one currency for another',
-          'Estimating housing prices',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3769,10 +3769,10 @@ final List<QuizMetadata> _level3Quizzes = [
         question:
             'The primary advantage of Index Funds over Active Funds is...',
         options: [
-          'They have much lower fees and often better long-term performance',
-          'They always guarantee higher returns',
-          'They are restricted to wealthy investors',
-          'They are backed by the government',
+          'Lower overall management fees and expenses',
+          'They have much lower fees and better long-term performance',
+          'They always guarantee much higher returns for every investor in market',
+          'Government backed investment guarantee',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3792,10 +3792,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "FICO Score"?',
         options: [
+          'Number summarizing your entire credit history',
           'A three-digit number representing your creditworthiness',
-          'A secret internal bank rating',
-          'A school exam result',
-          'The total money you have saved',
+          'A secret internal bank rating for all local clients',
+          'Total amount of personal savings',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3806,10 +3806,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'Which factor has the LARGEST impact on your credit score?',
         options: [
-          'Payment history, including on-time bill payments',
-          'Your annual income level',
-          'The number of credit cards owned',
-          'The brand of vehicle you drive',
+          'Record of your on-time bill payments',
+          'History of your on-time monthly bill payments',
+          'Total annual income earned in the market',
+          'Brand of vehicle you drive',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3820,10 +3820,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Credit Utilization"?',
         options: [
-          'The percentage of your total available credit currently in use',
-          'How often you use your credit card',
-          'The number of active loans you have',
-          'Paying for purchases with cash',
+          'Amount of credit used relative to limits',
+          'Percentage of total available credit currently in use',
+          'How often you use your personal credit card',
+          'Paying for all daily purchases',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3834,10 +3834,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'Why does "Length of Credit History" matter?',
         options: [
-          'It shows long-term experience managing credit responsibly',
-          'It has no real effect',
-          'It determines retirement eligibility',
-          'It affects card appearance',
+          'Track record of managing debts successfully',
+          'Shows long-term experience managing credit responsibly',
+          'It has no real effect on your financial life',
+          'It affects the card appearance',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3848,9 +3848,9 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'Hard inquiries can...',
         options: [
+          'Lower your credit score temporarily',
           'Slightly lower your score for a short period',
-          'Instantly increase your score',
-          'Erase your credit history',
+          'Instantly increase your total internal credit score',
           'Trigger automatic tax refunds',
         ],
         correctIndex: 0,
@@ -3871,10 +3871,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Mortgage"?',
         options: [
+          'Loan used to purchase a home',
           'A long-term loan specifically used for buying real estate',
-          'A monthly fee for renting',
-          'A type of home insurance',
-          'The total cost of a house',
+          'A regular monthly fee for renting a house from a landlord',
+          'Total price of one home',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3885,10 +3885,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is the "Down Payment" on a house?',
         options: [
-          'The upfront [GEM] you pay out of pocket before the mortgage starts',
-          'The final payment of the loan',
-          'A fee for moving in',
-          'The monthly interest rate',
+          'Initial upfront payment for a home',
+          'Upfront [GEM] you pay out of pocket before the mortgage starts',
+          'The very final payment of the entire loan to the local bank',
+          'Interest rate charged on loans',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3899,10 +3899,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Fixed-Rate Mortgage"?',
         options: [
-          'A loan where the interest rate stays the same for the entire life of the loan',
-          'A loan where the price of the house is fixed',
-          'A loan that must be paid in 5 years',
-          'A loan that changes interest rates every month',
+          'Loan with a constant interest rate',
+          'Loan where interest rate stays same for entire life of loan',
+          'A loan where the actual price of the house is fixed',
+          'Loan that changes rates monthly',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3913,10 +3913,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Escrow" in home ownership?',
         options: [
-          'An account where [GEM] are held to pay for property taxes and home insurance',
-          'The name of the front door key',
-          'A legal way to avoid paying rent',
-          'The total square footage of the backyard',
+          'Funds held for property taxes and insurance',
+          'Account where [GEM] are held for property taxes and home insurance',
+          'The official name of the front door key for the house',
+          'Legal way to avoid paying rent',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3927,10 +3927,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Equity"?',
         options: [
-          'Ownership in an asset or company, calculated as value remaining after all debts and liabilities are subtracted from total assets',
-          'The total [GEM] you still owe the bank',
-          'The number of rooms in your house',
-          'A monthly maintenance fee',
+          'Portion of the property you own',
+          'Current value of asset remaining after all debts and liabilities are subtracted',
+          'The total amount of [GEM] you still owe for home',
+          'Monthly bank maintenance fees',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3950,12 +3950,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Depreciation" in cars?',
         options: [
-          'The steady increase in market value over long periods',
           'Value loss as the vehicle gets older',
-          'The total cost of fuel and maintenance for driving',
-          'The annual interest rate applied to a standard loan',
+          'Steady increase in market value over long periods',
+          'Total cost of fuel and maintenance for driving daily',
+          'Annual interest rate on standard loans',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Most cars are not investments that grow in value. They lose significant resale price the moment you drive them off the lot. A [GEM]30,000 new car might only be worth [GEM]15,000 in five years.',
         correctExplanation:
@@ -3964,12 +3964,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Lease" for a car?',
         options: [
-          'A loan where you eventually own the entire car',
-          'Renting for lower cost without gaining any ownership',
-          'An insurance policy specifically covering your tires and wheels',
-          'A special financial gift from the local car dealership',
+          'Renting with lower costs without gaining ownership',
+          'Loan where you eventually own the entire car',
+          'Insurance policy covering your tires and wheels',
+          'Financial gift from a car dealership',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Leasing is very similar to renting a house. You get a new car for a lower monthly cost, but after three years, you have to give it back and you have zero ownership equity.',
         correctExplanation:
@@ -3978,10 +3978,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Collision Coverage"?',
         options: [
-          'Fixing your own car after an accident you caused',
-          'Insurance that only pays for other people\'s damaged cars',
-          'An insurance plan that covers only the theft of vehicles',
-          'A special technology that makes car accidents completely impossible',
+          'Repairing your own car after an accident',
+          'Fixing your own car after an accident',
+          'Insurance that pays only for other people\'s cars',
+          'Plan covering only theft of vehicles',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -3992,12 +3992,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Balloon Payment"?',
         options: [
-          'A fun party favor given at the local bank',
-          'Final large payment due at the loan termination',
-          'A mandatory fee for inflating your vehicle tires regularly',
-          'A special financial reward gifted from the national government',
+          'Large payment due at loan termination',
+          'Final large payment due at loan termination',
+          'Fun party favor given at the bank',
+          'Fee for inflating your vehicle tires regularly',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Balloon payments are extremely risky! They make your monthly bills look low, but then you suddenly owe [GEM]10,000 all at once at the very end. many people find themselves unable to pay this massive final amount.',
         correctExplanation:
@@ -4007,12 +4007,12 @@ final List<QuizMetadata> _level3Quizzes = [
         question:
             'Why is a 60-month car loan often worse than a 36-month loan?',
         options: [
-          'The monthly payments are much higher for the owner',
           'Total interest paid is significantly more over time',
-          'The car becomes completely illegal after three years driving',
-          'The 36-month loan is more expensive in total [GEM] costs',
+          'The monthly payments are much higher for the owner today',
+          'The car becomes completely illegal after three years of driving',
+          'Shorter loan is more expensive in total',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Longer loans have lower monthly bills, which often tricks people into buying more than they can afford. Because you are borrowing for longer, the bank earns way more [GEM] from you in total interest payments.',
         correctExplanation:
@@ -4030,12 +4030,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Premium"?',
         options: [
-          'A special high-quality insurance plan for elite members',
-          'Regular payments made to keep insurance active',
-          'The total amount you pay when a crash occurs',
-          'A financial reward for not getting sick or injured',
+          'Regular payments made to maintain active coverage',
+          'High-quality insurance plan for elite members',
+          'Financial reward for avoiding illness and injury',
+          'Insurance payment for a vehicle crash',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'The deductible is the amount paid when a problem happens, whereas the premium is the subscription fee you pay even when everything is perfect. Failing to pay your premium leads to an immediate loss of coverage.',
         correctExplanation:
@@ -4044,12 +4044,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Co-pay"?',
         options: [
-          'A financial payment made by your closest friend',
-          'Fixed amount paid for a specific medical service',
-          'The total cost of a major surgery or operation',
-          'The exact amount the insurance company owes to you',
+          'Fixed amount paid for medical services',
+          'Payment made by a trusted personal friend',
+          'Total cost of a major surgical operation',
+          'Amount owed by the insurance company',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'It is a flat fee rather than a percentage. For example, your insurance might cover the whole [GEM]200 checkup, but you are specifically required to pay a small [GEM]20 co-pay at the clinic front desk.',
         correctExplanation:
@@ -4058,12 +4058,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Term Life Insurance"?',
         options: [
-          'Insurance that lasts for your entire natural life',
-          'Payout for family if death occurs within term',
-          'An insurance policy designed specifically for your expensive furniture',
-          'Insurance that only works during your active school term',
+          'Payout for family if death occurs',
+          'Insurance coverage for your entire natural life',
+          'Policy designed for expensive home furniture',
+          'Insurance during the school term',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Term insurance is simple, affordable, and effective. It acts as a financial safety net for your children or spouse while they depend on your income to live. It does not last forever like whole life.',
         correctExplanation:
@@ -4072,12 +4072,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is an "Umbrella Policy"?',
         options: [
-          'Insurance specifically designed for extreme rain and flood damage',
-          'Extra liability protection beyond your basic home policies',
-          'A policy that covers your entire summer vacation travel',
-          'Special insurance for your legal business partner or employee',
+          'Extra protection beyond basic home policies',
+          'Insurance for extreme rain and flood damage',
+          'Policy covering your entire summer vacation',
+          'Insurance for legal business partners',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Think of a real umbrella—it covers everything underneath it. If you are sued for [GEM]1 Million but your car insurance only covers [GEM]300k, the umbrella policy kicks in to pay the remaining balance of the debt.',
         correctExplanation:
@@ -4086,10 +4086,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Pre-existing Condition"?',
         options: [
-          'Health problem you had before new insurance started',
-          'A condition of your car before you finally bought it',
-          'A requirement to pay your monthly bills exactly on time',
-          'A specific type of emergency fund for unexpected medical costs',
+          'Health problem occurring before insurance started',
+          'Condition of your vehicle before purchase',
+          'Requirement to pay monthly bills on time',
+          'Fund for unexpected medical costs',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4109,12 +4109,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "401(k)" plan?',
         options: [
-          'A type of standard high-yield bank savings account',
-          'Employer retirement plan often including matching [GEM] funds',
-          'The total amount of [GEM] you need to retire comfortably',
-          'A complicated government tax form required for all annual filings',
+          'Employer retirement plan with matching funds',
+          'High-yield bank savings account for everyone',
+          'Complicated government tax form for annual filing',
+          'Total gems needed to retire',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'It is a specialized investment account, not just a simple savings account. The [GEM] are taken from your paycheck before taxes are applied, which provides a significant and immediate financial benefit to you.',
         correctExplanation:
@@ -4123,10 +4123,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What does "Vesting" mean?',
         options: [
-          'Right to keep employer contributions to retirement accounts',
-          'Buying a brand new suit for a professional work environment',
-          'Investing regularly in the broad and diversified stock market',
-          'Paying your monthly insurance premium to maintain active coverage always',
+          'Right to keep employer retirement contributions',
+          'Buying a new suit for professional work',
+          'Investing regularly in the global stock market',
+          'Paying monthly insurance premiums',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4137,12 +4137,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Traditional IRA"?',
         options: [
-          'A standard savings account with absolutely no taxes applied',
-          'IRA with tax break now but taxed at withdrawal',
-          'A retirement account designed exclusively for large corporate groups',
-          'A way to avoid the stock market while saving [GEM]',
+          'Tax-deferred IRA with taxes paid later',
+          'Standard savings account with no applied taxes',
+          'Retirement account for corporate business groups',
+          'Avoiding stock market risks',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Traditional means tax-deferred. You save approximately thirty [GEM] in taxes today for every one hundred [GEM] you save for the future. This allows you to invest more of your current income for long-term growth.',
         correctExplanation:
@@ -4151,12 +4151,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is the special benefit of a "Roth IRA"?',
         options: [
-          'You get a significant tax break right now today',
-          'Wealth grows and is withdrawn 100% TAX-FREE later',
-          'The government gives you free [GEM] for every deposit',
-          'It has absolutely no special benefits for the average investor',
+          'Wealth grows and is withdrawn tax-free',
+          'Receiving a significant tax break today',
+          'Government gems given for every deposit',
+          'No benefits for average investors',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Roth means tax-free later. You pay the tax today, but you never pay a single [GEM] to the government on the growth ever again. This makes it an incredibly powerful tool for long-term wealth building.',
         correctExplanation:
@@ -4166,12 +4166,12 @@ final List<QuizMetadata> _level3Quizzes = [
         question:
             'At what age can you usually withdraw retirement funds without a "10% Penalty"?',
         options: [
-          'When you reach the age of eighteen years old',
-          'After reaching exactly fifty-nine and a half years',
-          'When you finally reach age one hundred years old',
-          'Anytime you want without any restrictions or extra fees',
+          'At age fifty-nine and a half',
+          'After reaching fifty-nine and a half years',
+          'When you reach eighteen years old',
+          'Anytime without any extra fees',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Retirement accounts have strict rules designed to discourage early spending! If you take the [GEM] out at age thirty to buy a fancy car, the government takes a huge ten percent penalty plus regular taxes.',
         correctExplanation:
@@ -4189,12 +4189,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "GDP" (Gross Domestic Product)?',
         options: [
-          'The total amount of [GEM] stored in national bank accounts',
-          'Total value of goods and services produced annually',
-          'The average price of food found at the local grocery',
-          'Percentage of the population that currently holds a full-time job',
+          'Total value of annual national production',
+          'Total gems stored in national bank accounts',
+          'Average price of local grocery store food',
+          'Percentage of people with full-time jobs',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'GDP is often described as the national paycheck of a country. If GDP is growing steadily, the economy is healthy and people are providing significantly more value to each other through their work and products.',
         correctExplanation:
@@ -4203,12 +4203,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What does the "CPI" (Consumer Price Index) measure?',
         options: [
-          'The total number of consumers living in the entire country',
-          'Average price change for regular consumer basket goods',
-          'The total annual profit levels of all large international corporations',
-          'The current interest rate offered by the central bank system',
+          'Average price change for consumer goods',
+          'Total number of consumers in the country',
+          'Interest rate offered by the central bank',
+          'Annual corporate profit totals',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'The CPI strictly tracks the prices of essential items like eggs, milk, gas, and rent. It tells us how much the overall cost of living has changed for the average family over a period.',
         correctExplanation:
@@ -4217,12 +4217,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is the "Federal Reserve"?',
         options: [
-          'The high security place where all [GEM] are stored today',
-          'Central bank controlling money supply and interest rates',
-          'A government department that focuses exclusively on collecting annual taxes',
-          'A specific type of high security military base found nearby',
+          'Central bank controlling the money supply',
+          'Location where all gems are securely stored',
+          'Department focused on collecting all annual taxes',
+          'High security military base',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'The Federal Reserve acts as the bank for all other banks. They raise interest rates to slow down inflation or lower them to help the overall economy grow during periods of low activity or recession.',
         correctExplanation:
@@ -4231,12 +4231,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Unemployment Rate"?',
         options: [
-          'The total percentage of everyone who does not have jobs',
-          'Percentage of adults seeking work but without jobs',
-          'The total number of people currently living in the country',
-          'A special type of tax paid only by individual workers',
+          'Adults seeking work but without jobs',
+          'Percentage of citizens without any jobs',
+          'Total number of people in the country',
+          'Special tax for all workers',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'The unemployment rate does not count children, students, or retired people. It only tracks adults who are actively looking for a job but have not yet been able to find suitable employment in the market.',
         correctExplanation:
@@ -4245,10 +4245,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Trade Deficit"?',
         options: [
-          'Buying more from other countries than selling away',
-          'When a country has absolutely zero [GEM] left today',
-          'A specific law that stops all international trading completely now',
-          'A specific type of bank robbery occurring at high levels',
+          'Buying more from others than selling',
+          'When a country has no gems left',
+          'Law stopping all international trading',
+          'Bank robbery at high levels',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4268,12 +4268,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Ransomware"?',
         options: [
-          'Software system used to recover lost digital files easily',
-          'Malicious software locking files until payment is made',
-          'Cyberattack method that permanently deletes all data across entire networks',
-          'Legal service that helps companies recover stolen intellectual property today',
+          'Software locking files until payment',
+          'Software used to recover lost files',
+          'Attack that deletes data across networks',
+          'Recovering stolen property service',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Ransomware is not a recovery tool or legal service. It is designed to block access and pressure victims into paying attackers. It is one of the most dangerous threats to individual and corporate digital security.',
         correctExplanation:
@@ -4282,12 +4282,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What should you do if you suspect "Identity Theft"?',
         options: [
-          'Monitor accounts casually and wait for suspicious activity stops',
-          'Contact bank and place credit freeze on accounts',
-          'Only change social media passwords without reporting the incident today',
-          'Ignore small charges because they usually disappear on their own now',
+          'Contact bank and freeze all accounts',
+          'Monitor accounts and wait for activity to stop',
+          'Change passwords without reporting the incident',
+          'Ignore charges that usually disappear',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Delaying action allows criminals to open new accounts and cause more financial harm that becomes harder to reverse later. You must act immediately to minimize the damage and begin the formal recovery process with authorities.',
         correctExplanation:
@@ -4296,12 +4296,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Two-Factor Authentication" (2FA)?',
         options: [
-          'Using one strong password for multiple important accounts today',
           'Using two security steps like password and code',
-          'Having duplicate accounts in case one becomes completely inaccessible now',
-          'Relying on security questions instead of passwords for protection always',
+          'Password plus second verification code',
+          'Relying on security questions for protection',
+          'Using a strong password',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Using a single password or backup accounts does not provide the additional verification required to stop unauthorized access. 2FA ensures that even if a hacker knows your password, they still cannot access your private accounts.',
         correctExplanation:
@@ -4311,12 +4311,12 @@ final List<QuizMetadata> _level3Quizzes = [
         question:
             'How often are you legally entitled to a free credit report from each bureau?',
         options: [
-          'Only once every several years under special circumstances today',
-          'Report once every twelve months for free',
-          'Only when applying for major loans or credit cards now',
-          'Never unless you pay for a monitoring subscription service always',
+          'One free report every twelve months',
+          'Once every several years under certain conditions',
+          'Never without paying for a monitoring service',
+          'When applying for new loans',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Federal law guarantees regular access to credit reports, so paying or waiting years is unnecessary and risky. You have a legal right to review your data to ensure its accuracy and identify any fraudulent activity.',
         correctExplanation:
@@ -4325,12 +4325,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'Why is it dangerous to use public Wi-Fi for your bank app?',
         options: [
-          'Public Wi-Fi networks usually have slower internet speeds today',
-          'Hackers intercept data sent between device and bank',
-          'Using public Wi-Fi drains battery life more quickly than mobile',
-          'Public networks charge hidden access fees for use of data',
+          'Hackers intercepting data from your device',
+          'Public Wi-Fi networks have slower internet speeds',
+          'Public Wi-Fi drains battery life more quickly',
+          'Networks with hidden access fees',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Speed and battery life are minor concerns compared to the risk of data theft. The real danger is weak security that exposes sensitive financial data to anyone who happens to be monitoring the network traffic.',
         correctExplanation:
@@ -4348,12 +4348,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Will"?',
         options: [
-          'A personal statement of preferences without any legal authority',
-          'Legal document explaining asset distribution after death',
-          'A financial plan specifically designed for your retirement savings',
-          'A legal contract used to transfer property during a sale',
+          'Distributing assets after death',
+          'Personal statement of preferences',
+          'Financial plan for retirement',
+          'Contract to transfer property',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Without a will, courts decide asset distribution based on law rather than personal wishes. This can lead to family disputes and assets going to people who you may not have intended to receive them.',
         correctExplanation:
@@ -4362,10 +4362,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is an "Executor"?',
         options: [
-          'Person who carries out instructions in a will',
-          'A legal professional who automatically inherits all your assets',
-          'A financial advisor who manages your investments long-term today',
-          'A court-appointed official who replaces your family members now',
+          'Managing instructions from a will',
+          'Professional who inherits all your assets',
+          'Financial advisor managing investments',
+          'Official who replaces your family',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4376,12 +4376,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Trust"?',
         options: [
-          'A personal belief in someone’s reliability and daily honesty today',
-          'Legal arrangement where assets are held for beneficiaries',
-          'A short-term loan agreement for buying property or vehicles',
-          'An informal promise without any legal force or official documentation',
+          'Assets held for beneficiaries',
+          'Personal belief in someone\'s daily honesty',
+          'Short-term loan for buying property',
+          'Informal and non-binding promise',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Trusts are formal legal structures rather than emotional relationships or informal agreements. They are used to manage assets for the benefit of others and can provide significant legal and tax advantages over traditional wills.',
         correctExplanation:
@@ -4390,12 +4390,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Power of Attorney"?',
         options: [
-          'Permission to practice law professionally in a court environment',
-          'Document allowing someone to make decisions for you',
-          'A specific financial account with special authority over investments',
-          'A requirement for medical treatment approval from the local government',
+          'Acting for someone else',
+          'Permission to practice law',
+          'Account with investment authority',
+          'Requirement for medical treatment approval',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Power of attorney grants decision authority rather than professional credentials or financial ownership. It is an essential document that ensures your affairs are handled if you suddenly become unable to make decisions for yourself.',
         correctExplanation:
@@ -4405,12 +4405,12 @@ final List<QuizMetadata> _level3Quizzes = [
         question:
             'The people who receive assets from a will or insurance are called...',
         options: [
-          'Executors who manage all estate paperwork and legal filings',
-          'Beneficiaries receiving the assets',
-          'Trustees overseeing complicated legal arrangements and financial distributions today',
-          'Policyholders responsible for paying all premiums to keep insurance',
+          'People who receive assets',
+          'Executors who manage all paperwork',
+          'Policyholders who pay insurance premiums',
+          'Trustees overseeing legal arrangements',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Executors and trustees manage assets, but beneficiaries are the ones who actually receive them. Understanding this distinction is vital for ensuring that your estate plan correctly identifies the specific people you want to help.',
         correctExplanation:
@@ -4428,12 +4428,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "529 Plan"?',
         options: [
-          'A budgeting strategy for families with low annual income',
-          'Tax-advantaged savings account for education expenses',
-          'A specific private student loan program with very high interest',
-          'A government-run scholarship system for high achieving students today',
+          'Tax-advantaged education savings account',
+          'Budgeting strategy for families',
+          'Private student loan program',
+          'Run scholarship system for students',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             '529 plans are savings and investment accounts rather than loans or automatic scholarship programs. They are designed specifically to help families save for future education costs while receiving significant tax benefits from the government.',
         correctExplanation:
@@ -4442,12 +4442,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is the "FAFSA"?',
         options: [
-          'An academic performance exam required for college entry today',
-          'The Free Application for Federal Student Aid',
-          'A private lender offering student loans with very low rates',
-          'A law guaranteeing free college tuition for every citizen always',
+          'Federal aid application for students',
+          'Academic exam for college entry',
+          'Private lender for student loans',
+          'Law guaranteeing free college',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'FAFSA does not provide money directly; it determines eligibility for financial aid programs. It is a necessary step for anyone looking for assistance through grants, work-study programs, or federal student loans in the country.',
         correctExplanation:
@@ -4456,12 +4456,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Student Loan Subsidized" by the government?',
         options: [
-          'A loan that never requires repayment from any student',
-          'Government pays interest while you are in school',
-          'A loan reserved only for high-income families with significant wealth',
-          'A loan that must be repaid within one year after graduating',
+          'Interest-free loan during school',
+          'Loan that never requires repayment',
+          'Loan for high-income families',
+          'Loan requiring quick repayment',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Subsidized loans still require repayment but prevent interest growth while you are enrolled in school. This is a massive benefit that can save students thousands of [GEM] in interest costs over their education years.',
         correctExplanation:
@@ -4470,10 +4470,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Grant"?',
         options: [
-          'Money for college that does not need repayment',
-          'A specific loan with delayed repayment terms and high rates',
-          'A legal contract with a university for future employment always',
-          'A tuition discount that must be earned back through work',
+          'College funds without repayment',
+          'Loan with delayed repayment terms',
+          'Tuition discount earned through work',
+          'Contract for future employment',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4485,12 +4485,12 @@ final List<QuizMetadata> _level3Quizzes = [
         question:
             'Why is "Average Starting Salary" important when choosing a degree?',
         options: [
-          'It has no effect on long-term finances for a student',
-          'Helps evaluate if education costs are financially reasonable',
-          'It determines job satisfaction levels of your future professional career',
-          'It predicts future promotion speed in your chosen field of work',
+          'Assessing educational value',
+          'No effect on long-term finances',
+          'Determines future job satisfaction',
+          'Predicts future workplace advancement',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Ignoring potential salary can lead to massive debt that is extremely difficult to repay after graduation. It is essential to understand the financial reality of your career path before committing to expensive degree programs.',
         correctExplanation:
@@ -4508,12 +4508,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'In the "50/30/20 Rule," what does the 50% stand for?',
         options: [
-          'Entertainment and discretionary spending for your own personal daily fun',
-          'Needs such as rent, groceries, and utilities',
-          'Savings and investments specifically meant for your long term retirement',
-          'Tax obligations that you must pay to the local government annually',
+          'Essential living expenses',
+          'Needs like rent and food',
+          'Entertainment and discretionary spending',
+          'Current annual tax obligations',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Needs are essential expenses required to maintain basic living standards and survival. They should be prioritized above all other spending to ensure that you always have a safe place to live and enough food.',
         correctExplanation:
@@ -4522,12 +4522,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'In the "50/30/20 Rule," what does the 30% represent?',
         options: [
-          'Emergency savings specifically for unexpected medical or financial crises today',
-          'Wants like hobbies, dining out, and subscriptions',
-          'Insurance payments for your car and home and health coverage',
-          'Charitable contributions to local groups or organizations in your own community',
+          'Optional lifestyle choices',
+          'Emergency savings for financial crises',
+          'Insurance for home and vehicle',
+          'Charitable gift to local groups',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Wants represent optional expenses rather than essential obligations or long-term savings goals. While they are important for quality of life, they should never be funded at the expense of your basic needs or your savings.',
         correctExplanation:
@@ -4536,12 +4536,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'In the "50/30/20 Rule," what is the most important 20%?',
         options: [
-          'Clothing purchases and regular fashion updates for your professional work',
-          'Savings, investing, and extra debt payments',
-          'Travel expenses for vacations and trips around the world today',
-          'Vehicle upkeep and regular maintenance for your car and driving needs',
+          'Savings and investing',
+          'Clothing and fashion for work',
+          'Travel for vacations and trips',
+          'Vehicle upkeep and maintenance',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'This specific portion of your income builds your long-term financial security rather than providing short-term comfort or status. It is the engine that drives your future wealth and eventually leads to your financial independence.',
         correctExplanation:
@@ -4550,12 +4550,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Lifestyle Creep"?',
         options: [
-          'Suspicious behavior within the neighborhood where you currently live today',
-          'Increasing spending as your income rises',
-          'Relocating for higher paying work in a much different and expensive city',
-          'Purchasing unnecessary items impulsively without any planning or thinking now',
+          'Raising spending as your income rises',
+          'Suspicious behavior in your neighborhood',
+          'Relocating for work in an expensive city',
+          'Purchasing unnecessary items impulsively',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'A higher income does not automatically require matching increases in your daily spending or luxury levels. Lifestyle creep happens when you upgrade your life every time you get a raise, leaving you with zero net gain.',
         correctExplanation:
@@ -4564,12 +4564,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'A "Zero-Based Budget" means...',
         options: [
-          'Ending the month with absolutely no money saved in your accounts',
-          'Every unit of income assigned specific purpose',
-          'Spending nothing at all for an entire month to save every [GEM]',
-          'Avoiding budgeting entirely because you do not have enough money today',
+          'Giving every unit of income a purpose',
+          'Ending the month with no money saved',
+          'Spending nothing for an entire month',
+          'Budgeting without any available gems',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Zero-based budgeting is about intentional planning and allocation rather than eliminating all spending from your life. It ensures that every single [GEM] you earn has a specific job to do before the month even begins.',
         correctExplanation:
@@ -4587,12 +4587,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Revenue" in a business?',
         options: [
-          'The net profit remaining after all company expenses are paid',
-          'Total money earned from sales before any subtractions',
-          'The exact amount of [GEM] paid in annual corporate taxes',
-          'Percentage of employees who work for the organization today always',
+          'Earnings from sales before subtractions',
+          'Net profit remaining after all expenses',
+          'Exact amount paid in annual corporate taxes',
+          'Workforce percentage of the company',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Revenue measures the total income before any expenses are subtracted, which identifies how much money is coming into the business. It is often called the top line because it appears at the peak of the statement.',
         correctExplanation:
@@ -4601,10 +4601,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Net Profit"?',
         options: [
-          'Money remaining after all expenses and taxes paid',
-          'The total amount spent on advertising and company promotions today',
-          'The total value of all business equipment and physical property',
-          'Total management salaries paid to all employees and contractors annually',
+          'Earnings after all expenses and taxes',
+          'Money spent on advertising and promotions',
+          'Value of all business property and equipment',
+          'Total salaries paid to employees',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4615,12 +4615,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What does "LLC" stand for?',
         options: [
-          'Large Local Company operating within a specific narrow geographic region',
-          'Limited Liability Company for private asset protection',
-          'Long-Term Capital Corporation focused on major infrastructure and development projects',
-          'Low-Level Corporate Structure intended for small family run seasonal businesses',
+          'Private asset protection company',
+          'Large company operating in a specific region',
+          'Corporation focused on global infrastructure',
+          'Low-level business structure',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'LLCs are designed to limit personal financial risk from various business liabilities and debts. This means that creditors generally cannot come after your personal home or savings to pay for the companys mistakes or failures.',
         correctExplanation:
@@ -4629,12 +4629,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is a "Business Plan"?',
         options: [
-          'A simple map showing the internal office and desk layout',
-          'Document outlining goals, strategy, and daily operations',
-          'A specific workplace dress requirement for all employees and visitors',
-          'A special insurance policy covering unexpected loss of business income',
+          'Document outlining goals and operations',
+          'Map showing the internal office layout',
+          'Insurance policy for unexpected business losses',
+          'Workplace dress requirement for employees',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Business plans are comprehensive roadmaps that guide overall operations rather than just simple daily workplace rules. They force entrepreneurs to think through their competition, marketing strategies, and financial projections before starting their new empire.',
         correctExplanation:
@@ -4643,12 +4643,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Equity Financing"?',
         options: [
-          'Borrowing money that must be repaid with regular interest payments',
-          'Selling ownership in exchange for growth funding',
-          'Buying expensive company equipment using saved cash from previous sales',
-          'Receiving a small government grant intended for local community improvement',
+          'Ownership sold for growth funding',
+          'Borrowing money that must be repaid',
+          'Buying equipment using saved cash',
+          'Receiving a small government grant',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Equity financing does not require repayment like high-interest loans. Instead of becoming a debtor, you take on partners who share in the profits and have a say in how the company is managed and operarted.',
         correctExplanation:
@@ -4666,12 +4666,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is the core concept of "Time Value of Money"?',
         options: [
-          'Money has different emotional value at different points in life',
-          'Present [GEM] is worth more than future [GEM] because of inflation',
-          'Wealth depends entirely on hours worked regardless of investment growth',
-          'Value remains constant across time and is unaffected by interest rates',
+          'Present gems worth more than future',
+          'Money has different emotional values personally',
+          'Wealth depends entirely on total hours worked',
+          'Constant value unaffected by rates',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'The time value of money concept is not based on internal emotions, working hours, or fixed value assumptions. It specifically recognizes that money can grow significantly through interest or reinvestment opportunities available today.',
         correctExplanation:
@@ -4680,10 +4680,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'In TVM, what does "Future Value" (FV) calculate?',
         options: [
-          'The value an investment will reach eventually',
-          'Expected cost of consumer goods many years from now by inflation',
-          'Number of years required to reach retirement based on current behavior',
-          'Total amount of money already spent on past investments and expenses',
+          'Investment value eventually reached',
+          'Expected cost of consumer goods in years',
+          'Years required to reach retirement age',
+          'Total amount of money already spent',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4694,12 +4694,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What does "Present Value" (PV) tell an investor?',
         options: [
-          'The current market price of everyday consumer goods in the store',
-          'Today\'s value of future [GEM] adjusted for interest',
-          'The total wealth currently held across all different types of accounts',
-          'The number of years required for an existing investment to double',
+          'Today\'s value of future gems',
+          'Price of everyday goods in store',
+          'Years needed for investments to double',
+          'Total wealth across all accounts',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'Present Value does not measure spending power, total wealth, or doubling time. It focuses specifically on translating future cash flows into todays value using certain discounting and interest assumptions about the market economy.',
         correctExplanation:
@@ -4708,10 +4708,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'How does the "Discount Rate" affect Present Value?',
         options: [
-          'Higher discount rate lowers today\'s value of future wealth',
-          'A higher discount rate increases the future purchasing power of money',
-          'The discount rate only applies to retail discounts and promotional pricing',
-          'Discount rates do not influence financial calculations or any investment decisions',
+          'High rates reducing present value',
+          'Higher rates increasing future purchasing power',
+          'Retail discounts and seasonal pricing',
+          'Rates not influencing financial calculations',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4722,12 +4722,12 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'An "Annuity" is a financial product that...',
         options: [
-          'Pays a single large amount once at the end of contract',
-          'Provides equal payments at regular intervals over defined period',
-          'Is limited to short-term consumer purchases like furniture or home goods',
-          'Offers no interest or time-based structure for the investor to use',
+          'Regular payments over defined periods',
+          'Single large payment at contract end',
+          'Short-term consumer purchases for the home',
+          'Lacking interest or time-based structure',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         wrongExplanation:
             'An annuity is not a lump sum payment or a consumer purchase tool. It is structured specifically to distribute payments consistently over a long period, which is often used for long-term income planning during retirement.',
         correctExplanation:
@@ -4745,10 +4745,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is the "Risk-Return Tradeoff"?',
         options: [
-          'All higher potential returns eventually require accepting higher risk',
-          'All investments should prioritize maximum risk for achieve faster wealth today',
-          'Risk and return exist independently and do not influence each other now',
-          'Government policies eliminate risk from all existing financial investments in country',
+          'Higher returns requiring higher risks',
+          'Prioritizing maximum risk to achieve wealth',
+          'Risk and return existing independently',
+          'Policies eliminating all investment risk',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4759,10 +4759,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What does "Beta" measure in a stock?',
         options: [
-          'The volatility of a stock compared to overall markets',
-          'The company’s total revenue growth over multiple years and months today',
-          'The experience level of executive leadership and management and board members',
-          'The amount of outstanding corporate debt owed to all the major lenders',
+          'Volatility relative to overall markets',
+          'Revenue growth over years and months',
+          'Experience level of the leadership team',
+          'Corporate debt owed to lenders',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4773,10 +4773,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'What is "Systematic Risk" (Market Risk)?',
         options: [
-          'Risk impacting entire market that is not easily diversified',
-          'Risk specific to one single company due to poor management decisions',
-          'Operational risks such as factory shutdowns or strikes at local plants today',
-          'Risks caused by individual consumer behavior or changing tastes and preferences now',
+          'Market risk not easily diversified',
+          'Company risk from poor management decisions',
+          'Risks such as factory shutdowns',
+          'Individual consumer behavior risks',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4787,10 +4787,10 @@ final List<QuizMetadata> _level3Quizzes = [
       QuizQuestion(
         question: 'The "Capital Asset Pricing Model" (CAPM) is used to...',
         options: [
-          'Estimate required rate of return based on investment risk',
-          'Predict exact future stock prices with absolute certainty and daily accuracy',
-          'Identify the cheapest assets currently available in the broad global market today',
-          'Eliminate all uncertainty from investment decisions to guarantee success for all',
+          'Estimating return based on risk',
+          'Predicting stock prices with absolute certainty',
+          'Identifying cheapest assets in the market',
+          'Eliminating uncertainty from investments',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4803,9 +4803,9 @@ final List<QuizMetadata> _level3Quizzes = [
             'What is the "Standard Deviation" of an investment used to measure?',
         options: [
           'Total volatility of returns around the calculated average wealth',
-          'The initial purchase cost of an individual investment asset today',
-          'The average economic growth rate of a country or regional group',
-          'The reputation of the fund manager or the board of directors',
+          'The initial purchase cost of an individual investment asset today now',
+          'The average economic growth rate of a specific country or region today',
+          'The reputation of the fund manager or board',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4830,10 +4830,10 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What is the primary difference between a "C-Corporation" and an "S-Corporation"?',
         options: [
-          'S-Corporations avoid double taxation by passing profits directly to shareholders',
-          'C-Corporations are legally restricted to operating only as small domestic firms today',
-          'C-Corporations are prohibited from issuing equity or raising capital from investors now',
-          'S-Corporations expose owners to unlimited personal liability for business obligations always',
+          'S-Corporations avoid double taxation through pass-through profits',
+          'C-Corporations restricted to small domestic operations',
+          'C-Corporations prohibited from raising equity capital',
+          'S-Corporations expose owners to unlimited liability',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4844,10 +4844,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does "Limited Liability" actually protect?',
         options: [
-          'The personal assets of the owners from being seized to pay business debts',
-          'The business itself from experiencing losses or operational failure in competitive markets today',
-          'Employees from termination or contract disputes during severe financial downturns in the country',
-          'Company-owned intellectual property from theft or misuse by international competitors in market now',
+          'Personal assets of owners from business debts',
+          'The business from experiencing failure in competitive markets',
+          'Employees from termination or labor contract disputes',
+          'Intellectual property from theft or misuse',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4858,10 +4858,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'A "Partnership" differs from a Corporation because...',
         options: [
-          'Partners often have unlimited personal liability for business debts always now',
-          'Partnerships allow shares to be traded publicly on regulated stock exchanges today',
-          'Partnerships are exempt from all forms of taxation in every global jurisdiction',
-          'Partnerships are legally restricted to employing no more than two individuals now',
+          'Partners often have unlimited liability for debts',
+          'Partnerships allow shares to be traded on exchanges',
+          'Partnerships are exempt from every form of taxation',
+          'Partnerships restricted to employing few individuals',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4872,10 +4872,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Non-Profit 501(c)(3)" organization?',
         options: [
-          'A corporation that reinvests surplus income into charitable or social missions',
-          'An organization that is legally prohibited from generating revenue under any circumstances today',
-          'A business entity that does not pay employees or contractors for their work always',
-          'An operational branch of the federal or local government found in major cities now',
+          'Corporation reinvesting surplus into social missions',
+          'Organization prohibited from generating revenue',
+          'Entity that never pays for employee work',
+          'Operational branch of the federal government',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4886,10 +4886,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Publicly Traded" company?',
         options: [
-          'A corporation that sells ownership shares to public through stock exchanges',
-          'A company owned and operated directly by government authorities in the country today',
-          'A company that distributes free products to customers for promotional purposes every year',
-          'A business whose financial statements are visible inside its office to all visitors now',
+          'Selling shares to public investors',
+          'Company owned and operated by government',
+          'Company distributing free products for promotions',
+          'Business whose financial statements are public',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4909,10 +4909,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does "Market Volatility" measure?',
         options: [
-          'The frequency and magnitude of price movements over time',
-          'The total volume of shares exchanged across global markets today always',
-          'The processing speed of electronic trading platforms found in major cities now',
-          'The combined profitability of all listed corporations within the entire market today',
+          'Frequency and magnitude of price movements',
+          'Total volume of shares exchanged across markets',
+          'Processing speed of electronic trading platforms',
+          'Aggregate profitability of listed firms',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4923,10 +4923,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Correction" in the stock market?',
         options: [
-          'A decline of ten percent or more from recent peaks',
-          'A government-mandated adjustment to incorrect asset pricing found in markets today now',
-          'A complete suspension of trading activity across all major international stock exchanges now',
-          'A rapid increase in prices caused by speculation and high investor excitement today',
+          'Decline of ten percent from peaks',
+          'Government mandated adjustment to incorrect pricing',
+          'Suspension of trading across major exchanges',
+          'Rapid increase in prices from speculation',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4937,10 +4937,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Market Sentiment"?',
         options: [
-          'Prevailing emotional and psychological outlook of individual investors',
-          'The total amount of capital circulating in financial markets today always',
-          'The exact valuation of individual securities based on daily professional analysis',
-          'A regulatory tax imposed on speculative behavior by the national government now',
+          'Emotional outlook of individual investors',
+          'Total capital circulating in financial markets',
+          'Valuation of securities based on analysis',
+          'Regulatory tax on speculative behavior',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4952,9 +4952,9 @@ final List<QuizMetadata> _level4Quizzes = [
         question: 'What defines a "Recession" (the technical definition)?',
         options: [
           'Two consecutive quarters of negative growth in GDP',
-          'A sustained increase in consumer prices across the entire national economy',
-          'A single sharp decline in equity markets observed by many investors today',
-          'Unemployment reaching a specific percentage threshold determined by the government officials now',
+          'Sharp decline in equity markets',
+          'Increase in consumer prices across the economy',
+          'Unemployment reaching a specific threshold',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4965,10 +4965,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'A "Bubble" occurs when...',
         options: [
-          'Prices rise far beyond fundamental value due to high speculation',
-          'Asset prices reflect their underlying intrinsic value based on solid economic data',
-          'Central banks expand the money supply to encourage higher spending and investment',
-          'Interest rates remain elevated for extended periods due to strict government intervention now',
+          'Prices rising beyond fundamental value',
+          'Asset prices reflecting their intrinsic value',
+          'Central banks expanding the money supply',
+          'Interest rates elevated by government',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -4988,10 +4988,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Marginal Tax Rate"?',
         options: [
-          'The tax rate applied to the last portion of income earned here',
-          'The average tax paid across total income earned by the individual worker today',
-          'A special rate imposed exclusively on financial institutions operating in the domestic markets',
-          'The lowest statutory tax rate found in the national economy for all citizens',
+          'Rate applied to last portion earned',
+          'Average tax paid across total income',
+          'Rate imposed on domestic financial institutions',
+          'Lowest national statutory tax rate',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5002,10 +5002,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is an "Effective Tax Rate"?',
         options: [
-          'The total taxes paid divided by total income earned yearly now',
-          'The rate applied to the final dollar earned by the individual citizen',
-          'A measure used exclusively for corporate taxation levels across many different industries',
-          'A rate adjusted for inflation annually by government officials using specific economic data',
+          'Taxes divided by total income',
+          'Measure used for corporate taxation',
+          'Rate adjusted for inflation annually',
+          'Taxes divided by annual gross earnings',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5016,10 +5016,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Taxable Income"?',
         options: [
-          'Gross income minus deductions, adjustments, and exemptions now',
-          'All income received before any adjustments are made today',
-          'The balance currently held in bank accounts by individual',
-          'The total refund amount owed by tax authorities now',
+          'Gross income minus deductions',
+          'Income received before adjustments',
+          'Account balance held by individuals',
+          'Refund amount owed by tax authorities',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5030,10 +5030,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'A "Regressive Tax" is one where...',
         options: [
-          'Low earners pay higher shares of income than wealthy ones',
-          'Higher earners pay progressively higher percentages of their total income earned always',
-          'Taxes decrease automatically over time regardless of economic performance in the country',
-          'No enforcement mechanisms exist to collect revenue from citizens in rural areas',
+          'Regressive tax paying systems',
+          'Higher earners paying higher percentages',
+          'Taxes decreasing automatically over time',
+          'No enforcement mechanisms for taxes',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5044,10 +5044,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Capital Gains Tax"?',
         options: [
-          'Tax on profits from selling investments like stocks or property',
-          'A tax applied to earned wages from a regular job or salary',
-          'A levy on total asset value held by an individual or corporation',
-          'A fee associated with capital cities and their specific local government laws',
+          'Taxing profits from investment sales',
+          'Tax applied to regular earned wages',
+          'Levy on total held asset value',
+          'Fee associated with capital cities',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5067,10 +5067,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the primary goal of "Asset Allocation"?',
         options: [
-          'To balance risk and reward by spreading [GEM] across different asset classes',
-          'To concentrate nearly all investable capital into a single asset believed to outperform today',
-          'To completely eliminate taxes through portfolio structure without considering any investment risk now',
-          'To maximize short-term spending efficiency instead of long-term financial stability and growth now',
+          'Balance risk by spreading gems',
+          'Concentrating capital into a single asset',
+          'Maximizing short-term spending efficiency',
+          'Eliminate taxes through portfolio structure',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5081,10 +5081,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does it mean for two investments to be "Uncorrelated"?',
         options: [
-          'The performance of one investment does not reliably move with the other',
-          'They consistently move in the same direction because they respond to identical economic forces always',
-          'They are held within the same brokerage or custodial account managed by a professional now',
-          'They operate under identical legal and regulatory frameworks found within the entire domestic market today',
+          'Investment performance not moving together',
+          'Consistently moving in the same direction',
+          'Operating under identical legal frameworks',
+          'Held within one brokerage account',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5095,10 +5095,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Rebalancing" a portfolio?',
         options: [
-          'Buying and selling assets to restore original target asset allocation',
-          'Selling profitable investments to fund unrelated personal expenses without regard for risk management',
-          'Waiting passively for markets to correct themselves without taking any active steps now',
-          'Changing account providers or credentials to improve overall safety of your digital assets',
+          'Trading to restore target allocation',
+          'Selling investments for personal expenses',
+          'Changing providers for asset safety',
+          'Waiting passively for market corrections',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5109,10 +5109,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Target Date Fund"?',
         options: [
-          'A fund that gradually shifts from higher risk to lower risk',
-          'An investment vehicle that exists only briefly before mandatory liquidation on calendar deadlines',
-          'A short-term trading product designed for frequent buying and selling on secondary markets',
-          'A fund designed to finance specific personal events like luxury weddings or vacations',
+          'Gradual shift to lower risk',
+          'Vehicle exiting before mandatory liquidation',
+          'Fund designed for personal luxury events',
+          'Frequent buying and selling product',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5124,10 +5124,10 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'Why does an investor\'s "Time Horizon" matter for allocation?',
         options: [
-          'A longer time horizon allows greater risk tolerance because recovery time exists',
-          'It determines the specific trading hours available to the individual investor in the country today',
-          'It dictates which financial institution must be used for all types of investment accounts and services',
-          'It has no meaningful impact on investment decisions made by the individual or professional advisors always',
+          'Recovery time allows risk',
+          'Determines investor trading hours',
+          'No impact on investment decisions',
+          'Dictates which institution is used',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5148,10 +5148,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Derivative" in finance?',
         options: [
-          'A financial contract whose value depends on an underlying asset',
-          'A banking product designed primarily for storing deposits and earning interest over time today always',
-          'A standardized method for calculating personal income taxes used by the local government authorities now',
-          'A perpetual loan with no maturity date that is offered to high income earners only',
+          'A financial contract whose value depends on an underlying asset today',
+          'A banking product designed primarily for storing deposits and earning interest over time today',
+          'A standardized method for calculating personal income taxes used by the local government now',
+          'A perpetual loan with no maturity date always now',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5162,10 +5162,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the primary purpose of "Hedging"?',
         options: [
-          'To reduce or offset the risk of losses in an existing position',
+          'To reduce or offset the risk of losses in an existing position now',
           'To maximize profits regardless of risk exposure to the overall market conditions today always',
-          'To hide investment losses from others using complicated legal structures and offshore banking accounts now',
           'To increase unnecessary portfolio complexity through the use of advanced financial instruments and contracts today',
+          'To hide investment losses using complicated legal structures and accounts now',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5179,7 +5179,7 @@ final List<QuizMetadata> _level4Quizzes = [
           'The right to buy stock at a set price within specific time',
           'The contractual right to sell shares at a fixed price regardless of market conditions',
           'A communication request initiated by a brokerage firm regarding your active trading accounts now always',
-          'A binding obligation to purchase an entire company following a formal agreement between parties',
+          'Binding obligation to purchase an entire company following formal agreement',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5192,8 +5192,8 @@ final List<QuizMetadata> _level4Quizzes = [
         options: [
           'The contractual right to sell a stock at a specific price now',
           'The binding obligation to buy a fixed number of shares in the market today',
-          'A deposit into a savings vehicle used to build long term wealth always now',
           'An account cancellation method required for all inactive trading platforms found in country always',
+          'A deposit into a savings vehicle used for wealth now',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5204,10 +5204,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What occurs during "Short Selling"?',
         options: [
-          'Borrowing shares to sell now, planning to repurchase them later cheaper',
-          'Buying shares for temporary ownership while waiting for a specific price increase today',
-          'Liquidating assets due to cash shortages caused by unexpected medical or personal expenses',
-          'Purchasing shares at a discounted price offered by the brokerage firm to customers',
+          'Borrowing shares to sell and repurchase later',
+          'Borrowing shares while waiting for price increases',
+          'Liquidating assets due to unexpected cash shortages',
+          'Purchasing shares at a brokerage discount',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5228,10 +5228,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does "Forex" (FX) stand for?',
         options: [
-          'The global marketplace used for trading one currency for another currency',
-          'A specialized system for processing international retail payments between different countries today always',
-          'A fixed accounting expense ratio used by major corporations to track global costs',
-          'An export licensing framework required for businesses that sell products in foreign nations',
+          'Global marketplace for trading currencies',
+          'System for processing payments between countries',
+          'Export licensing framework for selling products abroad',
+          'Corporate accounting costs tracking ratio',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5242,10 +5242,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'When a currency "Appreciates," what does that mean?',
         options: [
-          'Its value increases relative to another currency in the global markets',
-          'Its purchasing power decreases consistently due to inflation and weak demand today always',
-          'It stops being issued by the government following a significant economic or political crisis',
-          'It becomes unusable in international trade because of strict sanctions imposed by nations',
+          'Currency value increases against another',
+          'Purchasing power decreases from inflation',
+          'Unusable in trade from national sanctions',
+          'Issuance stops following economic crisis',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5256,10 +5256,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Trade Deficit"?',
         options: [
-          'When a country imports more goods and services than it exports',
-          'When exports exceed imports during a specific period of economic activity today always',
-          'A situation where a country has no foreign reserves left in its bank',
-          'A tax applied to imported goods by national government to protect local industries',
+          'Imports exceeding exports',
+          'Exports exceeding imports during economic activity',
+          'Situation with no remaining foreign reserves',
+          'Tax applied to imported goods',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5270,10 +5270,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Tariff"?',
         options: [
-          'A tax imposed on imported goods to regulate international trade and commerce',
-          'A diplomatic financial gift given to a foreign nation during an official visit today',
-          'A transportation infrastructure system used for moving products across different country borders always now',
-          'A securities trading license required for individuals working in the international investment banking industry',
+          'Tax on imported goods',
+          'Financial gift given to a foreign country',
+          'System for moving products across national borders',
+          'Securities license for banking individuals',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5284,10 +5284,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Hyperinflation"?',
         options: [
-          'Extremely rapid and uncontrollable price increases that devalue the national currency quickly',
-          'Moderate price increases observed in the daily cost of living for families today always',
-          'Fast stock market growth fueled by high investor confidence and record breaking corporate profits',
-          'An accelerated savings strategy intended to build wealth quickly during periods of economic instability',
+          'Rapid and uncontrollable price increases',
+          'Moderate price increases in daily cost',
+          'Market growth from high investor confidence',
+          'Accelerated strategy for building wealth',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5309,9 +5309,9 @@ final List<QuizMetadata> _level4Quizzes = [
         question: 'What is a "Fixed-Rate Mortgage"?',
         options: [
           'A loan with interest rate that remains constant over several decades',
-          'A home whose market value never changes regardless of the local economic conditions today',
-          'A mortgage repayable within one single year following the initial agreement between all parties now',
-          'A lending product restricted to wealthy borrowers found in major international financial centers today always',
+          'A home whose market value never changes regardless of conditions',
+          'Mortgage repayable within one year',
+          'Lending product restricted to wealthy borrowers found in centers',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5323,9 +5323,9 @@ final List<QuizMetadata> _level4Quizzes = [
         question: 'How does an "ARM" (Adjustable-Rate Mortgage) work?',
         options: [
           'Interest rates change over time based on specific market benchmarks',
-          'Payments are made through physical labor instead of using cash or digital currency today',
-          'The lender can seize the property at will without any formal legal warning or notice',
-          'Interest is permanently set to zero for the entire duration of the housing loan always',
+          'Payments are made through physical labor instead of using digital currency',
+          'The lender can seize property at will without formal legal warning',
+          'Interest is permanently set to zero for entire duration',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5336,10 +5336,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Mortgage Amortization Schedule"?',
         options: [
-          'Breakdown of how each payment applies to interest and principal monthly',
-          'A property feature list describing every individual room and structural component of the house today',
-          'A relocation plan used by families moving between different neighborhoods or large cities across country',
-          'A neighborhood agreement signed by all residents living on a specific residential street today always',
+          'Breakdown of interest and principal',
+          'Property feature list describing every room',
+          'Relocation plan for families moving cities',
+          'Agreement signed by street residents',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5350,10 +5350,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Home Equity"?',
         options: [
-          'Value owned outright by the homeowner after subtracting all debts',
-          'The home’s current market price estimated by a professional real estate agent today always',
-          'Outdoor property size measured in square meters or acres depending on the specific location now',
-          'Insurance coverage type required for all residential properties found within the domestic market today always',
+          'Value owned outright by the homeowner after subtracting all the debts',
+          'The home’s current market price estimated by professional real estate agent',
+          'Outdoor property size measured in square meters or acres depending',
+          'Insurance coverage required for residential properties within the market',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5364,10 +5364,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Refinance" (Refi)?',
         options: [
-          'Replacing an existing mortgage with a brand new loan agreement',
-          'Renovating a home to increase its overall market value and aesthetic appeal for potential buyers',
-          'Purchasing additional property as an investment strategy to build long term wealth in the country',
-          'Paying off debt in cash instead of using multiple monthly installments over several different years now',
+          'Replacing mortgage with new agreement',
+          'Renovating home to increase market value',
+          'Purchasing additional property as an investment',
+          'Paying off debt in cash',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5388,10 +5388,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the "P/E Ratio"?',
         options: [
-          'Price divided by earnings per share of a company',
-          'Profit divided by expenses across multiple operational departments of a corporation',
-          'Employee percentage metric used to track productivity within the entire organization',
-          'Energy cost ratio calculated by the facilities management team for electricity',
+          'Stock price divided by earnings',
+          'Profit divided by multiple department expenses',
+          'Metric used to track organizational productivity',
+          'Corporate electricity usage cost ratio',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5402,10 +5402,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does "Market Capitalization" (Market Cap) mean?',
         options: [
-          'Total value of all outstanding shares in the entire company',
-          'Total buildings owned by a corporation across multiple different geographic regions',
-          'Headquarters location chosen by board of directors for its strategic advantages',
-          'Cash reserves held in various banking institutions to fund future expansion',
+          'Total value of outstanding shares',
+          'Buildings owned across different geographic regions',
+          'Headquarters location chosen by the board',
+          'Corporate cash reserves held for expansion',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5416,10 +5416,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "EBITDA"?',
         options: [
-          'Earnings before interest, taxes, depreciation, and amortization for the firm',
-          'A professional qualification required for individuals working in the accounting and finance industry today always',
-          'A trade authority responsible for regulating international commerce and export activities between multiple different nations now',
-          'Marketing expenditure total calculated by the advertising department to reach new customers in global markets always',
+          'Earnings before interest and taxes',
+          'Qualification for accounting and finance industry',
+          'Authority regulating international commerce between nations',
+          'Expenditure to reach market customers',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5430,10 +5430,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Dividend Yield"?',
         options: [
-          'Annual dividend divided by stock price for the investment',
-          'Lifetime dividends paid to all historical shareholders since the initial public offering of the firm today',
-          'Number of shareholders currently registered with the company following the latest annual meeting of the board',
-          'Risk measurement used by traders to assess the potential for significant architectural failures within the infrastructure always',
+          'Annual dividend divided by price',
+          'Lifetime dividends paid to all shareholders',
+          'Shareholders registered after the annual meeting',
+          'Risk measurement for architectural failures',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5444,10 +5444,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Book Value"?',
         options: [
-          'Net asset value if the entire company was liquidated',
-          'Textbook cost typically associated with a new undergraduate degree in economics or finance today always',
-          'Library size measured by the total number of books found within the corporate research division now',
-          'Legal expense total accumulated after multiple different court cases involving intellectual property disputes in the industry now',
+          'Net asset value if liquidated',
+          'Textbook cost for an economics degree',
+          'Library size by total book count',
+          'Expense from multiple legal cases',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5468,10 +5468,10 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What is the primary role of the "Federal Reserve" (The Fed)?',
         options: [
-          'Manage the nation\'s money supply and set overall interest rates',
-          'To administer national tax system, directly collect revenues from individuals and businesses found in the country today always',
-          'To operate all government payment systems and approve every financial transaction occurring in the national economy today always',
-          'To guarantee financial profits for banks and investment firms regardless of current market conditions or overall economic performance now',
+          'Managing the national money supply',
+          'Administering tax system and collecting revenues',
+          'Operating government payment systems and approvals',
+          'Guaranteeing profits for banks and firms',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5482,10 +5482,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What happens when The Fed "Raises" interest rates?',
         options: [
-          'Borrowing becomes more expensive, which usually cools down overheating inflation',
-          'Borrowing costs fall significantly, encouraging higher consumer spending and rapid credit expansion across all households today always',
-          'Government spending automatically increases to offset higher private borrowing costs found within the entire domestic market today always',
-          'Asset prices instantly rise across all markets without any exception regardless of the underlying economic fundamentals or market sentiment now',
+          'Rates rise, cooling down inflation',
+          'Borrowing costs fall, encouraging consumer spending',
+          'Government spending increases to offset costs',
+          'Asset prices rising without any exception',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5496,10 +5496,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Quantitative Easing" (QE)?',
         options: [
-          'Central bank buys government bonds to inject [GEM] into economy',
-          'A comprehensive process for tracking every unit of currency in circulation',
-          'A targeted tax policy applied only to high-income earners during expansions',
-          'A regulatory rule limiting how many financial assets investors may hold',
+          'Buying bonds to inject gems',
+          'Tracking all currency units in circulation',
+          'Tax policy applied to high earners',
+          'Rule limiting financial asset investor holdings',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5510,10 +5510,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the "Dual Mandate" of the Federal Reserve?',
         options: [
-          'Maximum employment and stable prices with low inflation consistently',
-          'To supervise banks while simultaneously collecting taxes and enforcing federal budget laws found across the entire nation today always',
-          'To control currency printing and eliminate all financial fraud occurring within the international banking systems and markets today always',
-          'To oversee military funding and national infrastructure projects decided by the elected government officials and their respective agencies now',
+          'Maximum employment and stable prices',
+          'Supervising banks while collecting national taxes',
+          'Controlling currency and eliminating financial fraud',
+          'Overseeing military and national infrastructure projects',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5524,10 +5524,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What are "Reserve Requirements"?',
         options: [
-          'Percentage of deposits a bank must keep in reserve',
-          'The minimum amount of personal savings individuals must maintain in regulated banking institutions found in major international financial centers today always',
-          'A mandatory employment quota imposed on private companies following a specific government order to increase workforce participation across country borders now',
-          'A legal requirement for businesses to hold emergency cash funds that are strictly separated from their operational and research development budgets today',
+          'Deposit percentage banks must keep',
+          'Minimum savings individuals must maintain',
+          'Employment quotas imposed on private companies',
+          'Holding emergency cash legal rule',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5549,10 +5549,10 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What is the main difference between Monetary and "Fiscal Policy"?',
         options: [
-          'Fiscal policy is the use of government spending and taxation',
-          'Fiscal policy is controlled by central banks and focuses exclusively on interest rates and liquidity management solutions today always',
-          'Monetary policy applies only to low-income households and has no effect on large corporations or professional investors in market now',
-          'There is no meaningful distinction between monetary and fiscal policy tools used by the national government to manage its economy today',
+          'Fiscal policy is the use of government spending and the taxation',
+          'Fiscal policy is controlled by central banks and focuses on interest rates',
+          'Monetary policy applies only to low-income households and has no effect on corporations',
+          'No meaningful distinction between monetary and fiscal policy',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5564,9 +5564,9 @@ final List<QuizMetadata> _level4Quizzes = [
         question: 'What is a "Budget Deficit"?',
         options: [
           'When the government spends more [GEM] than it collects annually',
-          'A situation where the government completely runs out of money and cannot fund any public services for its citizens today now',
-          'An accounting error caused by inaccurate tax reporting across several different government agencies and departments following a recent budget audit today',
-          'A penalty imposed on countries with low economic growth and high unemployment rates by international financial organizations and major global lenders now',
+          'Situation where government completely runs out of money and cannot fund services',
+          'Accounting error caused by inaccurate tax reporting across several different government agencies',
+          'Penalty imposed on countries with the low economic growth',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5577,10 +5577,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the "National Debt"?',
         options: [
-          'Total accumulation of all past deficits that remain unpaid today',
-          'The combined personal debt of all citizens and households within a country regardless of their individual income or savings now always',
-          'The amount of money distributed as government grants to various non-profit organizations and small businesses to encourage higher economic growth today always',
-          'A recurring tax imposed on every resident living within the nation boundaries to help fund defense spending and infrastructure projects decided now',
+          'Total accumulation of all past deficits that remain unpaid',
+          'Combined personal debt of all citizens and households within country regardless',
+          'Amount of money distributed as government grants to various non-profit organizations',
+          'Recurring tax imposed on every resident living within boundaries',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5591,10 +5591,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does the "Debt-to-GDP Ratio" measure?',
         options: [
-          'Total government debt compared to annual economic output',
-          'The exact amount of debt owed by each citizen on an individual basis across all social and economic classes today always',
-          'The portion of taxes allocated to defense spending and international military aid decided by the elected political leaders and their advisors now',
-          'The repayment period of public loans borrowed from international financial institutions or major private sector lenders found within global markets today always',
+          'Debt compared to economic output',
+          'Debt owed by each individual citizen',
+          'Taxes allocated to international military aid',
+          'Repayment period of public loans',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5605,10 +5605,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Discretionary Spending" in a government budget?',
         options: [
-          'Spending that Congress approves annually through the formal budget process today now',
-          'Spending legally required under entitlement programs such as pensions and healthcare for citizens',
-          'Spending conducted secretly without any form of public oversight or democratic legislative review',
-          'Private sector consumer spending tracked by the national statistical agency to monitor economy',
+          'Optional funding approved annually',
+          'Spending approved annually by the government',
+          'Spending required for national entitlement programs',
+          'Consumer spending tracked by agencies',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5629,10 +5629,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Loss Aversion" in psychology?',
         options: [
-          'The tendency for people to feel losses more intensely than equivalent gains now',
-          'A navigational fear experienced when unfamiliar with physical surroundings in new environments today always',
-          'A strategy focused on maximizing gains at any cost without considering potential financial risks',
-          'The habit of ignoring financial information entirely due to overwhelming stress from market volatility',
+          'Feeling losses more than gains',
+          'Fear experienced in unfamiliar surroundings',
+          'Prioritizing gains while ignoring risks',
+          'Habit of ignoring financial information',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5643,10 +5643,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the "Sunk Cost Fallacy"?',
         options: [
-          'Continuing an investment because of past [GEM] already spent today always',
-          'The expense of constructing maritime vessels for international shipping during periods of growth',
-          'Assuming prices always rise over time regardless of the specific underlying economic conditions',
-          'Investing exclusively in low-risk assets to avoid any possibility of significant financial loss',
+          'Continuing due to past spending',
+          'Expense of constructing maritime vessels',
+          'Assuming prices always rise regardless of conditions',
+          'Buying only low-risk assets',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5657,10 +5657,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Herd Mentality" in the stock market?',
         options: [
-          'Following the actions of others without conducting any independent analysis today always',
-          'The coordinated purchasing of agricultural assets to improve food security and national stability',
-          'Maintaining a diversified investment portfolio across many different asset classes and geographic regions',
-          'Mandatory participation in investment groups required by banking institutions for all new account holders',
+          'Following others without analysis',
+          'Coordinated purchasing for food security',
+          'Maintaining a diversified portfolio',
+          'Mandatory participation in groups',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5671,10 +5671,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Confirmation Bias"?',
         options: [
-          'Seeking information that confirms existing beliefs while ignoring contradictory evidence today now',
-          'Receiving notifications after trades are executed on the stock exchange during normal business hours',
-          'Publicly sharing investment successes to build a reputation as a successful and professional market trader',
-          'Consulting professional advisors to gain expert insights into current market trends and future economic forecasts',
+          'Seeking only confirming information',
+          'Seeking info that confirms beliefs',
+          'Notifications after trades are executed',
+          'Consulting advisors for market trends',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5685,10 +5685,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "FOMO" (Fear Of Missing Out)?',
         options: [
-          'Anxiety caused by observing others profit while remaining uninvested today always now',
-          'A structured high-interest lending product offered by major global banking institutions to institutional clients',
-          'The cost of excessive trading activity including commissions and fees charged by brokerage firms',
-          'A regulatory limit on investment gains imposed by the national government to ensure fair competition',
+          'Fear of missing growth',
+          'Anxiety from watching others profit',
+          'Lending product from global banks',
+          'Regulatory limit on investment gains',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5709,10 +5709,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the "4% Rule" in retirement planning?',
         options: [
-          'Guideline allowing withdrawal of 4% yearly without depleting assets today always',
-          'A recommendation to save exactly four percent of income annually into a diversified account',
-          'The minimum interest paid on savings accounts by the national central bank each tax year',
-          'The maximum retirement tax rate applied to high-income earners within the local domestic financial market',
+          'Sustainable annual withdrawal limit',
+          'Recommendation to save four percent',
+          'Minimum interest paid on savings',
+          'Maximum retirement tax rate',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5723,10 +5723,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Sequence of Returns Risk"?',
         options: [
-          'The risk of poor returns early in retirement today always',
-          'The risk of stock exchanges shutting down because of major technical failures or crises',
-          'The order of household bill payments required to maintain a good personal credit score',
-          'Holding multiple accounts across different financial institutions to improve security and overall safety today',
+          'Poor returns early in retirement',
+          'Risk of stock markets shutting down',
+          'Ordering bills to maintain credit scores',
+          'Holding multiple accounts for security',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5737,10 +5737,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Roth Conversion"?',
         options: [
-          'Moving funds from traditional to Roth accounts for tax-free growth',
-          'Changing legal identity following a major life event or relocation to a new country',
-          'Selling property assets to fund retirement goals while reducing overall exposure to real estate today',
-          'Doubling wealth quickly by participating in high-risk speculative trading on global financial markets now',
+          'Moving funds for tax-free growth',
+          'Changing identity following relocation',
+          'Selling property to fund retirement',
+          'Doubling wealth through speculative trading',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5751,10 +5751,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Required Minimum Distribution" (RMD)?',
         options: [
-          'Mandatory withdrawals starting at a certain age today always',
-          'Minimum wage requirement enforced by national labor laws to protect low income workers today',
-          'Account opening minimum required by commercial banks to access professional investment portfolios now always',
-          'Charitible giving minimum suggested for wealthy individuals to reduce their taxable income during the year',
+          'Mandatory age based withdrawals',
+          'Minimum wage requirements for workers',
+          'Account minimum required for portfolios',
+          'Suggested giving for wealthy individuals',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5766,10 +5766,10 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What is an "HSA" (Health Savings Account) used as a retirement tool?',
         options: [
-          'A triple tax-advantaged account for healthcare costs today always',
-          'A short-term medical expense fund only used for minor doctor visits and generic prescriptions',
-          'Vehicle insurance required for all drivers to protect against accidents and potential legal liability now',
-          'Fitness-related savings used to purchase gym memberships or luxury health equipment for home use today',
+          'Tax-advantaged account for health',
+          'Fund used for medical visits',
+          'Vehicle insurance for all drivers',
+          'Savings used for gym memberships',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5791,10 +5791,10 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What are the four components of "GDP" (Gross Domestic Product)?',
         options: [
-          'Consumption, investment, government spending, and net exports of the country today',
-          'Financial assets, real estate, commodities, and labor within the domestic industrial borders',
-          'Taxes, fees, fines, and grants collected by the national government to fund public activities',
-          'Agricultural and industrial output categories tracked by the statistical agency to monitor economic growth patterns',
+          'Consumption, investment, and government spending',
+          'Financial assets, real estate, and labor',
+          'Taxes, fees, fines, and grants',
+          'Agricultural and industrial output categories',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5805,10 +5805,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the "CPI" (Consumer Price Index)?',
         options: [
-          'The weighted average price of a basket of goods today',
-          'A population growth measure used by urban planners to estimate future housing and infrastructure needs',
-          'Stock market pricing index used to track the performance of major technology companies over time',
-          'Retail sales tax applied to luxury items purchased within specific geographic regions of the country always',
+          'Weighted average price of goods',
+          'Population measure for future housing',
+          'Stock index tracking company performance',
+          'Retail sales tax on luxury items',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5819,10 +5819,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a "Leading Economic Indicator"?',
         options: [
-          'A metric that changes before the broader economy today',
-          'An economic report detailing past fiscal performances of various national and local governments always',
-          'A corporate performance award given to businesses that exceed their annual revenue targets consistently over time',
-          'A fiscal penalty imposed on companies that fail to meet their regulatory environmental standards during the year',
+          'Metric changing before the economy',
+          'Report detailing past fiscal performance',
+          'Award given for exceeding revenue',
+          'Fiscal penalty for failing standards',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5833,10 +5833,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is "Stagflation"?',
         options: [
-          'High inflation combined with stagnant growth characterised by high unemployment and stagnant wages',
-          'Rapid growth with stable prices observed during the most successful periods of recent economic history',
-          'Long-term price stability maintained through effective monetary policy and coordination between major central banks',
-          'Urban development measurement used to track the expansion of residential and commercial properties within the city',
+          'Inflation and stagnant economic growth',
+          'Rapid growth and stable prices',
+          'Price stability through monetary policy',
+          'Measurement tracking city expansion',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5847,10 +5847,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the "Yield Curve" (and why is it a warning)?',
         options: [
-          'A graph of bond yields by maturity today that signals investor pessimism and preceded recessions',
-          'A graphical commodity pricing pattern used by traders to predict future supply and demand shifts',
-          'A short-term equity chart showing daily fluctuations in stock prices for major global technology firms',
-          'A geological measurement used by mining companies to estimate the density and value of mineral deposits',
+          'Graph signaling investor pessimism',
+          'Pattern for future supply prediction',
+          'Chart showing daily stock fluctuations',
+          'Measurement to estimate deposit value',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5870,10 +5870,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the primary role of a Venture Capital (VC) firm?',
         options: [
-          'To invest [GEM] in early-stage, high-growth companies for equity ownership today',
-          'To provide collateralized loans to established corporations found in major international banking centers',
-          'To allocate public funds toward regulated infrastructure projects with predictable cash flows today always',
-          'To underwrite fixed-income securities for conservative institutional investors looking for low risk now',
+          'Invest in early stage startups',
+          'Loans provided to established corporations',
+          'Allocating funds toward infrastructure projects',
+          'Institutional fixed income risk security',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5884,10 +5884,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What typically occurs during a Series A funding round?',
         options: [
-          'A company raises its first institutional round to scale after validation today',
-          'The founders rely exclusively on personal savings and early employee contributions today always',
-          'The company distributes retained earnings to shareholders as recurring dividends every single quarter',
-          'The firm restructures debt obligations following liquidity stress and significant operational underperformance now',
+          'Initial institutional scaling round',
+          'Founders relying on personal savings',
+          'Distributing retained earnings as dividends',
+          'Firm restructuring debt after stress',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5898,10 +5898,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'In finance, what defines a "Unicorn" company?',
         options: [
-          'A privately held startup valued at over 1 billion [GEM] today by private equity firms',
-          'A publicly listed firm with exceptional quarterly revenue growth patterns observed over time',
-          'A multinational corporation operating across more than fifty countries worldwide in diverse markets',
-          'A technology firm generating consistent positive free cash flow before its third fiscal year',
+          'Startup valued over billion',
+          'Public firm with exceptional growth',
+          'Multinational corporation operating across countries',
+          'Positive free cash flow technology firm',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5912,10 +5912,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is an "Exit Strategy" for founders or investors?',
         options: [
-          'Method to convert illiquid equity into realized [GEM] through public events today',
-          'A predefined plan for closing offices and winding down daily operations across the country',
-          'A contractual obligation to resign from executive management roles following a change in ownership',
-          'A regulatory process required to dissolve a corporate legal entity under the national legislative framework',
+          'Selling equity for realized gems',
+          'Plan for closing business offices',
+          'Resigning following changes in ownership',
+          'Process to dissolve legal entities',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5926,10 +5926,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'In startup finance, what does "Burn Rate" measure?',
         options: [
-          'The pace at which a company spends its available [GEM] today always',
-          'The annual depreciation rate of physical and intangible assets held by the corporation now',
-          'The volatility of monthly revenue growth across different reporting periods and fiscal years today',
-          'The percentage of operating expenses allocated to research and development activities within the firm',
+          'Spending pace for gems',
+          'Annual depreciation rate of assets',
+          'Volatility of monthly revenue growth',
+          'Operating expenses for research projects',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5949,10 +5949,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is an Initial Public Offering (IPO)?',
         options: [
-          'The first sale of a private company’s shares to the public that begins the process of transitioning from private to public capital',
-          'A restructuring process designed to reduce outstanding corporate liabilities and overall financial debt now',
-          'An internal valuation exercise conducted for executive compensation planning and future board reviews always',
-          'A government-mandated conversion of private firms into regulated entities found in the domestic markets',
+          'First public share sale',
+          'Restructuring to reduce corporate liabilities',
+          'Internal valuation for compensation planning',
+          'Government mandated conversion of firms',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5963,10 +5963,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What role does an Underwriter play in an IPO?',
         options: [
-          'Pricing the offering and placing shares with major institutional investors today always',
-          'Drafting marketing campaigns to improve retail investor brand recognition across the international market now',
-          'Auditing historical financial statements for regulatory compliance before the final company listing process begins',
-          'Managing post-IPO shareholder communications and dividend distributions following the successful market debut always',
+          'Placing shares with institutional investors',
+          'Marketing campaigns for brand recognition',
+          'Auditing financials for regulatory compliance',
+          'Managing post-debut shareholder communications',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5977,10 +5977,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is an S-1 filing?',
         options: [
-          'Common registration document filed with regulators prior to an IPO today',
-          'A quarterly earnings disclosure submitted after a company lists publicly on the national stock exchange',
-          'A confidential agreement between underwriters and cornerstone investors regarding the final offering price now',
-          'A tax declaration used to calculate corporate income liabilities and other fiscal obligations for the year',
+          'Pre-IPO registration document',
+          'Quarterly earnings after public listing',
+          'Confidential agreement regarding offering prices',
+          'Tax declaration for income liabilities',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -5991,10 +5991,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is a Lock-up Period following an IPO?',
         options: [
-          'Restriction preventing insiders from selling shares for defined time today always',
-          'A temporary trading halt imposed during periods of extreme volatility observed in the broader financial market',
-          'A regulatory review phase delaying settlement of public market transactions until all requirements are met now',
-          'A contractual limit on dividend payments during the first fiscal year following the company listing process',
+          'Insider selling restricted after IPO',
+          'Temporary trading halt during volatility',
+          'Review phase delaying transaction settlement',
+          'Limit on first year dividends',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6005,10 +6005,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What distinguishes a Direct Listing from a traditional IPO?',
         options: [
-          'Shares begin trading publicly without issuing new equity or underwriter pricing',
-          'Shares are allocated exclusively to government-sponsored investment funds and specific institutional clients found globally',
-          'The company delays financial disclosures until after trading begins on the public market exchange today',
-          'Retail investors are restricted from participating during initial sessions until the price stability is fully reached',
+          'Trading without new equity issuance',
+          'Shares allocated to specific institutional clients',
+          'Disclosures delayed until after public trading',
+          'Retail restricted during initial sessions',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6028,10 +6028,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What primarily differentiates hedge funds from index funds?',
         options: [
-          'Hedge funds pursue active, leveraged strategies aiming to outperform benchmarks today now',
-          'Index funds operate under stricter ownership requirements enforced by national legislative banking authorities today',
-          'Index funds concentrate capital into a small number of high-conviction positions within a single sector',
-          'Hedge funds are designed to eliminate all forms of investment risk through complex mathematical modeling',
+          'Active strategies aiming to outperform',
+          'Stricter requirements for index funds',
+          'Positions restricted to single sectors',
+          'Hedge funds eliminate all risk',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6043,10 +6043,10 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'In investment performance analysis, what does "Alpha" measure?',
         options: [
-          'Return earned above a benchmark after adjusting for market exposure today',
-          'The total return generated by the overall market during a specific fiscal reporting period',
-          'The volatility of returns during periods of extreme economic stress and global market instability always',
-          'The liquidity premium associated with alternative asset classes found in private equity or real estate',
+          'Return above a benchmark',
+          'Market generated total return',
+          'Volatility during extreme stress',
+          'Liquidity premium of alternative assets',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6057,10 +6057,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does leverage mean in trading and investing?',
         options: [
-          'Using borrowed [GEM] to amplify exposure, increasing potential gains and losses',
-          'Allocating capital exclusively into low-risk government securities to protect the principal wealth today always',
-          'Diversifying holdings across multiple uncorrelated asset classes to reduce the overall impact of market volatility',
-          'Reducing portfolio volatility through active hedging techniques using derivatives and other complex financial products now',
+          'Using debt to amplify exposure',
+          'Allocating capital into government securities',
+          'Diversifying holdings across asset classes',
+          'Reducing volatility through hedging',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6071,10 +6071,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does the "2 and 20" hedge fund fee structure describe?',
         options: [
-          'A 2% management fee plus 20% of profits as compensation today',
-          'Two annual audits and twenty mandatory regulatory filings required by the secondary market authorities',
-          'Two investment strategies and twenty portfolio managers per fund working within the same organization always',
-          'A twenty-year lock-up period with a two-year redemption window provided to institutional investors today always',
+          'Management and performance fee structure',
+          'Two audits and twenty filings',
+          'Two strategies and twenty managers',
+          'Twenty year lock up period',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6085,10 +6085,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What defines a market-neutral investment strategy?',
         options: [
-          'Balancing long and short positions to minimize directional market risk today',
-          'Avoiding exposure to all equity and credit markets entirely during periods of extreme global instability',
-          'Holding only cash equivalents during periods of uncertainty to preserve capital for future buying opportunities',
-          'Tracking a broad market index with minimal tracking error using sophisticated software and automated systems always',
+          'Minimize directional market risk',
+          'Excluding exposure to equity markets',
+          'Holding cash equivalents during uncertainty',
+          'Tracking indexes with minimal error',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6108,10 +6108,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the relationship between bond prices and yields?',
         options: [
-          'When bond prices rise, their effective yield declines today always now',
-          'Bond prices and yields move in the same direction at all times during the trading sessions',
-          'Yields remain fixed regardless of secondary market trading activity observed on the global bond exchanges',
-          'Bond prices change only at issuance or maturity dates determined by the national central bank authorities',
+          'Yields decline when prices rise',
+          'Prices and yields move together',
+          'Yields fixed regardless of trading',
+          'Price changes only at issuance',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6122,10 +6122,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What characterizes high-yield or "junk" bonds?',
         options: [
-          'They offer higher interest to compensate for increased default risk today',
-          'They are issued exclusively by early-stage startup companies looking for rapid expansion and growth today',
-          'They are guaranteed by central banks during economic downturns to ensure market stability and investor confidence',
-          'They cannot be traded on secondary bond markets according to strict regulations found in the nation',
+          'Higher interest for default risk',
+          'Issued exclusively for company expansion',
+          'Guaranteed by banks during downturns',
+          'Bonds not traded on markets',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6136,10 +6136,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does bond duration measure?',
         options: [
-          'Sensitivity of a bond’s price to changes in interest rates today',
-          'The contractual maturity date stated on the bond certificate issued by the national treasury department',
-          'The frequency of coupon payments per year required by the original agreement between the parties now',
-          'The average holding period of institutional investors found in the major global financial centers today always',
+          'Price sensitivity to rate changes',
+          'Maturity date on bond certificates',
+          'Frequency of annual coupon payments',
+          'Average holding period for investors',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6150,10 +6150,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'Why are Treasury Bills often considered risk-free?',
         options: [
-          'They are backed by the government’s ability to tax and issue currency',
-          'They provide the highest returns available in global markets for all classes of institutional investors',
-          'They cannot lose value under any market conditions regardless of fluctuations in the broader economic landscape',
-          'They are insured by private international rating agencies which provide a full guarantee of the principal wealth',
+          'Taxing power ensures no default',
+          'Highest returns in the market',
+          'Immune to market condition changes',
+          'Insured by international rating agencies',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6164,10 +6164,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does a bond’s credit rating indicate?',
         options: [
-          'The issuer’s likelihood of meeting its debt obligations today always',
-          'The market price investors must pay to acquire the bond during the normal trading hours now always',
-          'The expected inflation rate over the bond’s lifespan predicted by the professional market analysis team today always',
-          'The historical return of similar bonds in the sector observed over the past few fiscal reporting years',
+          'Meeting future debt obligations',
+          'Bond acquisition market price',
+          'Inflation expected over bond lifespan',
+          'Historical return of similar bonds',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6187,10 +6187,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What defines a Real Estate Investment Trust (REIT)?',
         options: [
-          'An entity that owns income-generating real estate and distributes earnings as dividends',
-          'A construction firm specializing in residential property development across the major urban centers found today',
-          'A government authority regulating land ownership transactions and property rights within the national domestic borders now',
-          'A private partnership focused on speculative property flipping to generate high short term profits for its members',
+          'Earnings distributed as dividends',
+          'Construction firm in urban centers',
+          'Authority regulating national land ownership',
+          'Partnership flipping properties for profit',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6201,10 +6201,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'Why is gold often viewed as a hedge against inflation?',
         options: [
-          'Limited supply helps preserve purchasing power during currency debasement today',
-          'Its value increases at a fixed annual percentage determined by the global gold mining associations always',
-          'It generates consistent income through interest payments or dividends provided by the central banks found globally',
-          'Its price is controlled by central banks to ensure global financial stability during periods of economic crisis',
+          'Preserving value during debasement',
+          'Value increases at fixed rate',
+          'Generating income through interest payments',
+          'Controlled prices by central banks',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6215,10 +6215,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is commodity investing?',
         options: [
-          'Investing in raw materials such as energy, metals, and agricultural products today',
-          'Purchasing shares in consumer goods manufacturers located within the domestic and international industrial regions now',
-          'Trading finished products directly with retailers to capture the profit margins from the final consumer sales',
-          'Speculating exclusively on foreign exchange markets to profit from the fluctuations between different national currencies today always',
+          'Investing in raw materials',
+          'Purchasing shares in manufacturing firms',
+          'Trading finished products with retailers',
+          'Profit from foreign exchange fluctuations',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6229,10 +6229,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'At a systemic level, what is cryptocurrency?',
         options: [
-          'Decentralized digital asset secured by cryptography and distributed ledgers today always',
-          'A centralized digital payment system managed by commercial banks and national financial regulatory authorities found globally',
-          'A government-issued replacement for physical currency designed to improve the efficiency of the domestic payment infrastructure',
-          'A proprietary database controlled by technology corporations to track user data and financial transactions within their ecosystem',
+          'Digital asset secured by cryptography',
+          'Centralized payment system from banks',
+          'Government issued replacement currency',
+          'Database tracking private user data',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6243,10 +6243,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What does liquidity mean in an investment context?',
         options: [
-          'Ease and speed with which an asset can be converted into [GEM] today',
-          'The total interest income an asset generates annually based on its current market value and coupon rate',
-          'The legal protection offered to investors by national and international regulators to ensure overall market fairness today always',
-          'The expected appreciation rate over long holding periods estimated by the professional financial analysis and research firms found globally',
+          'Converting assets into gems',
+          'Total annual interest income',
+          'Protection from national regulators',
+          'Appreciation rate estimated by research',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6267,10 +6267,10 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What is the primary objective of a Discounted Cash Flow (DCF) analysis?',
         options: [
-          'To estimate the present value of investment by discounting expected future cash flows today',
-          'To measure the current cash balance reported on a company’s balance sheet each fiscal year',
-          'To compare short-term price momentum between competing publicly traded securities over recent reporting periods now',
-          'To determine product-level pricing strategies based on historical operating margins and cost structures always now',
+          'Discounting expected future cash flows',
+          'Measuring current corporate cash balances',
+          'Comparing price momentum between securities',
+          'Determining historical product pricing strategies',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6282,10 +6282,10 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What does Net Present Value (NPV) represent in capital budgeting?',
         options: [
-          'Difference between present value of expected cash inflows and outflows over investment life today',
-          'The gross revenue generated by a project before accounting for any operating or financing costs during the year',
-          'The statutory tax liability arising from a profitable long-term investment project conducted within the national domestic industrial sectors',
-          'The accounting value of assets remaining after liquidation of a failed business venture or significant corporate restructuring process always',
+          'Discounted inflows minus outflows',
+          'Difference in cash values',
+          'Tax liability from investments',
+          'Accounting value of liquidated assets',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6296,10 +6296,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'Within a DCF framework, what is Terminal Value?',
         options: [
-          'The value assigned to cash flows beyond the explicit forecast period assuming long-term growth today',
-          'The estimated recovery value of a business if operations cease at the end of the forecast horizon now',
-          'The cumulative compensation paid to senior executives during the final projection year according to the original employment contracts',
-          'The total outstanding liabilities recorded on the balance sheet at the end of the model period today now always',
+          'Growth value after explicit period',
+          'Recovery value of a business',
+          'Cumulative compensation paid to executives',
+          'Liabilities on final balance sheets',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6311,10 +6311,10 @@ final List<QuizMetadata> _level4Quizzes = [
         question:
             'What does WACC (Weighted Average Cost of Capital) represent?',
         options: [
-          'The blended required return demanded by both debt and equity providers based on contribution today',
-          'A legally mandated interest rate applied uniformly across all corporate borrowing arrangements by national authorities',
-          'The average operational expense incurred to maintain digital and physical infrastructure across the entire global corporation',
-          'The percentage of total revenue allocated annually to marketing and brand development initiatives within major sectors',
+          'Blended return for financial providers',
+          'Mandated interest rate by national authorities',
+          'Average expense for maintaining global infrastructure',
+          'Revenue percentage allocated to marketing',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6325,10 +6325,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is Free Cash Flow (FCF) in valuation analysis?',
         options: [
-          'Cash generated by operations after accounting for capital expenditures required to sustain business today',
-          'Unrestricted funds available to shareholders after all distributions and dividend payments are fully finalized now',
-          'Total reported net income adjusted for non-recurring accounting items observed over the past few fiscal years',
-          'Short-term liquidity obtained through revolving credit facilities provided by commercial banking institutions found within the system',
+          'Cash generated after capital expenditures',
+          'Unrestricted funds available to all shareholders',
+          'Net income adjusted for accounting items',
+          'Liquidity from revolving credit facilities',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6348,10 +6348,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is arbitrage in financial markets?',
         options: [
-          'The simultaneous buying and selling of equivalent assets to exploit small price discrepancies today',
-          'A regulatory mechanism used to resolve valuation disputes between institutional counterparties during the normal company settlement process now',
-          'A long-term investment strategy focused on dividend income and compounding returns over many decades of disciplined saving behavior',
-          'A hedging technique designed to reduce portfolio volatility during macroeconomic downturns using diversified asset classes found in global markets',
+          'Trading equivalent assets for discrepancies',
+          'Regulatory mechanism for resolving valuation disputes',
+          'Investment strategy focused on dividend income',
+          'Technique to reduce portfolio volatility',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6362,10 +6362,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What defines High-Frequency Trading (HFT)?',
         options: [
-          'Use of ultra-low-latency systems to execute large trade volumes in short timeframes today always',
-          'A discretionary trading approach based on macroeconomic forecasts and human judgment regarding the future state of the global markets',
-          'A manual trading style emphasizing reduced transaction frequency and extended holding periods for all classes of diversified physical assets',
-          'A compliance-driven trading restriction imposed during periods of excessive market volatility to protect individual and institutional investors alike',
+          'Ultra low latency volume execution',
+          'Discretionary trading based on human judgment',
+          'Manual trading with reduced transaction frequency',
+          'Trading restriction during market volatility',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6376,10 +6376,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is the primary function of a market maker?',
         options: [
-          'Continuously quoting buy and sell prices to facilitate liquidity and earn the spread today always',
-          'Designing new securities for initial public offerings on major exchanges located in the leading global financial centers found today',
-          'Supervising trading activity to ensure regulatory compliance across all participants within the domestic and international financial market systems always',
-          'Providing advisory services to issuers regarding capital structure optimization and future fundraising strategies during periods of growth and expansion',
+          'Quoting prices to facilitate liquidity',
+          'Designing new securities for public offerings',
+          'Supervising activity for regulatory compliance',
+          'Advising issuers on capital structure',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6390,10 +6390,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What characterizes dark pool trading?',
         options: [
-          'Private venues allowing large participants to execute block trades with limited transparency today',
-          'Unauthorized trading venues operating outside financial regulatory frameworks and national oversight systems found within the country today always',
-          'After-hours retail trading sessions restricted to non-institutional investors who wish to trade after the main market sessions are fully closed',
-          'Government-operated exchanges designed to stabilize markets during crises and provide emergency liquidity to the broader national financial system always',
+          'Private venues for block trades',
+          'Venues operating outside national oversight systems',
+          'Retail trading sessions for non-institutional investors',
+          'Exchanges designed to stabilize markets',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6404,10 +6404,10 @@ final List<QuizMetadata> _level4Quizzes = [
       QuizQuestion(
         question: 'What is algorithmic trading?',
         options: [
-          'Automated execution of trades using predefined rules based on market data today always',
-          'Discretionary trading based on qualitative news interpretation and professional analyst opinions today always now',
-          'A centralized system where exchanges determine specific member trading strategies to ensure stability always now',
-          'A method of eliminating mathematical models from investment decision-making to focus on human judgment now',
+          'Automated execution of trades using predefined rules based on market data today',
+          'Discretionary trading based on qualitative news interpretation and professional analyst opinions',
+          'A centralized system where exchanges determine specific member trading strategies to ensure stability',
+          'A method of eliminating mathematical models from trading to focus on human judgment',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6431,10 +6431,10 @@ final List<QuizMetadata> _level5Quizzes = [
         question:
             'Which of the following is the "strictest" measure of a company\'s immediate liquidity?',
         options: [
-          'The Quick Ratio specifically subtracts inventory balances to show the most liquid funds',
-          'The Current Ratio includes inventory items which may take months to monetize or sell',
-          'The Debt to Equity ratio measures the total long term financing provided by creditors',
-          'Total Asset Turnover measures how effectively buildings generate annual business revenue',
+          'Quick Ratio excluding inventory balances',
+          'Ratio including slower inventory items',
+          'Ratio measuring long term financing',
+          'Ratio measuring annual business revenue',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6445,10 +6445,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What does a "Current Ratio" of 1.2 mean?',
         options: [
-          'The company has 1.2 [GEM] in current assets for every single liability [GEM] owed.',
-          'The company is facing immediate bankruptcy and requires an emergency capital injection today now.',
-          'The company achieved a twenty percent net profit margin during this current reporting fiscal year.',
-          'Company has exactly one hundred twenty employees working in the department.',
+          'Current assets cover current liabilities',
+          'Facing bankruptcy and capital needs',
+          'Achieved twenty percent profit margin',
+          'Exactly one hundred twenty employees',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6459,10 +6459,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Working Capital" in professional accounting?',
         options: [
-          'The total amount of current assets minus the total amount of current liabilities today',
-          'The total amount of [GEM] the executive team earns annually for their professional services',
-          'The total long term debt owed to institutional creditors and major commercial banking entities',
-          'The current market value of the physical buildings owned by the global corporation',
+          'Current assets minus current liabilities',
+          'Executive team total annual earnings',
+          'Institutional debt owed to creditors',
+          'Value of company owned buildings',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6473,10 +6473,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Debt-to-Equity" ratio used to measure?',
         options: [
-          'Financial leverage representing the balance of funding between debt and total equity owners today',
-          'The annual net profit margin of the company calculated before all taxes and interests',
-          'The amount of corporate taxes owed to the state based on annual earnings reports',
-          'The total number of shares currently circulating in the open global stock market',
+          'Funding split between debt equity',
+          'Annual net profit before taxes',
+          'Corporate taxes owed for earnings',
+          'Total shares in stock market',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6487,10 +6487,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Solvency"?',
         options: [
-          'The ability of a business to meet all its long term financial obligations today',
-          'The ability to turn physical assets into [GEM] very quickly for immediate operational needs',
-          'The process of winning a significant legal case in a high national court system',
-          'A type of industrial cleaning chemical used to maintain factories and heavy machines',
+          'Ability to meet long-term debt',
+          'Converting physical assets to gems',
+          'Winning cases in national courts',
+          'Chemical used to maintain factories',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6510,10 +6510,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Materiality" in auditing?',
         options: [
-          'The threshold for errors that would significantly impact the economic decisions of investors today',
-          'The total cost of the external audit fee paid to the third party firms',
-          'A list of all raw materials used in production across the various global factories',
-          'The physical weight of precious metals stored in the central corporate secure vault',
+          'Error threshold for investors',
+          'Audit fees paid to firms',
+          'Raw materials used during production',
+          'Metal weight in corporate vaults',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6524,10 +6524,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Professional Skepticism"?',
         options: [
-          'A questioning mind and a critical assessment of all investigative evidence gathered today now',
-          'Assuming the client management team is always lying about the annual financial reports today',
-          'A refusal to believe any financial numbers provided by the company during the audit',
-          'Being consistently rude to the company management throughout the entire audit process always',
+          'Questioning mind and critical assessment',
+          'Assuming the management team lies',
+          'Refusal to believe financial numbers',
+          'Being rude to company management',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6538,10 +6538,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is an "External Audit"?',
         options: [
-          'An independent examination of financial statements performed by a qualified third party firm today',
-          'An audit of the building\'s exterior facade and architectural integrity conducted by licensed civil engineers',
-          'A review of the company by its own employees to identify potential operational improvements',
-          'When the CEO checks their own personal account for potential errors or missing [GEM]',
+          'Independent audit of statements',
+          'Exterior facade and architectural integrity',
+          'Internal review for identifying improvements',
+          'CEO checking their own accounts',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6552,10 +6552,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What does "Audit Independence" mean?',
         options: [
-          'The auditor has no personal or financial connection to the client being audited today',
-          'The auditor does not need any help from the client to gather information today',
-          'The auditor does not use any standard industry rules during the financial examination process',
-          'The auditor works from a home office environment instead of visiting the company',
+          'No personal or financial connections',
+          'Auditor requires no client help',
+          'Ignoring all standard industry rules',
+          'Auditor working from home environment',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6566,10 +6566,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Qualified Opinion"?',
         options: [
-          'A report stating that financial statements are fair except for one specific isolated issue',
-          'An opinion given by a very intelligent person who has high academic qualifications today',
-          'A report stating that everything is perfect and no errors were found during audit',
-          'A type of legal certificate for the board regarding the company\'s environmental social goals',
+          'Fair except one specific issue',
+          'Opinion from highly intelligent experts',
+          'Perfect reports with zero errors',
+          'Certificate regarding corporate social goals',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6590,10 +6590,10 @@ final List<QuizMetadata> _level5Quizzes = [
         question:
             'When comparing two "Mutually Exclusive" projects with unequal lives, what tool is best?',
         options: [
-          'The Equivalent Annual Annuity method allows comparing projects with very different expected lives',
-          'Net Present Value works best for projects that have exactly the same length today',
-          'Internal Rate of Return measures the percentage profit for a single project over time',
-          'Payback Period measures how many years until your initial investment returns',
+          'Comparing projects with different lives',
+          'NPV for same project length',
+          'IRR for profit over time',
+          'Years until initial investment returns',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6604,10 +6604,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Capital Rationing"?',
         options: [
-          'Choosing the best combination of projects when the total available capital is limited',
-          'When a company has too many [GEM] reserves and is idling in market',
-          'A tax on the company total invested capital applied by regional government authorities',
-          'Giving everyone in the entire company an equal share of the profit',
+          'Strategy for choosing limited capital',
+          'Excess reserves idling in market',
+          'Capital tax from regional authorities',
+          'Giving everyone equal profit shares',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6618,10 +6618,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Profitability Index" (PI)?',
         options: [
-          'The present value of inflows divided by the amount of initial project investment',
-          'The total net profit margin of the company calculated before any tax payments',
-          'A list of the company best performing products categorized by their annual revenue',
-          'The amount of [GEM] spent on marketing costs during the recent quarter',
+          'Value per unit of investment',
+          'Profit calculated before tax payments',
+          'Best performing products for revenue',
+          'Marketing cost for the quarter',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6632,10 +6632,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is an "Opportunity Cost of Capital"?',
         options: [
-          'The expected return from the next best alternative investment available to the company',
-          'The cost of hiring a new department manager to oversee the daily operations',
-          'A financial fine for missing a critical business meeting with major institutional investors',
-          'The interest rate charged by the primary bank for a small loan',
+          'Return from next best alternative',
+          'Hiring managers for daily operations',
+          'Financial fines for missing meetings',
+          'Interest charged by primary banks',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6646,10 +6646,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Sensitivity Analysis" in a financial model?',
         options: [
-          'Systematically changing variables to see the effects on the total project net value',
-          'Being careful not to hurt the client personal feelings during a professional meeting',
-          'Searching for minor clerical errors in the spreadsheet used for the financial model',
-          'A review of the company social media accounts for potential marketing trends',
+          'Calculating variable shift results',
+          'Caring about client personal feelings',
+          'Searching for minor clerical errors',
+          'Reviewing company social media accounts',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6670,10 +6670,10 @@ final List<QuizMetadata> _level5Quizzes = [
         question:
             'When a Parent company owns 80% of a Subsidiary, what is the remaining 20% called?',
         options: [
-          'Non Controlling Interest represents the ownership of investors other than the parent company',
-          'Minority Debt Obligations which include all the short term loans from external parties',
-          'Owners Equity Surplus reported on the balance sheet after all the dividends paid',
-          'Accumulated Retained Earnings kept for future investment in the heavy machinery assets',
+          'Equity owned by non-parents',
+          'Short term minor debt obligations',
+          'Equity surplus after dividend payments',
+          'Retained earnings for machinery assets',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6684,10 +6684,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'How is "Goodwill" calculated in an acquisition?',
         options: [
-          'The purchase price minus the fair value of net assets being acquired today',
-          'Purchase Price minus the original book value of assets recorded in the past',
-          'Total Revenue minus the total operating expenses incurred during the whole fiscal year',
-          'The estimated value of the company brand name and its market reputation',
+          'Price minus asset valuations',
+          'Purchase price minus book values',
+          'Revenue minus total operating expenses',
+          'Estimated value of brand reputation',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6698,10 +6698,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is an "Intra-group Transaction" in consolidation?',
         options: [
-          'Sales or loans between group members that must be erased during the consolidation',
-          'A trade between two different countries involving the physical transport of various goods',
-          'A secret deal made with a direct competitor to fix market prices illegally',
-          'Buying shares of your own parent company in the open national market',
+          'Sales or loans between units',
+          'Trade between countries with goods',
+          'Secret deals made with competitors',
+          'Buying shares of parent companies',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6712,10 +6712,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Full Goodwill" method?',
         options: [
-          'Recording the goodwill for both the parent share and the non controlling interest',
-          'Counting every single asset as goodwill to inflate the total value of group',
-          'Spending all your [GEM] on advertising to improve the public image of firm',
-          'A way to avoid paying taxes on acquisitions involving multiple foreign entities',
+          'Goodwill including non-controlling interest',
+          'Inflating values by counting assets',
+          'Improving image through advertising costs',
+          'Avoiding acquisition taxes through entities',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6726,10 +6726,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'When does "Impairment of Goodwill" occur?',
         options: [
-          'When the fair value of an asset falls below its carrying book amount',
-          'When the company pays a large dividend to shareholders from their accumulated profits',
-          'When an employee is injured on the site during the normal working hours',
-          'When the stock market closes for a holiday and no trading occurs',
+          'Book value exceeding fair value',
+          'Dividends paid from accumulated profits',
+          'Injured employees on working sites',
+          'Stock market holiday trading halt',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6749,10 +6749,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Componentization" of Fixed Assets?',
         options: [
-          'Depreciating the significant parts of a fixed asset separately over their individual lives.',
-          'Building a product from many small parts sourced from various global suppliers today.',
-          'Selling off pieces of the company to others to raise [GEM] for growth.',
-          'Buying parts from different global suppliers to reduce total production costs.',
+          'Depreciating asset components separately',
+          'Building products from global parts',
+          'Selling company pieces for growth',
+          'Buying parts for production costs',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6763,10 +6763,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Fair Value Hierarchy" Level 1?',
         options: [
-          'Using quoted prices in active markets for identical assets to determine the value',
-          'Assets that have no market value at all and are considered completely worthless',
-          'Assets that can only be valued by experts using very complex mathematical models',
-          'Assets that are owned by the national government for the public good',
+          'Using quoted market prices',
+          'Assets considered to be worthless',
+          'Assets valued using complex models',
+          'Assets owned by national government',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6777,10 +6777,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'Under IFRS, what is the "Revaluation Model"?',
         options: [
-          'Regularly adjusting the carrying value of assets up to their fair market value',
-          'A way to hide losses from the public eye using complicated accounting methods',
-          'Charging more for products to cover the rising operational costs of the business',
-          'Changing the name of the company brand to attract new younger customers',
+          'Updating asset values to market',
+          'Hiding losses using accounting methods',
+          'Charging more for rising costs',
+          'Changing brand names for customers',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6791,10 +6791,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Investment Property" (IAS 40)?',
         options: [
-          'Property that is held strictly for rental income or long term capital appreciation',
-          'A building where the company holds its regular board meetings and executive retreats',
-          'A type of low cost housing for employees who live near the factory',
-          'A property owned by the company bank for its own internal use',
+          'Property for rental or appreciation',
+          'Building used for board meetings',
+          'Employee housing near the factory',
+          'Property owned for internal use',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6828,10 +6828,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Reliability Hierarchy" of audit evidence?',
         options: [
-          'External third party evidence is more reliable than information provided by management today',
-          'Information provided by the company CEO is considered the most reliable during an audit',
-          'All information gathered by a professional auditor is equal regardless of its source today',
-          'Photos are the only reliable digital evidence accepted by the national agency',
+          'External information more reliable',
+          'CEO information is most reliable',
+          'Auditor info is all equal',
+          'Photos are the only evidence',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6842,10 +6842,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Substantive Testing"?',
         options: [
-          'Detailed auditing procedures designed to detect material errors in the financial statement items.',
-          'Testing the company indoor air quality to ensure a healthy working environment for staff.',
-          'A high level review of the company core mission statement and strategic goals.',
-          'Testing how fast employees can finish their daily work in the office.',
+          'Procedures to detect material errors',
+          'Testing indoor building air quality',
+          'Reviewing company core mission statements',
+          'Testing employee daily work speeds',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6856,10 +6856,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What does "Tolerable Error" mean in audit sampling?',
         options: [
-          'The maximum error an auditor accepts without the financial statements being materially misstated',
-          'The number of minor typos that are allowed in a professional audit report tonight',
-          'A specific mistake that the senior CEO is allowed to make every single year',
-          'The total amount of [GEM] a company can safely lose each year',
+          'Maximum accepted non-material error',
+          'Minor typos allowed in reports',
+          'Mistakes allowed for senior CEOs',
+          'Safe annual gem loss amounts',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6870,10 +6870,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is an "Analytical Procedure"?',
         options: [
-          'The evaluation of financial information through analysis of relationships among various data sets',
-          'A procedure that is performed by a very analytical person with high academic credentials',
-          'A type of complex computer hardware repair involving the main corporate servers today now',
-          'A way to train new junior auditors in the field of professional accounting',
+          'Evaluation of data relationships',
+          'Evaluation by highly analytical experts',
+          'Repair of complex server hardware',
+          'Training for new junior auditors',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6884,10 +6884,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Inherent Risk"?',
         options: [
-          'Susceptibility of an account to material misstatement before considering any related internal controls',
-          'The physical risk of a large building catching fire during the hot summer months',
-          'The total risk of the lead auditor losing their job due to poor performance',
-          'A risk that is strictly required by federal law for all firms',
+          'Misstatement susceptibility without controls',
+          'Buildings catching fire in summer',
+          'Lead auditors losing their jobs',
+          'Risk strictly required by law',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6907,10 +6907,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'Why do we use the "Post-Tax" cost of debt in WACC?',
         options: [
-          'Interest payments are tax deductible which reduces the true cost of borrowing [GEM].',
-          'Because the bank requires it for all corporate loans regardless of the company size.',
-          'Because taxes are considered unpaid debt by the national financial regulatory authorities today always.',
-          'To make calculation look more professional for the senior executive team.',
+          'Deductible interest reduces costs',
+          'Bank requirement for corporate loans',
+          'Taxes seen as unpaid debt',
+          'Professional look for executive teams',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6921,10 +6921,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Market Value Weight" rule for WACC?',
         options: [
-          'Weighting capital components by their current market prices instead of their book values.',
-          'Weighting physical corporate assets by how much they weigh in kilograms and grams today.',
-          'A rule that strictly requires you to trade in the early morning market hours.',
-          'Tax on total market value of all assets owned by individuals.',
+          'Weighting by current market price',
+          'Weighting physical assets by kilograms',
+          'Requirement for early morning trading',
+          'Tax on individual total wealth',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6935,10 +6935,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What are "Flotation Costs"?',
         options: [
-          'The fees paid to professionals for issuing new stocks or bonds to investors.',
-          'The total cost of keeping a boat in the harbor during the winter months.',
-          'The total [GEM] value lost to inflation every single year in the national economy.',
-          'Moving a factory to a new location across the national border.',
+          'Costs for raising new capital',
+          'Storing boats in winter harbors',
+          'Gem values lost to inflation',
+          'Moving factories across national borders',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6949,10 +6949,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Marginal Cost of Capital" (MCC)?',
         options: [
-          'The specific cost of raising the next additional [GEM] of capital for projects.',
-          'The total cost of the first gem ever borrowed from a commercial banking institution.',
-          'The cost of paying for minor office repairs and small administrative expenses every year.',
-          'Cost at the margin of error for firms in statistical models.',
+          'Cost for raising more capital',
+          'First gem borrowed from banks',
+          'Paying for minor office repairs',
+          'Firm marginal error in models',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6963,10 +6963,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Beta" (β) in the CAPM formula?',
         options: [
-          'A measure of how much a stock return fluctuates relative to the market',
-          'A type of software beta test conducted before the final product launch to customers',
-          'The second best bank in the whole country as ranked by the central agency',
-          'The total amount of profit a company makes during the fiscal year',
+          'Return fluctuation relative to market',
+          'Software beta test for products',
+          'Second best bank in the country',
+          'Total annual corporate fiscal profits',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -6986,10 +6986,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "First Step" in the IFRS 15 revenue model?',
         options: [
-          'Identifying legal contracts with customers where both parties have committed to the obligations.',
-          'Calculating the total annual profit of the entire corporation before all taxes and interests.',
-          'Sending an invoice immediately today to every customer who visited the store during day.',
-          'Counting all warehouse inventory items to determine the total asset counts.',
+          'Identifying legal contracts with customers',
+          'Calculating total annual corporate profits',
+          'Invoicing customers daily from store',
+          'Counting warehouse inventory asset counts',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7000,10 +7000,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Performance Obligation" (PO)?',
         options: [
-          'A promise in a contract to transfer a distinct good or service.',
-          'The requirement for all employees to wear specific uniforms at work during their shifts.',
-          'A type of musical show performed by employees for the senior management team today.',
-          'The total amount of [GEM] office rent costs for the corporation.',
+          'Promise for transferring items',
+          'Wearing specific uniforms during shifts',
+          'Musical shows for senior management',
+          'Total gem office rent costs',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7014,10 +7014,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Variable Consideration"?',
         options: [
-          'Uncertain portions of the transaction price such as bonuses or potential vendor rebates.',
-          'Being nice to different types of customers during a professional business meeting today always.',
-          'Buying different types of company assets using the available corporate cash reserves tonight now.',
-          'A changing tax rate from the state based on the location.',
+          'Uncertain price portions like bonuses',
+          'Politeness during formal business meetings',
+          'Acquiring assets using cash reserves',
+          'Changing tax rates based on location',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7028,10 +7028,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'When is revenue recognized for a "Point in Time" sale?',
         options: [
-          'Revenue is recognized when control of the promised asset is transferred to customers.',
-          'When the customer pays the final [GEM] for the goods they have received today.',
-          'Daily for the entire life of the product regardless of the actual delivery date.',
-          'Last day of the current fiscal year for all corporate transactions.',
+          'Asset control transferred to customer',
+          'Final gem payment upon receipt',
+          'Product life regardless of delivery',
+          'Fiscal year final day transactions',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7042,10 +7042,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Revenue Over Time" (Percentage of Completion)?',
         options: [
-          'Recognizing revenue systematically as the work is performed over a period of time.',
-          'Revenue that is only recorded after ten years of continuous service to the client.',
-          'Subtracting revenue from the total group expenses incurred during the current reporting cycle now.',
-          'Way to delay paying your corporate taxes to the national government.',
+          'Recognizing revenue over performance period',
+          'Recorded after ten year service',
+          'Subtracting expenses from total revenue',
+          'Delaying corporate taxes from government',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7065,10 +7065,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Transaction Exposure" in Forex?',
         options: [
-          'Risk that exchange rates will change before a specific [GEM] payment is completed.',
-          'The risk of the bank being closed due to a sudden technical failure today.',
-          'The risk of the building losing value over a long period of time always.',
-          'Tax on every single transaction made by the corporate bank account.',
+          'Exchange rate changes before payment',
+          'Banks closing from technical failures',
+          'Buildings losing value over time',
+          'Transaction tax for bank accounts',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7079,10 +7079,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Translation Exposure" (Accounting Exposure)?',
         options: [
-          'Exchange risk when converting the financial statements of a foreign subsidiary to base.',
-          'The total cost of hiring a professional translator for an international business meeting today.',
-          'Translating documents for a professional audit conducted by the national financial regulatory agency always.',
-          'A sudden change in company brand name for the global market.',
+          'Converting foreign subsidiary statements',
+          'Hiring translators for international meetings',
+          'Translating documents for professional audits',
+          'Sudden change in global brand',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7093,10 +7093,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Economic Exposure" (Operating Exposure)?',
         options: [
-          'Risk that exchange rate fluctuations will affect the long term competitive market position.',
-          'When the whole economy goes into a deep recession due to poor fiscal policies.',
-          'A tax on the country total wealth applied to every citizen and corporate entity.',
-          'The cost of running a large factory in an overseas location.',
+          'Exchange affecting competitive market position',
+          'Deep recessions from fiscal policies',
+          'Wealth taxes for all citizens',
+          'Operation cost for overseas factories',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7107,10 +7107,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Money Market Hedge"?',
         options: [
-          'Using domestic and foreign borrowing arrangements to lock in the future exchange rates.',
-          'Buying many stocks in different countries to diversify the total corporate investment portfolio today.',
-          'A way to get free interest from the national government every single year now.',
-          'Buying a physical fence for the bank to improve vault security.',
+          'Using borrowing to lock in rates',
+          'Diversifying portfolios using foreign stocks',
+          'Annual interest from national governments',
+          'Buying physical fences for banks',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7121,10 +7121,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Netting" in global treasury management?',
         options: [
-          'Combining internal cash flows between subsidiaries to pay only the net difference today',
-          'Catching fish for the company cafeteria to reduce the total food costs for employees',
-          'A tax on the total revenue earned by every single subsidiary within the group',
-          'A way to hide [GEM] from the professional auditor during the annual review',
+          'Paying net differences in flows',
+          'Catching fish for company cafeterias',
+          'Revenue tax for group subsidiaries',
+          'Hiding gems from professional auditors',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7145,10 +7145,10 @@ final List<QuizMetadata> _level5Quizzes = [
         question:
             'What is the primary difference between a "Forward" and a "Future" contract?',
         options: [
-          'Forwards are customized private contracts while Futures are traded on an organized exchange.',
-          'Forwards are only for the future while futures are only for the past events.',
-          'Futures are much cheaper for the company to use for their initial hedging strategy.',
-          'Forwards are illegal for small businesses in the national financial system.',
+          'Customized private vs exchange traded contracts',
+          'Historical versus future event contracts',
+          'Cheaper options for initial hedging strategies',
+          'Illegal status for small businesses',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7159,10 +7159,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Marking-to-Market" in futures trading?',
         options: [
-          'The daily settlement of profits and losses in futures trading accounts every night.',
-          'Painting the exchange building to improve the public image of the financial district today.',
-          'A way to choose which stocks to buy based on the recent market trends.',
-          'Tax on the total number of trades made during the year.',
+          'Settle daily profits and losses',
+          'Painting exchange buildings for image',
+          'Choosing stocks based on trends',
+          'Annual trading tax for firms',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7173,10 +7173,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Maintenance Margin"?',
         options: [
-          'The minimum [GEM] amount required to be kept in the trading account today.',
-          'The cost of repairing the office and maintaining the hardware used for professional trades.',
-          'A type of insurance for professional traders who work in the global markets daily.',
-          'Profit made by a bank on a trade conducted for client.',
+          'Minimum funds required in accounts',
+          'Office repair and hardware maintenance',
+          'Insurance for daily global traders',
+          'Bank profit for client trades',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7187,10 +7187,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What does "Contango" mean in the futures market?',
         options: [
-          'When the futures price is higher than the current spot price of asset.',
-          'A type of dance for executive teams to celebrate the end of fiscal year.',
-          'When the market is closed for a holiday and no trading activity occurs today.',
-          'Way to save on total trading fees charged by the exchange.',
+          'Price higher than current spot',
+          'Dance for fiscal year end',
+          'Market closed for holiday events',
+          'Reducing total exchange trading fees',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7201,10 +7201,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is an "Option Premium"?',
         options: [
-          'The non-refundable price paid by the option buyer to the seller today.',
-          'The highest price a stock ever reached in the history of the global market.',
-          'A reward for being a good junior investor who consistently follows the market rules.',
-          'Tax on the profit from an option trade made during year.',
+          'Non refundable price for buyers',
+          'Highest price in market history',
+          'Reward for following market rules',
+          'Tax on option trade profits',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7224,10 +7224,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'How do you calculate the "Operating Cycle"?',
         options: [
-          'The sum of inventory days and receivable days used for the corporate operating cycle.',
-          'The result of dividing total annual sales by the average total assets today always.',
-          'Subtracting all operating expenses from the total annual revenue earned during the whole year.',
-          'The total amount of debt divided by the total equity owners.',
+          'Sum of inventory and receivable periods',
+          'Annual sales divided by total assets',
+          'Operating expenses subtracted from annual revenue',
+          'Total debt divided by equity owners',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7238,10 +7238,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Cash Conversion Cycle" (CCC)?',
         options: [
-          'The total operating cycle minus the number of annual payable days from suppliers today.',
-          'The total amount of [GEM] currently held in the company cash accounts today always.',
-          'The total annual net profit divided by three hundred sixty five days of year.',
-          'A specific way to turn gold into [GEM] for the company.',
+          'Cycle minus supplier payable days',
+          'Total gems held in company accounts',
+          'Annual profit divided by calendar days',
+          'Turning physical gold into liquid gems',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7252,10 +7252,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Factoring" in working capital?',
         options: [
-          'Selling company accounts receivable to a third party for immediate liquid [GEM] reserves.',
-          'Choosing the best possible factory to use in production across various global regions today.',
-          'A professional way to calculate the total cost of a new product for users.',
-          'Hiring new employees to count [GEM] coins in the vault nightly.',
+          'Selling receivables for liquid gem reserves',
+          'Choosing optimal factories for global production',
+          'Professional calculation of product total costs',
+          'Hiring employees to count vault coins',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7266,10 +7266,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Economic Order Quantity" (EOQ)?',
         options: [
-          'The optimal order size that minimizes total inventory holding and ordering costs today always.',
-          'The total amount of [GEM] the national government orders for the public during year.',
-          'The total number of orders a company makes annually to all its various suppliers.',
-          'A tax on size of order for the large corporate factory.',
+          'Order size that minimizes total costs',
+          'Government orders made for the public',
+          'Total annual orders to company suppliers',
+          'Tax on corporate factory order sizes',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7280,10 +7280,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Just-In-Time" (JIT) Inventory?',
         options: [
-          'A strategy of receiving goods only as they are needed for the production process.',
-          'Delivering various finished products just before the store closes for the whole day today.',
-          'Buying diverse stock index funds at the very last minute of the trading day.',
-          'Paying your national taxes exactly on due date for the firm.',
+          'Receiving goods only as production requires',
+          'Delivering products before store closing times',
+          'Buying index funds at trading close',
+          'Paying national taxes on due dates',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7303,10 +7303,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Modern Portfolio Theory" (MPT)?',
         options: [
-          'A framework for maximizing return for a given level of risk in portfolios.',
-          'Investing all your available company funds only in a single tech stock today now.',
-          'A theory that all stocks in the market are equal regardless of performance now.',
-          'A specific way to predict future price of [GEM] for investors.',
+          'Maximizing return for given risk level',
+          'Investing all funds in single stocks',
+          'Theories stating that all stocks equal',
+          'Predicting future gem prices for investors',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7317,10 +7317,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Efficient Frontier"?',
         options: [
-          'Set of optimal portfolios that offer the highest return for each risk level.',
-          'The physical border of a country with a very good and strong economy tonight.',
-          'A list of the fastest growing companies in the entire country for this year.',
-          'The total amount of [GEM] a bank holds in its reserve.',
+          'Highest returns for given risk level',
+          'Physical borders of strong national economies',
+          'List of fastest growing national companies',
+          'Total gems held in bank reserves',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7331,10 +7331,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What does the "Efficient Market Hypothesis" (EMH) claim?',
         options: [
-          'Claims that asset prices reflect all available information in the global financial markets.',
-          'Every single market is equally efficient regardless of the location or the specific size.',
-          'Gems are the most efficient currency for use in the modern national economy today.',
-          'Computers will soon do all the trading work for the companies.',
+          'Asset prices reflect all available information',
+          'Markets are equally efficient regardless of size',
+          'Gems are the most efficient currencies',
+          'Computers doing all corporate trading work',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7345,10 +7345,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Arbitrage Pricing Theory" (APT)?',
         options: [
-          'A multi-factor asset pricing model considering many different systemic risk factors in market.',
-          'A specific way to set the price of a physical product for consumers today.',
-          'The total cost of trading [GEM] on an international exchange during the whole year.',
-          'Theory that arbitrage is illegal in states for all the firms.',
+          'Multi factor pricing for systemic risk',
+          'Setting physical consumer product price points',
+          'Internal exchange gem trading total costs',
+          'Arbitrage being illegal for all firms',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7359,10 +7359,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Sharpe Ratio"?',
         options: [
-          'A measure of excess return per unit of total portfolio risk or volatility.',
-          'The total profit made by the large company during this current fiscal reporting year.',
-          'The total amount of [GEM] spent on annual legal fees for the corporate firm.',
-          'The number of people who own a single stock today now.',
+          'Return per unit of total risk',
+          'Annual profit for reporting years',
+          'Annual legal fees for corporate firms',
+          'Number of people owning single stocks',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7382,10 +7382,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What are the three components of the "Fraud Triangle"?',
         options: [
-          'The core components of fraud including pressure, opportunity, and the final rationalization.',
-          'A combination of greed, fear, and general laziness found in many large offices.',
-          'Assets, liabilities, and equity reported on the official company paper using annual data.',
-          'The roles of the CEO, CFO, and the professional external auditor.',
+          'Pressure opportunity and rationalization elements',
+          'Laziness greed and fear in offices',
+          'Official report of assets and liabilities',
+          'Roles of CEOs CFOs and auditors',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7396,10 +7396,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Segregation of Duties" (SoD)?',
         options: [
-          'Internal control requiring multiple independent people for a single important business process.',
-          'Giving everyone different tasks in the building to ensure they stay busy long.',
-          'Making sure that everyone has their own private office within the large building.',
-          'A way to hire many more employees for the corporate company.',
+          'Independent people for single business process',
+          'Different tasks to keep humans busy',
+          'Ensuring humans have private office spaces',
+          'Hiring many more employees for companies',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7410,10 +7410,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "COSO Framework"?',
         options: [
-          'A globally recognized and standard blueprint for implementing effective internal business controls.',
-          'A type of software for financial accounting used by the large global corporations.',
-          'A new set of laws from the federal government regarding national security measures.',
-          'A special club for financial professionals in the global market.',
+          'Standard blueprint for effective internal controls',
+          'Financial accounting software for global corporations',
+          'Federal laws regarding national security measures',
+          'Special clubs for global financial professionals',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7424,10 +7424,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is an "IT General Control" (ITGC)?',
         options: [
-          'Controls over user passwords, data backups, and general network security for companies.',
-          'A large button that turns off all the computers in the entire building.',
-          'The total cost of buying new computers for all the senior staff members.',
-          'Hiring more people to fix the printers in the office.',
+          'Controls over passwords and network security',
+          'Off switches for all building computers',
+          'New computer costs for senior staff',
+          'Hiring staff to fix office printers',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7438,10 +7438,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Whistleblower Policy"?',
         options: [
-          'A formal system to report fraud or ethics violations without any fear.',
-          'A specific rule that bans all loud noises in the office site today.',
-          'A way to reward employees for working very hard on their daily tasks.',
-          'A type of insurance policy for the head company CEO.',
+          'Reporting fraud or ethics violations safely',
+          'Banning loud noise in the office',
+          'Rewarding employees for working hard daily',
+          'Head company CEO insurance policies',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7461,10 +7461,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Gordon Growth Model" (GGM) used for?',
         options: [
-          'Dividend model assuming constant growth of dividends forever for the very stable global firms.',
-          'Calculating how fast a company\'s employees grow each year during the whole fiscal cycle.',
-          'A specific way to predict the next economic recession in the national central market.',
-          'The total cost of a company debt during this year today.',
+          'Model for constant dividend growth forever',
+          'Calculating annual employee growth for companies',
+          'Predicting next economic recessions in markets',
+          'Annual company debt total costs today',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7475,10 +7475,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is an "EV/EBITDA" multiple used to compare?',
         options: [
-          'Enterprise Value relative to operational [GEM] cash flows produced by the core business today.',
-          'The size of two different buildings on the office site measured in square meters.',
-          'How many products a company sells in a year across all its global locations.',
-          'The amount of taxes paid by the two companies today now.',
+          'Business value relative to cash flows',
+          'Sizing buildings based on square meters',
+          'Annual product sales for global locations',
+          'Amount of taxes paid by companies',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7489,10 +7489,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Control Premium" in valuation?',
         options: [
-          'The extra price paid to acquire the controlling shares of a specific target company.',
-          'The total cost of hiring a new security guard team for the office building.',
-          'A tax on the company\'s annual net profits applied by the national government authorities.',
-          'A reward for the CEO staying for ten years tonight.',
+          'Extra price for acquiring company control',
+          'Hiring security guard teams for offices',
+          'Profit taxes applied by national authorities',
+          'CEOs staying for ten year rewards',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7503,10 +7503,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Asset-Based Valuation"?',
         options: [
-          'Totaling the fair value of all assets minus the total liabilities of the company.',
-          'Valuing a company based on its building materials like steel and concrete used today.',
-          'A way to choose which stocks to buy on Monday for the investment team.',
-          'The total revenue of a company in one cycle tonight.',
+          'Fair value of assets minus liabilities',
+          'Valuing building materials for companies',
+          'Choosing stocks for the investment team',
+          'Current cycle total revenue of companies',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7517,10 +7517,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Discount for Lack of Marketability" (DLOM)?',
         options: [
-          'Reduces the value of shares that are not easily sold publicly in the markets.',
-          'A discount on products that are not selling well in the local retail market.',
-          'A tax on properties in very rural regions of the country during fiscal year.',
-          'The cost of advertising a business to users today now.',
+          'Reducing value for hard to sell shares',
+          'Discounts for poorly selling retail products',
+          'Property taxes for rural national regions',
+          'Costs of advertising businesses to users',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7540,10 +7540,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is an "Operating Lease" under modern IFRS 16 rules?',
         options: [
-          'A lease recorded on the balance sheet as a ROU asset and liability.',
-          'A lease for a company car package given to every senior department manager.',
-          'When you rent a building for one single day only during the summer.',
-          'A secret contract between two global companies in the national economy.',
+          'Leases as ROU assets and liabilities',
+          'Company car leases for senior managers',
+          'Renting buildings for single summer days',
+          'Secret contracts between two global companies',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7554,10 +7554,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'Why might a company choose to LEASE instead of BUY?',
         options: [
-          'Companies choose to lease to avoid obsolescence and preserve their liquid [GEM] funds.',
-          'Because they do not like owning anything in the entire country today always.',
-          'To hide the physical assets from the national government team during an audit.',
-          'Because it is always cheaper than buying assets now today always.',
+          'Avoiding obsolescence and preserving liquid funds',
+          'Avoiding ownership in the entire country',
+          'Hiding physical assets from audit teams',
+          'Leasing is always cheaper than buying',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7568,10 +7568,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "NAL" (Net Advantage to Leasing)?',
         options: [
-          'A formula used for comparing the NPV of leasing versus buying an asset.',
-          'The total number of people who rent versus buy physical properties globally tonight.',
-          'The total annual profit from a rental agreement for the large corporate firm.',
-          'Insurance for the leased equipment in the office site today now.',
+          'Formula for comparing leasing versus buying',
+          'People renting versus buying physical properties',
+          'Annual reporting for corporate rental agreements',
+          'Equipment insurance for leased office sites',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7582,10 +7582,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Sale and Leaseback" transaction?',
         options: [
-          'Selling an asset to a bank and then immediately leasing it back today.',
-          'Selling a product and buying it back later during the next fiscal year.',
-          'A way to avoid paying rent in the long run for the company.',
-          'Trading old assets for new ones on the office site now.',
+          'Selling assets and immediately leasing back',
+          'Selling products and buying them back',
+          'Avoiding rent payments for the company',
+          'Trading old office site assets today',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7597,9 +7597,9 @@ final List<QuizMetadata> _level5Quizzes = [
         question: 'What is a "Finance Lease" (Capital Lease)?',
         options: [
           'A lease contract where the tenant takes all the risks and the rewards.',
-          'A lease for a commercial bank to use as a professional office space.',
-          'When the head CEO rents a car for a weekend in the country.',
-          'A type of low-interest loan for corporate employees in the firm.',
+          'Treated as purchase using life metrics',
+          'Renting a car for a weekend',
+          'Low interest loan for employees',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7619,10 +7619,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What does "Interest Rate Parity" (IRP) state?',
         options: [
-          'Interest rate differentials between countries equal the gap between forward and spot rates.',
-          'Financial experts believe that all global interest rates must eventually become identical over time.',
-          'High nominal interest rates in developing nations will always lead to zero inflation immediately.',
-          'Central banks maintain identical interest rates across all existing types of borders.',
+          'Differentials equal forward and spot rates',
+          'Global rates must eventually become identical',
+          'Inflation zeroing in developing nations',
+          'Identical rates across all existing borders',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7633,10 +7633,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Purchasing Power Parity" (PPP)?',
         options: [
-          'Exchange rates adjust so that identical goods cost the same in every nation.',
-          'A comprehensive global list of the richest people living in the world today.',
-          'A specific tax applied solely to buying products from overseas at the site.',
-          'Total power a CEO holds over the entire global management team.',
+          'Identical goods cost same across nations',
+          'Global list of the richest living people',
+          'Taxes applied for buying overseas products',
+          'CEO power over entire global management',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7647,10 +7647,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "International Fisher Effect"?',
         options: [
-          'Nominal interest rates reflect differences in expected inflation between different global countries.',
-          'A specific set of international rules that all global banks must follow today.',
-          'The total amount of liquid assets currently circulating in the entire modern world.',
-          'Way to catch more fish for sale in local neighborhood markets.',
+          'Nominal rates reflect expected inflation',
+          'International rules for all global banks',
+          'Total assets circulating in the modern world',
+          'Catching more fish for local markets',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7661,10 +7661,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Currency Swap"?',
         options: [
-          'Contract exchanging interest and principal payments in different currencies over a duration.',
-          'Trading one specific type of coin for another at a local retail shop.',
-          'A type of illegal gamble occurring with [GEM] on a street corner in city.',
-          'Way to hide your true nationality while you are traveling abroad.',
+          'Contract for exchanging currency payments',
+          'Trading coins at a local retail shop',
+          'Illegal gambling occurring on city corners',
+          'Hiding nationalities while traveling abroad',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7675,10 +7675,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Country Risk"?',
         options: [
-          'Political or economic risk impacting investments within a specific global geographic territory.',
-          'The specific risk of a country losing a sports match during competition.',
-          'A tax on international flights traveling to a specific region or country.',
-          'Risk of traveling to a new foreign place for your vacation.',
+          'Regional political and economic risks',
+          'Countries losing sports matches during competitions',
+          'Filing taxes for international flight travels',
+          'Traveling to new foreign vacation spots',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7698,10 +7698,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Benford\'s Law" used for in forensic audit?',
         options: [
-          'Leading digits in natural financial datasets are not distributed uniformly across reports.',
-          'A specific law that requires all professional auditors to wear dark formal suits.',
-          'A simple way for bank managers to calculate interest rates on a loan.',
-          'Rule that prevents people from stealing any local [GEM] project funds.',
+          'Leading digits distribution in datasets',
+          'Auditors requiring dark formal suits',
+          'Calculating interest rates on bank loans',
+          'Stealing local gem project funds',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7712,10 +7712,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Window Dressing"?',
         options: [
-          'Financial accounts looking better than they actually are at each fiscal year-end.',
-          'Cleaning the office windows before a big audit is conducted by the team.',
-          'A type of marketing show for new products offered by the company today.',
-          'Selling more products to customers on site during every holiday weekend.',
+          'Accounts looking better at year end',
+          'Cleaning office windows before audits',
+          'Marketing shows for new company products',
+          'Holiday weekend product sales on site',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7726,10 +7726,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Lapping" in accounts receivable fraud?',
         options: [
-          'Using Customer B funds to cover a Customer A theft in accounts.',
-          'Running multiple laps around the office for fitness during the lunch break hour.',
-          'A specific way to calculate the cost of a product for sale today.',
-          'Type of bank insurance created for small businesses in the city.',
+          'Using customer funds for covering theft',
+          'Running laps for office fitness breaks',
+          'Calculating costs of products for sale',
+          'Bank insurance for small city businesses',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7740,10 +7740,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Bribe" under the FCPA?',
         options: [
-          'Gifts or money given to foreign officials to win new global business.',
-          'A small tip for a professional waiter in a restaurant after a meal.',
-          'Buying a birthday gift for a close friend during the holiday season today.',
-          'Standard cost of doing business today in the local national markets.',
+          'Paying officials to win business',
+          'Tipping restaurant waiters after meals',
+          'Birthday gifts for close friends',
+          'Standard local national business costs',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7754,10 +7754,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is an "Audit Trail"?',
         options: [
-          'Step-by-step record of a transaction from the beginning to the final end.',
-          'A path in the woods near the office site for employee exercise today.',
-          'A list of all the employees in the company today for the payroll.',
-          'Total profit made by the company during this entire fiscal year.',
+          'Record of transactions start to end',
+          'Walking paths for employee exercise',
+          'Employee lists for company payrolls',
+          'Total annual corporate fiscal profits',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7777,10 +7777,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What are the four perspectives of the "Balanced Scorecard"?',
         options: [
-          'Financial, Customer, Process, and Learning and Growth perspectives for global management.',
-          'Past, Present, Future, and CEO perspective for the entire company board members.',
-          'Assets, Liabilities, Equity, and Revenue now for the company in the fiscal year.',
-          'Sales, Marketing, HR, and IT departments for the large business.',
+          'Financial customer process and growth',
+          'Past present and future perspectives',
+          'Assets liabilities and equity for firms',
+          'Marketing HR and IT department segments',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7791,10 +7791,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Activity-Based Costing" (ABC)?',
         options: [
-          'Allocating overhead based on consumed activities rather than using simple volume metrics.',
-          'Counting how many activities employees do daily for the management to review today.',
-          'A specific way to choose which stocks to buy on Friday for profit.',
-          'Total cost of running a website for users in the country.',
+          'Overhead allocation using activities',
+          'Counting employee daily activity levels',
+          'Choosing Friday stocks for profit',
+          'Running websites for national users',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7805,10 +7805,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Value Chain Analysis"?',
         options: [
-          'Examining steps to create value or save [GEM] during the whole production.',
-          'Looking at the chain on the company\'s front door for the security team.',
-          'A setup of rules for competitive global markets used by all the companies.',
-          'Way to calculate interest rates on a bank loan for customers.',
+          'Examining steps to create value',
+          'Checking chains for building security',
+          'Competitive rules for global markets',
+          'Bank loan interest rates for customers',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7819,10 +7819,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Kaizen" Costing?',
         options: [
-          'Japanese philosophy of "Continuous Improvement" involving all employees in the corporate organization.',
-          'A type of food in the company cafeteria today for all the employees.',
-          'A tax on high-profit companies in the region during the fiscal year ends.',
-          'Rule that limits how much you can sell each year today.',
+          'Continuous improvement for all staff',
+          'Serving cafeteria food for employees',
+          'Regional taxes for high profit companies',
+          'Annual sales limits for companies',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7833,10 +7833,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Total Quality Management" (TQM)?',
         options: [
-          'Quality is the goal for every employee in the entire corporate organization.',
-          'Managing the total number of employees in a lab for the research projects.',
-          'A rule that prevents bad products in the market for all the consumers.',
-          'Type of software test for the dev team in the office.',
+          'Quality goals for all employees',
+          'Managing labs for research projects',
+          'Prevention of bad market products',
+          'Software tests for office dev teams',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7856,10 +7856,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Step Acquisition" (Achieved in Stages)?',
         options: [
-          'Increasing ownership to a controlling share through steps of purchasing firm\'s equity.',
-          'Buying the building next door to the office site for the expansion plans.',
-          'A tax on buying more shares in the market during the fiscal year.',
-          'Way to pay for a company in monthly steps today.',
+          'Increasing ownership through step purchases',
+          'Buying buildings for expansion sites',
+          'Share purchase taxes during fiscal years',
+          'Paying for companies in monthly steps',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7870,10 +7870,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is the "Current Rate Method" for translation?',
         options: [
-          'Translating Balance Sheet at year-end and Income Statement using average exchange rates.',
-          'Charging customers the current interest rate for the loans they have taken today.',
-          'A way to avoid using any foreign currency now during the global trade.',
-          'Using the exchange rate from the founding day of the company.',
+          'Translating using year end rates',
+          'Interest rates for customer loans',
+          'Avoiding foreign currency for global trade',
+          'Exchange rates from company founding',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7884,10 +7884,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Temporal Method" translation?',
         options: [
-          'Translating monetary items at current rate and non-monetary items at historical rates.',
-          'A temporary way to count [GEM] in a bank for the daily reports.',
-          'A tax on temporary companies in the state durante the entire fiscal year.',
-          'Trading [GEM] only during certain times of year in city.',
+          'Monetary items at current rates',
+          'Bank reports for daily gem counts',
+          'Temporary taxes for state companies',
+          'Gem trading during certain times',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7898,10 +7898,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Bargain Purchase" (Negative Goodwill)?',
         options: [
-          'Buying a company for less than fair value of its net assets.',
-          'Buying a product on sale at a local store during the weekend holiday.',
-          'A secret deal with a local building supplier for the construction project now.',
-          'Company that is going bankrupt very fast in the country.',
+          'Buying assets below fair value',
+          'Weekend sales at local stores',
+          'Secret deals with building suppliers',
+          'Companies going bankrupt very fast',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7912,10 +7912,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Equity Method" vs "Consolidation"?',
         options: [
-          'Equity records share of profit; Consolidation adds together all assets and liabilities.',
-          'One is only used for very small businesses in the local city market.',
-          'A way to hide total debt from the public team during audits today.',
-          'One means selling the company for assets in local market.',
+          'Profit sharing vs adding assets',
+          'Local city business usage models',
+          'Debt hiding from investigative teams',
+          'Selling companies for local assets',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7935,10 +7935,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Delta Neutral" hedging?',
         options: [
-          'Creating a portfolio where value doesn\'t change with small underlying price moves.',
-          'A way to stay neutral in a political debate now during the elections.',
-          'Buying equal amounts of every stock in the market for the balanced fund.',
-          'Hedge made with zero [GEM] initial investment in the bank.',
+          'Stability against small price moves',
+          'Neutrality in political election debates',
+          'Balanced funds equal stock amounts',
+          'Zero initial investment bank hedges',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7949,10 +7949,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Gamma" in option Greeks?',
         options: [
-          'Greek letter representing the rate of change in Delta as price moves.',
-          'A type of radiation used in a hospital lab for the medical tests.',
-          'A tax on huge profits made in a single trade during the year.',
-          'Third best option available in the market for the investor.',
+          'Delta change over price moves',
+          'Radiation used in hospital labs',
+          'Huge profit taxes for trades',
+          'Third best options in markets',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7963,10 +7963,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is a "Bull Call Spread"?',
         options: [
-          'Bullish strategy involving buying one Call and selling another higher strike.',
-          'A type of farm animal found in the rural area during the summer.',
-          'A way to borrow [GEM] from a bull at low cost for business.',
-          'Telling everyone a stock is certainly going up in market.',
+          'Buying calls while selling higher',
+          'Farm animals in rural areas',
+          'Cheap debt borrowed from bulls',
+          'Predictions for rising stock markets',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7977,10 +7977,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Theta" decay?',
         options: [
-          'Gradual loss in option value as the expiration date gets closer today.',
-          'A type of brain wave found in deep sleep for the medical research.',
-          'A tax on holding stocks for too long in one account today.',
-          'Way to make [GEM] slowly over many cycles for profit.',
+          'Value loss as expiration approaches',
+          'Brain waves for medical research',
+          'Taxes for holding stocks long',
+          'Making gems slowly for profits',
         ],
         correctIndex: 0,
         wrongExplanation:
@@ -7991,10 +7991,10 @@ final List<QuizMetadata> _level5Quizzes = [
       QuizQuestion(
         question: 'What is "Value at Risk" (VaR)?',
         options: [
-          'Estimating maximum potential loss over time with a specific statistical confidence level.',
-          'The total amount of [GEM] the company owns now in the bank accounts.',
-          'A list of the riskiest stocks in the whole country for the investors.',
-          'Way to calculate interest on a large bank loan today.',
+          'Estimating maximum loss over time',
+          'Total gems in bank accounts',
+          'Riskiest national stocks for investors',
+          'Bank loan interest calculations today',
         ],
         correctIndex: 0,
         wrongExplanation:

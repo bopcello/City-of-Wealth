@@ -77,9 +77,7 @@ class SettingsTab extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.cloud_sync, color: Colors.blue),
             title: const Text("Sync with Cloud"),
-            subtitle: const Text(
-              "Manually save/load your progress from Firestore",
-            ),
+            subtitle: const Text("Manually sync your progress with the cloud"),
             onTap: onCloudSync,
           ),
           const SizedBox(height: 32),
