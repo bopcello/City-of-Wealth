@@ -201,7 +201,7 @@ class QuizMenuScreen extends StatelessWidget {
                       )
                     ]
                   : [], 
-                markingScheme: QuizMarkingScheme(correctPoints: 50, wrongPoints: 0),
+                markingScheme: const MarkingScheme(correctPoints: 50, wrongPoints: 0),
               );
 
               if (context.mounted) {
@@ -214,6 +214,7 @@ class QuizMenuScreen extends StatelessWidget {
                       sfx: sfx,
                       quiz: dailyQuiz,
                       isDaily: true,
+                      dailyDate: today,
                     ),
                   ),
                 );
@@ -309,6 +310,7 @@ class QuizScreen extends StatefulWidget {
   final QuizMetadata quiz;
   final bool isCompleted;
   final bool isDaily;
+  final String? dailyDate;
 
   const QuizScreen({
     super.key,
@@ -318,6 +320,7 @@ class QuizScreen extends StatefulWidget {
     required this.quiz,
     this.isCompleted = false,
     this.isDaily = false,
+    this.dailyDate,
   });
 
   @override
@@ -396,7 +399,7 @@ class _QuizScreenState extends State<QuizScreen> {
               if (current < widget.quiz.questions.length - 1) {
                 nextQuestion();
               } else {
-                if (!widget.isDaily) widget.game.onQuizComplete(widget.quiz.id);
+                if (!widget.isDaily) widget.game.markQuizCompleted(widget.quiz.id);
                 nextQuestion();
               }
             },
@@ -433,10 +436,12 @@ class _QuizScreenState extends State<QuizScreen> {
 
       if (passed) {
         finalKpDelta = award;
-        widget.game.onKpChange(finalKpDelta);
-        if (widget.isDaily) widget.game.completeDailyQuiz(true);
-      } else if (widget.isDaily) {
-        widget.game.completeDailyQuiz(false);
+        widget.game.addKp(finalKpDelta);
+        if (widget.isDaily && widget.dailyDate != null) {
+          widget.game.completeDailyQuiz(true, widget.dailyDate!);
+        }
+      } else if (widget.isDaily && widget.dailyDate != null) {
+        widget.game.completeDailyQuiz(false, widget.dailyDate!);
       }
 
       Navigator.pushReplacement(
@@ -454,6 +459,7 @@ class _QuizScreenState extends State<QuizScreen> {
             level: widget.quiz.requiredLevel,
             passed: passed,
             isDaily: widget.isDaily,
+            dailyDate: widget.dailyDate,
           ),
         ),
       );
@@ -573,6 +579,7 @@ class QuizAnalysisScreen extends StatelessWidget {
   final int level;
   final bool passed;
   final bool isDaily;
+  final String? dailyDate;
 
   const QuizAnalysisScreen({
     super.key,
@@ -587,6 +594,7 @@ class QuizAnalysisScreen extends StatelessWidget {
     required this.level,
     required this.passed,
     this.isDaily = false,
+    this.dailyDate,
   });
 
   String get message {

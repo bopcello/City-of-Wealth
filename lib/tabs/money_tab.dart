@@ -129,6 +129,7 @@ class MoneyTab extends StatelessWidget {
                       onBuyAsset: (type) => game.buyAsset(type, 1, context),
                       onSellAsset: (type) => game.sellAsset(type),
                       sfx: sfx,
+                      game: game,
                     ),
                   ),
                 );

@@ -8,6 +8,7 @@ import '../services/notification_service.dart';
 import '../services/firestore_service.dart';
 
 class GameManager extends ChangeNotifier {
+  final FirestoreService firestoreService = FirestoreService();
   int kp = 0;
   int gems = 0;
   CareerState career = const CareerState(track: CareerTrack.student, level: 1);
