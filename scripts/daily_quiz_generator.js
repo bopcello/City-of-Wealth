@@ -37,9 +37,11 @@ async function generateDailyQuiz() {
     : "This is the first question, so you have full creative freedom!";
 
   const prompt = `
-Generate ONE unique financial quiz question which is very difficult to answer for the average person.
+Generate ONE unique financial quiz question which can be answered by the average person.
 The question should be related to current affairs or general knowledge in the finance world.
+The question must not be longer than 30 words and the options must not be longer than 10 words each.
 
+Do not repeat the questions from these topics:
 ${hashConstraint}
 
 Return the output in EXACTLY this JSON format:
