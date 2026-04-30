@@ -1,6 +1,5 @@
 const axios = require('axios');
 const admin = require('firebase-admin');
-const crypto = require('crypto');
 
 // Initialize Firebase
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
@@ -9,7 +8,6 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     credential: admin.credential.cert(serviceAccount)
   });
 } else {
-  // Local development fallback
   admin.initializeApp();
 }
 
@@ -48,9 +46,15 @@ async function generateDailyQuiz() {
     ? `AVOID these previous topics, questions, and answers to ensure uniqueness:\n` + pastQuestions.map((q, i) => `${i + 1}. Topic: "${q.topic}" | Question: "${q.question}" | Answer: "${q.answer}"`).join('\n')
     : "This is the first question, so you have full creative freedom!";
 
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+
   const prompt = `
-Generate ONE unique financial quiz question which can be answered by the average person.
-The question should be related to current affairs or general knowledge in the finance world.
+Today's date is ${today}.
+
+You have access to Google Search. Before generating the quiz question, search the web for the latest financial news and current affairs from the past 7 days. Look for: recent central bank decisions, stock market movements, major corporate earnings, economic policy changes, cryptocurrency news, or any significant global financial events.
+
+Use what you find to generate ONE unique, timely financial quiz question that an average person can answer. The question should be grounded in a real current event or recent development in finance.
+
 The question must not be longer than 30 words and the options must not be longer than 10 words each.
 Do not use any markdown formatting like bold or italics. Give the output in plain text only.
 
@@ -73,16 +77,36 @@ Return the output in EXACTLY this JSON format:
 Ensure the explanations are thorough (at least 2-3 sentences).
 `;
 
-  // 3. Call Gemini AI
+  // 3. Call Gemini 3 Flash with Google Search grounding
   try {
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
       {
-        contents: [{ parts: [{ text: prompt }] }]
+        contents: [{ parts: [{ text: prompt }] }],
+        tools: [
+          {
+            google_search: {}
+          }
+        ],
+        generationConfig: {
+          thinkingConfig: { thinkingLevel: "low" }
+        }
       }
     );
 
-    const content = response.data.candidates[0].content.parts[0].text;
+    const candidates = response.data.candidates;
+    if (!candidates || candidates.length === 0) {
+      throw new Error('No candidates returned from Gemini');
+    }
+
+    // Gemini with search grounding may return multiple parts — find the text one
+    const parts = candidates[0].content.parts;
+    const textPart = parts.find(p => p.text);
+    if (!textPart) {
+      throw new Error('No text part found in Gemini response');
+    }
+
+    const content = textPart.text;
     console.log('Raw Gemini Response:', content);
 
     // Extract JSON from potential markdown code block
@@ -96,8 +120,7 @@ Ensure the explanations are thorough (at least 2-3 sentences).
     const quizData = JSON.parse(jsonMatch[0]);
     console.log('Successfully parsed quiz data for topic:', quizData.title);
 
-    // 4. Save to Firestore (using IST date to match daily cron)
-    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }); // YYYY-MM-DD
+    // 4. Save to Firestore
     const quizId = `daily_${today}`;
 
     await db.collection('daily_quizzes').doc(quizId).set({
@@ -105,7 +128,7 @@ Ensure the explanations are thorough (at least 2-3 sentences).
       id: quizId,
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
       dateString: today,
-      requiredLevel: 1 // Daily quizzes available to everyone
+      requiredLevel: 1
     });
 
     console.log(`Saved quiz for ${today}`);
