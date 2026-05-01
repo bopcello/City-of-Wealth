@@ -80,7 +80,7 @@ Ensure the explanations are thorough (at least 2-3 sentences).
   // 3. Call Gemini 3 Flash with Google Search grounding
   try {
     const response = await axios.post(
-  `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${GEMINI_API_KEY}`,
+  `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         contents: [{ parts: [{ text: prompt }] }],
         tools: [
