@@ -77,10 +77,29 @@ Return the output in EXACTLY this JSON format:
 Ensure the explanations are thorough (at least 2-3 sentences).
 `;
 
-  // 3. Call Gemini 3 Flash with Google Search grounding
+  // 3. Call Gemini Flash with Google Search grounding
   try {
     const response = await axios.post(
-  `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: prompt }]
+          }
+        ],
+        tools: [
+          {
+            googleSearch: {}
+          }
+        ]
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     const candidates = response.data.candidates;
     if (!candidates || candidates.length === 0) {
