@@ -4,6 +4,7 @@ import '../widgets/icon_text.dart';
 import '../widgets/counter_chip.dart';
 import '../theme/app_colors.dart';
 import '../logic/game_manager.dart';
+import '../logic/tutorial_keys.dart';
 import '../services/sfx_manager.dart';
 
 class LiabilitiesScreen extends StatefulWidget {
@@ -104,23 +105,51 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     return ListenableBuilder(
       listenable: widget.game,
       builder: (context, _) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text("Liabilities"),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: Center(
-                  child: CounterChip(
-                    label: "Gems",
-                    value: widget.game.gems,
-                    icon: Icons.diamond,
-                    color: AppColors.of(context, 'gem'),
+        final bool isBackAllowed = !widget.game.isTutorialActive || widget.game.isTutorialBackAllowed;
+        return PopScope(
+          canPop: isBackAllowed,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) {
+              if (widget.game.isTutorialActive) {
+                widget.game.onTutorialBackStepTriggered?.call();
+              }
+              return;
+            }
+            if (widget.game.isTutorialActive && !widget.game.isTutorialBackAllowed) {
+              widget.game.onBackGestureIntercepted?.call();
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text("Liabilities"),
+              leading: BackButton(
+                key: TutorialKeys.liabilitiesBackKey,
+                onPressed: () {
+                  if (widget.game.isTutorialActive) {
+                    if (widget.game.isTutorialBackAllowed) {
+                      // Let tutorial handle pop
+                    } else {
+                      widget.game.onBackGestureIntercepted?.call();
+                      return;
+                    }
+                  }
+                  widget.sfx.playClick();
+                  Navigator.pop(context);
+                },
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: Center(
+                    child: CounterChip(
+                      label: "[GEM]",
+                      value: widget.game.gems,
+                      prefix: "Gems",
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           body: Column(
             children: [
               // Top Section
@@ -195,6 +224,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                           widget.game.career.level,
                           v,
                         ),
+                        key: TutorialKeys.liabilitiesRentKey,
                       ),
                       _buildPanel(
                         "Food",
@@ -256,6 +286,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                           widget.game.career.level,
                           v,
                         ),
+                        key: TutorialKeys.liabilitiesFoodKey,
                       ),
                       _buildPanel(
                         "Transport",
@@ -317,6 +348,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                           widget.game.career.level,
                           v,
                         ),
+                        key: TutorialKeys.liabilitiesTransportKey,
                       ),
                       _buildMaintenanceSection(),
                       _buildInsuranceSection(),
@@ -328,10 +360,11 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
               ),
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   Widget _buildDebtSection(Color color) {
     if (widget.game.gems >= 0) return const SizedBox.shrink();
@@ -391,7 +424,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     }
 
     return Card(
-      color: Theme.of(context).colorScheme.surfaceVariant,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -503,7 +536,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     }
 
     return Card(
-      color: Theme.of(context).colorScheme.surfaceVariant,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -556,7 +589,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Theme.of(context).colorScheme.surfaceVariant,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -677,11 +710,13 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     int Function(T) kpGetter, {
     required Color theme,
     required Color color,
+    Key? key,
   }) {
     bool isLocked = selectedValue != null;
     return Card(
+      key: key,
       elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceVariant,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),

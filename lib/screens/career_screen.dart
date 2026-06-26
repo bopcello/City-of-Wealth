@@ -5,6 +5,7 @@ import '../theme/app_colors.dart';
 import '../services/sfx_manager.dart';
 
 import '../logic/game_manager.dart';
+import '../logic/tutorial_keys.dart';
 
 class CareerScreen extends StatefulWidget {
   final GameManager game;
@@ -28,17 +29,51 @@ class _CareerScreenState extends State<CareerScreen> {
   }
 
   Widget _buildScaffold(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Career")),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _CareerHeroCard(
-              key: ValueKey(
-                '${widget.game.career.track}-${widget.game.career.level}',
-              ),
+    final bool isBackAllowed = !widget.game.isTutorialActive || widget.game.isTutorialBackAllowed;
+
+    return PopScope(
+      canPop: isBackAllowed,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          if (widget.game.isTutorialActive) {
+            widget.game.onTutorialBackStepTriggered?.call();
+          }
+          return;
+        }
+        if (widget.game.isTutorialActive && !widget.game.isTutorialBackAllowed) {
+          widget.game.onBackGestureIntercepted?.call();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Career"),
+          leading: BackButton(
+            key: TutorialKeys.careerBackKey,
+            onPressed: () {
+              if (widget.game.isTutorialActive) {
+                if (widget.game.isTutorialBackAllowed) {
+                  // Let the tutorial advance
+                } else {
+                  widget.game.onBackGestureIntercepted?.call();
+                  return;
+                }
+              }
+              widget.sfx.playClick();
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              KeyedSubtree(
+                key: TutorialKeys.careerHeroCardKey,
+                child: _CareerHeroCard(
+                  key: ValueKey(
+                    '${widget.game.career.track}-${widget.game.career.level}',
+                  ),
               career: widget.game.career,
               sfx: widget.sfx,
               currentKp: widget.game.kp,
@@ -47,6 +82,7 @@ class _CareerScreenState extends State<CareerScreen> {
               completedQuizzes: widget.game.completedQuizzes,
               isWorkingOvertime: widget.game.isWorkingOvertime,
               onWorkOvertime: widget.game.workOvertime,
+              ),
             ),
             const SizedBox(height: 24),
             _CareerProgress(career: widget.game.career),
@@ -64,6 +100,7 @@ class _CareerScreenState extends State<CareerScreen> {
             ],
           ],
         ),
+      ),
       ),
     );
   }
@@ -216,7 +253,7 @@ class _CareerHeroCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
@@ -412,10 +449,12 @@ class _CareerHeroCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: isWorkingOvertime
+            KeyedSubtree(
+              key: TutorialKeys.careerOvertimeKey,
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: isWorkingOvertime
                     ? null
                     : () {
                         sfx.playClick();
@@ -463,6 +502,7 @@ class _CareerHeroCard extends StatelessWidget {
                   ],
                 ),
               ),
+            ),
             ),
           ],
         ],
@@ -514,7 +554,7 @@ class _CareerHint extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
       ),
       child: const Text(
@@ -541,7 +581,7 @@ class _CareerCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
@@ -614,7 +654,7 @@ class _TrackChoiceTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceVariant,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(

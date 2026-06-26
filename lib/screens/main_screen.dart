@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../game_state.dart';
 import '../logic/game_manager.dart';
+import '../logic/tutorial_keys.dart';
 import '../services/music_manager.dart';
 import '../services/sfx_manager.dart';
-import '../theme/app_colors.dart';
 import '../widgets/counter_chip.dart';
 import '../widgets/name_entry_dialog.dart';
 import '../widgets/disaster_report_dialog.dart';
+import '../widgets/tutorial_overlay.dart';
 import '../screens/loading_screen.dart';
 import '../tabs/home_tab.dart';
 import '../tabs/city_tab.dart';
@@ -30,6 +32,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   bool _nameDialogShown = false;
+  OverlayEntry? _tutorialOverlayEntry;
+  bool _overlayInserted = false;
 
   @override
   void initState() {
@@ -37,11 +41,19 @@ class _MainScreenState extends State<MainScreen> {
     widget.game.addListener(_handleGameStateChange);
     // Check immediately in case it's already loaded
     _handleGameStateChange();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateTutorialOverlay();
+    });
   }
 
   @override
   void dispose() {
     widget.game.removeListener(_handleGameStateChange);
+    if (_tutorialOverlayEntry != null && _overlayInserted) {
+      _tutorialOverlayEntry?.remove();
+    }
+    _tutorialOverlayEntry = null;
+    _overlayInserted = false;
     super.dispose();
   }
 
@@ -51,6 +63,58 @@ class _MainScreenState extends State<MainScreen> {
     if (oldWidget.game != widget.game) {
       oldWidget.game.removeListener(_handleGameStateChange);
       widget.game.addListener(_handleGameStateChange);
+    }
+  }
+
+  void _updateTutorialOverlay() {
+    if (!mounted) return;
+    if (widget.game.isTutorialActive) {
+      if (_tutorialOverlayEntry == null) {
+        _overlayInserted = false;
+        _tutorialOverlayEntry = OverlayEntry(
+          builder: (context) => TutorialOverlay(
+            game: widget.game,
+            sfx: widget.sfx,
+            onComplete: () {
+              _updateTutorialOverlay();
+            },
+          ),
+        );
+        // Small delay to ensure underlying widgets are fully rendered
+        Future.delayed(const Duration(milliseconds: 200), () {
+          if (mounted && _tutorialOverlayEntry != null && !_overlayInserted) {
+            try {
+              final overlay = Overlay.maybeOf(context);
+              if (overlay != null) {
+                overlay.insert(_tutorialOverlayEntry!);
+                _overlayInserted = true;
+              }
+            } catch (e) {
+              debugPrint("❌ Error inserting tutorial overlay: $e");
+            }
+          }
+        });
+      } else {
+        if (_overlayInserted) {
+          try {
+            _tutorialOverlayEntry!.markNeedsBuild();
+          } catch (e) {
+            debugPrint("⚠️ Failed to markNeedsBuild overlay: $e");
+          }
+        }
+      }
+    } else {
+      if (_tutorialOverlayEntry != null) {
+        if (_overlayInserted) {
+          try {
+            _tutorialOverlayEntry?.remove();
+          } catch (e) {
+            debugPrint("⚠️ Failed to remove overlay: $e");
+          }
+        }
+        _tutorialOverlayEntry = null;
+        _overlayInserted = false;
+      }
     }
   }
 
@@ -92,6 +156,11 @@ class _MainScreenState extends State<MainScreen> {
         );
       });
     }
+
+    _updateTutorialOverlay();
+
+    // Rebuild to reflect latest game state in AppBar chips and tabs
+    setState(() {});
   }
 
   @override
@@ -101,10 +170,16 @@ class _MainScreenState extends State<MainScreen> {
       return const LoadingScreen();
     }
 
+    final bool canPop = !game.isTutorialActive && game.selectedIndex == 0;
+
     return PopScope(
-      canPop: game.selectedIndex == 0,
+      canPop: canPop,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
+        if (game.isTutorialActive) {
+          game.onBackGestureIntercepted?.call();
+          return;
+        }
         widget.sfx.playBack();
         if (game.selectedIndex != 0) {
           game.selectedIndex = 0;
@@ -112,22 +187,42 @@ class _MainScreenState extends State<MainScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("City of Wealth"),
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              KeyedSubtree(
+                key: TutorialKeys.kpKey,
+                child: CounterChip(label: "[KP]", value: game.kp, prefix: "KP"),
+              ),
+              KeyedSubtree(
+                key: TutorialKeys.gemsKey,
+                child: CounterChip(
+                  label: "[GEM]",
+                  value: game.gems,
+                  prefix: "Gems",
+                ),
+              ),
+            ],
+          ),
+          centerTitle: false,
           actions: [
-            CounterChip(
-              label: "KP",
-              value: game.kp,
-              icon: Icons.school,
-              color: AppColors.of(context, 'kp'),
+            KeyedSubtree(
+              key: TutorialKeys.streakKey,
+              child: CounterChip(
+                label: "[STREAK]",
+                value: game.dailyQuizStreak,
+                prefix: "Streak",
+              ),
+            ),
+            KeyedSubtree(
+              key: TutorialKeys.revivalsKey,
+              child: CounterChip(
+                label: "[REVIVAL]",
+                value: game.streakRevivals,
+                prefix: "Revivals",
+              ),
             ),
             const SizedBox(width: 8),
-            CounterChip(
-              label: "Gems",
-              value: game.gems,
-              icon: Icons.diamond,
-              color: AppColors.of(context, 'gem'),
-            ),
-            const SizedBox(width: 12),
           ],
         ),
         body: IndexedStack(
@@ -143,6 +238,9 @@ class _MainScreenState extends State<MainScreen> {
               transportChoice: game.transportChoice,
               assets: game.assets,
               onClearEvents: game.clearEvents,
+              dailyQuizAvailable:
+                  game.lastDailyQuizDate !=
+                  DateFormat('yyyy-MM-dd').format(DateTime.now()),
               sfx: widget.sfx,
             ),
             CityTab(
@@ -195,6 +293,7 @@ class _MainScreenState extends State<MainScreen> {
               gameListenable: game,
             ),
             SettingsTab(
+              game: game,
               career: game.career,
               isDarkMode: game.isDarkMode,
               musicVolume: game.musicVolume,
@@ -245,15 +344,18 @@ class _MainScreenState extends State<MainScreen> {
           backgroundColor: Theme.of(context).colorScheme.surface,
           selectedItemColor: Theme.of(context).colorScheme.primary,
           unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          items: [
+            const BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
             BottomNavigationBarItem(
-              icon: Icon(Icons.location_city),
+              icon: Icon(Icons.location_city, key: TutorialKeys.tabCityKey),
               label: "City",
             ),
-            BottomNavigationBarItem(icon: Icon(Icons.work), label: "Money"),
             BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
+              icon: Icon(Icons.work, key: TutorialKeys.tabMoneyKey),
+              label: "Money",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings, key: TutorialKeys.tabSettingsKey),
               label: "Settings",
             ),
           ],

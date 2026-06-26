@@ -9,6 +9,7 @@ import '../screens/liabilities_screen.dart';
 import '../screens/passive_income_screen.dart';
 
 import '../logic/game_manager.dart';
+import '../logic/tutorial_keys.dart';
 
 class MoneyTab extends StatelessWidget {
   final GameManager game;
@@ -84,7 +85,32 @@ class MoneyTab extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: GridView.builder(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 24, left: 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Welcome back,",
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+                Text(
+                  playerName,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 16,
@@ -94,7 +120,15 @@ class MoneyTab extends StatelessWidget {
         itemCount: items.length,
         itemBuilder: (context, index) {
           final item = items[index];
+          Key? tileKey;
+          if (item.title == "Career") tileKey = TutorialKeys.careerTileKey;
+          if (item.title == "Passive Income") tileKey = TutorialKeys.passiveIncomeTileKey;
+          if (item.title == "Assets") tileKey = TutorialKeys.assetsTileKey;
+          if (item.title == "Liabilities") tileKey = TutorialKeys.liabilitiesTileKey;
+          if (item.title == "Quiz") tileKey = TutorialKeys.quizTileKey;
+
           return _MoneyTile(
+            key: tileKey,
             data: item,
             onTap: () {
               sfx.playClick();
@@ -161,8 +195,11 @@ class MoneyTab extends StatelessWidget {
           );
         },
       ),
-    );
-  }
+    ),
+  ],
+),
+);
+}
 }
 
 class _MoneyTileData {
@@ -176,7 +213,7 @@ class _MoneyTile extends StatelessWidget {
   final _MoneyTileData data;
   final VoidCallback onTap;
 
-  const _MoneyTile({required this.data, required this.onTap});
+  const _MoneyTile({super.key, required this.data, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +222,7 @@ class _MoneyTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceVariant,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Theme.of(context).colorScheme.outline),
           boxShadow: [

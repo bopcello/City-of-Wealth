@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "390785055286-r5osgc6fupk8sfrjn7ggbhbcoiqgid20.apps.googleusercontent.com",
+          "client_id": "390785055286-fgp3j0qc7v1jngu93mqgh9gpgsbnct9c.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.city_of_wealth",
-            "certificate_hash": "209963055b76542c892af457d2b7f8fbddaa3430"
+            "certificate_hash": "06ff39f6cc035a3a8ad1e51e390281aebe459287"
           }
         },
         {

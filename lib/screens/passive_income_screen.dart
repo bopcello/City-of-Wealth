@@ -6,6 +6,7 @@ import '../services/sfx_manager.dart';
 import '../theme/app_colors.dart';
 
 import '../logic/game_manager.dart';
+import '../logic/tutorial_keys.dart';
 
 class PassiveIncomeScreen extends StatelessWidget {
   final GameManager game;
@@ -15,8 +16,40 @@ class PassiveIncomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Passive Income")),
+    final bool isBackAllowed = !game.isTutorialActive || game.isTutorialBackAllowed;
+
+    return PopScope(
+      canPop: isBackAllowed,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          if (game.isTutorialActive) {
+            game.onTutorialBackStepTriggered?.call();
+          }
+          return;
+        }
+        if (game.isTutorialActive && !game.isTutorialBackAllowed) {
+          game.onBackGestureIntercepted?.call();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Passive Income"),
+          leading: BackButton(
+            key: TutorialKeys.passiveIncomeBackKey,
+            onPressed: () {
+              if (game.isTutorialActive) {
+                if (game.isTutorialBackAllowed) {
+                  // Let the tutorial advance
+                } else {
+                  game.onBackGestureIntercepted?.call();
+                  return;
+                }
+              }
+              sfx.playClick();
+              Navigator.pop(context);
+            },
+          ),
+        ),
       body: ListenableBuilder(
         listenable: game,
         builder: (context, _) => SingleChildScrollView(
@@ -44,9 +77,7 @@ class PassiveIncomeScreen extends StatelessWidget {
                   (b) => b.name == info.buildingName,
                 );
                 final ownedAssets = game.assets.count(assetType);
-                final canInvest =
-                    investedCount < ownedAssets &&
-                    game.gems >= info.investmentCost;
+                final canInvest = investedCount < ownedAssets;
 
                 final multiplier = game.getPassiveIncomeMultiplier(assetType);
                 final activeDisaster = game.getActiveDisasterForAsset(
@@ -73,8 +104,9 @@ class PassiveIncomeScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _PassiveIncomeCard extends StatelessWidget {
@@ -104,12 +136,13 @@ class _PassiveIncomeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rewards = getStreakRewards(game.dailyQuizStreak);
     final potentialIncome = (investedCount > 0 && hasBuilding)
         ? min(ownedAssets, investedCount) * info.incomePerAsset
         : 0;
 
     return Card(
-      color: Theme.of(context).colorScheme.surfaceVariant,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       margin: const EdgeInsets.only(bottom: 16),
@@ -241,14 +274,14 @@ class _PassiveIncomeCard extends StatelessWidget {
                           ),
                           children: [
                             const TextSpan(text: "Earning "),
-                            if (multiplier < 1.0)
+                            if (multiplier != 1.0)
                               TextSpan(
                                 text: "$potentialIncome",
                                 style: TextStyle(
                                   decoration: TextDecoration.lineThrough,
                                   color: Theme.of(
                                     context,
-                                  ).colorScheme.onSurfaceVariant,
+                                  ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                                 ),
                               ),
                             ...IconText.parseText(
@@ -264,7 +297,7 @@ class _PassiveIncomeCard extends StatelessWidget {
                             ),
                             if (getStreakRewards(game.dailyQuizStreak).passiveIncomeMultiplier > 1.0)
                               TextSpan(
-                                text: " (incl. ${((getStreakRewards(game.dailyQuizStreak).passiveIncomeMultiplier - 1.0) * 100).toInt()}% streak bonus)",
+                                text: " (${rewards.label} Bonus)",
                                 style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.normal),
                               ),
                             if (multiplier < 1.0 && activeDisaster != null)

@@ -36,8 +36,8 @@ class IconText extends StatelessWidget {
   ) {
     final inlineSpans = <InlineSpan>[];
 
-    // Split by placeholders [GEM] and [KP]
-    final regex = RegExp(r'(\[GEM\]|\[KP\])');
+    // Split by placeholders [GEM], [KP], [STREAK], [REVIVAL]
+    final regex = RegExp(r'(\[GEM\]|\[KP\]|\[STREAK\]|\[REVIVAL\])');
     final parts = text.split(regex);
     final matches = regex.allMatches(text).toList();
 
@@ -47,30 +47,33 @@ class IconText extends StatelessWidget {
       }
       if (i < matches.length) {
         final match = matches[i].group(0);
+        IconData? icon;
+        Color? iconColor;
+
         if (match == '[GEM]') {
-          inlineSpans.add(
-            WidgetSpan(
-              alignment: PlaceholderAlignment.middle,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: Icon(
-                  Icons.diamond,
-                  size: (style.fontSize ?? 14) * 1.2,
-                  color: AppColors.of(context, 'gem'),
-                ),
-              ),
-            ),
-          );
+          icon = Icons.diamond;
+          iconColor = AppColors.of(context, 'gem');
         } else if (match == '[KP]') {
+          icon = Icons.school;
+          iconColor = AppColors.of(context, 'kp');
+        } else if (match == '[STREAK]') {
+          icon = Icons.bolt;
+          iconColor = Colors.orange;
+        } else if (match == '[REVIVAL]') {
+          icon = Icons.favorite;
+          iconColor = Colors.redAccent;
+        }
+
+        if (icon != null) {
           inlineSpans.add(
             WidgetSpan(
               alignment: PlaceholderAlignment.middle,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 2),
                 child: Icon(
-                  Icons.school,
+                  icon,
                   size: (style.fontSize ?? 14) * 1.2,
-                  color: AppColors.of(context, 'kp'),
+                  color: iconColor,
                 ),
               ),
             ),

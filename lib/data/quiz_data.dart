@@ -39,6 +39,7 @@ class QuizMetadata {
   final QuizDifficulty difficulty;
   final int requiredLevel;
   final List<QuizQuestion> questions;
+  final String? hash;
 
   const QuizMetadata({
     required this.id,
@@ -47,6 +48,7 @@ class QuizMetadata {
     required this.difficulty,
     required this.requiredLevel,
     required this.questions,
+    this.hash,
   });
 
   MarkingScheme get markingScheme => markingSchemes[difficulty]!;

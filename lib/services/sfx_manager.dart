@@ -3,16 +3,19 @@ import 'package:flutter/foundation.dart';
 
 /// Manages sound effects (SFX) playback.
 class SfxManager {
+  static final SfxManager _instance = SfxManager._internal();
+  factory SfxManager() => _instance;
+
   final List<AudioPlayer> _pool = [];
-  final int _poolSize = 15;
+  final int _poolSize = 5;
 
   int _poolIndex = 0;
   double _volume = 1.0;
   bool _isDisposed = false;
 
-  SfxManager() {
+  SfxManager._internal() {
     // Initialize a pool of players.
-    // We use mediaPlayer mode for both Music and SFX to avoid SoundPool/MediaPlayer conflicts on Android during loops.
+    // Use lowLatency mode for snappier UI sound effects.
     for (int i = 0; i < _poolSize; i++) {
       final player = AudioPlayer();
       player.audioCache.prefix = '';
@@ -47,8 +50,9 @@ class SfxManager {
 
       // Ensure volume is synced
       player.setVolume(_volume);
-      // Reset player to ensure it can play again
+
       await player.stop();
+
       // Play source
       await player.play(AssetSource(assetPath));
     } catch (e) {

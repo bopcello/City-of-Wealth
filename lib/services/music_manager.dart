@@ -7,8 +7,12 @@ class MusicManager {
   final AudioPlayer _player = AudioPlayer();
   bool _isDisposed = false;
   String? _currentTrack;
+  double _volume;
 
-  MusicManager() {
+  MusicManager({double initialVolume = 0.7}) : _volume = initialVolume {
+    // Apply saved volume immediately so the player never starts at 1.0
+    _player.setVolume(_volume);
+
     // prefix is empty since we use lib/assets/...
     _player.audioCache.prefix = '';
 
@@ -72,6 +76,7 @@ class MusicManager {
 
   /// Set music volume (0.0 to 1.0)
   void setVolume(double volume) {
+    _volume = volume;
     _player.setVolume(volume);
   }
 
@@ -84,9 +89,10 @@ class MusicManager {
     _currentTrack = assetPath;
 
     try {
-      await _player.stop();
       await _player.play(AssetSource(assetPath));
-      debugPrint('[MUSIC_SYSTEM] Playback started');
+      // Re-apply volume after play — Android can reset it on track switch
+      await _player.setVolume(_volume);
+      debugPrint('[MUSIC_SYSTEM] Playback started (vol=$_volume)');
     } catch (e) {
       debugPrint('[MUSIC_SYSTEM] Playback error: $e');
     }

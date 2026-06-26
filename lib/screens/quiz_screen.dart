@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import '../game_state.dart';
 import '../data/quiz_data.dart';
 import '../widgets/icon_text.dart';
+import '../widgets/counter_chip.dart';
 import '../theme/app_colors.dart';
 import '../services/music_manager.dart';
 import '../services/sfx_manager.dart';
 import '../logic/game_manager.dart';
+import '../logic/tutorial_keys.dart';
 import 'package:intl/intl.dart';
 
 class QuizMenuScreen extends StatelessWidget {
@@ -59,16 +62,55 @@ class QuizMenuScreen extends StatelessWidget {
       builder: (context, _) {
         final currentLevel = game.career.level;
         final quizzes = getQuizzesForLevel(currentLevel);
-        final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        // Align with IST (GTM+5:30) used by the generator script
+        final istTime = DateTime.now().toUtc().add(
+          const Duration(hours: 5, minutes: 30),
+        );
+        final today = DateFormat('yyyy-MM-dd').format(istTime);
+        debugPrint(
+          "🧩 QuizMenuScreen: today(IST)=$today, level=$currentLevel, quizCount=${quizzes.length}",
+        );
         final isDailyCompleted = game.lastDailyQuizDate == today;
 
-        return Scaffold(
-          appBar: AppBar(title: const Text("Quizzes")),
+        final bool isBackAllowed = !game.isTutorialActive || game.isTutorialBackAllowed;
+
+        return PopScope(
+          canPop: isBackAllowed,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) {
+              if (game.isTutorialActive) {
+                game.onTutorialBackStepTriggered?.call();
+              }
+              return;
+            }
+            if (game.isTutorialActive && !game.isTutorialBackAllowed) {
+              game.onBackGestureIntercepted?.call();
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text("Quizzes"),
+              leading: BackButton(
+                key: TutorialKeys.quizBackKey,
+                onPressed: () {
+                  if (game.isTutorialActive) {
+                    if (game.isTutorialBackAllowed) {
+                      // Let the tutorial advance
+                    } else {
+                      game.onBackGestureIntercepted?.call();
+                      return;
+                    }
+                  }
+                  sfx.playClick();
+                  Navigator.pop(context);
+                },
+              ),
+            ),
           body: Column(
             children: [
               // DAILY QUIZ PANEL AT THE TOP
               _buildDailyQuizPanel(context, today, isDailyCompleted),
-              
+
               Expanded(
                 child: quizzes.isEmpty
                     ? _buildEmptyState(context)
@@ -78,7 +120,9 @@ class QuizMenuScreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final quiz = quizzes[index];
                           final scheme = quiz.markingScheme;
-                          final isCompleted = game.completedQuizzes.contains(quiz.id);
+                          final isCompleted = game.completedQuizzes.contains(
+                            quiz.id,
+                          );
 
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
@@ -87,37 +131,58 @@ class QuizMenuScreen extends StatelessWidget {
                                 border: Border.all(
                                   color: isCompleted
                                       ? AppColors.of(context, 'success')
-                                      : _getDifficultyColor(context, quiz.difficulty),
+                                      : _getDifficultyColor(
+                                          context,
+                                          quiz.difficulty,
+                                        ),
                                   width: 3,
                                 ),
                                 borderRadius: BorderRadius.circular(12),
                                 color: isCompleted
-                                    ? AppColors.of(context, 'success').withValues(alpha: 0.1)
-                                    : Theme.of(context).colorScheme.surfaceVariant,
+                                    ? AppColors.of(
+                                        context,
+                                        'success',
+                                      ).withValues(alpha: 0.1)
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.surfaceContainerHighest,
                               ),
                               child: ListTile(
                                 leading: Icon(
                                   isCompleted ? Icons.check_circle : Icons.quiz,
                                   color: isCompleted
                                       ? AppColors.of(context, 'success')
-                                      : _getDifficultyColor(context, quiz.difficulty),
+                                      : _getDifficultyColor(
+                                          context,
+                                          quiz.difficulty,
+                                        ),
                                 ),
-                                title: Text(
+                                title: IconText(
                                   quiz.title,
                                   style: TextStyle(
-                                    decoration: isCompleted ? TextDecoration.lineThrough : null,
+                                    decoration: isCompleted
+                                        ? TextDecoration.lineThrough
+                                        : null,
                                     color: isCompleted
-                                        ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)
-                                        : Theme.of(context).colorScheme.onSurface,
+                                        ? Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withValues(alpha: 0.5)
+                                        : Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
                                   ),
                                 ),
-                                subtitle: Text(
+                                subtitle: IconText(
                                   isCompleted
                                       ? '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • Repeat Award: +${_getRepeatAward(quiz.difficulty)} KP'
                                       : '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • +${scheme.correctPoints}/${scheme.wrongPoints} KP',
                                   style: TextStyle(
                                     color: isCompleted
-                                        ? Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7)
+                                        ? Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant
+                                              .withValues(alpha: 0.7)
                                         : null,
                                   ),
                                 ),
@@ -145,128 +210,256 @@ class QuizMenuScreen extends StatelessWidget {
               ),
             ],
           ),
+          ),
         );
       },
     );
   }
 
-  Widget _buildDailyQuizPanel(BuildContext context, String today, bool isCompleted) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isCompleted ? Colors.grey.withValues(alpha: 0.5) : Colors.amber,
-            width: isCompleted ? 1 : 3,
-          ),
-          color: isCompleted 
-              ? Colors.grey.withValues(alpha: 0.1) 
-              : Colors.amber.withValues(alpha: 0.1),
-        ),
-        child: InkWell(
-          onTap: () async {
-            if (isCompleted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Daily quiz already completed! Check back tomorrow.")),
-              );
-              return;
-            }
-            
-            // Show loading
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => const Center(child: CircularProgressIndicator()),
-            );
+  Widget _buildDailyQuizPanel(
+    BuildContext context,
+    String today,
+    bool isCompleted,
+  ) {
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: game.firestoreService.getDailyQuiz(today),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          debugPrint("❌ Daily Quiz Error: ${snapshot.error}");
+          return const SizedBox.shrink(); // Hide if serious error, or show error box
+        }
 
-            final dailyQuizData = await game.firestoreService.getDailyQuiz(today);
-            if (context.mounted) Navigator.pop(context); // close loading
+        final dailyData = snapshot.data;
+        debugPrint(
+          "🔍 Daily Quiz Check: date=$today, found=${dailyData != null}",
+        );
+        final title = dailyData?['title'] ?? "Daily Financial Challenge";
+        final subtitle =
+            dailyData?['subtitle'] ?? "Test your knowledge & earn rewards!";
+        final isAvailable = dailyData != null;
 
-            if (dailyQuizData != null) {
-              final dailyQuiz = QuizMetadata(
-                id: dailyQuizData['id'],
-                title: dailyQuizData['title'],
-                subtitle: dailyQuizData['subtitle'],
-                difficulty: _parseDifficulty(dailyQuizData['difficulty']),
-                requiredLevel: 1,
-                questions: (dailyQuizData['options'] != null) // Check if it's the right format
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Container(
+            key: TutorialKeys.quizDailyPanelKey,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isCompleted
+                    ? Colors.grey.withValues(alpha: 0.5)
+                    : (isAvailable
+                          ? Colors.blue
+                          : Colors.grey.withValues(alpha: 0.5)),
+                width: isCompleted ? 1 : 3,
+              ),
+              color: isCompleted
+                  ? Colors.grey.withValues(alpha: 0.1)
+                  : (isAvailable
+                        ? Colors.blue.withValues(alpha: 0.1)
+                        : Colors.grey.withValues(alpha: 0.1)),
+              boxShadow: (isAvailable && !isCompleted)
                   ? [
-                      QuizQuestion(
-                        question: dailyQuizData['question'],
-                        options: List<String>.from(dailyQuizData['options']),
-                        correctIndex: dailyQuizData['correctIndex'],
-                        correctExplanation: dailyQuizData['correctExplanation'],
-                        wrongExplanation: dailyQuizData['wrongExplanation'],
-                      )
+                      BoxShadow(
+                        color: Colors.blue.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        spreadRadius: 2,
+                      ),
                     ]
-                  : [], 
-                markingScheme: const MarkingScheme(correctPoints: 50, wrongPoints: 0),
-              );
-
-              if (context.mounted) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => QuizScreen(
-                      game: game,
-                      music: music,
-                      sfx: sfx,
-                      quiz: dailyQuiz,
-                      isDaily: true,
-                      dailyDate: today,
+                  : [],
+            ),
+            child: InkWell(
+              onTap: () async {
+                if (isCompleted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Daily quiz already completed! Check back tomorrow.",
+                      ),
                     ),
-                  ),
-                );
-              }
-            } else {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Daily quiz not available yet. Please try again later.")),
-                );
-              }
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Icon(
-                  isCompleted ? Icons.event_available : Icons.event_note,
-                  size: 40,
-                  color: isCompleted ? Colors.grey : Colors.amber,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Daily Financial Challenge",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: isCompleted ? Colors.grey : Colors.amber.shade800,
-                        ),
+                  );
+                  return;
+                }
+
+                if (!isAvailable) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Daily quiz not available yet. Please try again later.",
                       ),
-                      Text(
-                        isCompleted 
-                            ? "Completed! Streak: ${game.dailyQuizStreak}" 
-                            : "Test your knowledge & earn rewards!",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                        ),
+                    ),
+                  );
+                  return;
+                }
+
+                final dailyQuiz = QuizMetadata(
+                  id: dailyData['id'],
+                  title: dailyData['title'],
+                  subtitle: dailyData['subtitle'],
+                  difficulty: _parseDifficulty(dailyData['difficulty']),
+                  requiredLevel: 1,
+                  questions: (dailyData['options'] != null)
+                      ? [
+                          QuizQuestion(
+                            question: dailyData['question'],
+                            options: List<String>.from(dailyData['options']),
+                            correctIndex: dailyData['correctIndex'],
+                            correctExplanation: dailyData['correctExplanation'],
+                            wrongExplanation: dailyData['wrongExplanation'],
+                          ),
+                        ]
+                      : [],
+                );
+
+                if (context.mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => QuizScreen(
+                        game: game,
+                        music: music,
+                        sfx: sfx,
+                        quiz: dailyQuiz,
+                        isDaily: true,
+                        dailyDate: today,
                       ),
-                    ],
-                  ),
+                    ),
+                  );
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(20.0), // Bigger box
+                child: Row(
+                  children: [
+                    Icon(
+                      isCompleted ? Icons.event_available : Icons.auto_awesome,
+                      size: 48, // Bigger icon
+                      color: isCompleted ? Colors.grey : Colors.blue,
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "DAILY CHALLENGE",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.2,
+                                  color: isCompleted
+                                      ? Colors.grey
+                                      : Colors.blue.shade700,
+                                ),
+                              ),
+                              if (isAvailable && !isCompleted) ...[
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: const Text(
+                                    "NEW",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 8,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 22, // Bigger title
+                              fontWeight: FontWeight.bold,
+                              color: isCompleted
+                                  ? Colors.grey
+                                  : Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            subtitle,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.7),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              CounterChip(
+                                label: "[STREAK]",
+                                value: game.dailyQuizStreak,
+                                prefix: "Streak",
+                              ),
+                              CounterChip(
+                                label: "[REVIVAL]",
+                                value: game.streakRevivals,
+                                prefix: "Revivals",
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => PastQuizzesScreen(
+                                    game: game,
+                                    music: music,
+                                    sfx: sfx,
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.history, size: 16),
+                            label: const Text(
+                              "Past Challenges",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: isCompleted
+                                  ? Colors.grey
+                                  : Colors.blue,
+                              side: BorderSide(
+                                color: isCompleted ? Colors.grey : Colors.blue,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 0,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (!isCompleted && isAvailable)
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 20,
+                        color: Colors.blue,
+                      ),
+                  ],
                 ),
-                if (!isCompleted)
-                  const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.amber),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -283,7 +476,11 @@ class QuizMenuScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.construction, size: 64, color: AppColors.of(context, 'warning')),
+            Icon(
+              Icons.construction,
+              size: 64,
+              color: AppColors.of(context, 'warning'),
+            ),
             const SizedBox(height: 24),
             const Text(
               'Quizzes Coming Soon!',
@@ -293,7 +490,10 @@ class QuizMenuScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'We apologize for the inconvenience.\nOur quiz database for this level is still being curated.',
-              style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -310,6 +510,7 @@ class QuizScreen extends StatefulWidget {
   final QuizMetadata quiz;
   final bool isCompleted;
   final bool isDaily;
+  final bool isPractice;
   final String? dailyDate;
 
   const QuizScreen({
@@ -320,6 +521,7 @@ class QuizScreen extends StatefulWidget {
     required this.quiz,
     this.isCompleted = false,
     this.isDaily = false,
+    this.isPractice = false,
     this.dailyDate,
   });
 
@@ -357,7 +559,11 @@ class _QuizScreenState extends State<QuizScreen> {
     if (correct) correctCount++;
     results.add(correct);
     setState(() => selected = uiIndex);
-    if (correct) widget.sfx.playCorrect(); else widget.sfx.playIncorrect();
+    if (correct) {
+      widget.sfx.playCorrect();
+    } else {
+      widget.sfx.playIncorrect();
+    }
     _showExplanationDialog(correct, question);
   }
 
@@ -379,14 +585,20 @@ class _QuizScreenState extends State<QuizScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (!wasCorrect) ...[
-                const Text('Why Your Answer is Wrong', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Why Your Answer is Wrong',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 8),
                 Text(question.wrongExplanation),
                 const SizedBox(height: 16),
                 const Divider(),
                 const SizedBox(height: 16),
               ],
-              const Text('Why This Answer is Correct', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text(
+                'Why This Answer is Correct',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
               Text(question.correctExplanation),
             ],
@@ -399,11 +611,15 @@ class _QuizScreenState extends State<QuizScreen> {
               if (current < widget.quiz.questions.length - 1) {
                 nextQuestion();
               } else {
-                if (!widget.isDaily) widget.game.markQuizCompleted(widget.quiz.id);
+                if (!widget.isDaily && !widget.isPractice) {
+                  widget.game.markQuizCompleted(widget.quiz.id);
+                }
                 nextQuestion();
               }
             },
-            child: Text(current < widget.quiz.questions.length - 1 ? 'Next' : 'Finish'),
+            child: Text(
+              current < widget.quiz.questions.length - 1 ? 'Next' : 'Finish',
+            ),
           ),
         ],
       ),
@@ -420,15 +636,26 @@ class _QuizScreenState extends State<QuizScreen> {
       int award = 0;
       final scheme = widget.quiz.markingScheme;
       if (widget.isDaily) {
-        award = 50; // Daily quiz fixed award
+        award = 20; // Correct answer in daily quiz gives 20 KP
+      } else if (widget.isPractice) {
+        award = 10; // Practice questions give 10 KP
       } else if (widget.isCompleted) {
         switch (widget.quiz.difficulty) {
-          case QuizDifficulty.easy: award = 0; break;
-          case QuizDifficulty.medium: award = 10; break;
-          case QuizDifficulty.hard: award = 15; break;
+          case QuizDifficulty.easy:
+            award = 0;
+            break;
+          case QuizDifficulty.medium:
+            award = 10;
+            break;
+          case QuizDifficulty.hard:
+            award = 15;
+            break;
         }
       } else {
-        award = (scheme.correctPoints * correctCount) + (scheme.wrongPoints * (widget.quiz.questions.length - correctCount));
+        award =
+            (scheme.correctPoints * correctCount) +
+            (scheme.wrongPoints *
+                (widget.quiz.questions.length - correctCount));
       }
 
       int finalKpDelta = 0;
@@ -438,10 +665,27 @@ class _QuizScreenState extends State<QuizScreen> {
         finalKpDelta = award;
         widget.game.addKp(finalKpDelta);
         if (widget.isDaily && widget.dailyDate != null) {
-          widget.game.completeDailyQuiz(true, widget.dailyDate!);
+          widget.game.completeDailyQuiz(
+            true,
+            widget.dailyDate!,
+            widget.quiz.hash,
+            isPractice: false,
+          );
+        } else if (widget.isPractice && widget.dailyDate != null) {
+          widget.game.completeDailyQuiz(
+            true,
+            widget.dailyDate!,
+            widget.quiz.hash,
+            isPractice: true,
+          );
         }
       } else if (widget.isDaily && widget.dailyDate != null) {
-        widget.game.completeDailyQuiz(false, widget.dailyDate!);
+        widget.game.completeDailyQuiz(
+          false,
+          widget.dailyDate!,
+          widget.quiz.hash,
+          isPractice: false,
+        );
       }
 
       Navigator.pushReplacement(
@@ -459,6 +703,7 @@ class _QuizScreenState extends State<QuizScreen> {
             level: widget.quiz.requiredLevel,
             passed: passed,
             isDaily: widget.isDaily,
+            isPractice: widget.isPractice,
             dailyDate: widget.dailyDate,
           ),
         ),
@@ -482,13 +727,14 @@ class _QuizScreenState extends State<QuizScreen> {
         appBar: AppBar(
           title: Text(widget.quiz.title),
           actions: [
-            if (widget.isDaily)
+            if (widget.isDaily || widget.isPractice)
               Padding(
                 padding: const EdgeInsets.only(right: 16.0),
                 child: Center(
-                  child: Text(
-                    "Streak: ${widget.game.dailyQuizStreak}",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  child: CounterChip(
+                    label: "[STREAK]",
+                    value: widget.game.dailyQuizStreak,
+                    prefix: "Streak",
                   ),
                 ),
               ),
@@ -515,28 +761,45 @@ class _QuizScreenState extends State<QuizScreen> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Question ${current + 1}", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                            Text(
+                              "Question ${current + 1}",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
                             const SizedBox(height: 12),
                             IconText(
                               q.question,
-                              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 24),
                       ...List.generate(q.options.length, (uiIndex) {
-                        final originalIndex = _shuffledIndicesMap[current][uiIndex];
-                        Color bg = Theme.of(context).colorScheme.surfaceVariant;
+                        final originalIndex =
+                            _shuffledIndicesMap[current][uiIndex];
+                        Color bg = Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest;
                         if (selected != null) {
-                          if (originalIndex == q.correctIndex) bg = Colors.green.withValues(alpha: 0.3);
-                          else if (uiIndex == selected) bg = Colors.red.withValues(alpha: 0.3);
+                          if (originalIndex == q.correctIndex) {
+                            bg = Colors.green.withValues(alpha: 0.3);
+                          } else if (uiIndex == selected) {
+                            bg = Colors.red.withValues(alpha: 0.3);
+                          }
                         }
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
@@ -546,10 +809,18 @@ class _QuizScreenState extends State<QuizScreen> {
                             child: Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16)),
+                              decoration: BoxDecoration(
+                                color: bg,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
                               child: IconText(
                                 q.options[originalIndex],
-                                style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
                               ),
                             ),
                           ),
@@ -579,6 +850,7 @@ class QuizAnalysisScreen extends StatelessWidget {
   final int level;
   final bool passed;
   final bool isDaily;
+  final bool isPractice;
   final String? dailyDate;
 
   const QuizAnalysisScreen({
@@ -594,24 +866,48 @@ class QuizAnalysisScreen extends StatelessWidget {
     required this.level,
     required this.passed,
     this.isDaily = false,
+    this.isPractice = false,
     this.dailyDate,
   });
 
   String get message {
-    if (!passed) return "Almost there! Try again.";
+    if (isDaily) {
+      return passed
+          ? "Spot on, ${game.playerName}! You've mastered today's financial challenge."
+          : "Not quite this time, ${game.playerName}. But every mistake is a lesson in wealth.";
+    }
+    if (isPractice) {
+      return passed
+          ? "Great practice, ${game.playerName}! You got the answer right this time."
+          : "Practice makes perfect, ${game.playerName}! Keep learning and you'll master this soon.";
+    }
+    if (!passed) return "Almost there, ${game.playerName}! Try again.";
     switch (score) {
-      case 0: return "Don't lose hope, keep playing";
-      case 1: return "Focus on the good part, you still get to learn";
-      case 2: return "Not bad, Keep going!";
-      case 3: return "Good job, you got this!";
-      case 4: return "Almost there ${game.playerName}! Next one is in the bag, isn't it?";
-      case 5: return "Perfection!";
-      default: return "Good Job!";
+      case 0:
+        return "Don't lose hope ${game.playerName}, keep playing";
+      case 1:
+        return "Focus on the good part ${game.playerName}, you still get to learn";
+      case 2:
+        return "Not bad ${game.playerName}, Keep going!";
+      case 3:
+        return "Good job ${game.playerName}, you got this!";
+      case 4:
+        return "Almost there ${game.playerName}! Next one is in the bag, isn't it?";
+      case 5:
+        return "Perfection, ${game.playerName}!";
+      default:
+        return "Good Job!";
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isDaily && passed) {
+      // Check for milestones to show a special popup
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _checkAndShowMilestonePopup(context);
+      });
+    }
     final progress = score / total;
 
     return PopScope(
@@ -637,11 +933,17 @@ class QuizAnalysisScreen extends StatelessWidget {
                       CircularProgressIndicator(
                         value: progress,
                         strokeWidth: 50,
-                        color: progress >= 0.8 ? Colors.green : (progress >= 0.5 ? Colors.orange : Colors.red),
+                        color: progress >= 0.8
+                            ? Colors.green
+                            : (progress >= 0.5 ? Colors.orange : Colors.red),
                       ),
                       Text(
                         "$score/$total",
-                        style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ],
                   ),
@@ -650,14 +952,43 @@ class QuizAnalysisScreen extends StatelessWidget {
                 Text(
                   message,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 if (isDaily && passed) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    "Streak: ${game.dailyQuizStreak} 🔥",
-                    style: const TextStyle(fontSize: 20, color: Colors.amber, fontWeight: FontWeight.bold),
+                  const SizedBox(height: 12),
+                  CounterChip(
+                    label: "[STREAK]",
+                    value: game.dailyQuizStreak,
+                    prefix: "Streak",
                   ),
+                  if (getStreakRewards(
+                    game.dailyQuizStreak,
+                  ).label.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.amber),
+                      ),
+                      child: Text(
+                        getStreakRewards(game.dailyQuizStreak).label,
+                        style: const TextStyle(
+                          color: Colors.amber,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
                 const SizedBox(height: 16),
                 Wrap(
@@ -665,9 +996,17 @@ class QuizAnalysisScreen extends StatelessWidget {
                   children: List.generate(results.length, (index) {
                     final isCorrect = results[index];
                     return Container(
-                      width: 30, height: 30,
-                      decoration: BoxDecoration(color: isCorrect ? Colors.green : Colors.red, shape: BoxShape.circle),
-                      child: Icon(isCorrect ? Icons.check : Icons.close, color: Colors.white, size: 18),
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: isCorrect ? Colors.green : Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isCorrect ? Icons.check : Icons.close,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                     );
                   }),
                 ),
@@ -675,24 +1014,34 @@ class QuizAnalysisScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
                   ),
                   child: Text(
                     "KP: ${game.kp - deltaKp} ${deltaKp < 0 ? ' ' : '+ '}$deltaKp = ${game.kp}",
-                    style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 32),
-                if (!isDaily) 
+                if (!isDaily)
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
                         final quizzes = getQuizzesForLevel(level);
-                        final currentIndex = quizzes.indexWhere((q) => q.id == currentQuizId);
-                        if (currentIndex != -1 && currentIndex < quizzes.length - 1) {
+                        final currentIndex = quizzes.indexWhere(
+                          (q) => q.id == currentQuizId,
+                        );
+                        if (currentIndex != -1 &&
+                            currentIndex < quizzes.length - 1) {
                           final nextQuiz = quizzes[currentIndex + 1];
                           Navigator.pushReplacement(
                             context,
@@ -702,7 +1051,9 @@ class QuizAnalysisScreen extends StatelessWidget {
                                 music: music,
                                 sfx: sfx,
                                 quiz: nextQuiz,
-                                isCompleted: game.completedQuizzes.contains(nextQuiz.id),
+                                isCompleted: game.completedQuizzes.contains(
+                                  nextQuiz.id,
+                                ),
                               ),
                             ),
                           );
@@ -720,12 +1071,168 @@ class QuizAnalysisScreen extends StatelessWidget {
                     music.playHomeMusic();
                     Navigator.pop(context);
                   },
-                  child: Text(isDaily ? "Back to Menu" : "Back to quizzes"),
+                  child: Text(
+                    isDaily || isPractice ? "Back to Menu" : "Back to quizzes",
+                  ),
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _checkAndShowMilestonePopup(BuildContext context) {
+    final streak = game.dailyQuizStreak;
+    if (streak == 10 || streak == 30 || streak == 100) {
+      final rewards = getStreakRewards(streak);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Row(
+            children: [
+              const Icon(Icons.stars, color: Colors.amber),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  rewards.label.isNotEmpty
+                      ? rewards.label
+                      : "Milestone Reached!",
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Incredible consistency! You've reached a streak of:",
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              CounterChip(label: "[STREAK]", value: streak, prefix: "Streak"),
+              const SizedBox(height: 16),
+              const Text(
+                "Current Rewards:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              if (rewards.assetDiscount > 0)
+                IconText(
+                  "• ${(rewards.assetDiscount * 100).toInt()}% Asset Discount",
+                ),
+              if (rewards.passiveIncomeMultiplier > 1.0)
+                IconText(
+                  "• ${((rewards.passiveIncomeMultiplier - 1.0) * 100).toInt()}% Passive Income Bonus",
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Awesome!"),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+}
+
+class PastQuizzesScreen extends StatelessWidget {
+  final GameManager game;
+  final MusicManager music;
+  final SfxManager sfx;
+
+  const PastQuizzesScreen({
+    super.key,
+    required this.game,
+    required this.music,
+    required this.sfx,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Past Challenges")),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: game.firestoreService.getRecentDailyQuizzes(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError ||
+              !snapshot.hasData ||
+              snapshot.data!.isEmpty) {
+            return const Center(child: Text("No past challenges found."));
+          }
+
+          final quizzes = snapshot.data!;
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: quizzes.length,
+            itemBuilder: (context, index) {
+              final data = quizzes[index];
+              final dateString = data['dateString'] ?? "Unknown Date";
+              String displayDate = dateString;
+              try {
+                final parts = dateString.split('-');
+                if (parts.length == 3) {
+                  final year = int.tryParse(parts[0]);
+                  final month = int.tryParse(parts[1]);
+                  final day = int.tryParse(parts[2]);
+                  if (year != null && month != null && day != null) {
+                    final dt = DateTime(year, month, day);
+                    displayDate = DateFormat('dd/MM/yyyy').format(dt);
+                  }
+                }
+              } catch (_) {}
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: ListTile(
+                  leading: const Icon(Icons.history, color: Colors.blue),
+                  title: Text(data['title'] ?? "Daily Challenge"),
+                  subtitle: Text(displayDate),
+                  trailing: const Icon(Icons.play_arrow),
+                  onTap: () {
+                    final quizData = QuizMetadata(
+                      id: data['id'],
+                      title: data['title'],
+                      subtitle: data['subtitle'],
+                      difficulty: QuizDifficulty.medium,
+                      requiredLevel: 1,
+                      questions: [
+                        QuizQuestion(
+                          question: data['question'],
+                          options: List<String>.from(data['options']),
+                          correctIndex: data['correctIndex'],
+                          correctExplanation: data['correctExplanation'],
+                          wrongExplanation: data['wrongExplanation'],
+                        ),
+                      ],
+                    );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => QuizScreen(
+                          game: game,
+                          music: music,
+                          sfx: sfx,
+                          quiz: quizData,
+                          isPractice: true,
+                          dailyDate: dateString,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

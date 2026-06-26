@@ -58,7 +58,7 @@ class FirestoreService {
   /// Retrieves the daily quiz for a specific date.
   Future<Map<String, dynamic>?> getDailyQuiz(String date) async {
     try {
-      final doc = await _db.collection('Daily questions').doc('daily_$date').get();
+      final doc = await _db.collection('daily_quizzes').doc('daily_$date').get();
       return doc.exists ? doc.data() : null;
     } catch (e) {
       debugPrint("❌ Error fetching daily quiz: $e");
@@ -66,12 +66,29 @@ class FirestoreService {
     }
   }
 
-  /// Updates the player's streak and last quiz date.
-  Future<void> updatePlayerStreak(String uid, int streak, String date) async {
+  /// Retrieves the last 30 daily quizzes.
+  Future<List<Map<String, dynamic>>> getRecentDailyQuizzes() async {
+    try {
+      final query = await _db
+          .collection('daily_quizzes')
+          .orderBy('timestamp', descending: true)
+          .limit(30)
+          .get();
+      return query.docs.map((doc) => doc.data()).toList();
+    } catch (e) {
+      debugPrint("❌ Error fetching recent quizzes: $e");
+      return [];
+    }
+  }
+
+  /// Updates the player's streak, revivals and last quiz date.
+  Future<void> updatePlayerStreak(String uid, int streak, String date, int revivals, String? lastRevival) async {
     try {
       await _db.collection('players').doc(uid).update({
         'dailyQuizStreak': streak,
         'lastDailyQuizDate': date,
+        'streakRevivals': revivals,
+        'lastRevivalDate': lastRevival,
         'lastUpdated': FieldValue.serverTimestamp(),
       });
     } catch (e) {

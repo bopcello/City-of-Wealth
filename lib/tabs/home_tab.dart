@@ -14,6 +14,7 @@ class HomeTab extends StatelessWidget {
   final TransportType? transportChoice;
   final AssetInventory assets;
   final VoidCallback onClearEvents;
+  final bool dailyQuizAvailable;
   final SfxManager sfx;
 
   const HomeTab({
@@ -27,6 +28,7 @@ class HomeTab extends StatelessWidget {
     required this.transportChoice,
     required this.assets,
     required this.onClearEvents,
+    required this.dailyQuizAvailable,
     required this.sfx,
   });
 
@@ -52,7 +54,7 @@ class HomeTab extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
@@ -113,11 +115,11 @@ class HomeTab extends StatelessWidget {
           height: 200,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceVariant,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Theme.of(context).dividerColor),
           ),
-          child: events.isEmpty
+          child: (events.isEmpty && !dailyQuizAvailable)
               ? const Center(
                   child: Text(
                     "No events yet.\nChoices affect your daily cycle.",
@@ -127,10 +129,13 @@ class HomeTab extends StatelessWidget {
                 )
               : ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: events.length,
+                  itemCount: events.length + (dailyQuizAvailable ? 1 : 0),
                   itemBuilder: (context, index) {
+                    final allEvents = dailyQuizAvailable 
+                        ? ["New daily question available!", ...events] 
+                        : events;
                     final event =
-                        events[events.length - 1 - index]; // Show latest first
+                        allEvents[allEvents.length - 1 - index]; // Show latest first
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Row(

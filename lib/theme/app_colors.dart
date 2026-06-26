@@ -62,9 +62,8 @@ class AppColors {
     colorScheme: ColorScheme.fromSeed(
       seedColor: primarySeed,
       brightness: Brightness.light,
-      background: light['background']!,
       surface: light['surface']!,
-      surfaceVariant: light['surfaceVariant']!,
+      surfaceContainerHighest: light['surfaceVariant']!,
       onSurface: light['onSurface']!,
       onSurfaceVariant: light['onSurfaceVariant']!,
       outline: light['outline']!,
@@ -78,9 +77,8 @@ class AppColors {
     colorScheme: ColorScheme.fromSeed(
       seedColor: primarySeed,
       brightness: Brightness.dark,
-      background: dark['background']!,
       surface: dark['surface']!,
-      surfaceVariant: dark['surfaceVariant']!,
+      surfaceContainerHighest: dark['surfaceVariant']!,
       onSurface: dark['onSurface']!,
       onSurfaceVariant: dark['onSurfaceVariant']!,
       outline: dark['outline']!,

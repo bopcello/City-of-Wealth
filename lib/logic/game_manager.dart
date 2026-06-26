@@ -1,13 +1,18 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 import '../game_state.dart';
 import '../services/notification_service.dart';
 import '../services/firestore_service.dart';
 
-class GameManager extends ChangeNotifier {
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/music_manager.dart';
+
+class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   final FirestoreService firestoreService = FirestoreService();
   int kp = 0;
   int gems = 0;
@@ -38,9 +43,24 @@ class GameManager extends ChangeNotifier {
   String playerName = "User";
   int dailyQuizStreak = 0;
   String lastDailyQuizDate = "";
+  Set<String> solvedQuizHashes = {};
+  int streakRevivals = 3;
+  String? lastRevivalDate;
+  DisasterType? nextDisasterType;
+  bool onboardingComplete = false;
+  bool tutorialComplete = false;
+  bool isTutorialActive = false;
+  bool isTutorialBackAllowed = false;
+  VoidCallback? onBackGestureIntercepted;
+  VoidCallback? onTutorialBackStepTriggered;
+  int wakeUpHour = 8;
+  int wakeUpMinute = 0;
+  bool disasterAlertsEnabled = true;
+  MusicManager? musicManager;
   int _selectedIndex = 0;
   String? _currentUid;
   DateTime? _lastSyncTime;
+  bool _isSaving = false;
 
   int get selectedIndex => _selectedIndex;
   set selectedIndex(int value) {
@@ -88,12 +108,12 @@ class GameManager extends ChangeNotifier {
       if (loaded) _checkDailyCycle();
     });
 
+    WidgetsBinding.instance.addObserver(this);
+
     // Listen to Auth state changes to reload data on login
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
         if (_currentUid == null || _currentUid != user.uid) {
-          // Trigger a cloud reload ONLY when a new user signs in
-          // or the user changes, not on every app start if already logged in.
           _currentUid = user.uid;
           _loadGame(useCloud: true);
         }
@@ -106,7 +126,43 @@ class GameManager extends ChangeNotifier {
   @override
   void dispose() {
     _cycleTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  void attachMusicManager(MusicManager mm) {
+    musicManager = mm;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive) {
+      debugPrint("📱 App state changed ($state): Triggering sync");
+      
+      // Only pause music if the app is actually backgrounded or closed,
+      // not just when the notification shade is pulled down (inactive).
+      if (state != AppLifecycleState.inactive) {
+        musicManager?.pauseMusic();
+      }
+      
+      syncWithCloud(force: true);
+      NotificationService().scheduleInactivityNotification(playerName);
+    } else if (state == AppLifecycleState.resumed) {
+      debugPrint("📱 App resumed: Resuming music and checking quiz flag");
+      musicManager?.resumeMusic();
+      _checkNewQuizFlag();
+    }
+  }
+
+  Future<void> _checkNewQuizFlag() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool newQuizReady = prefs.getBool('new_quiz_ready') ?? false;
+    if (newQuizReady) {
+      await NotificationService().showNewQuizNotification(playerName);
+      await prefs.setBool('new_quiz_ready', false);
+    }
   }
 
   Future<void> _loadGame({bool useCloud = false, bool force = false}) async {
@@ -144,6 +200,14 @@ class GameManager extends ChangeNotifier {
         savedPendingDisasterResults,
         savedDailyQuizStreak,
         savedLastDailyQuizDate,
+        savedSolvedQuizHashes,
+        savedStreakRevivals,
+        savedLastRevivalDate,
+        savedNextDisasterType,
+        savedOnboardingComplete,
+        savedWakeUpHour,
+        savedWakeUpMinute,
+        savedDisasterAlertsEnabled,
       ) = await loadGameState(
         uid: uid,
         useCloud: useCloud,
@@ -177,6 +241,21 @@ class GameManager extends ChangeNotifier {
       pendingDisasterResults = savedPendingDisasterResults;
       dailyQuizStreak = savedDailyQuizStreak;
       lastDailyQuizDate = savedLastDailyQuizDate;
+      solvedQuizHashes = savedSolvedQuizHashes;
+      streakRevivals = savedStreakRevivals;
+      lastRevivalDate = savedLastRevivalDate;
+      nextDisasterType = savedNextDisasterType;
+      onboardingComplete = savedOnboardingComplete;
+      wakeUpHour = savedWakeUpHour;
+      wakeUpMinute = savedWakeUpMinute;
+      disasterAlertsEnabled = savedDisasterAlertsEnabled;
+
+      final prefs = await SharedPreferences.getInstance();
+      tutorialComplete = prefs.getBool('tutorialComplete') ?? false;
+      if (onboardingComplete && !tutorialComplete) {
+        isTutorialActive = true;
+      }
+
       loaded = true;
       notifyListeners();
 
@@ -184,7 +263,10 @@ class GameManager extends ChangeNotifier {
       // This allows the NameEntryDialog to be the first thing the user sees.
       if (playerName != "User") {
         _checkDailyCycle();
-        NotificationService().scheduleDailyNotifications();
+        _checkStreakConsistency();
+        _syncDailyQuiz(); // Check for new quiz on load
+        NotificationService().scheduleDailyNotifications(playerName);
+        _updateDailyChallengeReminders();
       }
     } catch (e) {
       debugPrint("❌ Error loading game: $e");
@@ -259,47 +341,104 @@ class GameManager extends ChangeNotifier {
       pendingDisasterResults: pendingDisasterResults,
       dailyQuizStreak: dailyQuizStreak,
       lastDailyQuizDate: lastDailyQuizDate,
+      solvedQuizHashes: solvedQuizHashes,
+      streakRevivals: streakRevivals,
+      lastRevivalDate: lastRevivalDate,
+      nextDisasterType: nextDisasterType,
+      onboardingComplete: onboardingComplete,
+      wakeUpHour: wakeUpHour,
+      wakeUpMinute: wakeUpMinute,
+      disasterAlertsEnabled: disasterAlertsEnabled,
     );
   }
 
-  void save() {
-    if (!loaded) {
-      debugPrint("⚠️ Skipping local save: Game manager not yet loaded");
-      return;
-    }
+  Future<void> save() async {
+    if (!loaded || _isSaving) return;
+    _isSaving = true;
 
-    saveGameState(
+    try {
+      await saveGameState(
+        uid: FirebaseAuth.instance.currentUser?.uid,
+        syncToCloud: false,
+        kp: kp,
+        gems: gems,
+        career: career,
+        lastIncomeTime: lastIncomeTime,
+        layout: cityLayout,
+        assets: assets,
+        rent: rentChoice,
+        food: foodChoice,
+        transport: transportChoice,
+        insurances: insurances,
+        bankruptcyCount: bankruptcyCount,
+        debtCycleCount: debtCycleCount,
+        nextDestructionCycle: nextDestructionCycle,
+        nextDisasterCycle: nextDisasterCycle,
+        wall: hasWall,
+        completedQuizzes: completedQuizzes,
+        isWorkingOvertime: isWorkingOvertime,
+        overtimeStreak: overtimeStreak,
+        activePassiveIncomes: activePassiveIncomes,
+        activeDisasterEffects: activeDisasterEffects,
+        playerName: playerName,
+        isDarkMode: isDarkMode,
+        musicVolume: musicVolume,
+        sfxVolume: sfxVolume,
+        pendingDisasterResults: pendingDisasterResults,
+        dailyQuizStreak: dailyQuizStreak,
+        lastDailyQuizDate: lastDailyQuizDate,
+        solvedQuizHashes: solvedQuizHashes,
+        streakRevivals: streakRevivals,
+        lastRevivalDate: lastRevivalDate,
+        nextDisasterType: nextDisasterType,
+        onboardingComplete: onboardingComplete,
+        wakeUpHour: wakeUpHour,
+        wakeUpMinute: wakeUpMinute,
+        disasterAlertsEnabled: disasterAlertsEnabled,
+      );
+
+      if (nextDisasterCycle != null && nextDisasterType != null) {
+        final disasterTime =
+            lastIncomeTime.add(Duration(days: nextDisasterCycle!));
+        NotificationService().scheduleDisasterNotification(
+          playerName,
+          disasterTime,
+          nextDisasterType!,
+          false,
+        );
+      }
+
+      NotificationService().scheduleInactivityNotification(playerName);
+      _updateDailyChallengeReminders();
+    } finally {
+      _isSaving = false;
+    }
+  }
+
+  void _updateDailyChallengeReminders() {
+    if (playerName == "User") return;
+    final nowIST = DateTime.now().toUtc().add(const Duration(hours: 5, minutes: 30));
+    final today = DateFormat('yyyy-MM-dd').format(nowIST);
+    final hasCompletedToday = lastDailyQuizDate == today;
+
+    NotificationService().scheduleDailyChallengeReminders(
+      playerName: playerName,
+      dailyQuizStreak: dailyQuizStreak,
+      streakRevivals: streakRevivals,
+      hasCompletedToday: hasCompletedToday,
+    );
+  }
+
+  /// Saves only the specified fields to local storage (lightweight).
+  Future<void> saveFields(Map<String, dynamic> fields) async {
+    if (!loaded) return;
+    final Map<String, dynamic> data = Map<String, dynamic>.from(fields);
+    data[lastUpdatedKey] = DateTime.now().millisecondsSinceEpoch;
+    await saveGameState(
       uid: FirebaseAuth.instance.currentUser?.uid,
       syncToCloud: false,
-      kp: kp,
-      gems: gems,
-      career: career,
-      lastIncomeTime: lastIncomeTime,
-      layout: cityLayout,
-      assets: assets,
-      rent: rentChoice,
-      food: foodChoice,
-      transport: transportChoice,
-      insurances: insurances,
-      bankruptcyCount: bankruptcyCount,
-      debtCycleCount: debtCycleCount,
-      nextDestructionCycle: nextDestructionCycle,
-      nextDisasterCycle: nextDisasterCycle,
-      wall: hasWall,
-      completedQuizzes: completedQuizzes,
-      isWorkingOvertime: isWorkingOvertime,
-      overtimeStreak: overtimeStreak,
-      activePassiveIncomes: activePassiveIncomes,
-      activeDisasterEffects: activeDisasterEffects,
-      playerName: playerName,
-      isDarkMode: isDarkMode,
-      musicVolume: musicVolume,
-      sfxVolume: sfxVolume,
-      pendingDisasterResults: pendingDisasterResults,
-      dailyQuizStreak: dailyQuizStreak,
-      lastDailyQuizDate: lastDailyQuizDate,
+      partialData: data,
     );
-    NotificationService().scheduleInactivityNotification();
   }
 
   void _checkDailyCycle() {
@@ -365,11 +504,13 @@ class GameManager extends ChangeNotifier {
       cycleTracker++;
       if (nextDisasterCycle == null) {
         nextDisasterCycle = 15 + Random().nextInt(5);
+        nextDisasterType = DisasterType.values[Random().nextInt(DisasterType.values.length)];
       } else {
         nextDisasterCycle = nextDisasterCycle! - 1;
         if (nextDisasterCycle! <= 0) {
           _triggerNaturalDisaster();
           nextDisasterCycle = 15 + Random().nextInt(5);
+          nextDisasterType = DisasterType.values[Random().nextInt(DisasterType.values.length)];
         }
       }
 
@@ -447,7 +588,7 @@ class GameManager extends ChangeNotifier {
                 events.add(
                   "${removed.name} was foreclosed/destroyed due to unpaid maintainance costs since you were in debt for more than 30 days!",
                 );
-                NotificationService().showForeclosureNotification(removed.name);
+                NotificationService().showForeclosureNotification(playerName, removed.name);
                 nextDestructionCycle = dayNumber + rng.nextInt(6);
               }
             }
@@ -551,7 +692,7 @@ class GameManager extends ChangeNotifier {
 
     // Trigger debt notification if in debt after cycles
     if (gems < 0 && cycles > 0) {
-      NotificationService().showDebtNotification();
+      NotificationService().showDebtNotification(playerName);
     }
   }
 
@@ -562,19 +703,19 @@ class GameManager extends ChangeNotifier {
 
   void toggleTheme(bool val) {
     isDarkMode = val;
-    save();
+    saveFields({isDarkModeKey: isDarkMode});
     notifyListeners();
   }
 
   void updateMusicVolume(double val, {bool saveToDisk = true}) {
     musicVolume = val;
-    if (saveToDisk) save();
+    if (saveToDisk) saveFields({musicVolumeKey: musicVolume});
     notifyListeners();
   }
 
   void updateSfxVolume(double val, {bool saveToDisk = true}) {
     sfxVolume = val;
-    if (saveToDisk) save();
+    if (saveToDisk) saveFields({sfxVolumeKey: sfxVolume});
     notifyListeners();
   }
 
@@ -583,14 +724,10 @@ class GameManager extends ChangeNotifier {
 
     // Add welcome message to events
     pendingEvents.add(
-      "Welcome $playerName!\n\n"
-      "In the top panel you can see your KP ([KP]). KP stands for knowledge points. This is your performace rating. "
-      "If you make well-informed financial decisions, your KP will increase, making bad financial decisions will reduce your KP. You'll learn the mechanics of the game as you go. "
-      "Beside that you have your gems ([GEM]). This is the currency in this game. To begin earning your salary, go to the Money tab and open the \"Liabilities\" tile to select your Shelter, Food and Transport. "
-      "One income cycle is 24 hours. There are requirements to level up which are shown in the Career tile in Money tab. "
-      "Occasionally disasters will strike your city, be prepared! As a last resort, you can declare bankruptcy to restart the game with a small bonus equal to 20% of the resale value of all assets you own.\n\n"
-      "Explore everything and have as much fun as you can. Learning must never be boring.\n\n"
-      "Hope you enjoy!",
+      "Welcome, $playerName! \n\n"
+      "Welcome to City of Wealth! I hope this game helps you master your personal finance journey. "
+      "Make smart financial choices, build your city, and have fun!\n\n"
+      "- The Maker"
     );
 
     // Trigger cycles now that the player has entered their name
@@ -599,27 +736,44 @@ class GameManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updatePlayerName(String name) {
+    if (name.trim().isEmpty) return;
+    playerName = name.trim();
+    saveFields({playerNameKey: playerName});
+    
+    // Reschedule notifications with the new name
+    NotificationService().scheduleDailyNotifications(playerName);
+    NotificationService().scheduleInactivityNotification(playerName);
+    _updateDailyChallengeReminders();
+    
+    notifyListeners();
+  }
+
   void placeBuilding(PlacedBuilding building) {
     cityLayout.add(building);
-    save();
+    saveFields({
+      cityLayoutKey: jsonEncode(cityLayout.map((b) => b.toJson()).toList()),
+    });
     notifyListeners();
   }
 
   void removeBuilding(PlacedBuilding building) {
     cityLayout.removeWhere((b) => b.x == building.x && b.y == building.y);
-    save();
+    saveFields({
+      cityLayoutKey: jsonEncode(cityLayout.map((b) => b.toJson()).toList()),
+    });
     notifyListeners();
   }
 
   void buyWall() {
     hasWall = true;
-    save();
+    saveFields({'hasWall': hasWall});
     notifyListeners();
   }
 
   void updateKp(int delta) {
     kp += delta;
-    save();
+    saveFields({kpKey: kp});
     notifyListeners();
   }
 
@@ -661,7 +815,10 @@ class GameManager extends ChangeNotifier {
       insurances.add(type);
       kp += 100;
     }
-    save();
+    saveFields({
+      insurancesKey: insurances.map((e) => e.name).toList(),
+      kpKey: kp,
+    });
     notifyListeners();
   }
 
@@ -681,7 +838,7 @@ class GameManager extends ChangeNotifier {
     if (currentAssetsOfThisType + amount > maxAllowedForThisType) {
       kpBonus = -100;
       message =
-          "Over-purchasing ${assetLabel(type)} for your level is a bad decision: -100 [KP]";
+          "$playerName, over-purchasing ${assetLabel(type)} for your level is a bad decision: -100 [KP]";
     }
 
     if (career.level == 5) {
@@ -695,13 +852,17 @@ class GameManager extends ChangeNotifier {
     assets = assets.add(type, amount);
     kp += kpBonus;
 
-    save();
+    saveFields({
+      gemsKey: gems,
+      assetsKey: jsonEncode(assets.toJson()),
+      kpKey: kp,
+    });
     notifyListeners();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Asset Purchased"),
+        title: Text("Asset Purchased, $playerName"),
         content: Text(message),
         actions: [
           TextButton(
@@ -718,7 +879,10 @@ class GameManager extends ChangeNotifier {
     final sellPrice = assetSellPrice(type);
     gems += sellPrice;
     assets = assets.add(type, -1);
-    save();
+    saveFields({
+      gemsKey: gems,
+      assetsKey: jsonEncode(assets.toJson()),
+    });
     notifyListeners();
   }
 
@@ -757,9 +921,9 @@ class GameManager extends ChangeNotifier {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Bankruptcy Declared"),
+        title: Text("Bankruptcy Declared, $playerName"),
         content: Text(
-          "All your assets were auctioned off and your debt was waived. "
+          "$playerName, all your assets were auctioned off and your debt was waived. "
           "Thankfully, the bank recovered $gemsRecovered gems more than your debt.\n\n"
           "You are now back to being a Level 1 Student. Good luck starting over!",
         ),
@@ -782,24 +946,35 @@ class GameManager extends ChangeNotifier {
 
   void markQuizCompleted(String quizId) {
     completedQuizzes.add(quizId);
-    save();
+    saveFields({completedQuizzesKey: completedQuizzes.toList()});
     notifyListeners();
   }
 
-  void completeDailyQuiz(bool correct, String date) {
-    if (lastDailyQuizDate == date) return;
-
-    if (correct) {
+  void completeDailyQuiz(bool correct, String date, String? quizHash, {bool isPractice = false}) {
+    // If it's a daily quiz (not practice) and not already done today
+    if (!isPractice && lastDailyQuizDate != date) {
+      // Streak always increments when the daily quiz is attempted
       dailyQuizStreak++;
-    } else {
-      dailyQuizStreak = 0;
+      if (dailyQuizStreak % 10 == 0 && streakRevivals < 5) {
+        streakRevivals++;
+      }
+      
+      if (correct) {
+        kp += 20; // 20 KP for correct daily
+        if (quizHash != null) solvedQuizHashes.add(quizHash);
+      }
+      
+      lastDailyQuizDate = date;
+      
+      if (_currentUid != null) {
+        firestoreService.updatePlayerStreak(_currentUid!, dailyQuizStreak, date, streakRevivals, lastRevivalDate);
+      }
+    } else if (isPractice && correct) {
+      kp += 10; // 10 KP for correct practice
+      if (quizHash != null) solvedQuizHashes.add(quizHash);
     }
-    lastDailyQuizDate = date;
 
     save();
-    if (_currentUid != null) {
-      FirestoreService().updatePlayerStreak(_currentUid!, dailyQuizStreak, date);
-    }
     notifyListeners();
   }
 
@@ -811,10 +986,15 @@ class GameManager extends ChangeNotifier {
     final currentInvested = activePassiveIncomes[assetType] ?? 0;
     final ownedCount = assets.count(assetType);
 
-    if (gems >= info.investmentCost && currentInvested < ownedCount) {
+    if (currentInvested < ownedCount) {
       gems -= info.investmentCost;
       activePassiveIncomes[assetType] = currentInvested + 1;
-      save();
+      saveFields({
+        gemsKey: gems,
+        activePassiveIncomesKey: jsonEncode(
+          activePassiveIncomes.map((k, v) => MapEntry(k.name, v)),
+        ),
+      });
       notifyListeners();
     }
   }
@@ -880,7 +1060,11 @@ class GameManager extends ChangeNotifier {
 
     isWorkingOvertime = true;
 
-    save();
+    saveFields({
+      kpKey: kp,
+      isWorkingOvertimeKey: isWorkingOvertime,
+      overtimeStreakKey: overtimeStreak,
+    });
     notifyListeners();
   }
 
@@ -902,7 +1086,8 @@ class GameManager extends ChangeNotifier {
     ];
 
     final allDisasters = [...assetDisasters, ...passiveIncomeDisasters];
-    final disasterType = allDisasters[rng.nextInt(allDisasters.length)];
+    final disasterType =
+        nextDisasterType ?? allDisasters[rng.nextInt(allDisasters.length)];
 
     List<String> destroyedNames = [];
     Map<AssetType, int> lostAssets = {};
@@ -1030,41 +1215,7 @@ class GameManager extends ChangeNotifier {
       ),
     );
 
-    // Determine insurance status for the notification variant
-    bool isInsuredForDisaster = false;
-    if (assetDisasters.contains(disasterType)) {
-      if (disasterType == DisasterType.flood) {
-        isInsuredForDisaster = insurances.contains(AssetType.land);
-      } else if (disasterType == DisasterType.fire) {
-        isInsuredForDisaster =
-            insurances.contains(AssetType.properties) ||
-            insurances.contains(AssetType.vehicles);
-      } else if (disasterType == DisasterType.earthquake) {
-        isInsuredForDisaster =
-            insurances.contains(AssetType.officeEquipment) ||
-            insurances.contains(AssetType.machinery);
-      }
-    } else {
-      // Passive income disaster mapping
-      AssetType? target;
-      if (disasterType == DisasterType.drought) target = AssetType.land;
-      if (disasterType == DisasterType.landslide) target = AssetType.vehicles;
-      if (disasterType == DisasterType.economyCrash)
-        target = AssetType.machinery;
-      if (disasterType == DisasterType.massEmigration)
-        target = AssetType.properties;
-      if (disasterType == DisasterType.pandemic)
-        target = AssetType.officeEquipment;
 
-      if (target != null) {
-        isInsuredForDisaster = insurances.contains(target);
-      }
-    }
-
-    NotificationService().showDisasterNotification(
-      disasterType,
-      isInsuredForDisaster,
-    );
 
     pendingEvents.add(
       "DISASTER: ${disasterLabel(disasterType)}! Check the detail report for losses and insurance coverage.",
@@ -1097,7 +1248,129 @@ class GameManager extends ChangeNotifier {
 
   void clearDisasterResults() {
     pendingDisasterResults.clear();
-    save();
+    saveFields({
+      'pendingDisasterResults': jsonEncode([]),
+    });
+    notifyListeners();
+  }
+
+  Future<void> _syncDailyQuiz() async {
+    try {
+      final now = DateTime.now().toUtc().add(const Duration(hours: 5, minutes: 30));
+      final dateStr = DateFormat('yyyy-MM-dd').format(now);
+      
+      final quiz = await firestoreService.getDailyQuiz(dateStr);
+      if (quiz != null) {
+        debugPrint("📅 Daily Quiz Sync (Load): Newest quiz for $dateStr is available.");
+        notifyListeners(); 
+      }
+    } catch (e) {
+      debugPrint("❌ Daily Quiz Sync (Load) Error: $e");
+    }
+  }
+
+  void _checkStreakConsistency() {
+    if (lastDailyQuizDate.isEmpty) return;
+
+    final now = DateTime.now().toUtc().add(const Duration(hours: 5, minutes: 30));
+    final today = DateFormat('yyyy-MM-dd').format(now);
+    
+    if (lastDailyQuizDate == today) return; 
+
+    try {
+      DateTime lastDate = DateFormat('yyyy-MM-dd').parse(lastDailyQuizDate);
+      DateTime todayDate = DateFormat('yyyy-MM-dd').parse(today);
+      
+      int daysDifference = todayDate.difference(lastDate).inDays;
+
+      if (daysDifference > 1) {
+        // User missed one or more days
+        int daysToRevive = daysDifference - 1; 
+        
+        while (daysToRevive > 0) {
+          if (streakRevivals > 0) {
+            streakRevivals--;
+            daysToRevive--;
+            lastRevivalDate = today; // Track when we last used revivals
+          } else {
+            // No more revivals
+            dailyQuizStreak = 0;
+            break;
+          }
+        }
+        
+        // Update lastDailyQuizDate to yesterday so they can still play today
+        if (dailyQuizStreak > 0) {
+          final yesterday = todayDate.subtract(const Duration(days: 1));
+          lastDailyQuizDate = DateFormat('yyyy-MM-dd').format(yesterday);
+          debugPrint("🛡️ Streak preserved using revivals. Remaining: $streakRevivals");
+        } else {
+          debugPrint("💔 Streak reset due to inactivity.");
+        }
+        
+        save();
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("❌ Error in _checkStreakConsistency: $e");
+    }
+  }
+
+  void completeOnboarding({
+    required String name,
+    required int hour,
+    required int minute,
+    required bool alertsEnabled,
+  }) {
+    playerName = name;
+    wakeUpHour = hour;
+    wakeUpMinute = minute;
+    disasterAlertsEnabled = alertsEnabled;
+    onboardingComplete = true;
+
+    if (!tutorialComplete) {
+      isTutorialActive = true;
+    }
+
+    saveFields({
+      playerNameKey: playerName,
+      wakeUpHourKey: wakeUpHour,
+      wakeUpMinuteKey: wakeUpMinute,
+      disasterAlertsEnabledKey: disasterAlertsEnabled,
+      onboardingCompleteKey: onboardingComplete,
+    });
+    notifyListeners();
+  }
+
+  Future<void> completeTutorial() async {
+    tutorialComplete = true;
+    isTutorialActive = false;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('tutorialComplete', true);
+    notifyListeners();
+  }
+
+  Future<void> restartTutorial() async {
+    tutorialComplete = false;
+    isTutorialActive = true;
+    selectedIndex = 0; // Go back to Home tab where tutorial starts
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('tutorialComplete', false);
+    notifyListeners();
+  }
+
+  void updateWakeUpTime(int hour, int minute) {
+    wakeUpHour = hour;
+    wakeUpMinute = minute;
+    saveFields({
+      wakeUpHourKey: wakeUpHour,
+      wakeUpMinuteKey: wakeUpMinute,
+    });
+    NotificationService().scheduleDailyMorningNotification(
+      playerName,
+      hour,
+      minute,
+    );
     notifyListeners();
   }
 }

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'dart:math' as math;
 import '../widgets/icon_text.dart';
 import '../theme/app_colors.dart';
 import '../services/sfx_manager.dart';
 import '../game_state.dart';
 import '../logic/game_manager.dart';
+import '../logic/tutorial_keys.dart';
 
 class CityTab extends StatefulWidget {
   final CareerState career;
@@ -89,11 +88,11 @@ class _CityTabState extends State<CityTab> {
             final double tx = (vw - side) / 2;
             final double ty = (vh - side) / 2;
 
-            _transformationController.value = Matrix4.identity()
-              ..translate(tx, ty);
+            _transformationController.value = Matrix4.translationValues(tx, ty, 0.0);
           }
 
           return Stack(
+            key: TutorialKeys.cityBodyKey,
             children: [
               Container(color: Colors.transparent),
               InteractiveViewer(
@@ -442,12 +441,7 @@ class _BuildingCard extends StatelessWidget {
       canBuild = career.level >= building.requiredLevel && hasAssetRequirements;
     }
 
-    final hasPassiveInvestment =
-        isPassive &&
-        gems >=
-            passiveIncomeData.values
-                .firstWhere((e) => e.buildingName == building.name)
-                .investmentCost;
+
 
     final hasLevel = isKeystone
         ? isLevel5
@@ -457,7 +451,7 @@ class _BuildingCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: canBuild
@@ -471,7 +465,7 @@ class _BuildingCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Image.asset(
