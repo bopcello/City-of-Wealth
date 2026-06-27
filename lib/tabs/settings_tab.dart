@@ -198,6 +198,7 @@ class SettingsTab extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
+                    key: TutorialKeys.settingsManualKey,
                     leading: Icon(Icons.menu_book, color: brandColor),
                     title: const Text("Player Manual"),
                     subtitle: const Text("Read manual, mechanics & tips"),

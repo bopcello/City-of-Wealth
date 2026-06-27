@@ -51,6 +51,17 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   bool tutorialComplete = false;
   bool isTutorialActive = false;
   bool isTutorialBackAllowed = false;
+
+  /// Set to true while a selection-result popup is open during the tutorial
+  /// so the tutorial overlay knows to expand to fullscreen and allow the
+  /// underlying dialog to receive touches.
+  bool isTutorialPopupActive = false;
+
+  void setTutorialPopupActive(bool value) {
+    isTutorialPopupActive = value;
+    notifyListeners();
+  }
+
   VoidCallback? onBackGestureIntercepted;
   VoidCallback? onTutorialBackStepTriggered;
   int wakeUpHour = 8;
@@ -119,6 +130,10 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         }
       } else {
         _currentUid = null;
+        _resetToDefault();
+        SharedPreferences.getInstance().then((prefs) {
+          prefs.setBool('new_quiz_ready', false);
+        });
       }
     });
   }
@@ -140,13 +155,13 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         state == AppLifecycleState.detached ||
         state == AppLifecycleState.inactive) {
       debugPrint("📱 App state changed ($state): Triggering sync");
-      
+
       // Only pause music if the app is actually backgrounded or closed,
       // not just when the notification shade is pulled down (inactive).
       if (state != AppLifecycleState.inactive) {
         musicManager?.pauseMusic();
       }
-      
+
       syncWithCloud(force: true);
       NotificationService().scheduleInactivityNotification(playerName);
     } else if (state == AppLifecycleState.resumed) {
@@ -158,11 +173,63 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> _checkNewQuizFlag() async {
     final prefs = await SharedPreferences.getInstance();
-    final bool newQuizReady = prefs.getBool('new_quiz_ready') ?? false;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final newQuizReadyKeyScoped = uid != null
+        ? "${uid}_new_quiz_ready"
+        : 'new_quiz_ready';
+    final bool newQuizReady =
+        prefs.getBool(newQuizReadyKeyScoped) ??
+        prefs.getBool('new_quiz_ready') ??
+        false;
     if (newQuizReady) {
       await NotificationService().showNewQuizNotification(playerName);
+      await prefs.setBool(newQuizReadyKeyScoped, false);
       await prefs.setBool('new_quiz_ready', false);
     }
+  }
+
+  void _resetToDefault() {
+    kp = 0;
+    gems = 0;
+    career = const CareerState(track: CareerTrack.student, level: 1);
+    lastIncomeTime = DateTime.now();
+    assets = const AssetInventory({});
+    cityLayout = [];
+    rentChoice = null;
+    foodChoice = null;
+    transportChoice = null;
+    insurances = {};
+    bankruptcyCount = 0;
+    debtCycleCount = 0;
+    nextDestructionCycle = null;
+    nextDisasterCycle = null;
+    pendingDisasterResults = [];
+    cycleTracker = 0;
+    hasWall = false;
+    completedQuizzes = {};
+    isWorkingOvertime = false;
+    overtimeStreak = 0;
+    activePassiveIncomes = {};
+    activeDisasterEffects = {};
+    isDarkMode = false;
+    musicVolume = 0.7;
+    sfxVolume = 1.0;
+    playerName = "User";
+    dailyQuizStreak = 0;
+    lastDailyQuizDate = "";
+    solvedQuizHashes = {};
+    streakRevivals = 3;
+    lastRevivalDate = null;
+    nextDisasterType = null;
+    onboardingComplete = false;
+    tutorialComplete = false;
+    isTutorialActive = false;
+    isTutorialBackAllowed = false;
+    wakeUpHour = 8;
+    wakeUpMinute = 0;
+    disasterAlertsEnabled = true;
+    loaded = false;
+    notifyListeners();
   }
 
   Future<void> _loadGame({bool useCloud = false, bool force = false}) async {
@@ -251,7 +318,11 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       disasterAlertsEnabled = savedDisasterAlertsEnabled;
 
       final prefs = await SharedPreferences.getInstance();
-      tutorialComplete = prefs.getBool('tutorialComplete') ?? false;
+      tutorialComplete =
+          prefs.getBool(
+            uid != null ? "${uid}_tutorialComplete" : 'tutorialComplete',
+          ) ??
+          false;
       if (onboardingComplete && !tutorialComplete) {
         isTutorialActive = true;
       }
@@ -266,6 +337,11 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         _checkStreakConsistency();
         _syncDailyQuiz(); // Check for new quiz on load
         NotificationService().scheduleDailyNotifications(playerName);
+        NotificationService().scheduleDailyMorningNotification(
+          playerName,
+          wakeUpHour,
+          wakeUpMinute,
+        );
         _updateDailyChallengeReminders();
       }
     } catch (e) {
@@ -398,8 +474,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       );
 
       if (nextDisasterCycle != null && nextDisasterType != null) {
-        final disasterTime =
-            lastIncomeTime.add(Duration(days: nextDisasterCycle!));
+        final disasterTime = lastIncomeTime.add(
+          Duration(days: nextDisasterCycle!),
+        );
         NotificationService().scheduleDisasterNotification(
           playerName,
           disasterTime,
@@ -417,15 +494,12 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
   void _updateDailyChallengeReminders() {
     if (playerName == "User") return;
-    final nowIST = DateTime.now().toUtc().add(const Duration(hours: 5, minutes: 30));
-    final today = DateFormat('yyyy-MM-dd').format(nowIST);
-    final hasCompletedToday = lastDailyQuizDate == today;
 
     NotificationService().scheduleDailyChallengeReminders(
       playerName: playerName,
       dailyQuizStreak: dailyQuizStreak,
       streakRevivals: streakRevivals,
-      hasCompletedToday: hasCompletedToday,
+      lastDailyQuizDate: lastDailyQuizDate,
     );
   }
 
@@ -504,13 +578,15 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       cycleTracker++;
       if (nextDisasterCycle == null) {
         nextDisasterCycle = 15 + Random().nextInt(5);
-        nextDisasterType = DisasterType.values[Random().nextInt(DisasterType.values.length)];
+        nextDisasterType =
+            DisasterType.values[Random().nextInt(DisasterType.values.length)];
       } else {
         nextDisasterCycle = nextDisasterCycle! - 1;
         if (nextDisasterCycle! <= 0) {
           _triggerNaturalDisaster();
           nextDisasterCycle = 15 + Random().nextInt(5);
-          nextDisasterType = DisasterType.values[Random().nextInt(DisasterType.values.length)];
+          nextDisasterType =
+              DisasterType.values[Random().nextInt(DisasterType.values.length)];
         }
       }
 
@@ -562,11 +638,11 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       if (currentBalance < 0) {
         debtCycleCount++;
 
-        double rate = 0.05;
+        double rate = 0.0;
         int debtFactor = currentBalance.abs();
-        if (debtFactor >= 2000) {
+        if (debtFactor >= 5000) {
           rate = 0.20;
-        } else if (debtFactor >= 1500) {
+        } else if (debtFactor >= 2000) {
           rate = 0.10;
         } else if (debtFactor >= 1000) {
           rate = 0.05;
@@ -588,7 +664,10 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
                 events.add(
                   "${removed.name} was foreclosed/destroyed due to unpaid maintainance costs since you were in debt for more than 30 days!",
                 );
-                NotificationService().showForeclosureNotification(playerName, removed.name);
+                NotificationService().showForeclosureNotification(
+                  playerName,
+                  removed.name,
+                );
                 nextDestructionCycle = dayNumber + rng.nextInt(6);
               }
             }
@@ -720,18 +799,27 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void setPlayerName(String name) {
-    playerName = name;
+    playerName = name.trim();
 
     // Add welcome message to events
     pendingEvents.add(
       "Welcome, $playerName! \n\n"
       "Welcome to City of Wealth! I hope this game helps you master your personal finance journey. "
       "Make smart financial choices, build your city, and have fun!\n\n"
-      "- The Maker"
+      "- The Maker",
     );
 
     // Trigger cycles now that the player has entered their name
     _checkDailyCycle();
+    _checkStreakConsistency();
+    _syncDailyQuiz(); // Check for new quiz on load
+    NotificationService().scheduleDailyNotifications(playerName);
+    NotificationService().scheduleDailyMorningNotification(
+      playerName,
+      wakeUpHour,
+      wakeUpMinute,
+    );
+    _updateDailyChallengeReminders();
     save();
     notifyListeners();
   }
@@ -740,12 +828,17 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     if (name.trim().isEmpty) return;
     playerName = name.trim();
     saveFields({playerNameKey: playerName});
-    
+
     // Reschedule notifications with the new name
     NotificationService().scheduleDailyNotifications(playerName);
+    NotificationService().scheduleDailyMorningNotification(
+      playerName,
+      wakeUpHour,
+      wakeUpMinute,
+    );
     NotificationService().scheduleInactivityNotification(playerName);
     _updateDailyChallengeReminders();
-    
+
     notifyListeners();
   }
 
@@ -879,10 +972,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     final sellPrice = assetSellPrice(type);
     gems += sellPrice;
     assets = assets.add(type, -1);
-    saveFields({
-      gemsKey: gems,
-      assetsKey: jsonEncode(assets.toJson()),
-    });
+    saveFields({gemsKey: gems, assetsKey: jsonEncode(assets.toJson())});
     notifyListeners();
   }
 
@@ -950,7 +1040,12 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     notifyListeners();
   }
 
-  void completeDailyQuiz(bool correct, String date, String? quizHash, {bool isPractice = false}) {
+  void completeDailyQuiz(
+    bool correct,
+    String date,
+    String? quizHash, {
+    bool isPractice = false,
+  }) {
     // If it's a daily quiz (not practice) and not already done today
     if (!isPractice && lastDailyQuizDate != date) {
       // Streak always increments when the daily quiz is attempted
@@ -958,16 +1053,22 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       if (dailyQuizStreak % 10 == 0 && streakRevivals < 5) {
         streakRevivals++;
       }
-      
+
       if (correct) {
         kp += 20; // 20 KP for correct daily
         if (quizHash != null) solvedQuizHashes.add(quizHash);
       }
-      
+
       lastDailyQuizDate = date;
-      
+
       if (_currentUid != null) {
-        firestoreService.updatePlayerStreak(_currentUid!, dailyQuizStreak, date, streakRevivals, lastRevivalDate);
+        firestoreService.updatePlayerStreak(
+          _currentUid!,
+          dailyQuizStreak,
+          date,
+          streakRevivals,
+          lastRevivalDate,
+        );
       }
     } else if (isPractice && correct) {
       kp += 10; // 10 KP for correct practice
@@ -1215,8 +1316,6 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       ),
     );
 
-
-
     pendingEvents.add(
       "DISASTER: ${disasterLabel(disasterType)}! Check the detail report for losses and insurance coverage.",
     );
@@ -1248,21 +1347,23 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
   void clearDisasterResults() {
     pendingDisasterResults.clear();
-    saveFields({
-      'pendingDisasterResults': jsonEncode([]),
-    });
+    saveFields({'pendingDisasterResults': jsonEncode([])});
     notifyListeners();
   }
 
   Future<void> _syncDailyQuiz() async {
     try {
-      final now = DateTime.now().toUtc().add(const Duration(hours: 5, minutes: 30));
+      final now = DateTime.now().toUtc().add(
+        const Duration(hours: 5, minutes: 30),
+      );
       final dateStr = DateFormat('yyyy-MM-dd').format(now);
-      
+
       final quiz = await firestoreService.getDailyQuiz(dateStr);
       if (quiz != null) {
-        debugPrint("📅 Daily Quiz Sync (Load): Newest quiz for $dateStr is available.");
-        notifyListeners(); 
+        debugPrint(
+          "📅 Daily Quiz Sync (Load): Newest quiz for $dateStr is available.",
+        );
+        notifyListeners();
       }
     } catch (e) {
       debugPrint("❌ Daily Quiz Sync (Load) Error: $e");
@@ -1272,21 +1373,23 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   void _checkStreakConsistency() {
     if (lastDailyQuizDate.isEmpty) return;
 
-    final now = DateTime.now().toUtc().add(const Duration(hours: 5, minutes: 30));
+    final now = DateTime.now().toUtc().add(
+      const Duration(hours: 5, minutes: 30),
+    );
     final today = DateFormat('yyyy-MM-dd').format(now);
-    
-    if (lastDailyQuizDate == today) return; 
+
+    if (lastDailyQuizDate == today) return;
 
     try {
       DateTime lastDate = DateFormat('yyyy-MM-dd').parse(lastDailyQuizDate);
       DateTime todayDate = DateFormat('yyyy-MM-dd').parse(today);
-      
+
       int daysDifference = todayDate.difference(lastDate).inDays;
 
       if (daysDifference > 1) {
         // User missed one or more days
-        int daysToRevive = daysDifference - 1; 
-        
+        int daysToRevive = daysDifference - 1;
+
         while (daysToRevive > 0) {
           if (streakRevivals > 0) {
             streakRevivals--;
@@ -1298,16 +1401,18 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
             break;
           }
         }
-        
+
         // Update lastDailyQuizDate to yesterday so they can still play today
         if (dailyQuizStreak > 0) {
           final yesterday = todayDate.subtract(const Duration(days: 1));
           lastDailyQuizDate = DateFormat('yyyy-MM-dd').format(yesterday);
-          debugPrint("🛡️ Streak preserved using revivals. Remaining: $streakRevivals");
+          debugPrint(
+            "🛡️ Streak preserved using revivals. Remaining: $streakRevivals",
+          );
         } else {
           debugPrint("💔 Streak reset due to inactivity.");
         }
-        
+
         save();
         notifyListeners();
       }
@@ -1322,7 +1427,6 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     required int minute,
     required bool alertsEnabled,
   }) {
-    playerName = name;
     wakeUpHour = hour;
     wakeUpMinute = minute;
     disasterAlertsEnabled = alertsEnabled;
@@ -1332,21 +1436,19 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       isTutorialActive = true;
     }
 
-    saveFields({
-      playerNameKey: playerName,
-      wakeUpHourKey: wakeUpHour,
-      wakeUpMinuteKey: wakeUpMinute,
-      disasterAlertsEnabledKey: disasterAlertsEnabled,
-      onboardingCompleteKey: onboardingComplete,
-    });
-    notifyListeners();
+    // Call unified setPlayerName which handles event log additions, cycles, notifications, and saving
+    setPlayerName(name);
   }
 
   Future<void> completeTutorial() async {
     tutorialComplete = true;
     isTutorialActive = false;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('tutorialComplete', true);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    await prefs.setBool(
+      uid != null ? "${uid}_tutorialComplete" : 'tutorialComplete',
+      true,
+    );
     notifyListeners();
   }
 
@@ -1355,17 +1457,18 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     isTutorialActive = true;
     selectedIndex = 0; // Go back to Home tab where tutorial starts
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('tutorialComplete', false);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    await prefs.setBool(
+      uid != null ? "${uid}_tutorialComplete" : 'tutorialComplete',
+      false,
+    );
     notifyListeners();
   }
 
   void updateWakeUpTime(int hour, int minute) {
     wakeUpHour = hour;
     wakeUpMinute = minute;
-    saveFields({
-      wakeUpHourKey: wakeUpHour,
-      wakeUpMinuteKey: wakeUpMinute,
-    });
+    saveFields({wakeUpHourKey: wakeUpHour, wakeUpMinuteKey: wakeUpMinute});
     NotificationService().scheduleDailyMorningNotification(
       playerName,
       hour,

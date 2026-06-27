@@ -1,5 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 /// Manages sound effects (SFX) playback.
 class SfxManager {
@@ -66,5 +66,20 @@ class SfxManager {
       player.dispose();
     }
     _pool.clear();
+  }
+}
+
+/// A NavigatorObserver that plays a 'back' sound whenever a route is popped.
+class SfxNavigatorObserver extends NavigatorObserver {
+  final SfxManager sfx;
+
+  SfxNavigatorObserver(this.sfx);
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPop(route, previousRoute);
+    if (route.settings.name != 'mute_back_sound') {
+      sfx.playBack();
+    }
   }
 }

@@ -105,6 +105,10 @@ class TutorialKeys {
     debugLabel: 'tutorial_passive_income_back',
   );
 
+  static final GlobalKey passiveIncomeBodyKey = GlobalKey(
+    debugLabel: 'tutorial_passive_income_body',
+  );
+
   // =========================
   // QUIZ SCREEN
   // =========================
@@ -139,5 +143,13 @@ class TutorialKeys {
 
   static final GlobalKey liabilitiesTransportKey = GlobalKey(
     debugLabel: 'tutorial_liabilities_transport',
+  );
+
+  // =========================
+  // SETTINGS SCREEN
+  // =========================
+
+  static final GlobalKey settingsManualKey = GlobalKey(
+    debugLabel: 'tutorial_settings_manual',
   );
 }

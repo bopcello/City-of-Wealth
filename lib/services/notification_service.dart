@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:intl/intl.dart';
 import '../game_state.dart';
 import '../data/notification_data.dart';
 
@@ -14,6 +15,9 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
+
+  static final ValueNotifier<String?> notificationPayloadNotifier =
+      ValueNotifier<String?>(null);
 
   Future<void> initialize() async {
     tz.initializeTimeZones();
@@ -32,7 +36,33 @@ class NotificationService {
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
 
-    await _notifications.initialize(settings: initializationSettings);
+    await _notifications.initialize(
+      settings: initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        debugPrint("🔔 Notification clicked with payload: ${response.payload}");
+        if (response.payload != null) {
+          notificationPayloadNotifier.value = response.payload;
+        }
+      },
+    );
+
+    // Check if the app was launched via notification click when terminated
+    try {
+      final NotificationAppLaunchDetails? launchDetails = await _notifications
+          .getNotificationAppLaunchDetails();
+      if (launchDetails?.didNotificationLaunchApp ?? false) {
+        final NotificationResponse? response =
+            launchDetails?.notificationResponse;
+        debugPrint(
+          "🔔 App launched via notification click with payload: ${response?.payload}",
+        );
+        if (response?.payload != null) {
+          notificationPayloadNotifier.value = response?.payload;
+        }
+      }
+    } catch (e) {
+      debugPrint("⚠️ Error getting notification app launch details: $e");
+    }
 
     // Create Notification Channels for Android
     const AndroidNotificationChannel gameChannel = AndroidNotificationChannel(
@@ -60,9 +90,17 @@ class NotificationService {
     const AndroidNotificationChannel inactivityChannel =
         AndroidNotificationChannel(
           'inactivity',
-          'Player Retention',
+          'Reminders',
           description: 'Reminders to check on your city',
           importance: Importance.low,
+        );
+
+    const AndroidNotificationChannel dailyRoutineChannel =
+        AndroidNotificationChannel(
+          'daily_routine',
+          'Daily Routine',
+          description: 'Daily reminders for quizzes and city management',
+          importance: Importance.high,
         );
 
     final androidPlugin = _notifications
@@ -74,6 +112,7 @@ class NotificationService {
     await androidPlugin?.createNotificationChannel(routineChannel);
     await androidPlugin?.createNotificationChannel(streakChannel);
     await androidPlugin?.createNotificationChannel(inactivityChannel);
+    await androidPlugin?.createNotificationChannel(dailyRoutineChannel);
 
     // Clean up any lingering streak warning notifications from previous version
     for (int i = 3000; i <= 3050; i++) {
@@ -97,8 +136,16 @@ class NotificationService {
     await iosPlugin?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
-  Future<void> showDisasterNotification(String playerName, DisasterType type, bool insured) async {
-    final notification = NotificationData.getRandomDisasterNotification(playerName, type, insured);
+  Future<void> showDisasterNotification(
+    String playerName,
+    DisasterType type,
+    bool insured,
+  ) async {
+    final notification = NotificationData.getRandomDisasterNotification(
+      playerName,
+      type,
+      insured,
+    );
 
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
@@ -137,8 +184,14 @@ class NotificationService {
     );
   }
 
-  Future<void> showForeclosureNotification(String playerName, String buildingName) async {
-    final notification = NotificationData.getRandomForeclosureNotification(playerName, buildingName);
+  Future<void> showForeclosureNotification(
+    String playerName,
+    String buildingName,
+  ) async {
+    final notification = NotificationData.getRandomForeclosureNotification(
+      playerName,
+      buildingName,
+    );
 
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
@@ -190,7 +243,9 @@ class NotificationService {
 
         if (scheduledDate.isBefore(now)) continue;
 
-        final notification = NotificationData.getRandomDailyGeneralNotification(playerName);
+        final notification = NotificationData.getRandomDailyGeneralNotification(
+          playerName,
+        );
 
         await _notifications.zonedSchedule(
           id: 1000 + scheduledCount,
@@ -234,7 +289,10 @@ class NotificationService {
     for (var entry in intervals.entries) {
       final key = entry.key;
       final duration = entry.value;
-      final notification = NotificationData.getRandomInactivityNotification(playerName, key);
+      final notification = NotificationData.getRandomInactivityNotification(
+        playerName,
+        key,
+      );
 
       await _notifications.zonedSchedule(
         id: 2000 + i,
@@ -250,7 +308,9 @@ class NotificationService {
   }
 
   Future<void> showNewQuizNotification(String playerName) async {
-    final notification = NotificationData.getRandomNewQuizNotification(playerName);
+    final notification = NotificationData.getRandomNewQuizNotification(
+      playerName,
+    );
 
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
@@ -278,7 +338,11 @@ class NotificationService {
     // Cancel existing disaster notifications (ID 5000)
     await _notifications.cancel(id: 5000);
 
-    final notification = NotificationData.getRandomDisasterNotification(playerName, type, insured);
+    final notification = NotificationData.getRandomDisasterNotification(
+      playerName,
+      type,
+      insured,
+    );
 
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
@@ -329,7 +393,9 @@ class NotificationService {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
 
-    final notification = NotificationData.getRandomDailyMorningNotification(playerName);
+    final notification = NotificationData.getRandomDailyMorningNotification(
+      playerName,
+    );
 
     await _notifications.zonedSchedule(
       id: 6000,
@@ -339,6 +405,7 @@ class NotificationService {
       notificationDetails: NotificationDetails(android: androidDetails),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
+      payload: 'quiz',
     );
   }
 
@@ -346,7 +413,7 @@ class NotificationService {
     required String playerName,
     required int dailyQuizStreak,
     required int streakRevivals,
-    required bool hasCompletedToday,
+    required String lastDailyQuizDate,
   }) async {
     // Cancel previous challenge reminder notifications (IDs 3000 to 3050)
     for (int i = 3000; i <= 3050; i++) {
@@ -357,13 +424,21 @@ class NotificationService {
         AndroidNotificationDetails(
           'streak_warnings',
           'Streak Warnings',
-          channelDescription: 'Notifications before you lose your streak or consume a revival',
+          channelDescription:
+              'Notifications before you lose your streak or consume a revival',
           importance: Importance.high,
           priority: Priority.high,
         );
 
     final now = tz.TZDateTime.now(tz.local);
-    final baseMidnight = tz.TZDateTime(tz.local, now.year, now.month, now.day, 0, 0);
+    final baseMidnight = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      0,
+      0,
+    );
 
     final List<(String, Duration)> intervals = [
       ("6h", const Duration(hours: 6)),
@@ -375,12 +450,6 @@ class NotificationService {
     int scheduledCount = 0;
 
     for (int day = 0; day < 7; day++) {
-      // If today is day 0 and the user has already completed the daily challenge today,
-      // we do not schedule reminders for today.
-      if (day == 0 && hasCompletedToday) {
-        continue;
-      }
-
       final deadline = baseMidnight.add(Duration(days: day + 1));
 
       for (int i = 0; i < intervals.length; i++) {
@@ -389,6 +458,14 @@ class NotificationService {
 
         // Only schedule if the time is in the future
         if (scheduledDate.isBefore(now)) {
+          continue;
+        }
+
+        // Convert the scheduled local date to IST date string to check if already attempted
+        final scheduledDateIST = scheduledDate.toUtc().add(const Duration(hours: 5, minutes: 30));
+        final targetQuizDateStr = DateFormat('yyyy-MM-dd').format(scheduledDateIST);
+
+        if (lastDailyQuizDate == targetQuizDateStr) {
           continue;
         }
 
@@ -408,12 +485,15 @@ class NotificationService {
           scheduledDate: scheduledDate,
           notificationDetails: NotificationDetails(android: androidDetails),
           androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          payload: 'quiz',
         );
         scheduledCount++;
       }
     }
     debugPrint("🔔 Scheduled $scheduledCount daily challenge reminders");
   }
+
+
 
   Future<bool> requestPermission() async {
     if (await Permission.notification.isGranted) return true;

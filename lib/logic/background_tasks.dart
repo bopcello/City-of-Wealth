@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
@@ -38,11 +39,15 @@ class BackgroundTaskManager {
         
         if (quiz != null) {
           final prefs = await SharedPreferences.getInstance();
-          final lastDate = prefs.getString('lastDailyQuizDate') ?? "";
+          final uid = FirebaseAuth.instance.currentUser?.uid;
+          final lastDailyQuizDateKeyScoped = uid != null ? "${uid}_lastDailyQuizDate" : 'lastDailyQuizDate';
+          final lastDate = prefs.getString(lastDailyQuizDateKeyScoped) ?? "";
           
           if (lastDate != dateStr) {
             // Flag to show notification on next phone interaction
-            await prefs.setBool('new_quiz_ready', true);
+            final newQuizReadyKeyScoped = uid != null ? "${uid}_new_quiz_ready" : 'new_quiz_ready';
+            await prefs.setBool(newQuizReadyKeyScoped, true);
+            await prefs.setBool('new_quiz_ready', true); // keep global for Android broadcast receiver
             debugPrint("📅 Background Sync: New quiz detected for $dateStr");
           }
         }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
 import '../widgets/icon_text.dart';
-import '../widgets/counter_chip.dart';
 import '../theme/app_colors.dart';
 import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';
@@ -50,6 +49,11 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     int cost,
     String description,
   ) {
+    // Signal the tutorial overlay to expand to fullscreen so the dialog
+    // button is tappable (not blocked by the spotlight dimming overlay).
+    if (widget.game.isTutorialActive) {
+      widget.game.setTutorialPopupActive(true);
+    }
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -91,6 +95,10 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
           TextButton(
             onPressed: () {
               widget.sfx.playClick();
+              // Clear the fullscreen mode before the overlay auto-advances.
+              if (widget.game.isTutorialActive) {
+                widget.game.setTutorialPopupActive(false);
+              }
               Navigator.pop(context);
             },
             child: const Text("Understood"),

@@ -656,18 +656,20 @@ Future<void> saveGameState({
     final key = entry.key;
     final value = entry.value;
 
+    final scopedKey = uid != null ? "${uid}_$key" : key;
+
     if (value == null) {
-      await prefs.remove(key);
+      await prefs.remove(scopedKey);
     } else if (value is int) {
-      await prefs.setInt(key, value);
+      await prefs.setInt(scopedKey, value);
     } else if (value is String) {
-      await prefs.setString(key, value);
+      await prefs.setString(scopedKey, value);
     } else if (value is bool) {
-      await prefs.setBool(key, value);
+      await prefs.setBool(scopedKey, value);
     } else if (value is double) {
-      await prefs.setDouble(key, value);
+      await prefs.setDouble(scopedKey, value);
     } else if (value is List<String>) {
-      await prefs.setStringList(key, value);
+      await prefs.setStringList(scopedKey, value);
     }
   }
 
@@ -675,9 +677,7 @@ Future<void> saveGameState({
   if (syncToCloud && uid != null) {
     await FirestoreService().savePlayerProgress(uid, data);
   }
-}
-
-Future<
+}Future<
   (
     int,
     int,
@@ -719,12 +719,86 @@ Future<
 loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
   final prefs = await SharedPreferences.getInstance();
 
+  // Helper to scope keys to current user ID
+  String scopedKey(String key) {
+    return uid != null ? "${uid}_$key" : key;
+  }
+
+  // One-time local data migration for this user
+  if (uid != null) {
+    final scopedLastUpdatedKey = "${uid}_$lastUpdatedKey";
+    if (!prefs.containsKey(scopedLastUpdatedKey)) {
+      if (prefs.containsKey(lastUpdatedKey)) {
+        debugPrint("🔄 Migrating unscoped local save data to user-scoped data for $uid");
+        final keysToMigrate = [
+          kpKey,
+          gemsKey,
+          careerTrackKey,
+          careerLevelKey,
+          lastIncomeTimeKey,
+          cityLayoutKey,
+          assetsKey,
+          rentChoiceKey,
+          foodChoiceKey,
+          transportChoiceKey,
+          insurancesKey,
+          bankruptcyCountKey,
+          debtCycleCountKey,
+          nextDestructionCycleKey,
+          nextDisasterCycleKey,
+          'hasWall',
+          completedQuizzesKey,
+          isWorkingOvertimeKey,
+          overtimeStreakKey,
+          activePassiveIncomesKey,
+          'activeDisasterEffects',
+          playerNameKey,
+          isDarkModeKey,
+          musicVolumeKey,
+          sfxVolumeKey,
+          'pendingDisasterResults',
+          solvedQuizHashesKey,
+          lastUpdatedKey,
+          dailyQuizStreakKey,
+          lastDailyQuizDateKey,
+          streakRevivalsKey,
+          lastRevivalDateKey,
+          nextDisasterTypeKey,
+          onboardingCompleteKey,
+          wakeUpHourKey,
+          wakeUpMinuteKey,
+          disasterAlertsEnabledKey,
+          'tutorialComplete',
+          'new_quiz_ready',
+        ];
+        for (final key in keysToMigrate) {
+          if (prefs.containsKey(key)) {
+            final val = prefs.get(key);
+            final sKey = "${uid}_$key";
+            if (val is int) {
+              await prefs.setInt(sKey, val);
+            } else if (val is String) {
+              await prefs.setString(sKey, val);
+            } else if (val is bool) {
+              await prefs.setBool(sKey, val);
+            } else if (val is double) {
+              await prefs.setDouble(sKey, val);
+            } else if (val is List<String>) {
+              await prefs.setStringList(sKey, val);
+            }
+            await prefs.remove(key);
+          }
+        }
+      }
+    }
+  }
+
   Map<String, dynamic>? cloudData;
   if (uid != null && useCloud) {
     cloudData = await FirestoreService().getPlayerProgress(uid);
   }
 
-  final localLastUpdated = prefs.getInt(lastUpdatedKey) ?? 0;
+  final localLastUpdated = prefs.getInt(scopedKey(lastUpdatedKey)) ?? 0;
 
   int cloudLastUpdated = 0;
   if (cloudData != null && cloudData.containsKey(lastUpdatedKey)) {
@@ -740,7 +814,7 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
 
   // For completedQuizzes, we always merge them to avoid losing progress.
   final List<dynamic> localQuizzes =
-      prefs.getStringList(completedQuizzesKey) ?? [];
+      prefs.getStringList(scopedKey(completedQuizzesKey)) ?? [];
   final cloudQuizzesRaw = cloudData?[completedQuizzesKey];
   final List<dynamic> cloudQuizzes = (cloudQuizzesRaw is List)
       ? cloudQuizzesRaw
@@ -751,7 +825,7 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
   };
 
   final List<dynamic> localSolvedHashes =
-      prefs.getStringList(solvedQuizHashesKey) ?? [];
+      prefs.getStringList(scopedKey(solvedQuizHashesKey)) ?? [];
   final cloudSolvedHashesRaw = cloudData?[solvedQuizHashesKey];
   final List<dynamic> cloudSolvedHashes = (cloudSolvedHashesRaw is List)
       ? cloudSolvedHashesRaw
@@ -781,39 +855,39 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
 
   final data = preferCloud ? cloudData! : {};
 
-  final int kp = (data[kpKey] as num?)?.toInt() ?? prefs.getInt(kpKey) ?? 0;
-  final int gems = (data[gemsKey] as num?)?.toInt() ?? prefs.getInt(gemsKey) ?? 0;
+  final int kp = (data[kpKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(kpKey)) ?? 0;
+  final int gems = (data[gemsKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(gemsKey)) ?? 0;
   final int bankruptcyCount =
-      (data[bankruptcyCountKey] as num?)?.toInt() ?? prefs.getInt(bankruptcyCountKey) ?? 0;
+      (data[bankruptcyCountKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(bankruptcyCountKey)) ?? 0;
   final int debtCycleCount =
-      (data[debtCycleCountKey] as num?)?.toInt() ?? prefs.getInt(debtCycleCountKey) ?? 0;
-  final int? nextDestructionCycle = (data[nextDestructionCycleKey] as num?)?.toInt() ?? (prefs.containsKey(nextDestructionCycleKey) ? prefs.getInt(nextDestructionCycleKey) : null);
-  final int? nextDisasterCycle = (data[nextDisasterCycleKey] as num?)?.toInt() ?? (prefs.containsKey(nextDisasterCycleKey) ? prefs.getInt(nextDisasterCycleKey) : null);
-  final bool isDarkMode = data[isDarkModeKey] == true || (prefs.getBool(isDarkModeKey) ?? false);
-  final String playerName = data[playerNameKey]?.toString() ?? prefs.getString(playerNameKey) ?? "User";
+      (data[debtCycleCountKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(debtCycleCountKey)) ?? 0;
+  final int? nextDestructionCycle = (data[nextDestructionCycleKey] as num?)?.toInt() ?? (prefs.containsKey(scopedKey(nextDestructionCycleKey)) ? prefs.getInt(scopedKey(nextDestructionCycleKey)) : null);
+  final int? nextDisasterCycle = (data[nextDisasterCycleKey] as num?)?.toInt() ?? (prefs.containsKey(scopedKey(nextDisasterCycleKey)) ? prefs.getInt(scopedKey(nextDisasterCycleKey)) : null);
+  final bool isDarkMode = data[isDarkModeKey] == true || (prefs.getBool(scopedKey(isDarkModeKey)) ?? false);
+  final String playerName = data[playerNameKey]?.toString() ?? prefs.getString(scopedKey(playerNameKey)) ?? "User";
   final musicVolume =
       data[musicVolumeKey]?.toDouble() ??
-      prefs.getDouble(musicVolumeKey) ??
+      prefs.getDouble(scopedKey(musicVolumeKey)) ??
       0.7;
   final sfxVolume =
-      data[sfxVolumeKey]?.toDouble() ?? prefs.getDouble(sfxVolumeKey) ?? 1.0;
+      data[sfxVolumeKey]?.toDouble() ?? prefs.getDouble(scopedKey(sfxVolumeKey)) ?? 1.0;
   final int dailyQuizStreak =
       (data[dailyQuizStreakKey] as num?)?.toInt() ??
-      prefs.getInt(dailyQuizStreakKey) ??
+      prefs.getInt(scopedKey(dailyQuizStreakKey)) ??
       0;
   final String lastDailyQuizDate =
       data[lastDailyQuizDateKey]?.toString() ??
-      prefs.getString(lastDailyQuizDateKey) ??
+      prefs.getString(scopedKey(lastDailyQuizDateKey)) ??
       "";
   final Set<String> solvedQuizHashes = mergedSolvedHashes;
   final int streakRevivals =
       (data[streakRevivalsKey] as num?)?.toInt() ??
-      prefs.getInt(streakRevivalsKey) ??
+      prefs.getInt(scopedKey(streakRevivalsKey)) ??
       3;
   final String? lastRevivalDate =
       data[lastRevivalDateKey]?.toString() ??
-      prefs.getString(lastRevivalDateKey);
-  final String? nextDisasterTypeName = data[nextDisasterTypeKey]?.toString() ?? prefs.getString(nextDisasterTypeKey);
+      prefs.getString(scopedKey(lastRevivalDateKey));
+  final String? nextDisasterTypeName = data[nextDisasterTypeKey]?.toString() ?? prefs.getString(scopedKey(nextDisasterTypeKey));
   final DisasterType? nextDisasterType = nextDisasterTypeName != null
       ? DisasterType.values.firstWhere(
           (e) => e.name == nextDisasterTypeName,
@@ -821,13 +895,13 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
         )
       : null;
 
-  final bool onboardingComplete = (data[onboardingCompleteKey] == true) || (prefs.getBool(onboardingCompleteKey) ?? false);
-  final int wakeUpHour = (data[wakeUpHourKey] as num?)?.toInt() ?? prefs.getInt(wakeUpHourKey) ?? 8;
-  final int wakeUpMinute = (data[wakeUpMinuteKey] as num?)?.toInt() ?? prefs.getInt(wakeUpMinuteKey) ?? 0;
-  final bool disasterAlertsEnabled = (data[disasterAlertsEnabledKey] == true) || (prefs.getBool(disasterAlertsEnabledKey) ?? true);
+  final bool onboardingComplete = (data[onboardingCompleteKey] == true) || (prefs.getBool(scopedKey(onboardingCompleteKey)) ?? false);
+  final int wakeUpHour = (data[wakeUpHourKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(wakeUpHourKey)) ?? 8;
+  final int wakeUpMinute = (data[wakeUpMinuteKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(wakeUpMinuteKey)) ?? 0;
+  final bool disasterAlertsEnabled = (data[disasterAlertsEnabledKey] == true) || (prefs.getBool(scopedKey(disasterAlertsEnabledKey)) ?? true);
 
-  final String? trackName = data[careerTrackKey]?.toString() ?? prefs.getString(careerTrackKey);
-  final int level = (data[careerLevelKey] as num?)?.toInt() ?? prefs.getInt(careerLevelKey) ?? 1;
+  final String? trackName = data[careerTrackKey]?.toString() ?? prefs.getString(scopedKey(careerTrackKey));
+  final int level = (data[careerLevelKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(careerLevelKey)) ?? 1;
 
   final track = CareerTrack.values.firstWhere(
     (e) => e.name == trackName,
@@ -844,11 +918,11 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
     lastIncomeMillis = cloudIncomeTime.millisecondsSinceEpoch;
   } else {
     lastIncomeMillis =
-        prefs.getInt(lastIncomeTimeKey) ??
+        prefs.getInt(scopedKey(lastIncomeTimeKey)) ??
         DateTime.now().millisecondsSinceEpoch;
   }
 
-  final layoutJson = data[cityLayoutKey] ?? prefs.getString(cityLayoutKey);
+  final layoutJson = data[cityLayoutKey] ?? prefs.getString(scopedKey(cityLayoutKey));
   List<PlacedBuilding> layout = [];
   if (layoutJson != null) {
     try {
@@ -861,7 +935,7 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
     }
   }
 
-  final assetsJson = data[assetsKey] ?? prefs.getString(assetsKey);
+  final assetsJson = data[assetsKey] ?? prefs.getString(scopedKey(assetsKey));
   AssetInventory assets = const AssetInventory({});
   if (assetsJson != null) {
     try {
@@ -874,24 +948,24 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
     }
   }
 
-  final rentName = data[rentChoiceKey] ?? prefs.getString(rentChoiceKey);
+  final rentName = data[rentChoiceKey] ?? prefs.getString(scopedKey(rentChoiceKey));
   final rent = rentName != null
       ? RentType.values.firstWhere((e) => e.name == rentName)
       : null;
 
-  final foodName = data[foodChoiceKey] ?? prefs.getString(foodChoiceKey);
+  final foodName = data[foodChoiceKey] ?? prefs.getString(scopedKey(foodChoiceKey));
   final food = foodName != null
       ? FoodType.values.firstWhere((e) => e.name == foodName)
       : null;
 
   final transportName =
-      data[transportChoiceKey] ?? prefs.getString(transportChoiceKey);
+      data[transportChoiceKey] ?? prefs.getString(scopedKey(transportChoiceKey));
   final transport = transportName != null
       ? TransportType.values.firstWhere((e) => e.name == transportName)
       : null;
 
   final List<dynamic> insuranceNamesRaw =
-      data[insurancesKey] ?? prefs.getStringList(insurancesKey) ?? [];
+      data[insurancesKey] ?? prefs.getStringList(scopedKey(insurancesKey)) ?? [];
   final List<dynamic> insuranceNames = insuranceNamesRaw;
   final insurances = insuranceNames
       .map(
@@ -902,15 +976,15 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
       )
       .toSet();
 
-  final bool? savedWall = (data['hasWall'] as bool?) ?? prefs.getBool('hasWall');
+  final bool? savedWall = (data['hasWall'] as bool?) ?? prefs.getBool(scopedKey('hasWall'));
   final completedQuizzes = mergedQuizzes;
 
-  final bool isWorkingOvertime = (data[isWorkingOvertimeKey] == true) || (prefs.getBool(isWorkingOvertimeKey) ?? false);
-  final int overtimeStreak = (data[overtimeStreakKey] as num?)?.toInt() ?? prefs.getInt(overtimeStreakKey) ?? 0;
+  final bool isWorkingOvertime = (data[isWorkingOvertimeKey] == true) || (prefs.getBool(scopedKey(isWorkingOvertimeKey)) ?? false);
+  final int overtimeStreak = (data[overtimeStreakKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(overtimeStreakKey)) ?? 0;
 
   final passiveIncomeJson =
       data[activePassiveIncomesKey] ??
-      prefs.getString(activePassiveIncomesKey);
+      prefs.getString(scopedKey(activePassiveIncomesKey));
   Map<AssetType, int> activePassiveIncomes = {};
   if (passiveIncomeJson != null) {
     try {
@@ -934,7 +1008,7 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
   }
 
   final disasterEffectsJson =
-      data['activeDisasterEffects'] ?? prefs.getString('activeDisasterEffects');
+      data['activeDisasterEffects'] ?? prefs.getString(scopedKey('activeDisasterEffects'));
   Map<DisasterType, int> activeDisasterEffects = {};
   if (disasterEffectsJson != null) {
     try {
@@ -959,7 +1033,7 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
 
   final pendingResultsJson =
       data['pendingDisasterResults'] ??
-      prefs.getString('pendingDisasterResults');
+      prefs.getString(scopedKey('pendingDisasterResults'));
   List<DisasterResult> pendingDisasterResults = [];
   if (pendingResultsJson != null) {
     try {

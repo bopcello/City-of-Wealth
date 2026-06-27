@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
 import '../widgets/icon_text.dart';
-import '../widgets/counter_chip.dart';
 import '../services/sfx_manager.dart';
 import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';

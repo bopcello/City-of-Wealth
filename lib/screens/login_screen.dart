@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import '../services/notification_service.dart';
 import '../theme/app_colors.dart';
@@ -17,26 +18,79 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isSignUp = false;
 
   Future<void> _handleEmailAuth() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
     setState(() => _isLoading = true);
     try {
+      if (email.isEmpty) {
+        throw "Email address cannot be empty.";
+      }
+      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+      if (!emailRegex.hasMatch(email)) {
+        throw "Please enter a valid email address.";
+      }
+      if (password.isEmpty) {
+        throw "Password cannot be empty.";
+      }
+      if (_isSignUp && password.length < 6) {
+        throw "Password must be at least 6 characters long.";
+      }
+
       if (_isSignUp) {
-        await AuthService().signUpWithEmail(
-          _emailController.text.trim(),
-          _passwordController.text.trim(),
-        );
+        await AuthService().signUpWithEmail(email, password);
       } else {
-        await AuthService().signInWithEmail(
-          _emailController.text.trim(),
-          _passwordController.text.trim(),
-        );
+        await AuthService().signInWithEmail(email, password);
       }
       // Request notifications permission only once on login/signup
       await NotificationService().requestPermissions();
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
+      String message = "An authentication error occurred.";
+      switch (e.code) {
+        case 'invalid-email':
+          message = "Please enter a valid email address.";
+          break;
+        case 'user-disabled':
+          message = "This user account has been disabled.";
+          break;
+        case 'user-not-found':
+          message = "No account found with this email.";
+          break;
+        case 'wrong-password':
+          message = "Incorrect password. Please try again.";
+          break;
+        case 'email-already-in-use':
+          message = "An account already exists for this email address.";
+          break;
+        case 'weak-password':
+          message = "The password is too weak. Please use a stronger password.";
+          break;
+        case 'operation-not-allowed':
+          message = "Email/password sign-in is not enabled.";
+          break;
+        case 'invalid-credential':
+          message = "Invalid email or password. Please try again.";
+          break;
+        default:
+          message = e.message ?? message;
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.toString()),
+            content: Text(message),
+            backgroundColor: AppColors.of(context, 'error'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        String msg = e.toString();
+        if (msg.startsWith("Exception: ")) {
+          msg = msg.substring(11);
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(msg),
             backgroundColor: AppColors.of(context, 'error'),
           ),
         );

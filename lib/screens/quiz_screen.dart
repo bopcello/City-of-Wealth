@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../game_state.dart';
 import '../data/quiz_data.dart';
 import '../widgets/icon_text.dart';
-import '../widgets/counter_chip.dart';
 import '../theme/app_colors.dart';
 import '../services/music_manager.dart';
 import '../services/sfx_manager.dart';

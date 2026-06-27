@@ -53,6 +53,7 @@ class PassiveIncomeScreen extends StatelessWidget {
       body: ListenableBuilder(
         listenable: game,
         builder: (context, _) => SingleChildScrollView(
+          key: TutorialKeys.passiveIncomeBodyKey,
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

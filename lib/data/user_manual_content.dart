@@ -78,10 +78,10 @@ If your Gems fall below zero, you are in debt. Debt in this game works exactly l
 
 | Debt Level | Interest per Cycle |
 |:---:|:---:|
-| Below 1,000 Gems | 5% |
-| Over 1,000 Gems | 5% |
-| Over 1,500 Gems | 10% |
-| Over 2,000 Gems | 20% |
+| Below 1,000 Gems | No interest |
+| Between 1,000 and 2,000 Gems | 5% |
+| Between 2,000 and 5,000 Gems | 10% |
+| Over 5,000 Gems | 20% |
 
 Debt also costs you 200 KP per cycle until it is cleared. If you stay in debt for over 30 days, the game starts foreclosing and destroying your buildings because you can no longer afford to maintain them. This is not a punishment invented for a game — this is exactly what happens in real life when people cannot pay their loans.
 
