@@ -13,6 +13,10 @@ import '../tabs/money_tab.dart';
 import '../tabs/settings_tab.dart';
 import '../theme/app_colors.dart';
 import 'quiz_screen.dart';
+import 'career_screen.dart';
+import 'assets_screen.dart';
+import 'liabilities_screen.dart';
+import 'passive_income_screen.dart';
 import '../services/notification_service.dart';
 
 class MainScreen extends StatefulWidget {
@@ -271,6 +275,68 @@ class _MainScreenState extends State<MainScreen> {
                   game.lastDailyQuizDate !=
                   DateFormat('yyyy-MM-dd').format(DateTime.now()),
               sfx: widget.sfx,
+              recentVisitedMoneyTiles: game.recentVisitedMoneyTiles,
+              onMoneyTileTap: (title) {
+                if (title == "Quiz") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => QuizMenuScreen(
+                        game: game,
+                        music: widget.music,
+                        sfx: widget.sfx,
+                      ),
+                    ),
+                  );
+                }
+                if (title == "Career") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CareerScreen(game: game, sfx: widget.sfx),
+                    ),
+                  );
+                }
+                if (title == "Assets") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AssetsScreen(
+                        assets: game.assets,
+                        gems: game.gems,
+                        streak: game.dailyQuizStreak,
+                        onBuyAsset: (type) => game.buyAsset(type, 1, context),
+                        onSellAsset: (type) => game.sellAsset(type),
+                        sfx: widget.sfx,
+                        game: game,
+                      ),
+                    ),
+                  );
+                }
+                if (title == "Liabilities") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LiabilitiesScreen(
+                        game: game,
+                        currentRent: game.rentChoice,
+                        currentFood: game.foodChoice,
+                        currentTransport: game.transportChoice,
+                        onSelectionChanged: game.updateLiabilities,
+                        sfx: widget.sfx,
+                      ),
+                    ),
+                  );
+                }
+                if (title == "Passive Income") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PassiveIncomeScreen(game: game, sfx: widget.sfx),
+                    ),
+                  );
+                }
+              },
             ),
             CityTab(
               career: game.career,
@@ -322,6 +388,7 @@ class _MainScreenState extends State<MainScreen> {
               gameListenable: game,
             ),
             SettingsTab(
+              isActive: game.selectedIndex == 3,
               game: game,
               career: game.career,
               isDarkMode: game.isDarkMode,

@@ -1,6 +1,6 @@
 # City of Wealth 💎
 
-A premium, interactive personal finance simulation game designed to teach real-world financial literacy through active gameplay. Built with a modern cross-platform **Flutter** frontend, backed by **Firebase Auth & Firestore**, and powered by an automated **Gemini AI** quiz generation pipeline running on **GitHub Actions**.
+A premium, interactive personal finance simulation game designed to teach real-world financial literacy through active gameplay. Built with a modern cross-platform **Flutter** frontend, backed by **Firebase Auth & Firestore**, and powered by an automated **OpenRouter AI** quiz generation pipeline running on **GitHub Actions**.
 
 ---
 
@@ -9,8 +9,8 @@ A premium, interactive personal finance simulation game designed to teach real-w
 ```mermaid
 graph TD
     Client[Flutter Mobile/Web App] <-->|Auth & Sync State| Firebase[(Firebase Auth & Firestore)]
-    Cron[GitHub Actions Cron] -->|Axios Trigger| Gemini[Gemini AI API]
-    Gemini -->|Format Quiz JSON| Cron
+    Cron[GitHub Actions Cron] -->|Axios Trigger| OpenRouter[OpenRouter API]
+    OpenRouter -->|Format Quiz JSON| Cron
     Cron -->|Write daily_YYYY-MM-DD| Firebase
     Client -->|Retrieve Quiz| Firebase
 ```
@@ -33,10 +33,10 @@ graph TD
   - **Progress Sync**: Stores user metrics, inventory, building coordinates, active disaster status, and streak configurations in the `players` collection. On login, the client performs a timestamp-comparison merge protocol (local vs. cloud `lastUpdated` timestamp) to prevent state overwriting.
   - **Daily Quiz Repository**: Serves daily challenges to users and maintains a history of past quizzes (last 30 days) to enable "Practice Mode" for players.
 
-### 🤖 Quiz Generation Pipeline (Gemini AI & GitHub Actions)
+### 🤖 Quiz Generation Pipeline (OpenRouter AI & GitHub Actions)
 - **GitHub Workflow**: An automated cron job defined in `.github/workflows/daily-question.yml` runs daily at **18:30 UTC / 00:00 IST** (`30 18 * * *`).
 - **Topic De-duplication**: The Node.js worker script (`scripts/daily_quiz_generator.js`) reads the last 30 daily quiz records from Cloud Firestore. It compiles their titles, questions, and answers to inject into the AI system prompt, ensuring the generated content is unique.
-- **Dynamic AI Generation**: Calls Google's **Gemini AI API (`gemini-2.0-flash`)** using a detailed prompt. Gemini acts as a financial analyst, producing a new multiple-choice question, options, correct options, and extensive correct/incorrect answers explanations.
+- **Dynamic AI Generation**: Calls **OpenRouter API (`google/gemini-2.0-flash-001`)** with search grounding enabled using a detailed prompt. The model acts as a financial analyst, producing a new multiple-choice question, options, correct options, and extensive correct/incorrect answers explanations.
 - **Automated Validation**: Parses the raw JSON response from Gemini, injects metadata (such as the target IST date and required level), and writes the document directly to the Firestore `daily_quizzes` collection.
 
 ---
@@ -130,18 +130,18 @@ If you want to debug or test the quiz generator script:
 
 3. **Acquire Credentials**:
    - Generate a Service Account JSON in the Firebase Console: **Project Settings > Service Accounts**. Download the key file.
-   - Obtain a Gemini API Key from Google AI Studio.
+   - Obtain an OpenRouter API Key.
 
 4. **Export Environment Variables**:
    *On Windows (PowerShell):*
    ```powershell
    $env:FIREBASE_SERVICE_ACCOUNT = Get-Content -Raw "path/to/your/firebase-service-account.json"
-   $env:GEMINI_API_KEY = "your-gemini-api-key"
+   $env:OPENROUTER_API_KEY = "your-openrouter-api-key"
    ```
    *On macOS/Linux:*
    ```bash
    export FIREBASE_SERVICE_ACCOUNT=$(cat path/to/your/firebase-service-account.json)
-   export GEMINI_API_KEY="your-gemini-api-key"
+   export OPENROUTER_API_KEY="your-openrouter-api-key"
    ```
 
 5. **Run the Generator Script**:

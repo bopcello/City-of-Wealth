@@ -115,9 +115,11 @@ class NotificationService {
     await androidPlugin?.createNotificationChannel(dailyRoutineChannel);
 
     // Clean up any lingering streak warning notifications from previous version
+    final cancelFutures = <Future<void>>[];
     for (int i = 3000; i <= 3050; i++) {
-      await _notifications.cancel(id: i);
+      cancelFutures.add(_notifications.cancel(id: i));
     }
+    await Future.wait(cancelFutures);
   }
 
   Future<void> requestPermissions() async {
@@ -134,6 +136,38 @@ class NotificationService {
           IOSFlutterLocalNotificationsPlugin
         >();
     await iosPlugin?.requestPermissions(alert: true, badge: true, sound: true);
+  }
+
+  /// Cancels all notifications and schedules daily, morning, and challenge reminders.
+  /// Staggers database writes to avoid blocking the main UI thread.
+  Future<void> rescheduleAllNotifications({
+    required String playerName,
+    required int dailyQuizStreak,
+    required int streakRevivals,
+    required String lastDailyQuizDate,
+    required int wakeUpHour,
+    required int wakeUpMinute,
+  }) async {
+    await _notifications.cancelAll();
+
+    await scheduleDailyMorningNotification(
+      playerName,
+      wakeUpHour,
+      wakeUpMinute,
+      skipCancel: true,
+    );
+
+    await Future.delayed(const Duration(milliseconds: 300));
+    await scheduleDailyChallengeReminders(
+      playerName: playerName,
+      dailyQuizStreak: dailyQuizStreak,
+      streakRevivals: streakRevivals,
+      lastDailyQuizDate: lastDailyQuizDate,
+      skipCancel: true,
+    );
+
+    await Future.delayed(const Duration(milliseconds: 300));
+    await scheduleDailyNotifications(playerName, skipCancel: true);
   }
 
   Future<void> showDisasterNotification(
@@ -210,10 +244,14 @@ class NotificationService {
     );
   }
 
-  Future<void> scheduleDailyNotifications(String playerName) async {
-    // Cancel previous daily notifications (IDs 1000-1100)
-    for (int i = 1000; i < 1100; i++) {
-      await _notifications.cancel(id: i);
+  Future<void> scheduleDailyNotifications(String playerName, {bool skipCancel = false}) async {
+    if (!skipCancel) {
+      // Cancel previous daily notifications (IDs 1000-1100)
+      final cancelFutures = <Future<void>>[];
+      for (int i = 1000; i < 1100; i++) {
+        cancelFutures.add(_notifications.cancel(id: i));
+      }
+      await Future.wait(cancelFutures);
     }
 
     int scheduledCount = 0;
@@ -228,6 +266,7 @@ class NotificationService {
         );
 
     final now = tz.TZDateTime.now(tz.local);
+    final scheduleFutures = <Future<void>>[];
 
     // Schedule for the next 7 days
     for (int day = 0; day < 7; day++) {
@@ -247,25 +286,28 @@ class NotificationService {
           playerName,
         );
 
-        await _notifications.zonedSchedule(
+        scheduleFutures.add(_notifications.zonedSchedule(
           id: 1000 + scheduledCount,
           title: notification.$1,
           body: notification.$2,
           scheduledDate: scheduledDate,
           notificationDetails: NotificationDetails(android: androidDetails),
           androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        );
+        ));
         scheduledCount++;
       }
     }
+    await Future.wait(scheduleFutures);
     debugPrint("📅 Scheduled $scheduledCount general notifications for 1 week");
   }
 
   Future<void> scheduleInactivityNotification(String playerName) async {
     // Cancel previous inactivity notifications (IDs 2000-2010)
+    final cancelFutures = <Future<void>>[];
     for (int i = 2000; i < 2010; i++) {
-      await _notifications.cancel(id: i);
+      cancelFutures.add(_notifications.cancel(id: i));
     }
+    await Future.wait(cancelFutures);
 
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
@@ -285,6 +327,7 @@ class NotificationService {
       "1m": const Duration(days: 30),
     };
 
+    final scheduleFutures = <Future<void>>[];
     int i = 0;
     for (var entry in intervals.entries) {
       final key = entry.key;
@@ -294,16 +337,17 @@ class NotificationService {
         key,
       );
 
-      await _notifications.zonedSchedule(
+      scheduleFutures.add(_notifications.zonedSchedule(
         id: 2000 + i,
         title: notification.$1,
         body: notification.$2,
         scheduledDate: tz.TZDateTime.now(tz.local).add(duration),
         notificationDetails: NotificationDetails(android: androidDetails),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      );
+      ));
       i++;
     }
+    await Future.wait(scheduleFutures);
     debugPrint("⏳ Scheduled $i inactivity notifications");
   }
 
@@ -366,10 +410,13 @@ class NotificationService {
   Future<void> scheduleDailyMorningNotification(
     String playerName,
     int hour,
-    int minute,
-  ) async {
-    // ID 6000 for daily morning quiz
-    await _notifications.cancel(id: 6000);
+    int minute, {
+    bool skipCancel = false,
+  }) async {
+    if (!skipCancel) {
+      // ID 6000 for daily morning quiz
+      await _notifications.cancel(id: 6000);
+    }
 
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
@@ -414,10 +461,15 @@ class NotificationService {
     required int dailyQuizStreak,
     required int streakRevivals,
     required String lastDailyQuizDate,
+    bool skipCancel = false,
   }) async {
-    // Cancel previous challenge reminder notifications (IDs 3000 to 3050)
-    for (int i = 3000; i <= 3050; i++) {
-      await _notifications.cancel(id: i);
+    if (!skipCancel) {
+      // Cancel previous challenge reminder notifications (IDs 3000 to 3050)
+      final cancelFutures = <Future<void>>[];
+      for (int i = 3000; i <= 3050; i++) {
+        cancelFutures.add(_notifications.cancel(id: i));
+      }
+      await Future.wait(cancelFutures);
     }
 
     const AndroidNotificationDetails androidDetails =
@@ -447,6 +499,7 @@ class NotificationService {
       ("15m", const Duration(minutes: 15)),
     ];
 
+    final scheduleFutures = <Future<void>>[];
     int scheduledCount = 0;
 
     for (int day = 0; day < 7; day++) {
@@ -478,7 +531,7 @@ class NotificationService {
 
         final notificationId = 3000 + (day * 4) + i;
 
-        await _notifications.zonedSchedule(
+        scheduleFutures.add(_notifications.zonedSchedule(
           id: notificationId,
           title: notification.$1,
           body: notification.$2,
@@ -486,10 +539,11 @@ class NotificationService {
           notificationDetails: NotificationDetails(android: androidDetails),
           androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
           payload: 'quiz',
-        );
+        ));
         scheduledCount++;
       }
     }
+    await Future.wait(scheduleFutures);
     debugPrint("🔔 Scheduled $scheduledCount daily challenge reminders");
   }
 

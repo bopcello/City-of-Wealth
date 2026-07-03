@@ -588,9 +588,10 @@ Future<void> saveGameState({
   int? wakeUpHour,
   int? wakeUpMinute,
   bool? disasterAlertsEnabled,
+  Map<String, dynamic>? stats,
 }) async {
   final prefs = await SharedPreferences.getInstance();
-  
+
   final Map<String, dynamic> data;
   if (partialData != null) {
     data = Map<String, dynamic>.from(partialData);
@@ -599,57 +600,58 @@ Future<void> saveGameState({
     }
   } else {
     data = {
-    kpKey: kp,
-    gemsKey: gems,
-    careerTrackKey: career?.track.name,
-    careerLevelKey: career?.level,
-    lastIncomeTimeKey: lastIncomeTime?.millisecondsSinceEpoch,
-    bankruptcyCountKey: bankruptcyCount,
-    playerNameKey: playerName,
-    cityLayoutKey: layout != null ? jsonEncode(layout.map((b) => b.toJson()).toList()) : null,
-    assetsKey: assets != null ? jsonEncode(assets.toJson()) : null,
-    rentChoiceKey: rent?.name,
-    foodChoiceKey: food?.name,
-    transportChoiceKey: transport?.name,
-    insurancesKey: insurances?.map((e) => e.name).toList(),
-    debtCycleCountKey: debtCycleCount,
-    nextDestructionCycleKey: nextDestructionCycle,
-    nextDisasterCycleKey: nextDisasterCycle,
-    'hasWall': wall,
-    completedQuizzesKey: completedQuizzes?.toList(),
-    isWorkingOvertimeKey: isWorkingOvertime,
-    overtimeStreakKey: overtimeStreak,
-    activePassiveIncomesKey: activePassiveIncomes != null ? jsonEncode(
-      activePassiveIncomes.map((k, v) => MapEntry(k.name, v)),
-    ) : null,
-    'activeDisasterEffects': activeDisasterEffects != null ? jsonEncode(
-      activeDisasterEffects.map((k, v) => MapEntry(k.name, v)),
-    ) : null,
-    isDarkModeKey: isDarkMode,
-    musicVolumeKey: musicVolume,
-    sfxVolumeKey: sfxVolume,
-    'pendingDisasterResults': pendingDisasterResults != null ? jsonEncode(
-      pendingDisasterResults.map((e) => e.toJson()).toList(),
-    ) : null,
-    solvedQuizHashesKey: solvedQuizHashes?.toList(),
-    lastUpdatedKey: DateTime.now().millisecondsSinceEpoch,
-    dailyQuizStreakKey: dailyQuizStreak,
-    lastDailyQuizDateKey: lastDailyQuizDate,
-    streakRevivalsKey: streakRevivals,
-    lastRevivalDateKey: lastRevivalDate,
-    nextDisasterTypeKey: nextDisasterType?.name,
-    onboardingCompleteKey: onboardingComplete,
-    wakeUpHourKey: wakeUpHour,
-    wakeUpMinuteKey: wakeUpMinute,
-    disasterAlertsEnabledKey: disasterAlertsEnabled,
+      kpKey: kp,
+      gemsKey: gems,
+      careerTrackKey: career?.track.name,
+      careerLevelKey: career?.level,
+      lastIncomeTimeKey: lastIncomeTime?.millisecondsSinceEpoch,
+      bankruptcyCountKey: bankruptcyCount,
+      playerNameKey: playerName,
+      cityLayoutKey: layout != null
+          ? jsonEncode(layout.map((b) => b.toJson()).toList())
+          : null,
+      assetsKey: assets != null ? jsonEncode(assets.toJson()) : null,
+      rentChoiceKey: rent?.name,
+      foodChoiceKey: food?.name,
+      transportChoiceKey: transport?.name,
+      insurancesKey: insurances?.map((e) => e.name).toList(),
+      debtCycleCountKey: debtCycleCount,
+      nextDestructionCycleKey: nextDestructionCycle,
+      nextDisasterCycleKey: nextDisasterCycle,
+      'hasWall': wall,
+      completedQuizzesKey: completedQuizzes?.toList(),
+      isWorkingOvertimeKey: isWorkingOvertime,
+      overtimeStreakKey: overtimeStreak,
+      activePassiveIncomesKey: activePassiveIncomes != null
+          ? jsonEncode(activePassiveIncomes.map((k, v) => MapEntry(k.name, v)))
+          : null,
+      'activeDisasterEffects': activeDisasterEffects != null
+          ? jsonEncode(activeDisasterEffects.map((k, v) => MapEntry(k.name, v)))
+          : null,
+      isDarkModeKey: isDarkMode,
+      musicVolumeKey: musicVolume,
+      sfxVolumeKey: sfxVolume,
+      'pendingDisasterResults': pendingDisasterResults != null
+          ? jsonEncode(pendingDisasterResults.map((e) => e.toJson()).toList())
+          : null,
+      solvedQuizHashesKey: solvedQuizHashes?.toList(),
+      lastUpdatedKey: DateTime.now().millisecondsSinceEpoch,
+      dailyQuizStreakKey: dailyQuizStreak,
+      lastDailyQuizDateKey: lastDailyQuizDate,
+      streakRevivalsKey: streakRevivals,
+      lastRevivalDateKey: lastRevivalDate,
+      nextDisasterTypeKey: nextDisasterType?.name,
+      onboardingCompleteKey: onboardingComplete,
+      wakeUpHourKey: wakeUpHour,
+      wakeUpMinuteKey: wakeUpMinute,
+      disasterAlertsEnabledKey: disasterAlertsEnabled,
+      'stats': stats != null ? jsonEncode(stats) : null,
     };
     // Remove null values to avoid overwriting with null if not intended
     data.removeWhere((key, value) => value == null);
   }
 
-  debugPrint(
-    "💾 SAVING GAME LOCALLY (${data.keys.length} fields updated)",
-  );
+  debugPrint("💾 SAVING GAME LOCALLY (${data.keys.length} fields updated)");
 
   // Local Save - Only iterate over keys in 'data'
   for (var entry in data.entries) {
@@ -673,11 +675,32 @@ Future<void> saveGameState({
     }
   }
 
+  for (final key in [
+    isDarkModeKey,
+    musicVolumeKey,
+    sfxVolumeKey,
+    lastUpdatedKey,
+  ]) {
+    if (!data.containsKey(key)) continue;
+    final value = data[key];
+    if (value == null) {
+      await prefs.remove(key);
+    } else if (value is int) {
+      await prefs.setInt(key, value);
+    } else if (value is bool) {
+      await prefs.setBool(key, value);
+    } else if (value is double) {
+      await prefs.setDouble(key, value);
+    }
+  }
+
   // Cloud Save
   if (syncToCloud && uid != null) {
     await FirestoreService().savePlayerProgress(uid, data);
   }
-}Future<
+}
+
+Future<
   (
     int,
     int,
@@ -714,6 +737,7 @@ Future<void> saveGameState({
     int,
     int,
     bool,
+    Map<String, dynamic>?,
   )
 >
 loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
@@ -729,7 +753,9 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
     final scopedLastUpdatedKey = "${uid}_$lastUpdatedKey";
     if (!prefs.containsKey(scopedLastUpdatedKey)) {
       if (prefs.containsKey(lastUpdatedKey)) {
-        debugPrint("🔄 Migrating unscoped local save data to user-scoped data for $uid");
+        debugPrint(
+          "🔄 Migrating unscoped local save data to user-scoped data for $uid",
+        );
         final keysToMigrate = [
           kpKey,
           gemsKey,
@@ -855,22 +881,43 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
 
   final data = preferCloud ? cloudData! : {};
 
-  final int kp = (data[kpKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(kpKey)) ?? 0;
-  final int gems = (data[gemsKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(gemsKey)) ?? 0;
+  final int kp =
+      (data[kpKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(kpKey)) ?? 0;
+  final int gems =
+      (data[gemsKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(gemsKey)) ?? 0;
   final int bankruptcyCount =
-      (data[bankruptcyCountKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(bankruptcyCountKey)) ?? 0;
+      (data[bankruptcyCountKey] as num?)?.toInt() ??
+      prefs.getInt(scopedKey(bankruptcyCountKey)) ??
+      0;
   final int debtCycleCount =
-      (data[debtCycleCountKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(debtCycleCountKey)) ?? 0;
-  final int? nextDestructionCycle = (data[nextDestructionCycleKey] as num?)?.toInt() ?? (prefs.containsKey(scopedKey(nextDestructionCycleKey)) ? prefs.getInt(scopedKey(nextDestructionCycleKey)) : null);
-  final int? nextDisasterCycle = (data[nextDisasterCycleKey] as num?)?.toInt() ?? (prefs.containsKey(scopedKey(nextDisasterCycleKey)) ? prefs.getInt(scopedKey(nextDisasterCycleKey)) : null);
-  final bool isDarkMode = data[isDarkModeKey] == true || (prefs.getBool(scopedKey(isDarkModeKey)) ?? false);
-  final String playerName = data[playerNameKey]?.toString() ?? prefs.getString(scopedKey(playerNameKey)) ?? "User";
-  final musicVolume =
-      data[musicVolumeKey]?.toDouble() ??
+      (data[debtCycleCountKey] as num?)?.toInt() ??
+      prefs.getInt(scopedKey(debtCycleCountKey)) ??
+      0;
+  final int? nextDestructionCycle =
+      (data[nextDestructionCycleKey] as num?)?.toInt() ??
+      (prefs.containsKey(scopedKey(nextDestructionCycleKey))
+          ? prefs.getInt(scopedKey(nextDestructionCycleKey))
+          : null);
+  final int? nextDisasterCycle =
+      (data[nextDisasterCycleKey] as num?)?.toInt() ??
+      (prefs.containsKey(scopedKey(nextDisasterCycleKey))
+          ? prefs.getInt(scopedKey(nextDisasterCycleKey))
+          : null);
+  final bool isDarkMode =
+      data[isDarkModeKey] == true ||
+      (prefs.getBool(scopedKey(isDarkModeKey)) ?? false);
+  final String playerName =
+      data[playerNameKey]?.toString() ??
+      prefs.getString(scopedKey(playerNameKey)) ??
+      "User";
+  final double musicVolume =
+      (data[musicVolumeKey] as num?)?.toDouble() ??
       prefs.getDouble(scopedKey(musicVolumeKey)) ??
       0.7;
-  final sfxVolume =
-      data[sfxVolumeKey]?.toDouble() ?? prefs.getDouble(scopedKey(sfxVolumeKey)) ?? 1.0;
+  final double sfxVolume =
+      (data[sfxVolumeKey] as num?)?.toDouble() ??
+      prefs.getDouble(scopedKey(sfxVolumeKey)) ??
+      1.0;
   final int dailyQuizStreak =
       (data[dailyQuizStreakKey] as num?)?.toInt() ??
       prefs.getInt(scopedKey(dailyQuizStreakKey)) ??
@@ -887,7 +934,9 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
   final String? lastRevivalDate =
       data[lastRevivalDateKey]?.toString() ??
       prefs.getString(scopedKey(lastRevivalDateKey));
-  final String? nextDisasterTypeName = data[nextDisasterTypeKey]?.toString() ?? prefs.getString(scopedKey(nextDisasterTypeKey));
+  final String? nextDisasterTypeName =
+      data[nextDisasterTypeKey]?.toString() ??
+      prefs.getString(scopedKey(nextDisasterTypeKey));
   final DisasterType? nextDisasterType = nextDisasterTypeName != null
       ? DisasterType.values.firstWhere(
           (e) => e.name == nextDisasterTypeName,
@@ -895,13 +944,28 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
         )
       : null;
 
-  final bool onboardingComplete = (data[onboardingCompleteKey] == true) || (prefs.getBool(scopedKey(onboardingCompleteKey)) ?? false);
-  final int wakeUpHour = (data[wakeUpHourKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(wakeUpHourKey)) ?? 8;
-  final int wakeUpMinute = (data[wakeUpMinuteKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(wakeUpMinuteKey)) ?? 0;
-  final bool disasterAlertsEnabled = (data[disasterAlertsEnabledKey] == true) || (prefs.getBool(scopedKey(disasterAlertsEnabledKey)) ?? true);
+  final bool onboardingComplete =
+      (data[onboardingCompleteKey] == true) ||
+      (prefs.getBool(scopedKey(onboardingCompleteKey)) ?? false);
+  final int wakeUpHour =
+      (data[wakeUpHourKey] as num?)?.toInt() ??
+      prefs.getInt(scopedKey(wakeUpHourKey)) ??
+      8;
+  final int wakeUpMinute =
+      (data[wakeUpMinuteKey] as num?)?.toInt() ??
+      prefs.getInt(scopedKey(wakeUpMinuteKey)) ??
+      0;
+  final bool disasterAlertsEnabled =
+      (data[disasterAlertsEnabledKey] == true) ||
+      (prefs.getBool(scopedKey(disasterAlertsEnabledKey)) ?? true);
 
-  final String? trackName = data[careerTrackKey]?.toString() ?? prefs.getString(scopedKey(careerTrackKey));
-  final int level = (data[careerLevelKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(careerLevelKey)) ?? 1;
+  final String? trackName =
+      data[careerTrackKey]?.toString() ??
+      prefs.getString(scopedKey(careerTrackKey));
+  final int level =
+      (data[careerLevelKey] as num?)?.toInt() ??
+      prefs.getInt(scopedKey(careerLevelKey)) ??
+      1;
 
   final track = CareerTrack.values.firstWhere(
     (e) => e.name == trackName,
@@ -922,7 +986,8 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
         DateTime.now().millisecondsSinceEpoch;
   }
 
-  final layoutJson = data[cityLayoutKey] ?? prefs.getString(scopedKey(cityLayoutKey));
+  final layoutJson =
+      data[cityLayoutKey] ?? prefs.getString(scopedKey(cityLayoutKey));
   List<PlacedBuilding> layout = [];
   if (layoutJson != null) {
     try {
@@ -948,24 +1013,29 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
     }
   }
 
-  final rentName = data[rentChoiceKey] ?? prefs.getString(scopedKey(rentChoiceKey));
+  final rentName =
+      data[rentChoiceKey] ?? prefs.getString(scopedKey(rentChoiceKey));
   final rent = rentName != null
       ? RentType.values.firstWhere((e) => e.name == rentName)
       : null;
 
-  final foodName = data[foodChoiceKey] ?? prefs.getString(scopedKey(foodChoiceKey));
+  final foodName =
+      data[foodChoiceKey] ?? prefs.getString(scopedKey(foodChoiceKey));
   final food = foodName != null
       ? FoodType.values.firstWhere((e) => e.name == foodName)
       : null;
 
   final transportName =
-      data[transportChoiceKey] ?? prefs.getString(scopedKey(transportChoiceKey));
+      data[transportChoiceKey] ??
+      prefs.getString(scopedKey(transportChoiceKey));
   final transport = transportName != null
       ? TransportType.values.firstWhere((e) => e.name == transportName)
       : null;
 
   final List<dynamic> insuranceNamesRaw =
-      data[insurancesKey] ?? prefs.getStringList(scopedKey(insurancesKey)) ?? [];
+      data[insurancesKey] ??
+      prefs.getStringList(scopedKey(insurancesKey)) ??
+      [];
   final List<dynamic> insuranceNames = insuranceNamesRaw;
   final insurances = insuranceNames
       .map(
@@ -976,11 +1046,17 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
       )
       .toSet();
 
-  final bool? savedWall = (data['hasWall'] as bool?) ?? prefs.getBool(scopedKey('hasWall'));
+  final bool? savedWall =
+      (data['hasWall'] as bool?) ?? prefs.getBool(scopedKey('hasWall'));
   final completedQuizzes = mergedQuizzes;
 
-  final bool isWorkingOvertime = (data[isWorkingOvertimeKey] == true) || (prefs.getBool(scopedKey(isWorkingOvertimeKey)) ?? false);
-  final int overtimeStreak = (data[overtimeStreakKey] as num?)?.toInt() ?? prefs.getInt(scopedKey(overtimeStreakKey)) ?? 0;
+  final bool isWorkingOvertime =
+      (data[isWorkingOvertimeKey] == true) ||
+      (prefs.getBool(scopedKey(isWorkingOvertimeKey)) ?? false);
+  final int overtimeStreak =
+      (data[overtimeStreakKey] as num?)?.toInt() ??
+      prefs.getInt(scopedKey(overtimeStreakKey)) ??
+      0;
 
   final passiveIncomeJson =
       data[activePassiveIncomesKey] ??
@@ -1008,7 +1084,8 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
   }
 
   final disasterEffectsJson =
-      data['activeDisasterEffects'] ?? prefs.getString(scopedKey('activeDisasterEffects'));
+      data['activeDisasterEffects'] ??
+      prefs.getString(scopedKey('activeDisasterEffects'));
   Map<DisasterType, int> activeDisasterEffects = {};
   if (disasterEffectsJson != null) {
     try {
@@ -1048,6 +1125,18 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
     }
   }
 
+  final statsJson = data['stats'] ?? prefs.getString(scopedKey('stats'));
+  Map<String, dynamic>? stats;
+  if (statsJson != null) {
+    try {
+      stats = statsJson is String
+          ? jsonDecode(statsJson)
+          : (statsJson is Map ? Map<String, dynamic>.from(statsJson) : null);
+    } catch (e) {
+      debugPrint("⚠️ Error decoding stats: $e");
+    }
+  }
+
   return (
     kp,
     gems,
@@ -1071,8 +1160,8 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
     activeDisasterEffects,
     playerName,
     isDarkMode,
-    musicVolume as double,
-    sfxVolume as double,
+    musicVolume,
+    sfxVolume,
     pendingDisasterResults,
     dailyQuizStreak,
     lastDailyQuizDate,
@@ -1084,6 +1173,7 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
     wakeUpHour,
     wakeUpMinute,
     disasterAlertsEnabled,
+    stats,
   );
 }
 

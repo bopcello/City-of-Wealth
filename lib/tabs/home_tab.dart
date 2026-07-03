@@ -16,6 +16,8 @@ class HomeTab extends StatelessWidget {
   final VoidCallback onClearEvents;
   final bool dailyQuizAvailable;
   final SfxManager sfx;
+  final List<String> recentVisitedMoneyTiles;
+  final void Function(String) onMoneyTileTap;
 
   const HomeTab({
     super.key,
@@ -30,6 +32,8 @@ class HomeTab extends StatelessWidget {
     required this.onClearEvents,
     required this.dailyQuizAvailable,
     required this.sfx,
+    required this.recentVisitedMoneyTiles,
+    required this.onMoneyTileTap,
   });
 
   @override
@@ -131,11 +135,13 @@ class HomeTab extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   itemCount: events.length + (dailyQuizAvailable ? 1 : 0),
                   itemBuilder: (context, index) {
-                    final allEvents = dailyQuizAvailable 
-                        ? ["New daily question available!", ...events] 
+                    final allEvents = dailyQuizAvailable
+                        ? ["New daily question available!", ...events]
                         : events;
                     final event =
-                        allEvents[allEvents.length - 1 - index]; // Show latest first
+                        allEvents[allEvents.length -
+                            1 -
+                            index]; // Show latest first
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Row(
@@ -226,6 +232,76 @@ class HomeTab extends StatelessWidget {
               );
             }).toList(),
           ),
+        if (recentVisitedMoneyTiles.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          const Text(
+            "Recently Visited",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: recentVisitedMoneyTiles.map((title) {
+              IconData icon = Icons.help;
+              if (title == "Career") icon = Icons.badge;
+              if (title == "Passive Income") icon = Icons.trending_up;
+              if (title == "Assets") icon = Icons.account_balance;
+              if (title == "Liabilities") icon = Icons.warning;
+              if (title == "Quiz") icon = Icons.quiz;
+
+              return Expanded(
+                child: Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      sfx.playClick();
+                      onMoneyTileTap(title);
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            icon,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ],
     );
   }

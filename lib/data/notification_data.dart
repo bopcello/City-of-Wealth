@@ -748,19 +748,19 @@ class NotificationData {
     int revivals,
     String timeLeft,
   ) {
-    if (revivals > 0) {
+    if (streak == 0) {
       final list =
-          challengeReminderWithRevival[timeLeft] ??
-          challengeReminderWithRevival["6h"]!;
+          challengeReminderZeroStreak[timeLeft] ??
+          challengeReminderZeroStreak["6h"]!;
       final choice = _randomElement(list);
       return (
         _format(choice.$1, {'name': name}),
         _format(choice.$2, {'name': name}),
       );
-    } else if (streak == 0) {
+    } else if (revivals > 0) {
       final list =
-          challengeReminderZeroStreak[timeLeft] ??
-          challengeReminderZeroStreak["6h"]!;
+          challengeReminderWithRevival[timeLeft] ??
+          challengeReminderWithRevival["6h"]!;
       final choice = _randomElement(list);
       return (
         _format(choice.$1, {'name': name}),

@@ -6,11 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 import '../game_state.dart';
+import 'game_stats.dart';
 import '../services/notification_service.dart';
 import '../services/firestore_service.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/music_manager.dart';
+import '../widgets/icon_text.dart';
 
 class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   final FirestoreService firestoreService = FirestoreService();
@@ -67,11 +69,13 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   int wakeUpHour = 8;
   int wakeUpMinute = 0;
   bool disasterAlertsEnabled = true;
+  GameStats stats = GameStats();
   MusicManager? musicManager;
   int _selectedIndex = 0;
   String? _currentUid;
   DateTime? _lastSyncTime;
   bool _isSaving = false;
+  bool _syncRequestedWhileLoading = false;
 
   int get selectedIndex => _selectedIndex;
   set selectedIndex(int value) {
@@ -108,8 +112,10 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
   bool loaded = false;
   final List<String> pendingEvents = [];
+  List<String> recentVisitedMoneyTiles = [];
 
   Timer? _cycleTimer;
+  Timer? _notificationRescheduleTimer;
 
   GameManager() {
     final user = FirebaseAuth.instance.currentUser;
@@ -141,6 +147,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   @override
   void dispose() {
     _cycleTimer?.cancel();
+    _notificationRescheduleTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -152,23 +159,38 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.detached ||
-        state == AppLifecycleState.inactive) {
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached) {
       debugPrint("📱 App state changed ($state): Triggering sync");
-
-      // Only pause music if the app is actually backgrounded or closed,
-      // not just when the notification shade is pulled down (inactive).
-      if (state != AppLifecycleState.inactive) {
-        musicManager?.pauseMusic();
-      }
-
+      musicManager?.pauseMusic();
       syncWithCloud(force: true);
       NotificationService().scheduleInactivityNotification(playerName);
     } else if (state == AppLifecycleState.resumed) {
-      debugPrint("📱 App resumed: Resuming music and checking quiz flag");
+      debugPrint("📱 App resumed: Resuming music, checking quiz flag, and rescheduling notifications");
       musicManager?.resumeMusic();
       _checkNewQuizFlag();
+      _rescheduleNotificationsDebounced();
     }
+  }
+
+  void _rescheduleNotificationsDebounced() {
+    _notificationRescheduleTimer?.cancel();
+    _notificationRescheduleTimer = Timer(const Duration(seconds: 5), () async {
+      if (!loaded || playerName == "User") return;
+      try {
+        debugPrint("🔔 Rescheduling all notifications (debounced)");
+        await NotificationService().rescheduleAllNotifications(
+          playerName: playerName,
+          dailyQuizStreak: dailyQuizStreak,
+          streakRevivals: streakRevivals,
+          lastDailyQuizDate: lastDailyQuizDate,
+          wakeUpHour: wakeUpHour,
+          wakeUpMinute: wakeUpMinute,
+        );
+      } catch (e) {
+        debugPrint("❌ Error rescheduling notifications: $e");
+      }
+    });
   }
 
   Future<void> _checkNewQuizFlag() async {
@@ -228,6 +250,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     wakeUpHour = 8;
     wakeUpMinute = 0;
     disasterAlertsEnabled = true;
+    stats = GameStats();
+    recentVisitedMoneyTiles = [];
     loaded = false;
     notifyListeners();
   }
@@ -275,6 +299,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         savedWakeUpHour,
         savedWakeUpMinute,
         savedDisasterAlertsEnabled,
+        savedStats,
       ) = await loadGameState(
         uid: uid,
         useCloud: useCloud,
@@ -316,6 +341,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       wakeUpHour = savedWakeUpHour;
       wakeUpMinute = savedWakeUpMinute;
       disasterAlertsEnabled = savedDisasterAlertsEnabled;
+      if (savedStats != null) {
+        stats = GameStats.fromJson(savedStats);
+      }
 
       final prefs = await SharedPreferences.getInstance();
       tutorialComplete =
@@ -323,6 +351,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
             uid != null ? "${uid}_tutorialComplete" : 'tutorialComplete',
           ) ??
           false;
+      final recentKey = uid != null ? "${uid}_recent_money_tiles" : "recent_money_tiles";
+      recentVisitedMoneyTiles = prefs.getStringList(recentKey) ?? [];
       if (onboardingComplete && !tutorialComplete) {
         isTutorialActive = true;
       }
@@ -336,13 +366,12 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         _checkDailyCycle();
         _checkStreakConsistency();
         _syncDailyQuiz(); // Check for new quiz on load
-        NotificationService().scheduleDailyNotifications(playerName);
-        NotificationService().scheduleDailyMorningNotification(
-          playerName,
-          wakeUpHour,
-          wakeUpMinute,
-        );
-        _updateDailyChallengeReminders();
+        _rescheduleNotificationsDebounced();
+      }
+
+      if (_syncRequestedWhileLoading) {
+        _syncRequestedWhileLoading = false;
+        syncWithCloud(force: true);
       }
     } catch (e) {
       debugPrint("❌ Error loading game: $e");
@@ -365,7 +394,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> syncWithCloud({bool force = false}) async {
     if (!loaded) {
-      debugPrint("⚠️ Skipping cloud sync: Game manager not yet loaded");
+      debugPrint("⚠️ Queueing cloud sync: Game manager not yet loaded");
+      _syncRequestedWhileLoading = true;
       return;
     }
 
@@ -425,6 +455,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       wakeUpHour: wakeUpHour,
       wakeUpMinute: wakeUpMinute,
       disasterAlertsEnabled: disasterAlertsEnabled,
+      stats: stats.toJson(),
     );
   }
 
@@ -471,6 +502,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         wakeUpHour: wakeUpHour,
         wakeUpMinute: wakeUpMinute,
         disasterAlertsEnabled: disasterAlertsEnabled,
+        stats: stats.toJson(),
       );
 
       if (nextDisasterCycle != null && nextDisasterType != null) {
@@ -766,6 +798,113 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     lastIncomeTime = DateTime.now();
     pendingEvents.addAll(events);
 
+    // --- Lifetime Stats Tracking ---
+    if (cycles > 0) {
+      // Gems earned from salary
+      final int salaryEarned = dailyIncome(career.track, career.level) * cycles;
+      stats.lifetimeGemsEarnedSalary += salaryEarned;
+
+      // Gems earned from passive income (per cycle total)
+      int passiveThisBatch = 0;
+      activePassiveIncomes.forEach((assetType, investedCount) {
+        final info = passiveIncomeData.values.firstWhere(
+          (e) => e.assetType == assetType,
+        );
+        if (cityLayout.any((b) => b.name == info.buildingName)) {
+          final ownedCount = assets.count(assetType);
+          final eligibleCount = min(ownedCount, investedCount);
+          final multiplier = getPassiveIncomeMultiplier(assetType);
+          final streakRewards = getStreakRewards(dailyQuizStreak);
+          passiveThisBatch += (eligibleCount * info.incomePerAsset * multiplier * streakRewards.passiveIncomeMultiplier).round() * cycles;
+        }
+      });
+      stats.lifetimeGemsEarnedPassive += passiveThisBatch;
+      stats.lifetimeGemsEarnedTotal = stats.lifetimeGemsEarnedSalary + stats.lifetimeGemsEarnedPassive;
+
+      // Gems spent on living costs
+      if (rentChoice != null) {
+        final rc = getRentCost(career.track, career.level, rentChoice!) * cycles;
+        stats.lifetimeGemsSpentTotal += rc;
+        if (rentChoice == RentType.sharedStudio) {
+          stats.lifetimeGemsSpentSharedStudio += rc;
+        } else if (rentChoice == RentType.smallApartment) {
+          stats.lifetimeGemsSpentSmallApartment += rc;
+        } else if (rentChoice == RentType.luxuryHouse) {
+          stats.lifetimeGemsSpentLuxuryHouse += rc;
+        }
+        stats.cyclesSpentSharedStudio += (rentChoice == RentType.sharedStudio) ? cycles : 0;
+        stats.cyclesSpentSmallApartment += (rentChoice == RentType.smallApartment) ? cycles : 0;
+        stats.cyclesSpentLuxuryHouse += (rentChoice == RentType.luxuryHouse) ? cycles : 0;
+      }
+      if (foodChoice != null) {
+        final fc = getFoodCost(career.track, career.level, foodChoice!) * cycles;
+        stats.lifetimeGemsSpentTotal += fc;
+        if (foodChoice == FoodType.cheap) { stats.lifetimeGemsSpentCheapFood += fc; stats.cyclesSpentCheapFood += cycles; }
+        else if (foodChoice == FoodType.balanced) { stats.lifetimeGemsSpentBalancedDiet += fc; stats.cyclesSpentBalancedDiet += cycles; }
+        else if (foodChoice == FoodType.buffet) { stats.lifetimeGemsSpentBuffet += fc; stats.cyclesSpentBuffet += cycles; }
+      }
+      if (transportChoice != null) {
+        final tc = getTransportCost(career.track, career.level, transportChoice!) * cycles;
+        stats.lifetimeGemsSpentTotal += tc;
+        if (transportChoice == TransportType.public) { stats.lifetimeGemsSpentPublicTransport += tc; stats.cyclesSpentPublicTransport += cycles; }
+        else if (transportChoice == TransportType.cycle) { stats.lifetimeGemsSpentCycling += tc; stats.cyclesSpentCycling += cycles; }
+        else if (transportChoice == TransportType.car) { stats.lifetimeGemsSpentCar += tc; stats.cyclesSpentCar += cycles; }
+      }
+
+      // Insurance costs
+      if (insurances.isNotEmpty) {
+        final insCost = insurances.length * 5 * cycles;
+        stats.lifetimeGemsSpentInsurance += insCost;
+        stats.totalPremiumsPaid += insCost;
+        stats.totalCyclesInsured += cycles;
+      } else {
+        stats.currentUninsuredStreak += cycles;
+        if (stats.currentUninsuredStreak > stats.longestGapUninsured) {
+          stats.longestGapUninsured = stats.currentUninsuredStreak;
+        }
+      }
+
+      // Debt tracking
+      stats.totalDaysPlayed += cycles;
+      if (gems < 0) {
+        final wasAlreadyInDebt = stats.currentDebtStreak > 0;
+        stats.totalCyclesSpentDebt += cycles;
+        stats.currentDebtStreak += cycles;
+        if (!wasAlreadyInDebt) stats.numberOfTimesDebtEntered++;
+        if (stats.currentDebtStreak > stats.longestContinuousDebtStreak) {
+          stats.longestContinuousDebtStreak = stats.currentDebtStreak;
+        }
+        if (gems.abs() > stats.maxDebtReached) stats.maxDebtReached = gems.abs();
+      } else {
+        stats.currentDebtStreak = 0;
+      }
+
+      // KP tracking
+      if (totalKpChange > 0) {
+        stats.lifetimeKpEarnedGross += totalKpChange;
+      } else if (totalKpChange < 0) {
+        stats.lifetimeKpLostGross += totalKpChange.abs();
+      }
+      if (kp > stats.highestKpReached) stats.highestKpReached = kp;
+      if (kp < stats.lowestKpReached) stats.lowestKpReached = kp;
+
+      // Peak gems
+      if (gems > stats.peakGemsHeld) stats.peakGemsHeld = gems;
+
+      // Per-cycle income/expenditure peaks
+      final cycleIncome = totalGemChange > 0 ? totalGemChange : 0;
+      if (cycleIncome > stats.highestSingleCycleIncome) stats.highestSingleCycleIncome = cycleIncome;
+      final cycleExp = totalGemChange < 0 ? totalGemChange.abs() : 0;
+      if (cycleExp > stats.highestSingleCycleExpenditure) stats.highestSingleCycleExpenditure = cycleExp;
+
+      // Disaster-free streak
+      stats.currentDisasterFreeStreak += cycles;
+      if (stats.currentDisasterFreeStreak > stats.longestDisasterFreeStretch) {
+        stats.longestDisasterFreeStretch = stats.currentDisasterFreeStreak;
+      }
+    }
+    // --- End Stats Tracking ---
+
     notifyListeners();
     save();
 
@@ -945,6 +1084,51 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     assets = assets.add(type, amount);
     kp += kpBonus;
 
+    // Stats tracking for asset purchases
+    stats.lifetimeGemsSpentTotal += cost;
+    switch (type) {
+      case AssetType.land:
+        {
+          stats.lifetimeGemsSpentLand += cost;
+          stats.totalLandPurchased += amount;
+          final pk = assets.count(AssetType.land);
+          if (pk > stats.peakLandHeld) stats.peakLandHeld = pk;
+        }
+        break;
+      case AssetType.properties:
+        {
+          stats.lifetimeGemsSpentProperties += cost;
+          stats.totalPropertiesPurchased += amount;
+          final pk = assets.count(AssetType.properties);
+          if (pk > stats.peakPropertiesHeld) stats.peakPropertiesHeld = pk;
+        }
+        break;
+      case AssetType.vehicles:
+        {
+          stats.lifetimeGemsSpentVehicles += cost;
+          stats.totalVehiclesPurchased += amount;
+          final pk = assets.count(AssetType.vehicles);
+          if (pk > stats.peakVehiclesHeld) stats.peakVehiclesHeld = pk;
+        }
+        break;
+      case AssetType.officeEquipment:
+        {
+          stats.lifetimeGemsSpentOfficeEquipment += cost;
+          stats.totalOfficeEquipmentPurchased += amount;
+          final pk = assets.count(AssetType.officeEquipment);
+          if (pk > stats.peakOfficeEquipmentHeld) stats.peakOfficeEquipmentHeld = pk;
+        }
+        break;
+      case AssetType.machinery:
+        {
+          stats.lifetimeGemsSpentMachinery += cost;
+          stats.totalMachineryPurchased += amount;
+          final pk = assets.count(AssetType.machinery);
+          if (pk > stats.peakMachineryHeld) stats.peakMachineryHeld = pk;
+        }
+        break;
+    }
+
     saveFields({
       gemsKey: gems,
       assetsKey: jsonEncode(assets.toJson()),
@@ -956,7 +1140,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       context: context,
       builder: (context) => AlertDialog(
         title: Text("Asset Purchased, $playerName"),
-        content: Text(message),
+        content: IconText(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -1050,12 +1234,22 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     if (!isPractice && lastDailyQuizDate != date) {
       // Streak always increments when the daily quiz is attempted
       dailyQuizStreak++;
+      stats.dailyQuizAttempted++;
       if (dailyQuizStreak % 10 == 0 && streakRevivals < 5) {
         streakRevivals++;
+        stats.totalRevivalsEarned++;
       }
+      if (dailyQuizStreak > stats.dailyQuizLongestStreak) stats.dailyQuizLongestStreak = dailyQuizStreak;
+      if (dailyQuizStreak >= 10) stats.timesStreak10Reached++;
+      if (dailyQuizStreak >= 30) stats.timesStreak30Reached++;
+      if (dailyQuizStreak >= 100) stats.timesStreak100Reached++;
 
       if (correct) {
         kp += 20; // 20 KP for correct daily
+        stats.dailyQuizCorrect++;
+        stats.totalKpEarnedDailyQuiz += 20;
+        stats.totalKpEarnedQuizzes += 20;
+        stats.lifetimeKpEarnedGross += 20;
         if (quizHash != null) solvedQuizHashes.add(quizHash);
       }
 
@@ -1072,6 +1266,10 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       }
     } else if (isPractice && correct) {
       kp += 10; // 10 KP for correct practice
+      stats.quizzesReplayed++;
+      stats.totalKpEarnedReplays += 10;
+      stats.totalKpEarnedQuizzes += 10;
+      stats.lifetimeKpEarnedGross += 10;
       if (quizHash != null) solvedQuizHashes.add(quizHash);
     }
 
@@ -1157,7 +1355,13 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     if (career.track != CareerTrack.student) {
       kp -= penalty;
       if (kp < 0) kp = 0;
+      stats.totalKpLostOvertime += penalty;
+      stats.totalKpLostOvertimePenalties += penalty;
+      if (overtimeStreak > 10) stats.timesBurnoutPenaltyTriggered++;
     }
+
+    stats.totalCyclesOvertime++;
+    if (overtimeStreak > stats.longestOvertimeStreak) stats.longestOvertimeStreak = overtimeStreak;
 
     isWorkingOvertime = true;
 
@@ -1320,6 +1524,27 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       "DISASTER: ${disasterLabel(disasterType)}! Check the detail report for losses and insurance coverage.",
     );
 
+    // --- Disaster Stats Tracking ---
+    stats.totalDisasters++;
+    stats.currentDisasterFreeStreak = 0;
+    switch (disasterType) {
+      case DisasterType.flood: stats.numberOfFloods++; stats.landLostFlood += lostAssets[AssetType.land] ?? 0; break;
+      case DisasterType.fire: stats.numberOfFires++; stats.propertiesVehiclesLostFire += (lostAssets[AssetType.properties] ?? 0) + (lostAssets[AssetType.vehicles] ?? 0); break;
+      case DisasterType.earthquake: stats.numberOfEarthquakes++; stats.officeEquipMachineryLostEarthquake += (lostAssets[AssetType.officeEquipment] ?? 0) + (lostAssets[AssetType.machinery] ?? 0); break;
+      case DisasterType.drought: stats.numberOfDroughts++; break;
+      case DisasterType.landslide: stats.numberOfLandslides++; break;
+      case DisasterType.economyCrash: stats.numberOfEconomyCrashes++; break;
+      case DisasterType.massEmigration: stats.numberOfMassEmigrations++; break;
+      case DisasterType.pandemic: stats.numberOfPandemics++; break;
+    }
+    if (hasAnyInsurance) {
+      stats.disastersSurvivedInsured++;
+    } else {
+      stats.disastersSurvivedUninsured++;
+    }
+    if (lostAssets.isEmpty && deactivatedPassiveIncomes.isEmpty) stats.disastersZeroLoss++;
+    // --- End Disaster Stats ---
+
     save();
     notifyListeners();
   }
@@ -1388,17 +1613,19 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
       if (daysDifference > 1) {
         // User missed one or more days
-        int daysToRevive = daysDifference - 1;
+        if (dailyQuizStreak > 0) {
+          int daysToRevive = daysDifference - 1;
 
-        while (daysToRevive > 0) {
-          if (streakRevivals > 0) {
-            streakRevivals--;
-            daysToRevive--;
-            lastRevivalDate = today; // Track when we last used revivals
-          } else {
-            // No more revivals
-            dailyQuizStreak = 0;
-            break;
+          while (daysToRevive > 0) {
+            if (streakRevivals > 0) {
+              streakRevivals--;
+              daysToRevive--;
+              lastRevivalDate = today; // Track when we last used revivals
+            } else {
+              // No more revivals
+              dailyQuizStreak = 0;
+              break;
+            }
           }
         }
 
@@ -1410,6 +1637,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
             "🛡️ Streak preserved using revivals. Remaining: $streakRevivals",
           );
         } else {
+          final yesterday = todayDate.subtract(const Duration(days: 1));
+          lastDailyQuizDate = DateFormat('yyyy-MM-dd').format(yesterday);
           debugPrint("💔 Streak reset due to inactivity.");
         }
 
@@ -1475,5 +1704,19 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       minute,
     );
     notifyListeners();
+  }
+
+  void visitMoneyTile(String title) {
+    recentVisitedMoneyTiles.remove(title);
+    recentVisitedMoneyTiles.insert(0, title);
+    if (recentVisitedMoneyTiles.length > 2) {
+      recentVisitedMoneyTiles.removeLast();
+    }
+    notifyListeners();
+    SharedPreferences.getInstance().then((prefs) {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      final key = uid != null ? "${uid}_recent_money_tiles" : "recent_money_tiles";
+      prefs.setStringList(key, recentVisitedMoneyTiles);
+    });
   }
 }

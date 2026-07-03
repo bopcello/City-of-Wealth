@@ -14,9 +14,9 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
 const db = admin.firestore();
 
 async function generateDailyQuiz() {
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-  if (!GEMINI_API_KEY) {
-    console.error('Missing GEMINI_API_KEY');
+  const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+  if (!OPENROUTER_API_KEY) {
+    console.error('Missing OPENROUTER_API_KEY');
     process.exit(1);
   }
 
@@ -77,44 +77,39 @@ Return the output in EXACTLY this JSON format:
 Ensure the explanations are thorough (at least 2-3 sentences).
 `;
 
-  // 3. Call Gemini Flash with Google Search grounding
+  // 3. Call OpenRouter with Google Search grounding
   try {
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      'https://openrouter.ai/api/v1/chat/completions',
       {
-        contents: [
+        model: 'google/gemini-2.0-flash-001',
+        messages: [
           {
             role: 'user',
-            parts: [{ text: prompt }]
+            content: prompt
           }
         ],
         tools: [
           {
-            googleSearch: {}
+            type: 'openrouter:web_search'
           }
         ]
       },
       {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`
         }
       }
     );
 
-    const candidates = response.data.candidates;
-    if (!candidates || candidates.length === 0) {
-      throw new Error('No candidates returned from Gemini');
+    const choices = response.data.choices;
+    if (!choices || choices.length === 0 || !choices[0].message) {
+      throw new Error('No message returned from OpenRouter');
     }
 
-    // Gemini with search grounding may return multiple parts — find the text one
-    const parts = candidates[0].content.parts;
-    const textPart = parts.find(p => p.text);
-    if (!textPart) {
-      throw new Error('No text part found in Gemini response');
-    }
-
-    const content = textPart.text;
-    console.log('Raw Gemini Response:', content);
+    const content = response.data.choices[0].message.content;
+    console.log('Raw OpenRouter Response:', content);
 
     // Extract JSON from potential markdown code block
     const jsonMatch = content.match(/\{[\s\S]*\}/);

@@ -1,33 +1,59 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
-/// Manages sound effects (SFX) playback.
+/// Manages sound effects (SFX) playback using dedicated players to prevent decoder churn.
 class SfxManager {
   static final SfxManager _instance = SfxManager._internal();
   factory SfxManager() => _instance;
 
-  final List<AudioPlayer> _pool = [];
-  final int _poolSize = 5;
-
-  int _poolIndex = 0;
+  final Map<String, AudioPlayer> _players = {};
   double _volume = 1.0;
   bool _isDisposed = false;
 
+  final Map<String, Source> _cachedSources = {};
+
   SfxManager._internal() {
-    // Initialize a pool of players.
-    // Use lowLatency mode for snappier UI sound effects.
-    for (int i = 0; i < _poolSize; i++) {
+    final sfxFiles = [
+      'lib/assets/music/Click.mp3',
+      'lib/assets/music/Back.mp3',
+      'lib/assets/music/Correct.mp3',
+      'lib/assets/music/Incorrect.mp3',
+      'lib/assets/music/Buy.mp3',
+      'lib/assets/music/Sell.mp3',
+      'lib/assets/music/Level_up.mp3',
+      'lib/assets/music/Disaster.mp3',
+    ];
+    for (final path in sfxFiles) {
       final player = AudioPlayer();
       player.audioCache.prefix = '';
       player.setPlayerMode(PlayerMode.lowLatency);
-      _pool.add(player);
+      player.setReleaseMode(ReleaseMode.stop);
+      _players[path] = player;
+    }
+    _preloadSfx();
+  }
+
+  Future<void> _preloadSfx() async {
+    final cache = AudioCache(prefix: '');
+    for (final path in _players.keys) {
+      try {
+        final uri = await cache.load(path);
+        final source = DeviceFileSource(uri.path);
+        _cachedSources[path] = source;
+        await _players[path]?.setSource(source);
+      } catch (e) {
+        debugPrint('[SFX_SYSTEM] Error preloading $path: $e');
+        final source = AssetSource(path);
+        _cachedSources[path] = source;
+        await _players[path]?.setSource(source).catchError((_) {});
+      }
     }
   }
 
   /// Update SFX volume (0.0 to 1.0)
   void setVolume(double volume) {
     _volume = volume;
-    for (final player in _pool) {
+    for (final player in _players.values) {
       player.setVolume(volume);
     }
   }
@@ -44,17 +70,17 @@ class SfxManager {
   Future<void> _playSound(String assetPath) async {
     if (_isDisposed) return;
     try {
-      // Rotate through the pool to allow overlapping sounds
-      final player = _pool[_poolIndex];
-      _poolIndex = (_poolIndex + 1) % _poolSize;
+      final player = _players[assetPath];
+      if (player == null) return;
 
-      // Ensure volume is synced
       player.setVolume(_volume);
 
-      await player.stop();
+      if (player.state == PlayerState.playing) {
+        await player.stop();
+      }
 
-      // Play source
-      await player.play(AssetSource(assetPath));
+      final source = _cachedSources[assetPath] ?? AssetSource(assetPath);
+      await player.play(source);
     } catch (e) {
       debugPrint('[SFX_SYSTEM] Error playing $assetPath: $e');
     }
@@ -62,10 +88,10 @@ class SfxManager {
 
   void dispose() {
     _isDisposed = true;
-    for (final player in _pool) {
+    for (final player in _players.values) {
       player.dispose();
     }
-    _pool.clear();
+    _players.clear();
   }
 }
 

@@ -324,27 +324,42 @@ class _TutorialOverlayState extends State<TutorialOverlay>
       ),
       TutorialStep(
         title: "Choose Your Rent",
-        description:
-            "Tap a Rent option in the highlighted panel above to make your selection and continue.",
+        description: widget.game.rentChoice != null
+            ? "You have already selected your Rent. You can choose this again when you level up or declare bankruptcy."
+            : "Tap a Rent option in the highlighted panel above to make your selection and continue.",
         targetKey: TutorialKeys.liabilitiesRentKey,
-        type: TutorialStepType.needsSelection,
-        canProgress: (game) => game.rentChoice != null,
+        type: widget.game.rentChoice != null
+            ? TutorialStepType.info
+            : TutorialStepType.needsSelection,
+        canProgress: widget.game.rentChoice != null
+            ? null
+            : (game) => game.rentChoice != null,
       ),
       TutorialStep(
         title: "Choose Your Food",
-        description:
-            "Now tap a Food plan in the highlighted panel above. Your choice affects daily KP and Gem expenses.",
+        description: widget.game.foodChoice != null
+            ? "You have already selected your Food plan. You can choose this again when you level up or declare bankruptcy."
+            : "Now tap a Food plan in the highlighted panel above. Your choice affects daily KP and Gem expenses.",
         targetKey: TutorialKeys.liabilitiesFoodKey,
-        type: TutorialStepType.needsSelection,
-        canProgress: (game) => game.foodChoice != null,
+        type: widget.game.foodChoice != null
+            ? TutorialStepType.info
+            : TutorialStepType.needsSelection,
+        canProgress: widget.game.foodChoice != null
+            ? null
+            : (game) => game.foodChoice != null,
       ),
       TutorialStep(
         title: "Choose Your Transport",
-        description:
-            "Finally, tap a Transport option in the highlighted panel above. Better options cost more but yield more KP.",
+        description: widget.game.transportChoice != null
+            ? "You have already selected your Transport mode. You can choose this again when you level up or declare bankruptcy."
+            : "Finally, tap a Transport option in the highlighted panel above. Better options cost more but yield more KP.",
         targetKey: TutorialKeys.liabilitiesTransportKey,
-        type: TutorialStepType.needsSelection,
-        canProgress: (game) => game.transportChoice != null,
+        type: widget.game.transportChoice != null
+            ? TutorialStepType.info
+            : TutorialStepType.needsSelection,
+        canProgress: widget.game.transportChoice != null
+            ? null
+            : (game) => game.transportChoice != null,
       ),
       TutorialStep(
         title: "Return to Money Tab",

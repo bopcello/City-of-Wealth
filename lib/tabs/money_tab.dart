@@ -132,6 +132,7 @@ class MoneyTab extends StatelessWidget {
             data: item,
             onTap: () {
               sfx.playClick();
+              game.visitMoneyTile(item.title);
               if (item.title == "Quiz") {
                 Navigator.push(
                   context,

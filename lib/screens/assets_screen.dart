@@ -130,7 +130,6 @@ class AssetsScreen extends StatelessWidget {
               final originalCost = assetCosts[type]!;
               final discountedCost = (originalCost * (1 - discount)).round();
               final sellPrice = assetSellPrice(type);
-              final canAfford = game.gems >= discountedCost;
               final ownedCount = game.assets.count(type);
 
               return Container(
@@ -140,11 +139,7 @@ class AssetsScreen extends StatelessWidget {
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: canAfford
-                        ? Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.3)
-                        : Colors.red.withValues(alpha: 0.3),
+                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                     width: 2,
                   ),
                 ),
@@ -188,11 +183,9 @@ class AssetsScreen extends StatelessWidget {
                         const SizedBox(width: 8),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: canAfford ? Colors.green : null,
-                            foregroundColor: canAfford ? Colors.white : null,
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                           ),
-                          onPressed: canAfford ? () => onBuyAsset(type) : null,
+                          onPressed: () => onBuyAsset(type),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [

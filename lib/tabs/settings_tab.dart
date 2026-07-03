@@ -5,9 +5,11 @@ import '../logic/game_manager.dart';
 import '../services/notification_service.dart';
 import '../theme/app_colors.dart';
 import '../screens/user_manual_screen.dart';
+import '../screens/stats_screen.dart';
 import '../logic/tutorial_keys.dart';
 
 class SettingsTab extends StatelessWidget {
+  final bool isActive;
   final GameManager game;
   final CareerState career;
   final bool isDarkMode;
@@ -20,6 +22,7 @@ class SettingsTab extends StatelessWidget {
 
   const SettingsTab({
     super.key,
+    required this.isActive,
     required this.game,
     required this.career,
     required this.isDarkMode,
@@ -255,6 +258,21 @@ class SettingsTab extends StatelessWidget {
               ),
               child: Column(
                 children: [
+                  ListTile(
+                    leading: Icon(Icons.query_stats, color: brandColor),
+                    title: const Text("Stats"),
+                    subtitle: const Text("Your lifetime financial record"),
+                    trailing: Icon(Icons.chevron_right, color: brandColor, size: 20),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => StatsScreen(game: game),
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(height: 1, indent: 56),
                   ListTile(
                     leading: Icon(Icons.person, color: brandColor),
                     title: const Text("Player Name"),
