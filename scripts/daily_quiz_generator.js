@@ -57,7 +57,21 @@ async function fetchFinanceNews() {
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const fromDate = sevenDaysAgo.toISOString().split('T')[0];
 
-  const query = 'finance OR economy OR "stock market" OR inflation OR "interest rates" OR "central bank" OR "Federal Reserve" OR ECB OR RBI OR earnings OR IPO OR mergers OR acquisitions OR cryptocurrency OR bitcoin OR "AI companies" OR recession';
+const query = `
+(
+earnings OR IPO OR merger OR acquisition OR
+"Federal Reserve" OR ECB OR RBI OR
+inflation OR recession OR
+Bitcoin OR Ethereum OR
+Nasdaq OR "S&P 500"
+)
+NOT sports
+NOT football
+NOT cricket
+NOT Taylor
+NOT wedding
+NOT entertainment
+`;
   const domains = 'reuters.com,bloomberg.com,cnbc.com,ft.com,wsj.com,apnews.com,bbc.com,fortune.com,businessinsider.com,finance.yahoo.com,marketwatch.com';
 
   console.log(`Fetching finance/business news since ${fromDate} from NewsAPI...`);
