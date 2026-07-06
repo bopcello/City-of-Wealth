@@ -33,3 +33,4 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
