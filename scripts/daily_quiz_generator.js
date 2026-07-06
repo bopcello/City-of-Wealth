@@ -175,21 +175,21 @@ CONTEXT:
 /**
  * Calls OpenRouter to generate the quiz content using the specified model.
  * @param {string} prompt 
+ * @param {string} model
  * @returns {Promise<string>}
  */
-async function callOpenRouter(prompt) {
+async function callOpenRouter(prompt, model) {
   const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
   if (!OPENROUTER_API_KEY) {
     throw new Error('OPENROUTER_API_KEY environment variable is missing.');
   }
 
-  const MODEL = process.env.OPENROUTER_MODEL || 'openrouter/free';
-  console.log(`Sending prompt to OpenRouter using model: ${MODEL}...`);
+  console.log(`Sending prompt to OpenRouter using model: ${model}...`);
 
   const response = await axios.post(
     'https://openrouter.ai/api/v1/chat/completions',
     {
-      model: MODEL,
+      model: model,
       messages: [
         {
           role: 'user',
@@ -432,29 +432,55 @@ async function generateDailyQuiz() {
     let finalQuizData = null;
     let currentPrompt = basePrompt;
 
-    for (let attempt = 1; attempt <= 2; attempt++) {
-      console.log(`LLM Generation Attempt ${attempt} of 2...`);
+    const primaryModel = process.env.OPENROUTER_MODEL;
+    const fallbackModel = 'openrouter/free';
+
+    const attempts = [];
+    if (primaryModel && primaryModel !== fallbackModel) {
+      attempts.push(
+        { model: primaryModel, label: `Primary Attempt 1 (${primaryModel})`, resetPrompt: false },
+        { model: primaryModel, label: `Primary Attempt 2 (${primaryModel})`, resetPrompt: false },
+        { model: fallbackModel, label: `Fallback Attempt 1 (${fallbackModel})`, resetPrompt: true },
+        { model: fallbackModel, label: `Fallback Attempt 2 (${fallbackModel})`, resetPrompt: false }
+      );
+    } else {
+      attempts.push(
+        { model: fallbackModel, label: `Attempt 1 (${fallbackModel})`, resetPrompt: false },
+        { model: fallbackModel, label: `Attempt 2 (${fallbackModel})`, resetPrompt: false }
+      );
+    }
+
+    for (let i = 0; i < attempts.length; i++) {
+      const config = attempts[i];
+      console.log(`LLM Generation: ${config.label}...`);
+
+      if (config.resetPrompt) {
+        console.log(`Resetting prompt to original state for new model: ${config.model}`);
+        currentPrompt = basePrompt;
+      }
+
       console.log('--- Full Prompt Sent to LLM ---');
       console.log(currentPrompt);
       console.log('-------------------------------');
-      
+
       try {
-        const responseText = await callOpenRouter(currentPrompt);
+        const responseText = await callOpenRouter(currentPrompt, config.model);
         console.log('--- Raw Response from LLM ---');
         console.log(responseText);
         console.log('-----------------------------');
-        
+
         const parsedData = extractAndParseJSON(responseText);
         validateQuiz(parsedData);
         finalQuizData = parsedData;
         break;
       } catch (error) {
-        console.error(`Attempt ${attempt} failed: ${error.message}`);
-        if (attempt === 1) {
-          console.log('Retrying with a corrective feedback prompt...');
+        console.error(`${config.label} failed: ${error.message}`);
+        
+        const nextAttempt = attempts[i + 1];
+        if (nextAttempt) {
           currentPrompt = `${basePrompt}\n\nIMPORTANT: The previous response was invalid and failed validation with error: "${error.message}". Return ONLY valid JSON matching the schema exactly. Do not include any surrounding explanations or markdown code blocks outside of the JSON object itself.`;
         } else {
-          console.error('All validation and generation attempts failed.');
+          console.error('All generation attempts (including fallbacks) failed.');
           process.exit(1);
         }
       }
