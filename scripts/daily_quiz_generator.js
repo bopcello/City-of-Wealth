@@ -432,8 +432,9 @@ async function generateDailyQuiz() {
     let finalQuizData = null;
     let currentPrompt = basePrompt;
 
-    const primaryModel = process.env.OPENROUTER_MODEL;
+    const primaryModel = process.env.OPENROUTER_MODEL ? process.env.OPENROUTER_MODEL.trim() : undefined;
     const fallbackModel = 'openrouter/free';
+    console.log(`Detected OPENROUTER_MODEL: "${primaryModel || '(not set)'}"`);
 
     const attempts = [];
     if (primaryModel && primaryModel !== fallbackModel) {
