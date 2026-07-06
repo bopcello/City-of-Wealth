@@ -402,6 +402,10 @@ async function generateDailyQuiz() {
       newsSummary = summarizeNews(articles);
       if (!newsSummary) {
         console.warn('Warning: No unique news headlines remaining after filtering.');
+      } else {
+        console.log('--- News Summary Generated from NewsAPI ---');
+        console.log(newsSummary);
+        console.log('-------------------------------------------');
       }
     } else {
       console.warn('Warning: Generating quiz without current news because no articles were fetched.');
@@ -422,8 +426,16 @@ async function generateDailyQuiz() {
 
     for (let attempt = 1; attempt <= 2; attempt++) {
       console.log(`LLM Generation Attempt ${attempt} of 2...`);
+      console.log('--- Full Prompt Sent to LLM ---');
+      console.log(currentPrompt);
+      console.log('-------------------------------');
+      
       try {
         const responseText = await callOpenRouter(currentPrompt);
+        console.log('--- Raw Response from LLM ---');
+        console.log(responseText);
+        console.log('-----------------------------');
+        
         const parsedData = extractAndParseJSON(responseText);
         validateQuiz(parsedData);
         finalQuizData = parsedData;
