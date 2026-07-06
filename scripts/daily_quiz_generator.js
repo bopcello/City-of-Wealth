@@ -14,14 +14,14 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
 const db = admin.firestore();
 
 /**
- * Fetches the last 30 daily quizzes from Firestore to avoid repeated topics or questions.
+ * Fetches the last 15 daily quizzes from Firestore to avoid repeated topics or questions.
  * @returns {Promise<Array<{topic: string, question: string, answer: string}>>}
  */
 async function fetchRecentQuestions() {
-  console.log('Fetching the last 30 daily quizzes from Firestore...');
+  console.log('Fetching the last 15 daily quizzes from Firestore...');
   const pastQuizzesSnapshot = await db.collection('daily_quizzes')
     .orderBy('timestamp', 'desc')
-    .limit(30)
+    .limit(15)
     .get();
 
   const pastQuestions = [];
@@ -64,11 +64,11 @@ async function fetchFinanceNews() {
   
   const response = await axios.get('https://newsapi.org/v2/everything', {
     params: {
-      q: query,
+      qInTitle: query,
       domains: domains,
       from: fromDate,
       sortBy: 'publishedAt',
-      pageSize: 40,
+      pageSize: 15,
       language: 'en',
       apiKey: NEWS_API_KEY
     },
@@ -85,7 +85,7 @@ async function fetchFinanceNews() {
 }
 
 /**
- * Normalizes and converts news articles to a clean summary of up to 15-20 unique headlines.
+ * Normalizes and converts news articles to a clean summary of up to 5-10 unique headlines.
  * @param {Array<object>} articles 
  * @returns {string}
  */
@@ -109,7 +109,7 @@ function summarizeNews(articles) {
       uniqueHeadlines.add(normalized);
       bulletPoints.push(`• ${trimmedTitle}`);
       
-      if (bulletPoints.length >= 20) {
+      if (bulletPoints.length >= 10) {
         break;
       }
     }
@@ -130,37 +130,31 @@ function summarizeNews(articles) {
  * @returns {string}
  */
 function buildPrompt(today, newsSummary, pastQuestionsText) {
-  const newsSection = newsSummary
-    ? `Below is a compact summary of recent finance news from the last 7 days. Use this news to generate ONE current finance quiz question about a real current event or recent development:\n\n${newsSummary}\n\nIf the news summary is empty or does not contain relevant financial topics, fallback to generating a timeless finance question instead.`
-    : 'No relevant recent news was found. Generate a timeless finance question instead.';
+  const newsInstruction = newsSummary
+    ? 'Use the provided recent news summary from the last 7 days to generate ONE current finance quiz question. If the news summary is empty, irrelevant, or not provided, fallback to generating a timeless finance question instead.'
+    : 'Generate a timeless finance question instead.';
 
-  return `Today's date is ${today}.
+  return `Generate ONE finance quiz document.
 
-${newsSection}
-
-${pastQuestionsText}
-
-Generate ONE finance quiz document.
-
-Ensure the following constraints are strictly satisfied:
-1. The question MUST NOT exceed 30 words.
-2. Each option MUST NOT exceed 10 words.
-3. No markdown formatting (like bold, italics, or backticks) inside any JSON field or value.
-4. The explanations (both correctExplanation and wrongExplanation) MUST consist of exactly 2 to 3 sentences.
-5. The title and subtitle MUST NOT give away the answer (no spoilers). They should introduce the topic neutrally.
-6. The question and topic MUST be unique and avoid repeating the topics, questions, or answers listed in the previous questions section.
-
-Return the output in EXACTLY this JSON format with no additional text:
+STRICT INSTRUCTIONS:
+1. Output MUST be in EXACTLY this JSON format (no surrounding text or markdown blocks, no bold/italics/backticks in values):
 {
-  "title": "Topic Title (Short)",
+  "title": "Topic Title (Short, no spoilers)",
   "subtitle": "Short descriptive subtitle",
   "difficulty": "easy" | "medium" | "hard",
-  "question": "The question text",
-  "options": ["Option A", "Option B", "Option C", "Option D"],
-  "correctIndex": 0,
-  "correctExplanation": "Explanation of why the correct answer is right.",
-  "wrongExplanation": "General explanation of common misconceptions related to this topic."
+  "question": "The question text (MUST NOT exceed 30 words)",
+  "options": ["Option A", "Option B", "Option C", "Option D"], // Exactly 4 options, each MUST NOT exceed 10 words
+  "correctIndex": 0, // Integer between 0 and 3
+  "correctExplanation": "Thorough explanation of why correct (exactly 2-3 sentences)",
+  "wrongExplanation": "General explanation of common misconceptions (exactly 2-3 sentences)"
 }
+2. ${newsInstruction}
+3. The question and topic MUST be unique. AVOID repeating the topics, questions, or answers listed in the previous questions section.
+
+CONTEXT:
+- Today's Date: ${today}
+- ${newsSummary ? `${newsSummary}` : 'No recent news available.'}
+- ${pastQuestionsText}
 `;
 }
 
