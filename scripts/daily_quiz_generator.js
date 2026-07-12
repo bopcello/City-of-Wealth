@@ -18,10 +18,10 @@ const db = admin.firestore();
  * @returns {Promise<Array<{topic: string, question: string, answer: string}>>}
  */
 async function fetchRecentQuestions() {
-  console.log('Fetching the last 15 daily quizzes from Firestore...');
+  console.log('Fetching the last 10 daily quizzes from Firestore...');
   const pastQuizzesSnapshot = await db.collection('daily_quizzes')
     .orderBy('timestamp', 'desc')
-    .limit(15)
+    .limit(10)
     .get();
 
   const pastQuestions = [];
@@ -164,6 +164,8 @@ STRICT INSTRUCTIONS:
 }
 2. ${newsInstruction}
 3. The question and topic MUST be unique. AVOID repeating the topics, questions, or answers listed in the previous questions section.
+4. The question must not be longer than 30 words and the options must not be longer than 10 words each. Do not use any markdown formatting like bold or italics. Give the output in plain text only. Ensure the explanations are thorough (at least 2-3 sentences).
+5. IMPORTANT: Do not set the title or the subtitle such that they give the answer for free. They should indicate the topic without spoiling the correct option.
 
 CONTEXT:
 - Today's Date: ${today}
