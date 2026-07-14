@@ -1,7 +1,10 @@
 const axios = require('axios');
 const admin = require('firebase-admin');
 
-// Initialize Firebase
+// ---------------------------------------------------------------------------
+// Firebase setup
+// ---------------------------------------------------------------------------
+
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
   admin.initializeApp({
@@ -13,12 +16,38 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
 
 const db = admin.firestore();
 
+// ---------------------------------------------------------------------------
+// Model cascade configuration
+//
+// Attempts are made in order down this list. Each entry gets its own fresh
+// prompt (reset from the base prompt) on its first attempt; if a model fails
+// validation, the error is fed back into the prompt for its next attempt.
+// After the whole cascade is exhausted, generation falls back to
+// `openrouter/free` for up to FINAL_FALLBACK_MAX_ATTEMPTS tries. If that
+// also fails, generateQuizWithRetries throws and the workflow exits.
+// ---------------------------------------------------------------------------
+
+const MODEL_CASCADE = [
+  { model: 'nvidia/nemotron-3-ultra-550b-a55b:free', attempts: 2 },
+  { model: 'gpt-oss-120b:free', attempts: 2 },
+  { model: 'nvidia/nemotron-3-super-120b-a12b:free', attempts: 2 },
+  { model: 'google/gemma-4-31b-it:free', attempts: 2 }
+];
+
+const FINAL_FALLBACK_MODEL = 'openrouter/free';
+const FINAL_FALLBACK_MAX_ATTEMPTS = 10;
+
+// ---------------------------------------------------------------------------
+// Firestore helpers
+// ---------------------------------------------------------------------------
+
 /**
- * Fetches the last 15 daily quizzes from Firestore to avoid repeated topics or questions.
+ * Fetches the last 10 daily quizzes from Firestore to avoid repeated topics or questions.
  * @returns {Promise<Array<{topic: string, question: string, answer: string}>>}
  */
 async function fetchRecentQuestions() {
   console.log('Fetching the last 10 daily quizzes from Firestore...');
+
   const pastQuizzesSnapshot = await db.collection('daily_quizzes')
     .orderBy('timestamp', 'desc')
     .limit(10)
@@ -27,21 +56,53 @@ async function fetchRecentQuestions() {
   const pastQuestions = [];
   pastQuizzesSnapshot.forEach(doc => {
     const data = doc.data();
-    if (data.question) {
-      const correctAnswer = data.options && data.options[data.correctIndex] !== undefined
-        ? data.options[data.correctIndex]
-        : 'Unknown';
-      pastQuestions.push({
-        topic: data.title || 'Unknown',
-        question: data.question,
-        answer: correctAnswer
-      });
-    }
+    if (!data.question) return;
+
+    const correctAnswer = data.options && data.options[data.correctIndex] !== undefined
+      ? data.options[data.correctIndex]
+      : 'Unknown';
+
+    pastQuestions.push({
+      topic: data.title || 'Unknown',
+      question: data.question,
+      answer: correctAnswer
+    });
   });
 
   console.log(`Successfully fetched ${pastQuestions.length} recent questions.`);
   return pastQuestions;
 }
+
+/**
+ * Saves the daily quiz to Firestore.
+ * @param {string} quizId
+ * @param {object} quizData
+ * @param {string} today
+ */
+async function saveQuiz(quizId, quizData, today) {
+  console.log(`Writing daily quiz to Firestore document: ${quizId}...`);
+
+  await db.collection('daily_quizzes').doc(quizId).set({
+    title: quizData.title,
+    subtitle: quizData.subtitle,
+    difficulty: quizData.difficulty,
+    question: quizData.question,
+    options: quizData.options,
+    correctIndex: quizData.correctIndex,
+    correctExplanation: quizData.correctExplanation,
+    wrongExplanation: quizData.wrongExplanation,
+    id: quizId,
+    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    dateString: today,
+    requiredLevel: 1
+  });
+
+  console.log(`Successfully saved daily quiz to document ${quizId}.`);
+}
+
+// ---------------------------------------------------------------------------
+// News fetching / summarizing
+// ---------------------------------------------------------------------------
 
 /**
  * Fetches recent finance/business news from the last 7 days using NewsAPI.
@@ -57,29 +118,30 @@ async function fetchFinanceNews() {
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const fromDate = sevenDaysAgo.toISOString().split('T')[0];
 
-const query = `
-(
-earnings OR IPO OR merger OR acquisition OR
-"Federal Reserve" OR ECB OR RBI OR
-inflation OR recession OR
-Bitcoin OR Ethereum OR
-Nasdaq OR "S&P 500"
-)
-NOT sports
-NOT football
-NOT cricket
-NOT Taylor
-NOT wedding
-NOT entertainment
-`;
+  const query = `
+    (
+      earnings OR IPO OR merger OR acquisition OR
+      "Federal Reserve" OR ECB OR RBI OR
+      inflation OR recession OR
+      Bitcoin OR Ethereum OR
+      Nasdaq OR "S&P 500"
+    )
+    NOT sports
+    NOT football
+    NOT cricket
+    NOT Taylor
+    NOT wedding
+    NOT entertainment
+  `;
+
   const domains = 'reuters.com,bloomberg.com,cnbc.com,ft.com,wsj.com,apnews.com,bbc.com,fortune.com,businessinsider.com,finance.yahoo.com,marketwatch.com';
 
   console.log(`Fetching finance/business news since ${fromDate} from NewsAPI...`);
-  
+
   const response = await axios.get('https://newsapi.org/v2/everything', {
     params: {
       qInTitle: query,
-      domains: domains,
+      domains,
       from: fromDate,
       sortBy: 'publishedAt',
       pageSize: 15,
@@ -99,8 +161,8 @@ NOT entertainment
 }
 
 /**
- * Normalizes and converts news articles to a clean summary of up to 5-10 unique headlines.
- * @param {Array<object>} articles 
+ * Normalizes and converts news articles into a clean summary of up to 10 unique headlines.
+ * @param {Array<object>} articles
  * @returns {string}
  */
 function summarizeNews(articles) {
@@ -113,20 +175,17 @@ function summarizeNews(articles) {
 
   for (const article of articles) {
     if (!article.title) continue;
-    
     if (article.title.toLowerCase().includes('[removed]')) continue;
 
     const trimmedTitle = article.title.trim();
     const normalized = trimmedTitle.toLowerCase();
 
-    if (!uniqueHeadlines.has(normalized)) {
-      uniqueHeadlines.add(normalized);
-      bulletPoints.push(`• ${trimmedTitle}`);
-      
-      if (bulletPoints.length >= 10) {
-        break;
-      }
-    }
+    if (uniqueHeadlines.has(normalized)) continue;
+
+    uniqueHeadlines.add(normalized);
+    bulletPoints.push(`• ${trimmedTitle}`);
+
+    if (bulletPoints.length >= 10) break;
   }
 
   if (bulletPoints.length === 0) {
@@ -136,11 +195,15 @@ function summarizeNews(articles) {
   return `Recent finance news:\n\n${bulletPoints.join('\n')}`;
 }
 
+// ---------------------------------------------------------------------------
+// Prompt building
+// ---------------------------------------------------------------------------
+
 /**
- * Builds the prompt message for OpenRouter.
- * @param {string} today 
- * @param {string} newsSummary 
- * @param {string} pastQuestionsText 
+ * Builds the base prompt message sent to the LLM.
+ * @param {string} today
+ * @param {string} newsSummary
+ * @param {string} pastQuestionsText
  * @returns {string}
  */
 function buildPrompt(today, newsSummary, pastQuestionsText) {
@@ -175,8 +238,22 @@ CONTEXT:
 }
 
 /**
+ * Appends a correction notice to the base prompt after a failed attempt.
+ * @param {string} basePrompt
+ * @param {Error} error
+ * @returns {string}
+ */
+function buildRetryPrompt(basePrompt, error) {
+  return `${basePrompt}\n\nIMPORTANT: The previous response was invalid and failed validation with error: "${error.message}". Return ONLY valid JSON matching the schema exactly. Do not include any surrounding explanations or markdown code blocks outside of the JSON object itself.`;
+}
+
+// ---------------------------------------------------------------------------
+// OpenRouter call + JSON extraction/validation
+// ---------------------------------------------------------------------------
+
+/**
  * Calls OpenRouter to generate the quiz content using the specified model.
- * @param {string} prompt 
+ * @param {string} prompt
  * @param {string} model
  * @returns {Promise<string>}
  */
@@ -191,13 +268,8 @@ async function callOpenRouter(prompt, model) {
   const response = await axios.post(
     'https://openrouter.ai/api/v1/chat/completions',
     {
-      model: model,
-      messages: [
-        {
-          role: 'user',
-          content: prompt
-        }
-      ]
+      model,
+      messages: [{ role: 'user', content: prompt }]
     },
     {
       headers: {
@@ -218,7 +290,7 @@ async function callOpenRouter(prompt, model) {
 
 /**
  * Robustly extracts the first JSON object from a string and parses it.
- * @param {string} text 
+ * @param {string} text
  * @returns {object}
  */
 function extractAndParseJSON(text) {
@@ -283,7 +355,7 @@ function extractAndParseJSON(text) {
 
 /**
  * Validates the generated quiz object against required schema constraints.
- * @param {object} quizData 
+ * @param {object} quizData
  */
 function validateQuiz(quizData) {
   if (!quizData || typeof quizData !== 'object') {
@@ -307,23 +379,11 @@ function validateQuiz(quizData) {
     }
   }
 
-  if (typeof quizData.title !== 'string' || quizData.title.trim() === '') {
-    throw new Error('Field "title" must be a non-empty string.');
-  }
-  if (typeof quizData.subtitle !== 'string' || quizData.subtitle.trim() === '') {
-    throw new Error('Field "subtitle" must be a non-empty string.');
-  }
-  if (typeof quizData.difficulty !== 'string' || quizData.difficulty.trim() === '') {
-    throw new Error('Field "difficulty" must be a non-empty string.');
-  }
-  if (typeof quizData.question !== 'string' || quizData.question.trim() === '') {
-    throw new Error('Field "question" must be a non-empty string.');
-  }
-  if (typeof quizData.correctExplanation !== 'string' || quizData.correctExplanation.trim() === '') {
-    throw new Error('Field "correctExplanation" must be a non-empty string.');
-  }
-  if (typeof quizData.wrongExplanation !== 'string' || quizData.wrongExplanation.trim() === '') {
-    throw new Error('Field "wrongExplanation" must be a non-empty string.');
+  const requiredStringFields = ['title', 'subtitle', 'difficulty', 'question', 'correctExplanation', 'wrongExplanation'];
+  for (const field of requiredStringFields) {
+    if (typeof quizData[field] !== 'string' || quizData[field].trim() === '') {
+      throw new Error(`Field "${field}" must be a non-empty string.`);
+    }
   }
 
   if (!Array.isArray(quizData.options)) {
@@ -347,36 +407,79 @@ function validateQuiz(quizData) {
 }
 
 /**
- * Saves the daily quiz to Firestore.
- * @param {string} quizId 
- * @param {object} quizData 
- * @param {string} today 
+ * Makes a single generation attempt: calls the model, extracts JSON, and validates it.
+ * @param {string} prompt
+ * @param {string} model
+ * @returns {Promise<object>}
  */
-async function saveQuiz(quizId, quizData, today) {
-  console.log(`Writing daily quiz to Firestore document: ${quizId}...`);
-  await db.collection('daily_quizzes').doc(quizId).set({
-    title: quizData.title,
-    subtitle: quizData.subtitle,
-    difficulty: quizData.difficulty,
-    question: quizData.question,
-    options: quizData.options,
-    correctIndex: quizData.correctIndex,
-    correctExplanation: quizData.correctExplanation,
-    wrongExplanation: quizData.wrongExplanation,
-    id: quizId,
-    timestamp: admin.firestore.FieldValue.serverTimestamp(),
-    dateString: today,
-    requiredLevel: 1
-  });
-  console.log(`Successfully saved daily quiz to document ${quizId}.`);
+async function attemptGeneration(prompt, model) {
+  const responseText = await callOpenRouter(prompt, model);
+  console.log('--- Raw Response from LLM ---');
+  console.log(responseText);
+  console.log('-----------------------------');
+
+  const parsedData = extractAndParseJSON(responseText);
+  validateQuiz(parsedData);
+  return parsedData;
 }
+
+// ---------------------------------------------------------------------------
+// Retry orchestration across the model cascade
+// ---------------------------------------------------------------------------
+
+/**
+ * Walks through MODEL_CASCADE in order, then retries FINAL_FALLBACK_MODEL
+ * indefinitely until a valid quiz is generated.
+ * @param {string} basePrompt
+ * @returns {Promise<object>}
+ */
+async function generateQuizWithRetries(basePrompt) {
+  // Fixed cascade: a limited number of attempts per named model.
+  for (const { model, attempts } of MODEL_CASCADE) {
+    let currentPrompt = basePrompt;
+
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+      console.log(`LLM Generation: ${model} (attempt ${attempt}/${attempts})...`);
+
+      try {
+        return await attemptGeneration(currentPrompt, model);
+      } catch (error) {
+        console.error(`${model} attempt ${attempt} failed: ${error.message}`);
+        currentPrompt = buildRetryPrompt(basePrompt, error);
+      }
+    }
+  }
+
+  // Final fallback: retry openrouter/free up to FINAL_FALLBACK_MAX_ATTEMPTS times.
+  console.warn(`All cascade models failed. Falling back to "${FINAL_FALLBACK_MODEL}" for up to ${FINAL_FALLBACK_MAX_ATTEMPTS} attempts.`);
+
+  let currentPrompt = basePrompt;
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= FINAL_FALLBACK_MAX_ATTEMPTS; attempt++) {
+    console.log(`LLM Generation: ${FINAL_FALLBACK_MODEL} (fallback attempt ${attempt}/${FINAL_FALLBACK_MAX_ATTEMPTS})...`);
+
+    try {
+      return await attemptGeneration(currentPrompt, FINAL_FALLBACK_MODEL);
+    } catch (error) {
+      lastError = error;
+      console.error(`${FINAL_FALLBACK_MODEL} fallback attempt ${attempt} failed: ${error.message}`);
+      currentPrompt = buildRetryPrompt(basePrompt, error);
+    }
+  }
+
+  throw new Error(`All generation attempts (including ${FINAL_FALLBACK_MAX_ATTEMPTS} "${FINAL_FALLBACK_MODEL}" fallback attempts) failed. Last error: ${lastError.message}`);
+}
+
+// ---------------------------------------------------------------------------
+// Main workflow
+// ---------------------------------------------------------------------------
 
 /**
  * Main coordinator function that executes the quiz generation workflow.
  */
 async function generateDailyQuiz() {
   try {
-    // Verify required API keys are configured in the environment
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
     if (!OPENROUTER_API_KEY) {
       console.error('Error: Missing OPENROUTER_API_KEY in environment variables.');
@@ -398,7 +501,7 @@ async function generateDailyQuiz() {
       process.exit(1);
     }
 
-    // 2. Fetch recent finance/business news from the last 7 days using NewsAPI
+    // 2. Fetch recent finance/business news from the last 7 days
     let articles = [];
     try {
       articles = await fetchFinanceNews();
@@ -421,7 +524,7 @@ async function generateDailyQuiz() {
       console.warn('Warning: Generating quiz without current news because no articles were fetched.');
     }
 
-    // 4. Formulate instructions and context for OpenRouter
+    // 4. Build the base prompt
     const pastQuestionsText = pastQuestions.length > 0
       ? 'AVOID these previous topics, questions, and answers to ensure uniqueness:\n' +
         pastQuestions.map((q, i) => `${i + 1}. Topic: "${q.topic}" | Question: "${q.question}" | Answer: "${q.answer}"`).join('\n')
@@ -430,74 +533,17 @@ async function generateDailyQuiz() {
     const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
     const basePrompt = buildPrompt(today, newsSummary, pastQuestionsText);
 
-    // 5. Retry loop for LLM completion call, extraction, parsing, and validation
-    let finalQuizData = null;
-    let currentPrompt = basePrompt;
+    console.log('--- Full Base Prompt Sent to LLM ---');
+    console.log(basePrompt);
+    console.log('-------------------------------------');
 
-    const primaryModel = process.env.OPENROUTER_MODEL ? process.env.OPENROUTER_MODEL.trim() : undefined;
-    const fallbackModel = 'openrouter/free';
-    console.log(`Detected OPENROUTER_MODEL: "${primaryModel || '(not set)'}"`);
-
-    const attempts = [];
-    if (primaryModel && primaryModel !== fallbackModel) {
-      attempts.push(
-        { model: primaryModel, label: `Primary Attempt 1 (${primaryModel})`, resetPrompt: false },
-        { model: primaryModel, label: `Primary Attempt 2 (${primaryModel})`, resetPrompt: false },
-        { model: fallbackModel, label: `Fallback Attempt 1 (${fallbackModel})`, resetPrompt: true },
-        { model: fallbackModel, label: `Fallback Attempt 2 (${fallbackModel})`, resetPrompt: false }
-      );
-    } else {
-      attempts.push(
-        { model: fallbackModel, label: `Attempt 1 (${fallbackModel})`, resetPrompt: false },
-        { model: fallbackModel, label: `Attempt 2 (${fallbackModel})`, resetPrompt: false }
-      );
-    }
-
-    for (let i = 0; i < attempts.length; i++) {
-      const config = attempts[i];
-      console.log(`LLM Generation: ${config.label}...`);
-
-      if (config.resetPrompt) {
-        console.log(`Resetting prompt to original state for new model: ${config.model}`);
-        currentPrompt = basePrompt;
-      }
-
-      console.log('--- Full Prompt Sent to LLM ---');
-      console.log(currentPrompt);
-      console.log('-------------------------------');
-
-      try {
-        const responseText = await callOpenRouter(currentPrompt, config.model);
-        console.log('--- Raw Response from LLM ---');
-        console.log(responseText);
-        console.log('-----------------------------');
-
-        const parsedData = extractAndParseJSON(responseText);
-        validateQuiz(parsedData);
-        finalQuizData = parsedData;
-        break;
-      } catch (error) {
-        console.error(`${config.label} failed: ${error.message}`);
-        
-        const nextAttempt = attempts[i + 1];
-        if (nextAttempt) {
-          currentPrompt = `${basePrompt}\n\nIMPORTANT: The previous response was invalid and failed validation with error: "${error.message}". Return ONLY valid JSON matching the schema exactly. Do not include any surrounding explanations or markdown code blocks outside of the JSON object itself.`;
-        } else {
-          console.error('All generation attempts (including fallbacks) failed.');
-          process.exit(1);
-        }
-      }
-    }
+    // 5. Run the model cascade (with infinite final fallback) until success
+    const finalQuizData = await generateQuizWithRetries(basePrompt);
 
     // 6. Write the final validated quiz to Firestore
-    if (finalQuizData) {
-      const quizId = `daily_${today}`;
-      await saveQuiz(quizId, finalQuizData, today);
-      console.log(`Successfully generated and saved daily quiz for ${today}.`);
-    } else {
-      console.error('Unexpected error: finalQuizData is null despite successful loop completion.');
-      process.exit(1);
-    }
+    const quizId = `daily_${today}`;
+    await saveQuiz(quizId, finalQuizData, today);
+    console.log(`Successfully generated and saved daily quiz for ${today}.`);
 
   } catch (error) {
     console.error('Fatal error in quiz generation workflow:', error.message);
