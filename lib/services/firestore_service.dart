@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import '../data/quote_data.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -64,6 +65,31 @@ class FirestoreService {
       debugPrint("❌ Error fetching daily quiz: $e");
       return null;
     }
+  }
+
+  /// Retrieves the daily financial quote for a specific date or from cache/local fallback.
+  Future<Map<String, dynamic>> getDailyQuote(String date) async {
+    try {
+      final doc = await _db.collection('daily_quotes').doc('daily_$date').get();
+      if (doc.exists && doc.data() != null) {
+        return doc.data()!;
+      }
+      final todayDoc = await _db.collection('daily_quotes').doc('today').get();
+      if (todayDoc.exists && todayDoc.data() != null) {
+        return todayDoc.data()!;
+      }
+      final cacheDoc = await _db.collection('daily_quotes').doc('cache').get();
+      if (cacheDoc.exists && cacheDoc.data() != null) {
+        final quotes = (cacheDoc.data()?['quotes'] as List?) ?? [];
+        if (quotes.isNotEmpty) {
+          final index = DateTime.now().day % quotes.length;
+          return Map<String, dynamic>.from(quotes[index]);
+        }
+      }
+    } catch (e) {
+      debugPrint("❌ Error fetching daily quote: $e");
+    }
+    return getRandomLocalQuote();
   }
 
   /// Retrieves the last 30 daily quizzes.

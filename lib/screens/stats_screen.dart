@@ -12,7 +12,7 @@ class StatsScreen extends StatefulWidget {
 }
 
 class _StatsScreenState extends State<StatsScreen> {
-  static const _shareChannel = MethodChannel('com.example.city_of_wealth/share');
+  static const _shareChannel = MethodChannel('com.city_of_wealth/share');
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
 
@@ -31,7 +31,8 @@ class _StatsScreenState extends State<StatsScreen> {
   }
 
   // ── helpers ──────────────────────────────────────────────────────────────
-  bool _matches(String label) => _query.isEmpty || label.toLowerCase().contains(_query);
+  bool _matches(String label) =>
+      _query.isEmpty || label.toLowerCase().contains(_query);
 
   Widget _row(BuildContext context, String label, String value) {
     if (!_matches(label)) return const SizedBox.shrink();
@@ -77,7 +78,9 @@ class _StatsScreenState extends State<StatsScreen> {
   ) {
     // If searching, filter: only show if at least one row has visible content
     // (rows already return SizedBox.shrink for non-matching, so check title too)
-    final hasMatch = _query.isEmpty || title.toLowerCase().contains(_query) ||
+    final hasMatch =
+        _query.isEmpty ||
+        title.toLowerCase().contains(_query) ||
         rows.any((w) => w is! SizedBox);
     if (!hasMatch) return const SizedBox.shrink();
 
@@ -120,11 +123,15 @@ class _StatsScreenState extends State<StatsScreen> {
   Future<void> _shareStats() async {
     final s = widget.game.stats;
     final buf = StringBuffer();
-    buf.writeln('City of Wealth — Lifetime Stats for ${widget.game.playerName}');
+    buf.writeln(
+      'City of Wealth — Lifetime Stats for ${widget.game.playerName}',
+    );
     buf.writeln('=' * 50);
     buf.writeln('\n💎 GEMS — ECONOMY');
     buf.writeln('Lifetime Gems Earned (Salary): ${s.lifetimeGemsEarnedSalary}');
-    buf.writeln('Lifetime Gems Earned (Passive): ${s.lifetimeGemsEarnedPassive}');
+    buf.writeln(
+      'Lifetime Gems Earned (Passive): ${s.lifetimeGemsEarnedPassive}',
+    );
     buf.writeln('Lifetime Gems Earned (Total): ${s.lifetimeGemsEarnedTotal}');
     buf.writeln('Lifetime Gems Spent: ${s.lifetimeGemsSpentTotal}');
     buf.writeln('Peak Gems Held: ${s.peakGemsHeld}');
@@ -158,11 +165,14 @@ class _StatsScreenState extends State<StatsScreen> {
   // ── build ─────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final brandColor = AppColors.of(context, 'kp');
-    final s = widget.game.stats;
+    return ListenableBuilder(
+      listenable: widget.game,
+      builder: (context, _) {
+        final theme = Theme.of(context);
+        final brandColor = AppColors.of(context, 'kp');
+        final s = widget.game.stats;
 
-    return Scaffold(
+        return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
@@ -170,7 +180,9 @@ class _StatsScreenState extends State<StatsScreen> {
         elevation: 0,
         title: Text(
           'Stats',
-          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [
           IconButton(
@@ -190,10 +202,18 @@ class _StatsScreenState extends State<StatsScreen> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search stats…',
-                prefixIcon: Icon(Icons.search, color: theme.colorScheme.onSurfaceVariant, size: 20),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: theme.colorScheme.onSurfaceVariant,
+                  size: 20,
+                ),
                 suffixIcon: _query.isNotEmpty
                     ? IconButton(
-                        icon: Icon(Icons.clear, size: 18, color: theme.colorScheme.onSurfaceVariant),
+                        icon: Icon(
+                          Icons.clear,
+                          size: 18,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                         onPressed: () => _searchController.clear(),
                       )
                     : null,
@@ -206,13 +226,18 @@ class _StatsScreenState extends State<StatsScreen> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.5)),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.outline.withValues(alpha: 0.5),
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: brandColor, width: 1.5),
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 12,
+                ),
               ),
               style: theme.textTheme.bodySmall?.copyWith(fontSize: 13),
             ),
@@ -222,117 +247,473 @@ class _StatsScreenState extends State<StatsScreen> {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
-
                 // ── GEMS — ECONOMY ────────────────────────────────────────
                 _category(context, 'Gems — Economy', Icons.diamond_outlined, [
-                  _row(context, 'Lifetime Gems Earned (Salary)', '${s.lifetimeGemsEarnedSalary}'),
-                  _row(context, 'Lifetime Gems Earned (Passive)', '${s.lifetimeGemsEarnedPassive}'),
-                  _row(context, 'Lifetime Gems Earned (Total)', '${s.lifetimeGemsEarnedTotal}'),
-                  _row(context, 'Lifetime Gems Spent (Total)', '${s.lifetimeGemsSpentTotal}'),
-                  _row(context, 'Gems Spent — Land', '${s.lifetimeGemsSpentLand}'),
-                  _row(context, 'Gems Spent — Properties', '${s.lifetimeGemsSpentProperties}'),
-                  _row(context, 'Gems Spent — Vehicles', '${s.lifetimeGemsSpentVehicles}'),
-                  _row(context, 'Gems Spent — Office Equipment', '${s.lifetimeGemsSpentOfficeEquipment}'),
-                  _row(context, 'Gems Spent — Machinery', '${s.lifetimeGemsSpentMachinery}'),
-                  _row(context, 'Gems Spent — Insurance', '${s.lifetimeGemsSpentInsurance}'),
-                  _row(context, 'Gems Spent — Shared Studio', '${s.lifetimeGemsSpentSharedStudio}'),
-                  _row(context, 'Gems Spent — Small Apartment', '${s.lifetimeGemsSpentSmallApartment}'),
-                  _row(context, 'Gems Spent — Luxury House', '${s.lifetimeGemsSpentLuxuryHouse}'),
-                  _row(context, 'Gems Spent — Balanced Diet', '${s.lifetimeGemsSpentBalancedDiet}'),
-                  _row(context, 'Gems Spent — Cheap Food', '${s.lifetimeGemsSpentCheapFood}'),
-                  _row(context, 'Gems Spent — Buffet', '${s.lifetimeGemsSpentBuffet}'),
-                  _row(context, 'Gems Spent — Public Transport', '${s.lifetimeGemsSpentPublicTransport}'),
-                  _row(context, 'Gems Spent — Cycling', '${s.lifetimeGemsSpentCycling}'),
-                  _row(context, 'Gems Spent — Car', '${s.lifetimeGemsSpentCar}'),
-                  _row(context, 'Interest Paid (Debt)', '${s.lifetimeInterestPaidDebt}'),
+                  _row(
+                    context,
+                    'Lifetime Gems Earned (Salary)',
+                    '${s.lifetimeGemsEarnedSalary}',
+                  ),
+                  _row(
+                    context,
+                    'Lifetime Gems Earned (Passive)',
+                    '${s.lifetimeGemsEarnedPassive}',
+                  ),
+                  _row(
+                    context,
+                    'Lifetime Gems Earned (Total)',
+                    '${s.lifetimeGemsEarnedTotal}',
+                  ),
+                  _row(
+                    context,
+                    'Lifetime Gems Spent (Total)',
+                    '${s.lifetimeGemsSpentTotal}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Land',
+                    '${s.lifetimeGemsSpentLand}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Properties',
+                    '${s.lifetimeGemsSpentProperties}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Vehicles',
+                    '${s.lifetimeGemsSpentVehicles}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Office Equipment',
+                    '${s.lifetimeGemsSpentOfficeEquipment}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Machinery',
+                    '${s.lifetimeGemsSpentMachinery}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Insurance',
+                    '${s.lifetimeGemsSpentInsurance}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Shared Studio',
+                    '${s.lifetimeGemsSpentSharedStudio}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Small Apartment',
+                    '${s.lifetimeGemsSpentSmallApartment}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Luxury House',
+                    '${s.lifetimeGemsSpentLuxuryHouse}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Balanced Diet',
+                    '${s.lifetimeGemsSpentBalancedDiet}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Cheap Food',
+                    '${s.lifetimeGemsSpentCheapFood}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Buffet',
+                    '${s.lifetimeGemsSpentBuffet}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Public Transport',
+                    '${s.lifetimeGemsSpentPublicTransport}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Cycling',
+                    '${s.lifetimeGemsSpentCycling}',
+                  ),
+                  _row(
+                    context,
+                    'Gems Spent — Car',
+                    '${s.lifetimeGemsSpentCar}',
+                  ),
+                  _row(
+                    context,
+                    'Interest Paid (Debt)',
+                    '${s.lifetimeInterestPaidDebt}',
+                  ),
                   _row(context, 'Peak Gems Held', '${s.peakGemsHeld}'),
                   _row(context, 'Max Debt Reached', '${s.maxDebtReached}'),
-                  _row(context, 'Debt Interest Cycles @5%', '${s.cyclesDebtInterest5}'),
-                  _row(context, 'Debt Interest Cycles @10%', '${s.cyclesDebtInterest10}'),
-                  _row(context, 'Debt Interest Cycles @20%', '${s.cyclesDebtInterest20}'),
-                  _row(context, 'Highest Single-Cycle Income', '${s.highestSingleCycleIncome}'),
-                  _row(context, 'Highest Single-Cycle Expenditure', '${s.highestSingleCycleExpenditure}'),
+                  _row(
+                    context,
+                    'Debt Interest Cycles @5%',
+                    '${s.cyclesDebtInterest5}',
+                  ),
+                  _row(
+                    context,
+                    'Debt Interest Cycles @10%',
+                    '${s.cyclesDebtInterest10}',
+                  ),
+                  _row(
+                    context,
+                    'Debt Interest Cycles @20%',
+                    '${s.cyclesDebtInterest20}',
+                  ),
+                  _row(
+                    context,
+                    'Highest Single-Cycle Income',
+                    '${s.highestSingleCycleIncome}',
+                  ),
+                  _row(
+                    context,
+                    'Highest Single-Cycle Expenditure',
+                    '${s.highestSingleCycleExpenditure}',
+                  ),
                 ]),
 
                 // ── KP — FINANCIAL WISDOM ─────────────────────────────────
                 _category(context, 'KP — Financial Wisdom', Icons.trending_up, [
-                  _row(context, 'Lifetime KP Earned (Gross)', '${s.lifetimeKpEarnedGross}'),
-                  _row(context, 'Lifetime KP Lost (Gross)', '${s.lifetimeKpLostGross}'),
+                  _row(
+                    context,
+                    'Lifetime KP Earned (Gross)',
+                    '${s.lifetimeKpEarnedGross}',
+                  ),
+                  _row(
+                    context,
+                    'Lifetime KP Lost (Gross)',
+                    '${s.lifetimeKpLostGross}',
+                  ),
                   _row(context, 'Highest KP Reached', '${s.highestKpReached}'),
                   _row(context, 'Lowest KP Reached', '${s.lowestKpReached}'),
                   _row(context, 'KP Lost — Debt', '${s.totalKpLostDebt}'),
-                  _row(context, 'KP Lost — Waste Penalty', '${s.totalKpLostWaste}'),
-                  _row(context, 'KP Lost — Overtime', '${s.totalKpLostOvertime}'),
-                  _row(context, 'KP Gained — Insurance', '${s.totalKpGainedInsurance}'),
-                  _row(context, 'KP Gained — Quizzes', '${s.totalKpGainedQuizzes}'),
-                  _row(context, 'Biggest Single KP Gain', '${s.biggestSingleKpGain}'),
-                  _row(context, 'Biggest Single KP Loss', '${s.biggestSingleKpLoss}'),
-                  _row(context, 'Waste Penalties Triggered', '${s.wastePenaltyTriggeredCount}'),
+                  _row(
+                    context,
+                    'KP Lost — Waste Penalty',
+                    '${s.totalKpLostWaste}',
+                  ),
+                  _row(
+                    context,
+                    'KP Lost — Overtime',
+                    '${s.totalKpLostOvertime}',
+                  ),
+                  _row(
+                    context,
+                    'KP Gained — Insurance',
+                    '${s.totalKpGainedInsurance}',
+                  ),
+                  _row(
+                    context,
+                    'KP Gained — Quizzes',
+                    '${s.totalKpGainedQuizzes}',
+                  ),
+                  _row(
+                    context,
+                    'Biggest Single KP Gain',
+                    '${s.biggestSingleKpGain}',
+                  ),
+                  _row(
+                    context,
+                    'Biggest Single KP Loss',
+                    '${s.biggestSingleKpLoss}',
+                  ),
+                  _row(
+                    context,
+                    'Waste Penalties Triggered',
+                    '${s.wastePenaltyTriggeredCount}',
+                  ),
                 ]),
 
                 // ── ASSETS & BUILDINGS ────────────────────────────────────
                 _category(context, 'Assets & Buildings', Icons.business, [
                   _row(context, 'Land Purchased', '${s.totalLandPurchased}'),
-                  _row(context, 'Properties Purchased', '${s.totalPropertiesPurchased}'),
-                  _row(context, 'Vehicles Purchased', '${s.totalVehiclesPurchased}'),
-                  _row(context, 'Office Equipment Purchased', '${s.totalOfficeEquipmentPurchased}'),
-                  _row(context, 'Machinery Purchased', '${s.totalMachineryPurchased}'),
+                  _row(
+                    context,
+                    'Properties Purchased',
+                    '${s.totalPropertiesPurchased}',
+                  ),
+                  _row(
+                    context,
+                    'Vehicles Purchased',
+                    '${s.totalVehiclesPurchased}',
+                  ),
+                  _row(
+                    context,
+                    'Office Equipment Purchased',
+                    '${s.totalOfficeEquipmentPurchased}',
+                  ),
+                  _row(
+                    context,
+                    'Machinery Purchased',
+                    '${s.totalMachineryPurchased}',
+                  ),
                   _row(context, 'Peak Land Held', '${s.peakLandHeld}'),
-                  _row(context, 'Peak Properties Held', '${s.peakPropertiesHeld}'),
+                  _row(
+                    context,
+                    'Peak Properties Held',
+                    '${s.peakPropertiesHeld}',
+                  ),
                   _row(context, 'Peak Vehicles Held', '${s.peakVehiclesHeld}'),
-                  _row(context, 'Peak Office Equipment Held', '${s.peakOfficeEquipmentHeld}'),
-                  _row(context, 'Peak Machinery Held', '${s.peakMachineryHeld}'),
-                  _row(context, 'Buildings Lost (Foreclosure)', '${s.buildingsLostForeclosure}'),
+                  _row(
+                    context,
+                    'Peak Office Equipment Held',
+                    '${s.peakOfficeEquipmentHeld}',
+                  ),
+                  _row(
+                    context,
+                    'Peak Machinery Held',
+                    '${s.peakMachineryHeld}',
+                  ),
+                  _row(
+                    context,
+                    'Buildings Lost (Foreclosure)',
+                    '${s.buildingsLostForeclosure}',
+                  ),
+                  _row(context, 'Land Sold', '${s.totalLandSold}'),
+                  _row(context, 'Properties Sold', '${s.totalPropertiesSold}'),
+                  _row(context, 'Vehicles Sold', '${s.totalVehiclesSold}'),
+                  _row(
+                    context,
+                    'Office Equipment Sold',
+                    '${s.totalOfficeEquipmentSold}',
+                  ),
+                  _row(context, 'Machinery Sold', '${s.totalMachinerySold}'),
+                  _row(
+                    context,
+                    'Total Buildings Constructed',
+                    '${s.totalBuildingsConstructed}',
+                  ),
+                  _row(context, 'Farms Built', '${s.farmsBuilt}'),
+                  _row(context, 'Factories Built', '${s.factoriesBuilt}'),
+                  _row(context, 'Apartments Built', '${s.apartmentsBuilt}'),
+                  _row(
+                    context,
+                    'Distribution Centers Built',
+                    '${s.distCentersBuilt}',
+                  ),
+                  _row(
+                    context,
+                    'IT Service Centers Built',
+                    '${s.itServiceCentersBuilt}',
+                  ),
+                  _row(
+                    context,
+                    'Buildings Demolished',
+                    '${s.demolitionSessionsCount}',
+                  ),
                 ]),
 
                 // ── PASSIVE INCOME ────────────────────────────────────────
                 _category(context, 'Passive Income', Icons.attach_money, [
-                  _row(context, 'Total Earned — Farms', '${s.passiveIncomeFarmsEarned}'),
-                  _row(context, 'Total Earned — Factories', '${s.passiveIncomeFactoriesEarned}'),
-                  _row(context, 'Total Earned — Apartments', '${s.passiveIncomeApartmentsEarned}'),
-                  _row(context, 'Total Earned — Dist. Centers', '${s.passiveIncomeDistCentersEarned}'),
-                  _row(context, 'Total Earned — IT Services', '${s.passiveIncomeItServiceEarned}'),
-                  _row(context, 'Farms Lost (Disaster)', '${s.farmsLostDisaster}'),
-                  _row(context, 'Factories Lost (Disaster)', '${s.factoriesLostDisaster}'),
-                  _row(context, 'Apartments Lost (Disaster)', '${s.apartmentsLostDisaster}'),
-                  _row(context, 'Dist. Centers Lost (Disaster)', '${s.distCentersLostDisaster}'),
-                  _row(context, 'IT Services Lost (Disaster)', '${s.itServiceCentersLostDisaster}'),
-                  _row(context, 'Highest Single-Cycle Passive', '${s.highestSingleCyclePassiveIncome}'),
+                  _row(
+                    context,
+                    'Total Earned — Farms',
+                    '${s.passiveIncomeFarmsEarned}',
+                  ),
+                  _row(
+                    context,
+                    'Total Earned — Factories',
+                    '${s.passiveIncomeFactoriesEarned}',
+                  ),
+                  _row(
+                    context,
+                    'Total Earned — Apartments',
+                    '${s.passiveIncomeApartmentsEarned}',
+                  ),
+                  _row(
+                    context,
+                    'Total Earned — Dist. Centers',
+                    '${s.passiveIncomeDistCentersEarned}',
+                  ),
+                  _row(
+                    context,
+                    'Total Earned — IT Services',
+                    '${s.passiveIncomeItServiceEarned}',
+                  ),
+                  _row(
+                    context,
+                    'Farms Lost (Disaster)',
+                    '${s.farmsLostDisaster}',
+                  ),
+                  _row(
+                    context,
+                    'Factories Lost (Disaster)',
+                    '${s.factoriesLostDisaster}',
+                  ),
+                  _row(
+                    context,
+                    'Apartments Lost (Disaster)',
+                    '${s.apartmentsLostDisaster}',
+                  ),
+                  _row(
+                    context,
+                    'Dist. Centers Lost (Disaster)',
+                    '${s.distCentersLostDisaster}',
+                  ),
+                  _row(
+                    context,
+                    'IT Services Lost (Disaster)',
+                    '${s.itServiceCentersLostDisaster}',
+                  ),
+                  _row(
+                    context,
+                    'Highest Single-Cycle Passive',
+                    '${s.highestSingleCyclePassiveIncome}',
+                  ),
+                  _row(
+                    context,
+                    'Passive Income Reinvested',
+                    '${s.passiveIncomeDestroyedReinvested}',
+                  ),
+                  _row(
+                    context,
+                    'Streak Boost Bonus Earned',
+                    '${s.extraPassiveIncomeStreakBoosts} 💎',
+                  ),
+                  _row(
+                    context,
+                    'Passive : Salary Ratio',
+                    '${s.ratioPassiveToSalary.toStringAsFixed(2)}x',
+                  ),
                 ]),
 
                 // ── DEBT & BANKRUPTCY ─────────────────────────────────────
-                _category(context, 'Debt & Bankruptcy', Icons.warning_amber_rounded, [
-                  _row(context, 'Total Cycles in Debt', '${s.totalCyclesSpentDebt}'),
-                  _row(context, 'Longest Debt Streak', '${s.longestContinuousDebtStreak} days'),
-                  _row(context, 'Current Debt Streak', '${s.currentDebtStreak} days'),
-                  _row(context, 'Times Entered Debt', '${s.numberOfTimesDebtEntered}'),
-                  _row(context, 'Bankruptcies Declared', '${s.bankruptciesDeclared}'),
-                  _row(context, 'Max Debt Reached', '${s.maxDebtReached} 💎'),
-                ]),
+                _category(
+                  context,
+                  'Debt & Bankruptcy',
+                  Icons.warning_amber_rounded,
+                  [
+                    _row(
+                      context,
+                      'Total Cycles in Debt',
+                      '${s.totalCyclesSpentDebt}',
+                    ),
+                    _row(
+                      context,
+                      'Longest Debt Streak',
+                      '${s.longestContinuousDebtStreak} days',
+                    ),
+                    _row(
+                      context,
+                      'Current Debt Streak',
+                      '${s.currentDebtStreak} days',
+                    ),
+                    _row(
+                      context,
+                      'Times Entered Debt',
+                      '${s.numberOfTimesDebtEntered}',
+                    ),
+                    _row(
+                      context,
+                      'Bankruptcies Declared',
+                      '${s.bankruptciesDeclared}',
+                    ),
+                    _row(context, 'Max Debt Reached', '${s.maxDebtReached} 💎'),
+                    _row(
+                      context,
+                      'Closest Call to Foreclosure',
+                      '${s.closestCallForeclosure} days away',
+                    ),
+                  ],
+                ),
 
                 // ── DAILY LIVING CHOICES ──────────────────────────────────
-                _category(context, 'Daily Living Choices', Icons.home_outlined, [
-                  _row(context, 'Days — Shared Studio', '${s.cyclesSpentSharedStudio}'),
-                  _row(context, 'Days — Small Apartment', '${s.cyclesSpentSmallApartment}'),
-                  _row(context, 'Days — Luxury House', '${s.cyclesSpentLuxuryHouse}'),
-                  _row(context, 'Days — Balanced Diet', '${s.cyclesSpentBalancedDiet}'),
-                  _row(context, 'Days — Cheap Food', '${s.cyclesSpentCheapFood}'),
-                  _row(context, 'Days — Buffet', '${s.cyclesSpentBuffet}'),
-                  _row(context, 'Days — Public Transport', '${s.cyclesSpentPublicTransport}'),
-                  _row(context, 'Days — Cycling', '${s.cyclesSpentCycling}'),
-                  _row(context, 'Days — Car', '${s.cyclesSpentCar}'),
-                  _row(context, 'Longest Balanced Diet Streak', '${s.longestBalancedDietStreak} days'),
-                  _row(context, 'Longest Public Transport Streak', '${s.longestPublicTransportStreak} days'),
-                ]),
+                _category(
+                  context,
+                  'Daily Living Choices',
+                  Icons.home_outlined,
+                  [
+                    _row(
+                      context,
+                      'Days — Shared Studio',
+                      '${s.cyclesSpentSharedStudio}',
+                    ),
+                    _row(
+                      context,
+                      'Days — Small Apartment',
+                      '${s.cyclesSpentSmallApartment}',
+                    ),
+                    _row(
+                      context,
+                      'Days — Luxury House',
+                      '${s.cyclesSpentLuxuryHouse}',
+                    ),
+                    _row(
+                      context,
+                      'Days — Balanced Diet',
+                      '${s.cyclesSpentBalancedDiet}',
+                    ),
+                    _row(
+                      context,
+                      'Days — Cheap Food',
+                      '${s.cyclesSpentCheapFood}',
+                    ),
+                    _row(context, 'Days — Buffet', '${s.cyclesSpentBuffet}'),
+                    _row(
+                      context,
+                      'Days — Public Transport',
+                      '${s.cyclesSpentPublicTransport}',
+                    ),
+                    _row(context, 'Days — Cycling', '${s.cyclesSpentCycling}'),
+                    _row(context, 'Days — Car', '${s.cyclesSpentCar}'),
+                    _row(
+                      context,
+                      'Longest Balanced Diet Streak',
+                      '${s.longestBalancedDietStreak} days',
+                    ),
+                    _row(
+                      context,
+                      'Longest Public Transport Streak',
+                      '${s.longestPublicTransportStreak} days',
+                    ),
+                    _row(
+                      context,
+                      'Luxury House Penalty Cycles',
+                      '${s.luxuryHousePenaltyTriggered}',
+                    ),
+                  ],
+                ),
 
                 // ── INSURANCE ─────────────────────────────────────────────
                 _category(context, 'Insurance', Icons.shield_outlined, [
                   _row(context, 'Cycles Insured', '${s.totalCyclesInsured}'),
-                  _row(context, 'Total Premiums Paid', '${s.totalPremiumsPaid} 💎'),
-                  _row(context, 'Disasters Survived (Insured)', '${s.disastersSurvivedInsured}'),
-                  _row(context, 'Disasters Survived (Uninsured)', '${s.disastersSurvivedUninsured}'),
-                  _row(context, 'Longest Uninsured Gap', '${s.longestGapUninsured} days'),
-                  _row(context, 'Current Uninsured Streak', '${s.currentUninsuredStreak} days'),
+                  _row(
+                    context,
+                    'Total Premiums Paid',
+                    '${s.totalPremiumsPaid} 💎',
+                  ),
+                  _row(context, 'Claims Filed', '${s.totalClaimsFiled}'),
+                  _row(
+                    context,
+                    'Total Payouts Received',
+                    '${s.lifetimeInsurancePayoutsReceived} 💎',
+                  ),
+                  _row(
+                    context,
+                    'Disasters Survived (Insured)',
+                    '${s.disastersSurvivedInsured}',
+                  ),
+                  _row(
+                    context,
+                    'Disasters Survived (Uninsured)',
+                    '${s.disastersSurvivedUninsured}',
+                  ),
+                  _row(
+                    context,
+                    'Longest Uninsured Gap',
+                    '${s.longestGapUninsured} days',
+                  ),
+                  _row(
+                    context,
+                    'Current Uninsured Streak',
+                    '${s.currentUninsuredStreak} days',
+                  ),
                 ]),
 
                 // ── DISASTERS ─────────────────────────────────────────────
@@ -343,72 +724,151 @@ class _StatsScreenState extends State<StatsScreen> {
                   _row(context, 'Earthquakes', '${s.numberOfEarthquakes}'),
                   _row(context, 'Droughts', '${s.numberOfDroughts}'),
                   _row(context, 'Landslides', '${s.numberOfLandslides}'),
-                  _row(context, 'Economy Crashes', '${s.numberOfEconomyCrashes}'),
-                  _row(context, 'Mass Emigrations', '${s.numberOfMassEmigrations}'),
+                  _row(
+                    context,
+                    'Economy Crashes',
+                    '${s.numberOfEconomyCrashes}',
+                  ),
+                  _row(
+                    context,
+                    'Mass Emigrations',
+                    '${s.numberOfMassEmigrations}',
+                  ),
                   _row(context, 'Pandemics', '${s.numberOfPandemics}'),
-                  _row(context, 'Disasters with Zero Loss', '${s.disastersZeroLoss}'),
-                  _row(context, 'Longest Disaster-Free Stretch', '${s.longestDisasterFreeStretch} days'),
-                  _row(context, 'Current Disaster-Free Streak', '${s.currentDisasterFreeStreak} days'),
+                  _row(
+                    context,
+                    'Disasters with Zero Loss',
+                    '${s.disastersZeroLoss}',
+                  ),
+                  _row(
+                    context,
+                    'Longest Disaster-Free Stretch',
+                    '${s.longestDisasterFreeStretch} days',
+                  ),
+                  _row(
+                    context,
+                    'Current Disaster-Free Streak',
+                    '${s.currentDisasterFreeStreak} days',
+                  ),
                 ]),
 
                 // ── QUIZ PERFORMANCE ──────────────────────────────────────
                 _category(context, 'Quiz Performance', Icons.quiz_outlined, [
-                  _row(context, 'Daily Quizzes Attempted', '${s.dailyQuizAttempted}'),
-                  _row(context, 'Daily Quizzes Correct', '${s.dailyQuizCorrect}'),
-                  _row(context, 'Daily Quiz Longest Streak', '${s.dailyQuizLongestStreak}'),
+                  _row(
+                    context,
+                    'Daily Quizzes Attempted',
+                    '${s.dailyQuizAttempted}',
+                  ),
+                  _row(
+                    context,
+                    'Daily Quizzes Correct',
+                    '${s.dailyQuizCorrect}',
+                  ),
+                  _row(
+                    context,
+                    'Daily Quiz Longest Streak',
+                    '${s.dailyQuizLongestStreak}',
+                  ),
                   _row(context, 'Practice Replays', '${s.quizzesReplayed}'),
-                  _row(context, 'KP Earned — Daily Quiz', '${s.totalKpEarnedDailyQuiz}'),
-                  _row(context, 'KP Earned — Replays', '${s.totalKpEarnedReplays}'),
-                  _row(context, 'KP Earned — Quizzes (Total)', '${s.totalKpEarnedQuizzes}'),
+                  _row(
+                    context,
+                    'KP Earned — Daily Quiz',
+                    '${s.totalKpEarnedDailyQuiz}',
+                  ),
+                  _row(
+                    context,
+                    'KP Earned — Replays',
+                    '${s.totalKpEarnedReplays}',
+                  ),
+                  _row(
+                    context,
+                    'KP Earned — Quizzes (Total)',
+                    '${s.totalKpEarnedQuizzes}',
+                  ),
                 ]),
 
                 // ── STREAKS & REVIVALS ────────────────────────────────────
-                _category(context, 'Streaks & Revivals', Icons.local_fire_department_outlined, [
-                  _row(context, 'Revivals Earned', '${s.totalRevivalsEarned}'),
-                  _row(context, 'Revivals Used', '${s.totalRevivalsUsed}'),
-                  _row(context, 'Streak Resets to Zero', '${s.streakResetToZero}'),
-                  _row(context, 'Times Streak ≥ 10', '${s.timesStreak10Reached}'),
-                  _row(context, 'Times Streak ≥ 30', '${s.timesStreak30Reached}'),
-                  _row(context, 'Times Streak ≥ 100', '${s.timesStreak100Reached}'),
-                  _row(context, 'Gems Saved (Streak Discounts)', '${s.gemsSavedStreakDiscounts}'),
-                ]),
+                _category(
+                  context,
+                  'Streaks & Revivals',
+                  Icons.local_fire_department_outlined,
+                  [
+                    _row(
+                      context,
+                      'Revivals Earned',
+                      '${s.totalRevivalsEarned}',
+                    ),
+                    _row(context, 'Revivals Used', '${s.totalRevivalsUsed}'),
+                    _row(
+                      context,
+                      'Streak Resets to Zero',
+                      '${s.streakResetToZero}',
+                    ),
+                    _row(
+                      context,
+                      'Times Streak ≥ 10',
+                      '${s.timesStreak10Reached}',
+                    ),
+                    _row(
+                      context,
+                      'Times Streak ≥ 30',
+                      '${s.timesStreak30Reached}',
+                    ),
+                    _row(
+                      context,
+                      'Times Streak ≥ 100',
+                      '${s.timesStreak100Reached}',
+                    ),
+                    _row(
+                      context,
+                      'Gems Saved (Streak Discounts)',
+                      '${s.gemsSavedStreakDiscounts}',
+                    ),
+                  ],
+                ),
 
                 // ── OVERTIME ──────────────────────────────────────────────
                 _category(context, 'Overtime', Icons.more_time, [
-                  _row(context, 'Total Overtime Cycles', '${s.totalCyclesOvertime}'),
-                  _row(context, 'Longest Overtime Streak', '${s.longestOvertimeStreak}'),
-                  _row(context, 'KP Lost — Overtime Penalties', '${s.totalKpLostOvertimePenalties}'),
-                  _row(context, 'Burnout Penalties Triggered', '${s.timesBurnoutPenaltyTriggered}'),
+                  _row(
+                    context,
+                    'Total Overtime Cycles',
+                    '${s.totalCyclesOvertime}',
+                  ),
+                  _row(
+                    context,
+                    'Longest Overtime Streak',
+                    '${s.longestOvertimeStreak}',
+                  ),
+                  _row(
+                    context,
+                    'KP Lost — Overtime Penalties',
+                    '${s.totalKpLostOvertimePenalties}',
+                  ),
+                  _row(
+                    context,
+                    'Burnout Penalties Triggered',
+                    '${s.timesBurnoutPenaltyTriggered}',
+                  ),
                 ]),
 
                 // ── PROGRESSION ───────────────────────────────────────────
                 _category(context, 'Career & Progression', Icons.stairs, [
                   _row(context, 'Total Days Played', '${s.totalDaysPlayed}'),
-                  _row(context, 'Current Level Title', s.currentTrackLevelTitle),
+                  _row(
+                    context,
+                    'Current Level Title',
+                    s.currentTrackLevelTitle,
+                  ),
                 ]),
 
-                const SizedBox(height: 24),
-                Center(
-                  child: TextButton.icon(
-                    onPressed: _shareStats,
-                    icon: Icon(Icons.share, size: 18, color: brandColor),
-                    label: Text(
-                      'Share Stats',
-                      style: TextStyle(color: brandColor, fontWeight: FontWeight.bold),
-                    ),
-                    style: TextButton.styleFrom(
-                      side: BorderSide(color: brandColor.withValues(alpha: 0.5)),
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 32),
               ],
             ),
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

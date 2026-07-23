@@ -35,49 +35,68 @@ class IconText extends StatelessWidget {
     BuildContext context,
   ) {
     final inlineSpans = <InlineSpan>[];
+    final styleStack = <TextStyle>[style];
 
-    // Split by placeholders [GEM], [KP], [STREAK], [REVIVAL]
-    final regex = RegExp(r'(\[GEM\]|\[KP\]|\[STREAK\]|\[REVIVAL\])');
+    final regex = RegExp(
+        r'(\[GEM\]|\[KP\]|\[STREAK\]|\[REVIVAL\]|\[\/?(?:success|error|warning|gem|kp|passive)\])');
     final parts = text.split(regex);
     final matches = regex.allMatches(text).toList();
 
     for (int i = 0; i < parts.length; i++) {
       if (parts[i].isNotEmpty) {
-        inlineSpans.add(TextSpan(text: parts[i], style: style));
+        inlineSpans.add(TextSpan(text: parts[i], style: styleStack.last));
       }
       if (i < matches.length) {
-        final match = matches[i].group(0);
-        IconData? icon;
-        Color? iconColor;
+        final match = matches[i].group(0) ?? '';
 
-        if (match == '[GEM]') {
-          icon = Icons.diamond;
-          iconColor = AppColors.of(context, 'gem');
-        } else if (match == '[KP]') {
-          icon = Icons.school;
-          iconColor = AppColors.of(context, 'kp');
-        } else if (match == '[STREAK]') {
-          icon = Icons.bolt;
-          iconColor = Colors.orange;
-        } else if (match == '[REVIVAL]') {
-          icon = Icons.favorite;
-          iconColor = Colors.redAccent;
-        }
+        if (match.startsWith('[/')) {
+          if (styleStack.length > 1) {
+            styleStack.removeLast();
+          }
+        } else if (match.startsWith('[') &&
+            (match.endsWith(']') &&
+                (match == '[success]' ||
+                    match == '[error]' ||
+                    match == '[warning]' ||
+                    match == '[gem]' ||
+                    match == '[kp]' ||
+                    match == '[passive]'))) {
+          final key = match.substring(1, match.length - 1);
+          final color = AppColors.of(context, key);
+          styleStack.add(styleStack.last.copyWith(color: color));
+        } else {
+          IconData? icon;
+          Color? iconColor;
 
-        if (icon != null) {
-          inlineSpans.add(
-            WidgetSpan(
-              alignment: PlaceholderAlignment.middle,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: Icon(
-                  icon,
-                  size: (style.fontSize ?? 14) * 1.2,
-                  color: iconColor,
+          if (match == '[GEM]') {
+            icon = Icons.diamond;
+            iconColor = AppColors.of(context, 'gem');
+          } else if (match == '[KP]') {
+            icon = Icons.school;
+            iconColor = AppColors.of(context, 'kp');
+          } else if (match == '[STREAK]') {
+            icon = Icons.bolt;
+            iconColor = Colors.orange;
+          } else if (match == '[REVIVAL]') {
+            icon = Icons.favorite;
+            iconColor = Colors.redAccent;
+          }
+
+          if (icon != null) {
+            inlineSpans.add(
+              WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: Icon(
+                    icon,
+                    size: (styleStack.last.fontSize ?? 14) * 1.2,
+                    color: iconColor,
+                  ),
                 ),
               ),
-            ),
-          );
+            );
+          }
         }
       }
     }

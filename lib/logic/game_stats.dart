@@ -82,6 +82,11 @@ class GameStats {
   int totalVehiclesPurchased = 0;
   int totalOfficeEquipmentPurchased = 0;
   int totalMachineryPurchased = 0;
+  int totalLandSold = 0;
+  int totalPropertiesSold = 0;
+  int totalVehiclesSold = 0;
+  int totalOfficeEquipmentSold = 0;
+  int totalMachinerySold = 0;
   int peakLandHeld = 0;
   int peakPropertiesHeld = 0;
   int peakVehiclesHeld = 0;
@@ -148,9 +153,10 @@ class GameStats {
   int longestPublicTransportStreak = 0;
   int currentPublicTransportStreak = 0;
 
-  // Insurance (7 stats)
+  // Insurance (8 stats)
   int totalCyclesInsured = 0;
   int totalPremiumsPaid = 0;
+  int totalClaimsFiled = 0;
   int disastersSurvivedInsured = 0;
   int disastersSurvivedUninsured = 0;
   int longestGapUninsured = 0;
@@ -203,7 +209,7 @@ class GameStats {
   int totalKpEarnedDailyQuiz = 0;
 
   // Streaks & Revivals (10 stats)
-  int totalRevivalsEarned = 3;
+  int totalRevivalsEarned = 0;
   int totalRevivalsUsed = 0;
   int streakResetToZero = 0;
   int timesStreak10Reached = 0;
@@ -316,6 +322,11 @@ class GameStats {
       'totalVehiclesPurchased': totalVehiclesPurchased,
       'totalOfficeEquipmentPurchased': totalOfficeEquipmentPurchased,
       'totalMachineryPurchased': totalMachineryPurchased,
+      'totalLandSold': totalLandSold,
+      'totalPropertiesSold': totalPropertiesSold,
+      'totalVehiclesSold': totalVehiclesSold,
+      'totalOfficeEquipmentSold': totalOfficeEquipmentSold,
+      'totalMachinerySold': totalMachinerySold,
       'peakLandHeld': peakLandHeld,
       'peakPropertiesHeld': peakPropertiesHeld,
       'peakVehiclesHeld': peakVehiclesHeld,
@@ -381,6 +392,7 @@ class GameStats {
 
       'totalCyclesInsured': totalCyclesInsured,
       'totalPremiumsPaid': totalPremiumsPaid,
+      'totalClaimsFiled': totalClaimsFiled,
       'disastersSurvivedInsured': disastersSurvivedInsured,
       'disastersSurvivedUninsured': disastersSurvivedUninsured,
       'longestGapUninsured': longestGapUninsured,
@@ -540,6 +552,11 @@ class GameStats {
     s.totalVehiclesPurchased = json['totalVehiclesPurchased'] ?? 0;
     s.totalOfficeEquipmentPurchased = json['totalOfficeEquipmentPurchased'] ?? 0;
     s.totalMachineryPurchased = json['totalMachineryPurchased'] ?? 0;
+    s.totalLandSold = json['totalLandSold'] ?? 0;
+    s.totalPropertiesSold = json['totalPropertiesSold'] ?? 0;
+    s.totalVehiclesSold = json['totalVehiclesSold'] ?? 0;
+    s.totalOfficeEquipmentSold = json['totalOfficeEquipmentSold'] ?? 0;
+    s.totalMachinerySold = json['totalMachinerySold'] ?? 0;
     s.peakLandHeld = json['peakLandHeld'] ?? 0;
     s.peakPropertiesHeld = json['peakPropertiesHeld'] ?? 0;
     s.peakVehiclesHeld = json['peakVehiclesHeld'] ?? 0;
@@ -605,6 +622,7 @@ class GameStats {
 
     s.totalCyclesInsured = json['totalCyclesInsured'] ?? 0;
     s.totalPremiumsPaid = json['totalPremiumsPaid'] ?? 0;
+    s.totalClaimsFiled = json['totalClaimsFiled'] ?? 0;
     s.disastersSurvivedInsured = json['disastersSurvivedInsured'] ?? 0;
     s.disastersSurvivedUninsured = json['disastersSurvivedUninsured'] ?? 0;
     s.longestGapUninsured = json['longestGapUninsured'] ?? 0;
@@ -654,7 +672,7 @@ class GameStats {
     s.pastDailyQuizzesAttemptedRetroactive = json['pastDailyQuizzesAttemptedRetroactive'] ?? 0;
     s.totalKpEarnedDailyQuiz = json['totalKpEarnedDailyQuiz'] ?? 0;
 
-    s.totalRevivalsEarned = json['totalRevivalsEarned'] ?? 3;
+    s.totalRevivalsEarned = json['totalRevivalsEarned'] ?? 0;
     s.totalRevivalsUsed = json['totalRevivalsUsed'] ?? 0;
     s.streakResetToZero = json['streakResetToZero'] ?? 0;
     s.timesStreak10Reached = json['timesStreak10Reached'] ?? 0;

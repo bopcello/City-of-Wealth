@@ -545,11 +545,77 @@ async function generateDailyQuiz() {
     await saveQuiz(quizId, finalQuizData, today);
     console.log(`Successfully generated and saved daily quiz for ${today}.`);
 
+    // 7. Generate and save daily financial quote from ZenQuotes
+    await generateDailyQuote(today);
+
   } catch (error) {
     console.error('Fatal error in quiz generation workflow:', error.message);
     process.exit(1);
   }
 }
 
+/**
+ * Fetches a finance/money related quote from ZenQuotes and saves it to Firestore.
+ */
+async function generateDailyQuote(todayDateStr) {
+  console.log(`Fetching daily financial quote for ${todayDateStr} from ZenQuotes...`);
+  let quoteData = null;
+
+  try {
+    const response = await axios.get('https://zenquotes.io/api/quotes', { timeout: 10000 });
+    if (Array.isArray(response.data)) {
+      const financeKeywords = ['money', 'wealth', 'rich', 'invest', 'business', 'work', 'success', 'value', 'price', 'economy', 'earn', 'spend', 'buy', 'gold', 'opportunity', 'fortune'];
+      const matched = response.data.filter(q => {
+        const text = (q.q + ' ' + q.a).toLowerCase();
+        return financeKeywords.some(kw => text.includes(kw));
+      });
+      if (matched.length > 0) {
+        const item = matched[Math.floor(Math.random() * matched.length)];
+        quoteData = { quote: item.q, author: item.a };
+      } else if (response.data.length > 0) {
+        const item = response.data[0];
+        quoteData = { quote: item.q, author: item.a };
+      }
+    }
+  } catch (err) {
+    console.warn('Notice fetching from ZenQuotes API:', err.message);
+  }
+
+  // Fallback to cache document in Firestore if ZenQuotes API failed or returned no quote
+  if (!quoteData) {
+    try {
+      const cacheDoc = await db.collection('daily_quotes').doc('cache').get();
+      if (cacheDoc.exists) {
+        const quotes = cacheDoc.data()?.quotes || [];
+        if (quotes.length > 0) {
+          const dayNum = new Date().getDate();
+          quoteData = quotes[dayNum % quotes.length];
+        }
+      }
+    } catch (e) {
+      console.warn('Notice reading quote cache:', e.message);
+    }
+  }
+
+  // Final emergency fallback quote
+  if (!quoteData) {
+    quoteData = {
+      quote: "An investment in knowledge pays the best interest.",
+      author: "Benjamin Franklin"
+    };
+  }
+
+  const payload = {
+    ...quoteData,
+    date: todayDateStr,
+    timestamp: admin.firestore.FieldValue.serverTimestamp()
+  };
+
+  await db.collection('daily_quotes').doc(`daily_${todayDateStr}`).set(payload);
+  await db.collection('daily_quotes').doc('today').set(payload);
+  console.log(`✅ Daily financial quote saved to daily_quotes/daily_${todayDateStr} and daily_quotes/today.`);
+}
+
 // Execute the workflow
 generateDailyQuiz();
+

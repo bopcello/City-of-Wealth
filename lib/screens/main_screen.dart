@@ -276,6 +276,9 @@ class _MainScreenState extends State<MainScreen> {
                   DateFormat('yyyy-MM-dd').format(DateTime.now()),
               sfx: widget.sfx,
               recentVisitedMoneyTiles: game.recentVisitedMoneyTiles,
+              playerName: game.playerName,
+              dailyQuoteText: game.todayQuoteText,
+              dailyQuoteAuthor: game.todayQuoteAuthor,
               onMoneyTileTap: (title) {
                 if (title == "Quiz") {
                   Navigator.push(

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import '../game_state.dart';
 import 'game_stats.dart';
+import '../data/quiz_data.dart';
 import '../services/notification_service.dart';
 import '../services/firestore_service.dart';
 
@@ -16,9 +17,57 @@ import '../widgets/icon_text.dart';
 
 class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   final FirestoreService firestoreService = FirestoreService();
-  int kp = 0;
-  int gems = 0;
-  CareerState career = const CareerState(track: CareerTrack.student, level: 1);
+  int _kp = 0;
+  int get kp => _kp;
+  set kp(int value) {
+    if (_kp == value) return;
+    _kp = value;
+    if (loaded) {
+      if (_kp > stats.highestKpReached) stats.highestKpReached = _kp;
+      if (_kp < stats.lowestKpReached) stats.lowestKpReached = _kp;
+    }
+    notifyListeners();
+  }
+
+  int _gems = 0;
+  int get gems => _gems;
+  set gems(int value) {
+    if (_gems == value) return;
+    _gems = value;
+    if (loaded) {
+      if (_gems > stats.peakGemsHeld) stats.peakGemsHeld = _gems;
+      if (_gems < 0) {
+        final debtAmt = _gems.abs();
+        if (debtAmt > stats.maxDebtReached) stats.maxDebtReached = debtAmt;
+      }
+    }
+    notifyListeners();
+  }
+
+  CareerState _career = const CareerState(track: CareerTrack.student, level: 1);
+  CareerState get career => _career;
+  set career(CareerState newCareer) {
+    if (_career.track == newCareer.track && _career.level == newCareer.level) return;
+    _career = newCareer;
+    if (loaded) {
+      final newTitle = levelName(_career.track, _career.level);
+      stats.currentTrackLevelTitle = newTitle;
+
+      if (stats.titleHistory.isEmpty || stats.titleHistory.last != newTitle) {
+        stats.titleHistory.add(newTitle);
+      }
+
+      if (!stats.fastestTimeToLevel.containsKey(newTitle)) {
+        stats.fastestTimeToLevel[newTitle] = stats.totalDaysPlayed;
+      } else {
+        if (stats.totalDaysPlayed < stats.fastestTimeToLevel[newTitle]!) {
+          stats.fastestTimeToLevel[newTitle] = stats.totalDaysPlayed;
+        }
+      }
+    }
+    notifyListeners();
+  }
+
   DateTime lastIncomeTime = DateTime.now();
   AssetInventory assets = const AssetInventory({});
   List<PlacedBuilding> cityLayout = [];
@@ -49,6 +98,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   int streakRevivals = 3;
   String? lastRevivalDate;
   DisasterType? nextDisasterType;
+  String? todayQuoteText;
+  String? todayQuoteAuthor;
   bool onboardingComplete = false;
   bool tutorialComplete = false;
   bool isTutorialActive = false;
@@ -166,7 +217,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       syncWithCloud(force: true);
       NotificationService().scheduleInactivityNotification(playerName);
     } else if (state == AppLifecycleState.resumed) {
-      debugPrint("📱 App resumed: Resuming music, checking quiz flag, and rescheduling notifications");
+      debugPrint(
+        "📱 App resumed: Resuming music, checking quiz flag, and rescheduling notifications",
+      );
       musicManager?.resumeMusic();
       _checkNewQuizFlag();
       _rescheduleNotificationsDebounced();
@@ -344,6 +397,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       if (savedStats != null) {
         stats = GameStats.fromJson(savedStats);
       }
+      if (stats.currentTrackLevelTitle == "None") {
+        stats.currentTrackLevelTitle = levelName(career.track, career.level);
+      }
 
       final prefs = await SharedPreferences.getInstance();
       tutorialComplete =
@@ -351,7 +407,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
             uid != null ? "${uid}_tutorialComplete" : 'tutorialComplete',
           ) ??
           false;
-      final recentKey = uid != null ? "${uid}_recent_money_tiles" : "recent_money_tiles";
+      final recentKey = uid != null
+          ? "${uid}_recent_money_tiles"
+          : "recent_money_tiles";
       recentVisitedMoneyTiles = prefs.getStringList(recentKey) ?? [];
       if (onboardingComplete && !tutorialComplete) {
         isTutorialActive = true;
@@ -368,6 +426,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         _syncDailyQuiz(); // Check for new quiz on load
         _rescheduleNotificationsDebounced();
       }
+      _fetchDailyQuote();
 
       if (_syncRequestedWhileLoading) {
         _syncRequestedWhileLoading = false;
@@ -390,6 +449,18 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     loaded = false;
     notifyListeners();
     await _loadGame(useCloud: true, force: true);
+  }
+
+  Future<void> _fetchDailyQuote() async {
+    try {
+      final dateStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final data = await firestoreService.getDailyQuote(dateStr);
+      todayQuoteText = data['quote'] as String?;
+      todayQuoteAuthor = data['author'] as String?;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("❌ Error in _fetchDailyQuote: $e");
+    }
   }
 
   Future<void> syncWithCloud({bool force = false}) async {
@@ -681,6 +752,15 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         }
         interestCost = (debtFactor * rate).round();
 
+        stats.lifetimeInterestPaidDebt += interestCost;
+        if (rate == 0.05) {
+          stats.cyclesDebtInterest5++;
+        } else if (rate == 0.10) {
+          stats.cyclesDebtInterest10++;
+        } else if (rate == 0.20) {
+          stats.cyclesDebtInterest20++;
+        }
+
         if (debtCycleCount > 30) {
           if (cityLayout.isNotEmpty) {
             if (nextDestructionCycle == null || nextDestructionCycle! <= 0) {
@@ -693,6 +773,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
               if (cityLayout.isNotEmpty) {
                 final indexToRemove = rng.nextInt(cityLayout.length);
                 final removed = cityLayout.removeAt(indexToRemove);
+                stats.buildingsLostForeclosure++;
                 events.add(
                   "${removed.name} was foreclosed/destroyed due to unpaid maintainance costs since you were in debt for more than 30 days!",
                 );
@@ -749,10 +830,127 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       totalKpChange += dayKp;
       totalGemChange += dayGems;
 
+      if (foodChoice == FoodType.balanced) {
+        stats.currentBalancedDietStreak++;
+        if (stats.currentBalancedDietStreak > stats.longestBalancedDietStreak) {
+          stats.longestBalancedDietStreak = stats.currentBalancedDietStreak;
+        }
+      } else {
+        stats.currentBalancedDietStreak = 0;
+      }
+
+      if (transportChoice == TransportType.public) {
+        stats.currentPublicTransportStreak++;
+        if (stats.currentPublicTransportStreak >
+            stats.longestPublicTransportStreak) {
+          stats.longestPublicTransportStreak =
+              stats.currentPublicTransportStreak;
+        }
+      } else {
+        stats.currentPublicTransportStreak = 0;
+      }
+
+      if (foodChoice == FoodType.cheap) {
+        stats.gemsSpentCheapFood += fCost;
+      } else if (foodChoice == FoodType.buffet) {
+        stats.gemsSpentBuffet += fCost;
+      }
+
+      int grossGain = 0;
+      int grossLoss = 0;
+
+      final rKp = rentChoice != null
+          ? getRentKp(career.track, career.level, rentChoice!)
+          : 0;
+      if (rKp > 0) {
+        grossGain += rKp;
+      } else {
+        grossLoss += rKp.abs();
+      }
+
+      final fKp = foodChoice != null
+          ? getFoodKp(career.track, career.level, foodChoice!)
+          : 0;
+      if (fKp > 0) {
+        grossGain += fKp;
+      } else {
+        grossLoss += fKp.abs();
+      }
+
+      final tKp = transportChoice != null
+          ? getTransportKp(career.track, career.level, transportChoice!)
+          : 0;
+      if (tKp > 0) {
+        grossGain += tKp;
+      } else {
+        grossLoss += tKp.abs();
+      }
+
+      grossGain += insuranceKp;
+
+      if (hasWaste) {
+        grossLoss += wastePenalty;
+        stats.totalKpLostWaste += wastePenalty;
+      }
+
+      if (currentBalance < 0) {
+        grossLoss += 200;
+        stats.totalKpLostDebt += 200;
+      }
+
+      stats.lifetimeKpEarnedGross += grossGain;
+      stats.lifetimeKpLostGross += grossLoss;
+
+      if (grossGain > stats.biggestSingleKpGain) {
+        stats.biggestSingleKpGain = grossGain;
+      }
+      if (grossLoss > stats.biggestSingleKpLoss) {
+        stats.biggestSingleKpLoss = grossLoss;
+      }
+
+      if (rKp > 0) {
+        stats.totalKpGainedHousing += rKp;
+      } else {
+        stats.totalKpLostHousing += rKp.abs();
+      }
+      if (fKp > 0) {
+        stats.totalKpGainedFood += fKp;
+      } else {
+        stats.totalKpLostFood += fKp.abs();
+      }
+      if (tKp > 0) {
+        stats.totalKpGainedTransport += tKp;
+      } else {
+        stats.totalKpLostTransport += tKp.abs();
+      }
+
+      if (foodChoice == FoodType.balanced) {
+        stats.kpGainedBalancedDiet += fKp;
+      } else if (foodChoice == FoodType.cheap) {
+        stats.kpLostCheapFood += fKp.abs();
+      } else if (foodChoice == FoodType.buffet) {
+        stats.kpLostBuffet += fKp.abs();
+      }
+
+      if (transportChoice == TransportType.cycle) {
+        stats.kpLostCyclingTimeCost += tKp.abs();
+      }
+
       final balanceAfterDay = gems + totalGemChange;
 
-      String event =
-          "Day $dayNumber: [KP]=${dayKp > 0 ? '+' : ''}$dayKp, [GEM]=${dayGems > 0 ? '+' : ''}$dayGems";
+      String kpStr = dayKp > 0
+          ? "[success][KP] +$dayKp[/success]"
+          : (dayKp < 0
+              ? "[error][KP] $dayKp[/error]"
+              : "[warning][KP] 0[/warning]");
+
+      String gemStr = dayGems > 0
+          ? "[success][GEM] +$dayGems[/success]"
+          : (dayGems < 0
+              ? "[error][GEM] $dayGems[/error]"
+              : "[warning][GEM] 0[/warning]");
+
+      String event = "Day $dayNumber: $kpStr, $gemStr";
       if (isWorkingOvertime && i == 0) {
         event += " (Worked overtime! Earned 50% extra income)";
       }
@@ -800,12 +998,21 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
     // --- Lifetime Stats Tracking ---
     if (cycles > 0) {
+      final currentTitle = levelName(career.track, career.level);
+      stats.daysSpentAtEachLevel[currentTitle] =
+          (stats.daysSpentAtEachLevel[currentTitle] ?? 0) + cycles;
+
+      final trackKey = career.track.name;
+      stats.currentTrackDaysSpent[trackKey] =
+          (stats.currentTrackDaysSpent[trackKey] ?? 0) + cycles;
+
       // Gems earned from salary
       final int salaryEarned = dailyIncome(career.track, career.level) * cycles;
       stats.lifetimeGemsEarnedSalary += salaryEarned;
 
       // Gems earned from passive income (per cycle total)
       int passiveThisBatch = 0;
+      int singleCyclePassiveTotal = 0;
       activePassiveIncomes.forEach((assetType, investedCount) {
         final info = passiveIncomeData.values.firstWhere(
           (e) => e.assetType == assetType,
@@ -815,15 +1022,61 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
           final eligibleCount = min(ownedCount, investedCount);
           final multiplier = getPassiveIncomeMultiplier(assetType);
           final streakRewards = getStreakRewards(dailyQuizStreak);
-          passiveThisBatch += (eligibleCount * info.incomePerAsset * multiplier * streakRewards.passiveIncomeMultiplier).round() * cycles;
+          final earned =
+              (eligibleCount *
+                      info.incomePerAsset *
+                      multiplier *
+                      streakRewards.passiveIncomeMultiplier)
+                  .round() *
+              cycles;
+          passiveThisBatch += earned;
+          singleCyclePassiveTotal +=
+              (eligibleCount *
+                      info.incomePerAsset *
+                      multiplier *
+                      streakRewards.passiveIncomeMultiplier)
+                  .round();
+
+          final baseEarned =
+              (eligibleCount * info.incomePerAsset * multiplier).round() *
+              cycles;
+          final boost = earned - baseEarned;
+          if (boost > 0) {
+            stats.extraPassiveIncomeStreakBoosts += boost;
+          }
+
+          if (assetType == AssetType.land) {
+            stats.passiveIncomeFarmsEarned += earned;
+          } else if (assetType == AssetType.machinery) {
+            stats.passiveIncomeFactoriesEarned += earned;
+          } else if (assetType == AssetType.properties) {
+            stats.passiveIncomeApartmentsEarned += earned;
+          } else if (assetType == AssetType.vehicles) {
+            stats.passiveIncomeDistCentersEarned += earned;
+          } else if (assetType == AssetType.officeEquipment) {
+            stats.passiveIncomeItServiceEarned += earned;
+          }
         }
       });
       stats.lifetimeGemsEarnedPassive += passiveThisBatch;
-      stats.lifetimeGemsEarnedTotal = stats.lifetimeGemsEarnedSalary + stats.lifetimeGemsEarnedPassive;
+      stats.lifetimeGemsEarnedTotal =
+          stats.lifetimeGemsEarnedSalary + stats.lifetimeGemsEarnedPassive;
+      stats.ratioPassiveToSalary = stats.lifetimeGemsEarnedSalary > 0
+          ? stats.lifetimeGemsEarnedPassive / stats.lifetimeGemsEarnedSalary
+          : 0.0;
+
+      if (singleCyclePassiveTotal > stats.highestSingleCyclePassiveIncome) {
+        stats.highestSingleCyclePassiveIncome = singleCyclePassiveTotal;
+      }
+
+      if (hasWaste) {
+        stats.wastePenaltyTriggeredCount += cycles;
+      }
 
       // Gems spent on living costs
       if (rentChoice != null) {
-        final rc = getRentCost(career.track, career.level, rentChoice!) * cycles;
+        final rc =
+            getRentCost(career.track, career.level, rentChoice!) * cycles;
         stats.lifetimeGemsSpentTotal += rc;
         if (rentChoice == RentType.sharedStudio) {
           stats.lifetimeGemsSpentSharedStudio += rc;
@@ -831,24 +1084,54 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
           stats.lifetimeGemsSpentSmallApartment += rc;
         } else if (rentChoice == RentType.luxuryHouse) {
           stats.lifetimeGemsSpentLuxuryHouse += rc;
+          final rentKpVal = getRentKp(
+            career.track,
+            career.level,
+            RentType.luxuryHouse,
+          );
+          if (rentKpVal < 0) {
+            stats.luxuryHousePenaltyTriggered += cycles;
+          }
         }
-        stats.cyclesSpentSharedStudio += (rentChoice == RentType.sharedStudio) ? cycles : 0;
-        stats.cyclesSpentSmallApartment += (rentChoice == RentType.smallApartment) ? cycles : 0;
-        stats.cyclesSpentLuxuryHouse += (rentChoice == RentType.luxuryHouse) ? cycles : 0;
+        stats.cyclesSpentSharedStudio += (rentChoice == RentType.sharedStudio)
+            ? cycles
+            : 0;
+        stats.cyclesSpentSmallApartment +=
+            (rentChoice == RentType.smallApartment) ? cycles : 0;
+        stats.cyclesSpentLuxuryHouse += (rentChoice == RentType.luxuryHouse)
+            ? cycles
+            : 0;
       }
       if (foodChoice != null) {
-        final fc = getFoodCost(career.track, career.level, foodChoice!) * cycles;
+        final fc =
+            getFoodCost(career.track, career.level, foodChoice!) * cycles;
         stats.lifetimeGemsSpentTotal += fc;
-        if (foodChoice == FoodType.cheap) { stats.lifetimeGemsSpentCheapFood += fc; stats.cyclesSpentCheapFood += cycles; }
-        else if (foodChoice == FoodType.balanced) { stats.lifetimeGemsSpentBalancedDiet += fc; stats.cyclesSpentBalancedDiet += cycles; }
-        else if (foodChoice == FoodType.buffet) { stats.lifetimeGemsSpentBuffet += fc; stats.cyclesSpentBuffet += cycles; }
+        if (foodChoice == FoodType.cheap) {
+          stats.lifetimeGemsSpentCheapFood += fc;
+          stats.cyclesSpentCheapFood += cycles;
+        } else if (foodChoice == FoodType.balanced) {
+          stats.lifetimeGemsSpentBalancedDiet += fc;
+          stats.cyclesSpentBalancedDiet += cycles;
+        } else if (foodChoice == FoodType.buffet) {
+          stats.lifetimeGemsSpentBuffet += fc;
+          stats.cyclesSpentBuffet += cycles;
+        }
       }
       if (transportChoice != null) {
-        final tc = getTransportCost(career.track, career.level, transportChoice!) * cycles;
+        final tc =
+            getTransportCost(career.track, career.level, transportChoice!) *
+            cycles;
         stats.lifetimeGemsSpentTotal += tc;
-        if (transportChoice == TransportType.public) { stats.lifetimeGemsSpentPublicTransport += tc; stats.cyclesSpentPublicTransport += cycles; }
-        else if (transportChoice == TransportType.cycle) { stats.lifetimeGemsSpentCycling += tc; stats.cyclesSpentCycling += cycles; }
-        else if (transportChoice == TransportType.car) { stats.lifetimeGemsSpentCar += tc; stats.cyclesSpentCar += cycles; }
+        if (transportChoice == TransportType.public) {
+          stats.lifetimeGemsSpentPublicTransport += tc;
+          stats.cyclesSpentPublicTransport += cycles;
+        } else if (transportChoice == TransportType.cycle) {
+          stats.lifetimeGemsSpentCycling += tc;
+          stats.cyclesSpentCycling += cycles;
+        } else if (transportChoice == TransportType.car) {
+          stats.lifetimeGemsSpentCar += tc;
+          stats.cyclesSpentCar += cycles;
+        }
       }
 
       // Insurance costs
@@ -857,6 +1140,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         stats.lifetimeGemsSpentInsurance += insCost;
         stats.totalPremiumsPaid += insCost;
         stats.totalCyclesInsured += cycles;
+        stats.currentUninsuredStreak = 0;
       } else {
         stats.currentUninsuredStreak += cycles;
         if (stats.currentUninsuredStreak > stats.longestGapUninsured) {
@@ -874,28 +1158,23 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         if (stats.currentDebtStreak > stats.longestContinuousDebtStreak) {
           stats.longestContinuousDebtStreak = stats.currentDebtStreak;
         }
-        if (gems.abs() > stats.maxDebtReached) stats.maxDebtReached = gems.abs();
+        final call = 30 - stats.currentDebtStreak;
+        if (call >= 0 && call < stats.closestCallForeclosure) {
+          stats.closestCallForeclosure = call;
+        }
       } else {
         stats.currentDebtStreak = 0;
       }
 
-      // KP tracking
-      if (totalKpChange > 0) {
-        stats.lifetimeKpEarnedGross += totalKpChange;
-      } else if (totalKpChange < 0) {
-        stats.lifetimeKpLostGross += totalKpChange.abs();
-      }
-      if (kp > stats.highestKpReached) stats.highestKpReached = kp;
-      if (kp < stats.lowestKpReached) stats.lowestKpReached = kp;
-
-      // Peak gems
-      if (gems > stats.peakGemsHeld) stats.peakGemsHeld = gems;
-
       // Per-cycle income/expenditure peaks
       final cycleIncome = totalGemChange > 0 ? totalGemChange : 0;
-      if (cycleIncome > stats.highestSingleCycleIncome) stats.highestSingleCycleIncome = cycleIncome;
+      if (cycleIncome > stats.highestSingleCycleIncome) {
+        stats.highestSingleCycleIncome = cycleIncome;
+      }
       final cycleExp = totalGemChange < 0 ? totalGemChange.abs() : 0;
-      if (cycleExp > stats.highestSingleCycleExpenditure) stats.highestSingleCycleExpenditure = cycleExp;
+      if (cycleExp > stats.highestSingleCycleExpenditure) {
+        stats.highestSingleCycleExpenditure = cycleExp;
+      }
 
       // Disaster-free streak
       stats.currentDisasterFreeStreak += cycles;
@@ -983,6 +1262,24 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
   void placeBuilding(PlacedBuilding building) {
     cityLayout.add(building);
+    stats.totalBuildingsConstructed++;
+    switch (building.name) {
+      case "Farm":
+        stats.farmsBuilt++;
+        break;
+      case "Factory":
+        stats.factoriesBuilt++;
+        break;
+      case "Apartment":
+        stats.apartmentsBuilt++;
+        break;
+      case "Distribution Center":
+        stats.distCentersBuilt++;
+        break;
+      case "IT Service Center":
+        stats.itServiceCentersBuilt++;
+        break;
+    }
     saveFields({
       cityLayoutKey: jsonEncode(cityLayout.map((b) => b.toJson()).toList()),
     });
@@ -991,6 +1288,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
   void removeBuilding(PlacedBuilding building) {
     cityLayout.removeWhere((b) => b.x == building.x && b.y == building.y);
+    stats.demolitionSessionsCount++;
     saveFields({
       cityLayoutKey: jsonEncode(cityLayout.map((b) => b.toJson()).toList()),
     });
@@ -1005,8 +1303,21 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
   void updateKp(int delta) {
     kp += delta;
+    if (kp < 0) kp = 0;
+
+    if (delta > 0) {
+      stats.lifetimeKpEarnedGross += delta;
+      if (delta > stats.biggestSingleKpGain) {
+        stats.biggestSingleKpGain = delta;
+      }
+    } else if (delta < 0) {
+      stats.lifetimeKpLostGross += delta.abs();
+      if (delta.abs() > stats.biggestSingleKpLoss) {
+        stats.biggestSingleKpLoss = delta.abs();
+      }
+    }
+
     saveFields({kpKey: kp});
-    notifyListeners();
   }
 
   void updateCareer(CareerState newCareer) {
@@ -1017,7 +1328,6 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     }
     career = newCareer;
     save();
-    notifyListeners();
   }
 
   void updateLiabilities(RentType? r, FoodType? f, TransportType? t) {
@@ -1036,6 +1346,19 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     foodChoice = f;
     transportChoice = t;
     kp += kpDelta;
+
+    if (kpDelta > 0) {
+      stats.lifetimeKpEarnedGross += kpDelta;
+      if (kpDelta > stats.biggestSingleKpGain) {
+        stats.biggestSingleKpGain = kpDelta;
+      }
+    } else if (kpDelta < 0) {
+      stats.lifetimeKpLostGross += kpDelta.abs();
+      if (kpDelta.abs() > stats.biggestSingleKpLoss) {
+        stats.biggestSingleKpLoss = kpDelta.abs();
+      }
+    }
+
     save();
     notifyListeners();
   }
@@ -1046,6 +1369,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     } else {
       insurances.add(type);
       kp += 100;
+      stats.totalKpGainedInsurance += 100;
+      stats.lifetimeKpEarnedGross += 100;
+      if (100 > stats.biggestSingleKpGain) stats.biggestSingleKpGain = 100;
     }
     saveFields({
       insurancesKey: insurances.map((e) => e.name).toList(),
@@ -1055,7 +1381,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void buyAsset(AssetType type, int amount, BuildContext context) {
-    final cost = assetCost(type) * amount;
+    final cost = assetCost(type, streak: dailyQuizStreak) * amount;
 
     int kpBonus = 10 * amount;
     String message = "Purchasing necessary assets: +$kpBonus [KP]";
@@ -1084,6 +1410,24 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     assets = assets.add(type, amount);
     kp += kpBonus;
 
+    final baseCost = assetCosts[type]! * amount;
+    final savings = baseCost - cost;
+    if (savings > 0) {
+      stats.gemsSavedStreakDiscounts += savings;
+    }
+
+    if (kpBonus > 0) {
+      stats.lifetimeKpEarnedGross += kpBonus;
+      if (kpBonus > stats.biggestSingleKpGain) {
+        stats.biggestSingleKpGain = kpBonus;
+      }
+    } else if (kpBonus < 0) {
+      stats.lifetimeKpLostGross += kpBonus.abs();
+      if (kpBonus.abs() > stats.biggestSingleKpLoss) {
+        stats.biggestSingleKpLoss = kpBonus.abs();
+      }
+    }
+
     // Stats tracking for asset purchases
     stats.lifetimeGemsSpentTotal += cost;
     switch (type) {
@@ -1092,7 +1436,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
           stats.lifetimeGemsSpentLand += cost;
           stats.totalLandPurchased += amount;
           final pk = assets.count(AssetType.land);
-          if (pk > stats.peakLandHeld) stats.peakLandHeld = pk;
+          if (pk > stats.peakLandHeld) {
+            stats.peakLandHeld = pk;
+          }
         }
         break;
       case AssetType.properties:
@@ -1100,7 +1446,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
           stats.lifetimeGemsSpentProperties += cost;
           stats.totalPropertiesPurchased += amount;
           final pk = assets.count(AssetType.properties);
-          if (pk > stats.peakPropertiesHeld) stats.peakPropertiesHeld = pk;
+          if (pk > stats.peakPropertiesHeld) {
+            stats.peakPropertiesHeld = pk;
+          }
         }
         break;
       case AssetType.vehicles:
@@ -1108,7 +1456,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
           stats.lifetimeGemsSpentVehicles += cost;
           stats.totalVehiclesPurchased += amount;
           final pk = assets.count(AssetType.vehicles);
-          if (pk > stats.peakVehiclesHeld) stats.peakVehiclesHeld = pk;
+          if (pk > stats.peakVehiclesHeld) {
+            stats.peakVehiclesHeld = pk;
+          }
         }
         break;
       case AssetType.officeEquipment:
@@ -1116,7 +1466,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
           stats.lifetimeGemsSpentOfficeEquipment += cost;
           stats.totalOfficeEquipmentPurchased += amount;
           final pk = assets.count(AssetType.officeEquipment);
-          if (pk > stats.peakOfficeEquipmentHeld) stats.peakOfficeEquipmentHeld = pk;
+          if (pk > stats.peakOfficeEquipmentHeld) {
+            stats.peakOfficeEquipmentHeld = pk;
+          }
         }
         break;
       case AssetType.machinery:
@@ -1124,7 +1476,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
           stats.lifetimeGemsSpentMachinery += cost;
           stats.totalMachineryPurchased += amount;
           final pk = assets.count(AssetType.machinery);
-          if (pk > stats.peakMachineryHeld) stats.peakMachineryHeld = pk;
+          if (pk > stats.peakMachineryHeld) {
+            stats.peakMachineryHeld = pk;
+          }
         }
         break;
     }
@@ -1156,6 +1510,25 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     final sellPrice = assetSellPrice(type);
     gems += sellPrice;
     assets = assets.add(type, -1);
+
+    switch (type) {
+      case AssetType.land:
+        stats.totalLandSold++;
+        break;
+      case AssetType.properties:
+        stats.totalPropertiesSold++;
+        break;
+      case AssetType.vehicles:
+        stats.totalVehiclesSold++;
+        break;
+      case AssetType.officeEquipment:
+        stats.totalOfficeEquipmentSold++;
+        break;
+      case AssetType.machinery:
+        stats.totalMachinerySold++;
+        break;
+    }
+
     saveFields({gemsKey: gems, assetsKey: jsonEncode(assets.toJson())});
     notifyListeners();
   }
@@ -1169,6 +1542,12 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     }
 
     final gemsRecovered = (totalLiquidationValue * 0.2).round();
+
+    stats.bankruptciesDeclared++;
+    stats.totalAssetValueLostBankruptcy +=
+        totalLiquidationValue - gemsRecovered;
+    stats.streakResetToZero++;
+    stats.currentDebtStreak = 0;
 
     bankruptcyCount++;
     kp = 0;
@@ -1213,14 +1592,120 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
   void addKp(int delta) {
     kp += delta;
-    if (kp < 0) kp = 0;
+    if (kp < 0) {
+      kp = 0;
+    }
+
+    if (delta > 0) {
+      stats.lifetimeKpEarnedGross += delta;
+      if (delta > stats.biggestSingleKpGain) {
+        stats.biggestSingleKpGain = delta;
+      }
+    } else if (delta < 0) {
+      stats.lifetimeKpLostGross += delta.abs();
+      if (delta.abs() > stats.biggestSingleKpLoss) {
+        stats.biggestSingleKpLoss = delta.abs();
+      }
+    }
+
     save();
-    notifyListeners();
   }
 
   void markQuizCompleted(String quizId) {
     completedQuizzes.add(quizId);
     saveFields({completedQuizzesKey: completedQuizzes.toList()});
+    notifyListeners();
+  }
+
+  void recordQuestionResult(QuizDifficulty difficulty, bool correct) {
+    if (correct) {
+      if (difficulty == QuizDifficulty.easy) {
+        stats.correctEasyAnswers++;
+      } else if (difficulty == QuizDifficulty.medium) {
+        stats.correctMediumAnswers++;
+      } else if (difficulty == QuizDifficulty.hard) {
+        stats.correctHardAnswers++;
+      }
+    } else {
+      if (difficulty == QuizDifficulty.easy) {
+        stats.wrongEasyAnswers++;
+      } else if (difficulty == QuizDifficulty.medium) {
+        stats.wrongMediumAnswers++;
+      } else if (difficulty == QuizDifficulty.hard) {
+        stats.wrongHardAnswers++;
+      }
+    }
+
+    final totalEasy = stats.correctEasyAnswers + stats.wrongEasyAnswers;
+    if (totalEasy > 0) {
+      stats.accuracyRateEasy = stats.correctEasyAnswers / totalEasy;
+    }
+
+    final totalMedium = stats.correctMediumAnswers + stats.wrongMediumAnswers;
+    if (totalMedium > 0) {
+      stats.accuracyRateMedium = stats.correctMediumAnswers / totalMedium;
+    }
+
+    final totalHard = stats.correctHardAnswers + stats.wrongHardAnswers;
+    if (totalHard > 0) {
+      stats.accuracyRateHard = stats.correctHardAnswers / totalHard;
+    }
+
+    final totalCorrect =
+        stats.correctEasyAnswers +
+        stats.correctMediumAnswers +
+        stats.correctHardAnswers;
+    final totalWrong =
+        stats.wrongEasyAnswers +
+        stats.wrongMediumAnswers +
+        stats.wrongHardAnswers;
+    final totalQuestions = totalCorrect + totalWrong;
+    if (totalQuestions > 0) {
+      stats.accuracyRateOverall = totalCorrect / totalQuestions;
+    }
+
+    notifyListeners();
+  }
+
+  void recordQuizCompleted({
+    required String quizId,
+    required QuizDifficulty difficulty,
+    required int score,
+    required int totalQuestions,
+    required int kpEarned,
+    required bool isDaily,
+    required bool isPractice,
+    required bool isReplay,
+  }) {
+    stats.totalQuizzesAttempted++;
+
+    if (isDaily || isPractice) {
+      // For daily and practice quizzes, stats like totalKpEarnedQuizzes,
+      // totalKpGainedQuizzes, and quizzesReplayed are already handled
+      // inside completeDailyQuiz().
+    } else {
+      if (isReplay) {
+        stats.quizzesReplayed++;
+        if (kpEarned > 0) {
+          stats.totalKpEarnedReplays += kpEarned;
+          stats.totalKpEarnedQuizzes += kpEarned;
+          stats.totalKpGainedQuizzes += kpEarned;
+        }
+      } else {
+        if (kpEarned > 0) {
+          stats.totalKpEarnedQuizzes += kpEarned;
+          stats.totalKpGainedQuizzes += kpEarned;
+        } else if (kpEarned < 0) {
+          stats.totalKpLostWrongQuiz += kpEarned.abs();
+        }
+      }
+    }
+
+    if (score == totalQuestions) {
+      stats.longestCorrectStreakQuizzes++;
+    }
+
+    save();
     notifyListeners();
   }
 
@@ -1235,14 +1720,24 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       // Streak always increments when the daily quiz is attempted
       dailyQuizStreak++;
       stats.dailyQuizAttempted++;
-      if (dailyQuizStreak % 10 == 0 && streakRevivals < 5) {
-        streakRevivals++;
+      if (dailyQuizStreak % 10 == 0) {
         stats.totalRevivalsEarned++;
+        if (streakRevivals < 5) {
+          streakRevivals++;
+        }
       }
-      if (dailyQuizStreak > stats.dailyQuizLongestStreak) stats.dailyQuizLongestStreak = dailyQuizStreak;
-      if (dailyQuizStreak >= 10) stats.timesStreak10Reached++;
-      if (dailyQuizStreak >= 30) stats.timesStreak30Reached++;
-      if (dailyQuizStreak >= 100) stats.timesStreak100Reached++;
+      if (dailyQuizStreak > stats.dailyQuizLongestStreak) {
+        stats.dailyQuizLongestStreak = dailyQuizStreak;
+      }
+      if (dailyQuizStreak >= 10) {
+        stats.timesStreak10Reached++;
+      }
+      if (dailyQuizStreak >= 30) {
+        stats.timesStreak30Reached++;
+      }
+      if (dailyQuizStreak >= 100) {
+        stats.timesStreak100Reached++;
+      }
 
       if (correct) {
         kp += 20; // 20 KP for correct daily
@@ -1250,7 +1745,12 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         stats.totalKpEarnedDailyQuiz += 20;
         stats.totalKpEarnedQuizzes += 20;
         stats.lifetimeKpEarnedGross += 20;
-        if (quizHash != null) solvedQuizHashes.add(quizHash);
+        if (20 > stats.biggestSingleKpGain) {
+          stats.biggestSingleKpGain = 20;
+        }
+        if (quizHash != null) {
+          solvedQuizHashes.add(quizHash);
+        }
       }
 
       lastDailyQuizDate = date;
@@ -1270,7 +1770,12 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       stats.totalKpEarnedReplays += 10;
       stats.totalKpEarnedQuizzes += 10;
       stats.lifetimeKpEarnedGross += 10;
-      if (quizHash != null) solvedQuizHashes.add(quizHash);
+      if (10 > stats.biggestSingleKpGain) {
+        stats.biggestSingleKpGain = 10;
+      }
+      if (quizHash != null) {
+        solvedQuizHashes.add(quizHash);
+      }
     }
 
     save();
@@ -1288,6 +1793,65 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     if (currentInvested < ownedCount) {
       gems -= info.investmentCost;
       activePassiveIncomes[assetType] = currentInvested + 1;
+
+      stats.lifetimeGemsSpentTotal += info.investmentCost;
+      switch (assetType) {
+        case AssetType.land:
+          stats.farmsSetupCostsPaid += info.investmentCost;
+          break;
+        case AssetType.machinery:
+          stats.factoriesSetupCostsPaid += info.investmentCost;
+          break;
+        case AssetType.properties:
+          stats.apartmentsSetupCostsPaid += info.investmentCost;
+          break;
+        case AssetType.vehicles:
+          stats.distCentersSetupCostsPaid += info.investmentCost;
+          break;
+        case AssetType.officeEquipment:
+          stats.itServiceCentersSetupCostsPaid += info.investmentCost;
+          break;
+      }
+
+      bool isReinvest = false;
+      switch (assetType) {
+        case AssetType.land:
+          if (stats.farmsLostDisaster > 0) {
+            stats.farmsLostDisaster--;
+            isReinvest = true;
+          }
+          break;
+        case AssetType.machinery:
+          if (stats.factoriesLostDisaster > 0) {
+            stats.factoriesLostDisaster--;
+            isReinvest = true;
+          }
+          break;
+        case AssetType.properties:
+          if (stats.apartmentsLostDisaster > 0) {
+            stats.apartmentsLostDisaster--;
+            isReinvest = true;
+          }
+          break;
+        case AssetType.vehicles:
+          if (stats.distCentersLostDisaster > 0) {
+            stats.distCentersLostDisaster--;
+            isReinvest = true;
+          }
+          break;
+        case AssetType.officeEquipment:
+          if (stats.itServiceCentersLostDisaster > 0) {
+            stats.itServiceCentersLostDisaster--;
+            isReinvest = true;
+          }
+          break;
+      }
+      if (isReinvest) {
+        stats.passiveIncomeDestroyedReinvested++;
+      }
+
+      stats.activePassiveIncomeTypesCount = activePassiveIncomes.keys.length;
+
       saveFields({
         gemsKey: gems,
         activePassiveIncomesKey: jsonEncode(
@@ -1357,11 +1921,17 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       if (kp < 0) kp = 0;
       stats.totalKpLostOvertime += penalty;
       stats.totalKpLostOvertimePenalties += penalty;
+      stats.lifetimeKpLostGross += penalty;
+      if (penalty > stats.biggestSingleKpLoss) {
+        stats.biggestSingleKpLoss = penalty;
+      }
       if (overtimeStreak > 10) stats.timesBurnoutPenaltyTriggered++;
     }
 
     stats.totalCyclesOvertime++;
-    if (overtimeStreak > stats.longestOvertimeStreak) stats.longestOvertimeStreak = overtimeStreak;
+    if (overtimeStreak > stats.longestOvertimeStreak) {
+      stats.longestOvertimeStreak = overtimeStreak;
+    }
 
     isWorkingOvertime = true;
 
@@ -1507,6 +2077,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       }
     });
 
+    activePassiveIncomes.removeWhere((k, v) => v <= 0);
+    stats.activePassiveIncomeTypesCount = activePassiveIncomes.keys.length;
+
     pendingDisasterResults.add(
       DisasterResult(
         type: disasterType,
@@ -1527,22 +2100,88 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     // --- Disaster Stats Tracking ---
     stats.totalDisasters++;
     stats.currentDisasterFreeStreak = 0;
+    int gemLossEstimate = 0;
+    lostAssets.forEach(
+      (t, count) => gemLossEstimate += count * assetSellPrice(t),
+    );
+    if (!hasAnyInsurance) stats.netGemsLostDisasters += gemLossEstimate;
+
+    deactivatedPassiveIncomes.forEach((type, lostCount) {
+      if (lostCount > 0) {
+        switch (type) {
+          case AssetType.land:
+            stats.farmsLostDisaster += lostCount;
+            break;
+          case AssetType.properties:
+            stats.apartmentsLostDisaster += lostCount;
+            break;
+          case AssetType.vehicles:
+            stats.distCentersLostDisaster += lostCount;
+            break;
+          case AssetType.officeEquipment:
+            stats.itServiceCentersLostDisaster += lostCount;
+            break;
+          case AssetType.machinery:
+            stats.factoriesLostDisaster += lostCount;
+            break;
+        }
+      }
+    });
+
     switch (disasterType) {
-      case DisasterType.flood: stats.numberOfFloods++; stats.landLostFlood += lostAssets[AssetType.land] ?? 0; break;
-      case DisasterType.fire: stats.numberOfFires++; stats.propertiesVehiclesLostFire += (lostAssets[AssetType.properties] ?? 0) + (lostAssets[AssetType.vehicles] ?? 0); break;
-      case DisasterType.earthquake: stats.numberOfEarthquakes++; stats.officeEquipMachineryLostEarthquake += (lostAssets[AssetType.officeEquipment] ?? 0) + (lostAssets[AssetType.machinery] ?? 0); break;
-      case DisasterType.drought: stats.numberOfDroughts++; break;
-      case DisasterType.landslide: stats.numberOfLandslides++; break;
-      case DisasterType.economyCrash: stats.numberOfEconomyCrashes++; break;
-      case DisasterType.massEmigration: stats.numberOfMassEmigrations++; break;
-      case DisasterType.pandemic: stats.numberOfPandemics++; break;
+      case DisasterType.flood:
+        stats.numberOfFloods++;
+        stats.landLostFlood += lostAssets[AssetType.land] ?? 0;
+        break;
+      case DisasterType.fire:
+        stats.numberOfFires++;
+        stats.propertiesVehiclesLostFire +=
+            (lostAssets[AssetType.properties] ?? 0) +
+            (lostAssets[AssetType.vehicles] ?? 0);
+        break;
+      case DisasterType.earthquake:
+        stats.numberOfEarthquakes++;
+        stats.officeEquipMachineryLostEarthquake +=
+            (lostAssets[AssetType.officeEquipment] ?? 0) +
+            (lostAssets[AssetType.machinery] ?? 0);
+        break;
+      case DisasterType.drought:
+        stats.numberOfDroughts++;
+        stats.farmsDestroyedDrought +=
+            deactivatedPassiveIncomes[AssetType.land] ?? 0;
+        break;
+      case DisasterType.landslide:
+        stats.numberOfLandslides++;
+        stats.distCentersDestroyedLandslide +=
+            deactivatedPassiveIncomes[AssetType.vehicles] ?? 0;
+        break;
+      case DisasterType.economyCrash:
+        stats.numberOfEconomyCrashes++;
+        stats.factoriesDestroyedEconomyCrash +=
+            deactivatedPassiveIncomes[AssetType.machinery] ?? 0;
+        break;
+      case DisasterType.massEmigration:
+        stats.numberOfMassEmigrations++;
+        stats.apartmentsDestroyedMassEmigration +=
+            deactivatedPassiveIncomes[AssetType.properties] ?? 0;
+        break;
+      case DisasterType.pandemic:
+        stats.numberOfPandemics++;
+        stats.itServiceCentersDestroyedPandemic +=
+            deactivatedPassiveIncomes[AssetType.officeEquipment] ?? 0;
+        break;
     }
     if (hasAnyInsurance) {
       stats.disastersSurvivedInsured++;
+      final totalPayout = insurancePayouts.values.fold(0, (a, b) => a + b);
+      stats.lifetimeInsurancePayoutsReceived += totalPayout;
+      stats.totalClaimsFiled += insurancePayouts.keys.length;
     } else {
       stats.disastersSurvivedUninsured++;
     }
-    if (lostAssets.isEmpty && deactivatedPassiveIncomes.isEmpty) stats.disastersZeroLoss++;
+    if (lostAssets.isEmpty && deactivatedPassiveIncomes.isEmpty) {
+      stats.disastersZeroLoss++;
+    }
     // --- End Disaster Stats ---
 
     save();
@@ -1619,11 +2258,12 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
           while (daysToRevive > 0) {
             if (streakRevivals > 0) {
               streakRevivals--;
+              stats.totalRevivalsUsed++;
               daysToRevive--;
-              lastRevivalDate = today; // Track when we last used revivals
+              lastRevivalDate = today;
             } else {
-              // No more revivals
               dailyQuizStreak = 0;
+              stats.streakResetToZero++;
               break;
             }
           }
@@ -1715,7 +2355,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     notifyListeners();
     SharedPreferences.getInstance().then((prefs) {
       final uid = FirebaseAuth.instance.currentUser?.uid;
-      final key = uid != null ? "${uid}_recent_money_tiles" : "recent_money_tiles";
+      final key = uid != null
+          ? "${uid}_recent_money_tiles"
+          : "recent_money_tiles";
       prefs.setStringList(key, recentVisitedMoneyTiles);
     });
   }

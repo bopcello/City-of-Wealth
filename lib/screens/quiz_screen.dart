@@ -557,6 +557,7 @@ class _QuizScreenState extends State<QuizScreen> {
     final correct = originalIndex == question.correctIndex;
     if (correct) correctCount++;
     results.add(correct);
+    widget.game.recordQuestionResult(widget.quiz.difficulty, correct);
     setState(() => selected = uiIndex);
     if (correct) {
       widget.sfx.playCorrect();
@@ -661,8 +662,6 @@ class _QuizScreenState extends State<QuizScreen> {
       final bool passed = correctCount >= widget.quiz.questions.length * 0.5;
 
       if (passed) {
-        finalKpDelta = award;
-        widget.game.addKp(finalKpDelta);
         if (widget.isDaily && widget.dailyDate != null) {
           widget.game.completeDailyQuiz(
             true,
@@ -670,6 +669,7 @@ class _QuizScreenState extends State<QuizScreen> {
             widget.quiz.hash,
             isPractice: false,
           );
+          finalKpDelta = 20; // Daily correct = 20 KP (handled inside completeDailyQuiz)
         } else if (widget.isPractice && widget.dailyDate != null) {
           widget.game.completeDailyQuiz(
             true,
@@ -677,6 +677,10 @@ class _QuizScreenState extends State<QuizScreen> {
             widget.quiz.hash,
             isPractice: true,
           );
+          finalKpDelta = 10; // Practice correct = 10 KP (handled inside completeDailyQuiz)
+        } else {
+          finalKpDelta = award;
+          widget.game.addKp(finalKpDelta);
         }
       } else if (widget.isDaily && widget.dailyDate != null) {
         widget.game.completeDailyQuiz(
@@ -686,6 +690,17 @@ class _QuizScreenState extends State<QuizScreen> {
           isPractice: false,
         );
       }
+
+      widget.game.recordQuizCompleted(
+        quizId: widget.quiz.id,
+        difficulty: widget.quiz.difficulty,
+        score: correctCount,
+        totalQuestions: widget.quiz.questions.length,
+        kpEarned: finalKpDelta,
+        isDaily: widget.isDaily,
+        isPractice: widget.isPractice,
+        isReplay: widget.isCompleted,
+      );
 
       Navigator.pushReplacement(
         context,
