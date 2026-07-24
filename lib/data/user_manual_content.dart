@@ -267,6 +267,42 @@ Insurance costs 5 Gems per cycle. It rewards you with +20 KP per cycle, a one-ti
 
 ---
 
+## The Friends System — Connect and Compete
+
+In real life, wealth is rarely built in isolation. Your social network is a source of learning, comparison, and support. The Friends system in City of Wealth lets you connect with other players, track their progress, and cheer them on.
+
+### Adding Friends
+
+Every player has a unique **Friend Code** shown in the Add Friend menu.
+- Copy your code and share it with others.
+- Search for friends by entering their Friend Code or their username.
+- You can accept incoming friend requests under the **Friends** tab in your City.
+
+### Friends View and Cities
+
+Once added, you can switch between your own city view and the **Friends** tab.
+- Tap any friend in the list to visit their city in real-time.
+- View their skyline, their placed buildings, and see how they are designing their path to wealth.
+- You can toggle notifications or mute a friend if you prefer, or block players if necessary.
+
+### The Activity Feed and Cheers
+
+The **Activity Feed** (accessed via the notification bell) keeps you updated on what your friends are doing.
+- See when a friend buys new assets, levels up, or constructs a major building.
+- Send a **Cheer** to celebrate their milestones! A cheer is a quick way to show support.
+- If a friend sends you a cheer, it appears in your feed, encouraging you on your journey.
+
+### The Leaderboard
+
+Healthy competition pushes us to improve. The **Leaderboard** ranks you and your friends based on three main metrics:
+1. **KP (Knowledge Points)**: Measures your overall financial literacy and career growth.
+2. **Daily Quiz Streak**: Measures your financial consistency over time.
+3. **Career Title**: Displays your current job or business level.
+
+Use the leaderboard to measure your progression against your friends and challenge each other to build more wealth and make smarter decisions daily.
+
+---
+
 ## Your First Week — What to Actually Do
 
 If you have never managed money before, start here.

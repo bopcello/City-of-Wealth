@@ -152,4 +152,28 @@ class TutorialKeys {
   static final GlobalKey settingsManualKey = GlobalKey(
     debugLabel: 'tutorial_settings_manual',
   );
+
+  // =========================
+  // FRIENDS SYSTEM
+  // =========================
+
+  static final GlobalKey cityTabKey = GlobalKey(
+    debugLabel: 'tutorial_city_tab',
+  );
+
+  static final GlobalKey friendsSegmentKey = GlobalKey(
+    debugLabel: 'tutorial_friends_segment',
+  );
+
+  static final GlobalKey addFriendButtonKey = GlobalKey(
+    debugLabel: 'tutorial_add_friend_button',
+  );
+
+  static final GlobalKey leaderboardButtonKey = GlobalKey(
+    debugLabel: 'tutorial_leaderboard_button',
+  );
+
+  static final GlobalKey activityFeedButtonKey = GlobalKey(
+    debugLabel: 'tutorial_activity_feed_button',
+  );
 }

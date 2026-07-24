@@ -342,6 +342,7 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             CityTab(
+              key: TutorialKeys.cityTabKey,
               career: game.career,
               gems: game.gems,
               assets: game.assets,
@@ -397,6 +398,7 @@ class _MainScreenState extends State<MainScreen> {
               isDarkMode: game.isDarkMode,
               musicVolume: game.musicVolume,
               sfxVolume: game.sfxVolume,
+              sfx: widget.sfx,
               onThemeToggle: game.toggleTheme,
               onMusicVolumeChanged: game.updateMusicVolume,
               onSfxVolumeChanged: game.updateSfxVolume,

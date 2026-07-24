@@ -58,13 +58,27 @@ class SfxManager {
     }
   }
 
-  void playClick() => _playSound('lib/assets/music/Click.mp3');
+  static bool isTutorialActive = false;
+
+  void playClick({bool fromTutorial = false}) {
+    if (isTutorialActive && !fromTutorial) {
+      return;
+    }
+    _playSound('lib/assets/music/Click.mp3');
+  }
+
   void playBack() => _playSound('lib/assets/music/Back.mp3');
+
   void playCorrect() => _playSound('lib/assets/music/Correct.mp3');
+
   void playIncorrect() => _playSound('lib/assets/music/Incorrect.mp3');
+
   void playBuy() => _playSound('lib/assets/music/Buy.mp3');
+
   void playSell() => _playSound('lib/assets/music/Sell.mp3');
+
   void playLevelUp() => _playSound('lib/assets/music/Level_up.mp3');
+
   void playDisaster() => _playSound('lib/assets/music/Disaster.mp3');
 
   Future<void> _playSound(String assetPath) async {
@@ -108,4 +122,31 @@ class SfxNavigatorObserver extends NavigatorObserver {
       sfx.playBack();
     }
   }
+}
+
+/// Wrap any widget with [SilenceClickSound] to prevent the global click SFX
+/// from firing when it or its descendants are tapped.
+///
+/// Use this on buttons that already play their own sound (Buy, Sell, OK, etc.)
+/// so they don't double-play with the generic click sound.
+///
+/// Example:
+/// ```dart
+/// SilenceClickSound(
+///   child: ElevatedButton(
+///     onPressed: () { sfx.playBuy(); ... },
+///     child: Text('Buy'),
+///   ),
+/// )
+/// ```
+class SilenceClickSound extends InheritedWidget {
+  const SilenceClickSound({super.key, required super.child});
+
+  /// Returns true if a [SilenceClickSound] ancestor is present in the tree.
+  static bool isSilenced(BuildContext context) {
+    return context.getInheritedWidgetOfExactType<SilenceClickSound>() != null;
+  }
+
+  @override
+  bool updateShouldNotify(SilenceClickSound oldWidget) => false;
 }

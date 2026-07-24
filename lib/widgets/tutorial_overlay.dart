@@ -9,6 +9,11 @@ import '../screens/passive_income_screen.dart';
 import '../screens/assets_screen.dart';
 import '../screens/liabilities_screen.dart';
 import '../screens/quiz_screen.dart';
+import '../game_state.dart';
+import '../tabs/city_tab.dart';
+import '../screens/leaderboard_screen.dart';
+import '../screens/activity_feed_screen.dart';
+import '../widgets/add_friend_dialog.dart';
 
 enum TutorialStepType { info, interactive, backNavigation, needsSelection }
 
@@ -42,7 +47,10 @@ class TutorialStep {
       targetKey == TutorialKeys.cityBodyKey ||
       targetKey == TutorialKeys.settingsBodyKey ||
       targetKey == TutorialKeys.assetsBodyKey ||
-      targetKey == TutorialKeys.passiveIncomeBodyKey;
+      targetKey == TutorialKeys.passiveIncomeBodyKey ||
+      title == "Search and Connect" ||
+      title == "Compare and Compete" ||
+      title == "Recent Activity";
 }
 
 class TutorialOverlay extends StatefulWidget {
@@ -76,6 +84,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
   @override
   void initState() {
     super.initState();
+    SfxManager.isTutorialActive = true;
 
     widget.game.addListener(_onGameStateChanged);
 
@@ -150,10 +159,136 @@ class _TutorialOverlayState extends State<TutorialOverlay>
         targetKey: TutorialKeys.cityBodyKey,
       ),
       TutorialStep(
-        title: "City Defenses",
+        title: "City Development",
         description:
-            "You can place, move, or remove buildings. Protect them from natural disasters by building a defensive City Wall or buying insurance.",
+            "You can place, move, or remove buildings. Protect them from natural disasters by buying insurance.",
         targetKey: TutorialKeys.cityBodyKey,
+      ),
+      TutorialStep(
+        title: "Social & Friends",
+        description:
+            "This friends system allows you to connect with other players. Tap the Friends segment to switch your view to your friends list.",
+        targetKey: TutorialKeys.friendsSegmentKey,
+        type: TutorialStepType.interactive,
+        action: () async {
+          final state = TutorialKeys.cityTabKey.currentState as CityTabState?;
+          if (state != null) {
+            state.setSelectedSegment(1);
+          }
+        },
+      ),
+      TutorialStep(
+        title: "Adding Friends",
+        description:
+            "Tap this button to see your own unique Friend Code, copy it, or search for other players using their name or code.",
+        targetKey: TutorialKeys.addFriendButtonKey,
+        type: TutorialStepType.interactive,
+        action: () async {
+          final state = TutorialKeys.cityTabKey.currentState as CityTabState?;
+          if (state != null && state.mounted) {
+            showDialog(
+              context: state.context,
+              builder: (_) => AddFriendDialog(
+                myFriendCode: state.widget.game.friendCode,
+                currentFriendships: state.friendships,
+              ),
+            );
+          }
+        },
+      ),
+      TutorialStep(
+        title: "Search and Connect",
+        description:
+            "Enter a code or name to send a friend request. Tap anywhere to close this dialog and continue.",
+        type: TutorialStepType.backNavigation,
+        action: () async {
+          final state = TutorialKeys.cityTabKey.currentState as CityTabState?;
+          if (state != null && state.mounted) {
+            Navigator.pop(state.context);
+          }
+        },
+      ),
+      TutorialStep(
+        title: "Friends Leaderboard",
+        description:
+            "Tap this icon to check the leaderboard. You can compare your KP, daily streaks, and career titles with your friends!",
+        targetKey: TutorialKeys.leaderboardButtonKey,
+        type: TutorialStepType.interactive,
+        action: () async {
+          final state = TutorialKeys.cityTabKey.currentState as CityTabState?;
+          if (state != null && state.mounted) {
+            Navigator.push(
+              state.context,
+              MaterialPageRoute(
+                builder: (_) => LeaderboardScreen(
+                  currentUid: state.widget.game.currentUid ?? '',
+                  myPlayerName: state.widget.game.playerName,
+                  myKp: state.widget.game.kp,
+                  myStreak: state.widget.game.dailyQuizStreak,
+                  myTitle: levelName(
+                    state.widget.career.track,
+                    state.widget.career.level,
+                  ),
+                  friendSnapshots: state.friendSnapshots,
+                ),
+              ),
+            );
+          }
+        },
+      ),
+      TutorialStep(
+        title: "Compare and Compete",
+        description:
+            "Climb the ranks by earning more KP and keeping up your streak! Tap anywhere to return to your city.",
+        type: TutorialStepType.backNavigation,
+        action: () async {
+          final state = TutorialKeys.cityTabKey.currentState as CityTabState?;
+          if (state != null && state.mounted) {
+            Navigator.pop(state.context);
+          }
+        },
+      ),
+      TutorialStep(
+        title: "Activity Feed & Cheers",
+        description:
+            "Tap the notification bell to view your activity feed. Here you can see who cheered you, status updates, and accept pending requests.",
+        targetKey: TutorialKeys.activityFeedButtonKey,
+        type: TutorialStepType.interactive,
+        action: () async {
+          final state = TutorialKeys.cityTabKey.currentState as CityTabState?;
+          if (state != null && state.mounted) {
+            Navigator.push(
+              state.context,
+              MaterialPageRoute(
+                builder: (_) => ActivityFeedScreen(
+                  initialActivities: state.activityFeed,
+                  myPlayerName: state.widget.game.playerName,
+                  friendships: state.friendships,
+                  friendNames: {
+                    for (var f in state.friendships)
+                      (f.playerA == state.widget.game.currentUid
+                              ? f.playerB
+                              : f.playerA):
+                          "Friend",
+                  },
+                ),
+              ),
+            );
+          }
+        },
+      ),
+      TutorialStep(
+        title: "Recent Activity",
+        description:
+            "Keep track of cheers from your friends and your latest updates here. Tap anywhere to close the feed and continue.",
+        type: TutorialStepType.backNavigation,
+        action: () async {
+          final state = TutorialKeys.cityTabKey.currentState as CityTabState?;
+          if (state != null && state.mounted) {
+            Navigator.pop(state.context);
+            state.setSelectedSegment(0);
+          }
+        },
       ),
       TutorialStep(
         title: "Money Tab",
@@ -472,6 +607,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
     widget.game.onBackGestureIntercepted = null;
     widget.game.isTutorialBackAllowed = false;
     _arrowController.dispose();
+    SfxManager.isTutorialActive = false;
     super.dispose();
   }
 
@@ -503,7 +639,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
 
   Future<void> _advanceStep() async {
     if (!mounted) return;
-    widget.sfx.playClick();
+    widget.sfx.playClick(fromTutorial: true);
     if (_currentStep >= _steps.length - 1) {
       _finishTutorial();
       return;
@@ -523,6 +659,16 @@ class _TutorialOverlayState extends State<TutorialOverlay>
 
   void _updateTargetRectOnTick() {
     if (!mounted) return;
+    if (currentStep.isFullScreenHighlight) {
+      final size = MediaQuery.of(context).size;
+      final newRect = Rect.fromLTWH(0, 0, size.width, size.height);
+      if (_targetRect != newRect) {
+        setState(() {
+          _targetRect = newRect;
+        });
+      }
+      return;
+    }
     final key = currentStep.targetKey;
     if (key == null) {
       if (_targetRect != null) {
@@ -559,6 +705,14 @@ class _TutorialOverlayState extends State<TutorialOverlay>
   }
 
   Future<void> _refreshTargetRect() async {
+    if (!mounted) return;
+    if (currentStep.isFullScreenHighlight) {
+      final size = MediaQuery.of(context).size;
+      setState(() {
+        _targetRect = Rect.fromLTWH(0, 0, size.width, size.height);
+      });
+      return;
+    }
     final key = currentStep.targetKey;
 
     if (key == null) {
@@ -607,8 +761,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
       return;
     }
 
-
-    widget.sfx.playClick();
+    widget.sfx.playClick(fromTutorial: true);
 
     if (_currentStep >= _steps.length - 1) {
       _finishTutorial();
@@ -629,7 +782,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
     final action = currentStep.action;
 
     if (action != null) {
-      widget.sfx.playClick();
+      widget.sfx.playClick(fromTutorial: true);
       await action();
       await Future.delayed(const Duration(milliseconds: 350));
     }
@@ -658,7 +811,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
   }
 
   void _showExitConfirmationDialog() {
-    widget.sfx.playClick();
+    widget.sfx.playClick(fromTutorial: true);
     setState(() {
       _showExitDialog = true;
     });
@@ -674,76 +827,78 @@ class _TutorialOverlayState extends State<TutorialOverlay>
 
     return Stack(
       children: [
-          // ── Dimming overlay ──────────────────────────────────────────────
-          // Hidden entirely while a selection-result popup is open (so the
-          // dialog is fully visible and its button is tappable).
-          // For needsSelection steps, the dimming overlay has a cutout
-          // that allows touches to pass through directly to the underlying screen.
-          // For every other step a GestureDetector blocks/handles taps.
-          if (!widget.game.isTutorialPopupActive) ...[
-            if (step.needsSelection)
-              ClipPath(
+        // ── Dimming overlay ──────────────────────────────────────────────
+        // Hidden entirely while a selection-result popup is open (so the
+        // dialog is fully visible and its button is tappable).
+        // For needsSelection steps, the dimming overlay has a cutout
+        // that allows touches to pass through directly to the underlying screen.
+        // For every other step a GestureDetector blocks/handles taps.
+        if (!widget.game.isTutorialPopupActive) ...[
+          if (step.needsSelection)
+            ClipPath(
+              clipper: SpotlightClipper(rect),
+              child: Container(color: Colors.black.withValues(alpha: 0.78)),
+            )
+          else ...[
+            // Visual dimming (always ignore its own pointer events)
+            IgnorePointer(
+              child: ClipPath(
                 clipper: SpotlightClipper(rect),
                 child: Container(color: Colors.black.withValues(alpha: 0.78)),
-              )
-            else ...[
-              // Visual dimming (always ignore its own pointer events)
-              IgnorePointer(
-                child: ClipPath(
-                  clipper: SpotlightClipper(rect),
-                  child: Container(color: Colors.black.withValues(alpha: 0.78)),
-                ),
               ),
-              // Full-screen tap blocker / handler for non-needsSelection steps
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: step.isInteractive ? null : _nextStep,
-                child: const SizedBox.expand(),
-              ),
-            ],
+            ),
+            // Full-screen tap blocker / handler for non-needsSelection steps
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: step.isInteractive ? null : _nextStep,
+              child: const SizedBox.expand(),
+            ),
           ],
+        ],
 
-          // Tappable spotlight cutout for normal interactive steps
-          if (rect != null && step.isInteractive)
-            Positioned.fromRect(
-              rect: rect,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: _handleInteractiveStep,
-                child: Container(color: Colors.transparent),
-              ),
+        // Tappable spotlight cutout for normal interactive steps
+        if (rect != null && step.isInteractive)
+          Positioned.fromRect(
+            rect: rect,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: _handleInteractiveStep,
+              child: Container(color: Colors.transparent),
             ),
+          ),
 
-          // Arrow: shown when rect is present and is not full-screen highlight
-          if (rect != null && !step.isFullScreenHighlight && !widget.game.isTutorialPopupActive)
-            AnimatedBuilder(
-              animation: _arrowAnimation,
-              builder: (_, __) {
-                final isTopHalf = rect.top < screenSize.height / 2;
-                final top = isTopHalf
-                    ? rect.bottom + 12 + _arrowAnimation.value
-                    : rect.top - 56 - _arrowAnimation.value;
+        // Arrow: shown when rect is present and is not full-screen highlight
+        if (rect != null &&
+            !step.isFullScreenHighlight &&
+            !widget.game.isTutorialPopupActive)
+          AnimatedBuilder(
+            animation: _arrowAnimation,
+            builder: (_, __) {
+              final isTopHalf = rect.top < screenSize.height / 2;
+              final top = isTopHalf
+                  ? rect.bottom + 12 + _arrowAnimation.value
+                  : rect.top - 56 - _arrowAnimation.value;
 
-                return Positioned(
-                  left: rect.center.dx - 20,
-                  top: top,
-                  child: IgnorePointer(
-                    child: Icon(
-                      isTopHalf
-                          ? Icons.arrow_upward_rounded
-                          : Icons.arrow_downward_rounded,
-                      size: 42,
-                      color: Colors.amberAccent,
-                      shadows: const [
-                        Shadow(blurRadius: 10, color: Colors.black87),
-                      ],
-                    ),
+              return Positioned(
+                left: rect.center.dx - 20,
+                top: top,
+                child: IgnorePointer(
+                  child: Icon(
+                    isTopHalf
+                        ? Icons.arrow_upward_rounded
+                        : Icons.arrow_downward_rounded,
+                    size: 42,
+                    color: Colors.amberAccent,
+                    shadows: const [
+                      Shadow(blurRadius: 10, color: Colors.black87),
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          ),
 
-          if (!widget.game.isTutorialPopupActive)
+        if (!widget.game.isTutorialPopupActive)
           Positioned(
             left: 20,
             right: 20,
@@ -760,135 +915,135 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                   type: MaterialType.transparency,
                   child: Container(
                     padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.amber, width: 1.4),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black54,
-                        blurRadius: 20,
-                        offset: Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.amber,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              "Step ${_currentStep + 1}/${_steps.length}",
-                              style: const TextStyle(
-                                color: Colors.black87,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              step.title,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      IconText(
-                        step.description,
-                        style: TextStyle(
-                          fontSize: 14.5,
-                          height: 1.45,
-                          color: Theme.of(context).colorScheme.onSurface,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: Colors.amber, width: 1.4),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black54,
+                          blurRadius: 20,
+                          offset: Offset(0, 10),
                         ),
-                      ),
-                      const SizedBox(height: 18),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          if (_currentStep == 0)
-                            TextButton(
-                              onPressed: _showExitConfirmationDialog,
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.amber,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                               child: Text(
-                                "Skip Tutorial",
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.error,
+                                "Step ${_currentStep + 1}/${_steps.length}",
+                                style: const TextStyle(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                step.title,
+                                style: const TextStyle(
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            )
-                          else
-                            Text(
-                              step.needsSelection
-                                  ? "Tap the highlighted area above"
-                                  : step.isInteractive
-                                  ? "Tap highlighted area"
-                                  : "Tap anywhere to continue",
-                              style: TextStyle(
-                                fontSize: 11.5,
-                                fontStyle: FontStyle.italic,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
                             ),
-                          // needsSelection steps auto-advance; hide the Next button
-                          if (!step.needsSelection)
-                            ElevatedButton(
-                              onPressed: canProgress
-                                  ? (step.isInteractive
-                                        ? _handleInteractiveStep
-                                        : _nextStep)
-                                  : null,
-                              style: ElevatedButton.styleFrom(
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        IconText(
+                          step.description,
+                          style: TextStyle(
+                            fontSize: 14.5,
+                            height: 1.45,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            if (_currentStep == 0)
+                              TextButton(
+                                onPressed: _showExitConfirmationDialog,
+                                child: Text(
+                                  "Skip Tutorial",
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.error,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )
+                            else
+                              Text(
+                                step.needsSelection
+                                    ? "Tap the highlighted area above"
+                                    : step.isInteractive
+                                    ? "Tap highlighted area"
+                                    : "Tap anywhere to continue",
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  fontStyle: FontStyle.italic,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            // needsSelection steps auto-advance; hide the Next button
+                            if (!step.needsSelection)
+                              ElevatedButton(
+                                onPressed: canProgress
+                                    ? (step.isInteractive
+                                          ? _handleInteractiveStep
+                                          : _nextStep)
+                                    : null,
+                                style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.amber,
                                   foregroundColor: Colors.black87,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                              child: Text(
-                                _currentStep == _steps.length - 1
-                                    ? "Finish"
-                                    : step.isInteractive
-                                    ? "Guide Me"
-                                    : "Next",
+                                child: Text(
+                                  _currentStep == _steps.length - 1
+                                      ? "Finish"
+                                      : step.isInteractive
+                                      ? "Guide Me"
+                                      : "Next",
+                                ),
                               ),
-                            ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 ),
               ),
             ),
           ),
 
-          if (_showExitDialog)
-            Positioned.fill(
-              child: Material(
-                type: MaterialType.transparency,
-                child: Container(
-                  color: Colors.black54,
-                  child: Center(
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 28),
+        if (_showExitDialog)
+          Positioned.fill(
+            child: Material(
+              type: MaterialType.transparency,
+              child: Container(
+                color: Colors.black54,
+                child: Center(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 28),
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
@@ -948,11 +1103,11 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                     ),
                   ),
                 ),
-                ),
               ),
             ),
-        ],
-      );
+          ),
+      ],
+    );
   }
 }
 

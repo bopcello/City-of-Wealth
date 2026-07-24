@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'dart:math' as math;
 import 'services/firestore_service.dart';
+
 
 enum CareerTrack { student, job, business }
 
@@ -428,6 +430,7 @@ const isWorkingOvertimeKey = 'isWorkingOvertime';
 const overtimeStreakKey = 'overtimeStreak';
 const activePassiveIncomesKey = 'activePassiveIncomes';
 const playerNameKey = 'playerName';
+const friendCodeKey = 'friendCode';
 const isDarkModeKey = 'isDarkMode';
 const musicVolumeKey = 'musicVolume';
 const sfxVolumeKey = 'sfxVolume';
@@ -574,6 +577,7 @@ Future<void> saveGameState({
   Map<AssetType, int>? activePassiveIncomes,
   Map<DisasterType, int>? activeDisasterEffects,
   String? playerName,
+  String? friendCode,
   bool? isDarkMode,
   double? musicVolume,
   double? sfxVolume,
@@ -607,6 +611,7 @@ Future<void> saveGameState({
       lastIncomeTimeKey: lastIncomeTime?.millisecondsSinceEpoch,
       bankruptcyCountKey: bankruptcyCount,
       playerNameKey: playerName,
+      friendCodeKey: friendCode ?? prefs.getString(uid != null ? "${uid}_$friendCodeKey" : friendCodeKey),
       cityLayoutKey: layout != null
           ? jsonEncode(layout.map((b) => b.toJson()).toList())
           : null,
@@ -700,6 +705,12 @@ Future<void> saveGameState({
   }
 }
 
+String _generateRandomFriendCode() {
+  final chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  final rand = math.Random();
+  return List.generate(6, (index) => chars[rand.nextInt(chars.length)]).join();
+}
+
 Future<
   (
     int,
@@ -738,6 +749,7 @@ Future<
     int,
     bool,
     Map<String, dynamic>?,
+    String,
   )
 >
 loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
@@ -910,6 +922,13 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
       data[playerNameKey]?.toString() ??
       prefs.getString(scopedKey(playerNameKey)) ??
       "User";
+  String friendCode = data[friendCodeKey]?.toString() ??
+      prefs.getString(scopedKey(friendCodeKey)) ??
+      "";
+  if (friendCode.isEmpty) {
+    friendCode = _generateRandomFriendCode();
+    await prefs.setString(scopedKey(friendCodeKey), friendCode);
+  }
   final double musicVolume =
       (data[musicVolumeKey] as num?)?.toDouble() ??
       prefs.getDouble(scopedKey(musicVolumeKey)) ??
@@ -1174,6 +1193,7 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
     wakeUpMinute,
     disasterAlertsEnabled,
     stats,
+    friendCode,
   );
 }
 

@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Player progress: Only the owner can write; any logged-in user can read to allow search
+    match /players/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      // Activity Feed subcollection
+      match /activity_feed/{activityId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        // Allow any authenticated user to create (to post cheers or notifications)
+        allow create: if request.auth != null;
+        // Owner can update (mark as seen) or delete; sender can also delete their own cheer
+        allow update: if request.auth != null && request.auth.uid == userId;
+        allow delete: if request.auth != null &&
+          (request.auth.uid == userId || resource.data.sourcePlayerId == request.auth.uid);
+      }
+
+      // Cheers sent: personal cooldown tracker — only the sender can read/write
+      match /cheers_sent/{targetId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Friendships: Only the participating players can view, create, or update the friendship
+    match /friendships/{friendshipId} {
+      allow read, delete: if request.auth != null && 
+        (request.auth.uid == resource.data.playerA || request.auth.uid == resource.data.playerB);
+      allow create: if request.auth != null && 
+        (request.auth.uid == request.resource.data.playerA || request.auth.uid == request.resource.data.playerB);
+      allow update: if request.auth != null && 
+        (request.auth.uid == resource.data.playerA || request.auth.uid == resource.data.playerB) &&
+        (request.auth.uid == request.resource.data.playerA || request.auth.uid == request.resource.data.playerB);
+    }
+
+    // Public Cities: Authenticated users can read snapshots; only the owner can save/overwrite
+    match /public_cities/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Daily Quizzes: Any logged-in player can read today's quiz
+    match /daily_quizzes/{quizId} {
+      allow read: if request.auth != null;
+    }
+
+    // Metadata: For internal tracking
+    match /daily_quizzes_metadata/{docId} {
+      allow read: if request.auth != null;
+    }
+
+    // Daily Quotes: Any logged-in player can read daily quotes
+    match /daily_quotes/{quoteId} {
+      allow read: if request.auth != null;
+    }
+  }
+}

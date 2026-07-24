@@ -16,7 +16,8 @@ class PassiveIncomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isBackAllowed = !game.isTutorialActive || game.isTutorialBackAllowed;
+    final bool isBackAllowed =
+        !game.isTutorialActive || game.isTutorialBackAllowed;
 
     return PopScope(
       canPop: isBackAllowed,
@@ -45,69 +46,69 @@ class PassiveIncomeScreen extends StatelessWidget {
                   return;
                 }
               }
-              sfx.playClick();
               Navigator.pop(context);
             },
           ),
         ),
-      body: ListenableBuilder(
-        listenable: game,
-        builder: (context, _) => SingleChildScrollView(
-          key: TutorialKeys.passiveIncomeBodyKey,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Invest in passive income sources",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Each investment unlocks a building. Once built, it generates passive income based on your assets.",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+        body: ListenableBuilder(
+          listenable: game,
+          builder: (context, _) => SingleChildScrollView(
+            key: TutorialKeys.passiveIncomeBodyKey,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Invest in passive income sources",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-              ),
-              const SizedBox(height: 24),
-              ...passiveIncomeData.entries.map((entry) {
-                final info = entry.value;
-                final assetType = info.assetType;
-                final investedCount = game.activePassiveIncomes[assetType] ?? 0;
-                final hasBuilding = game.cityLayout.any(
-                  (b) => b.name == info.buildingName,
-                );
-                final ownedAssets = game.assets.count(assetType);
-                final canInvest = investedCount < ownedAssets;
+                const SizedBox(height: 8),
+                Text(
+                  "Each investment unlocks a building. Once built, it generates passive income based on your assets.",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                ...passiveIncomeData.entries.map((entry) {
+                  final info = entry.value;
+                  final assetType = info.assetType;
+                  final investedCount =
+                      game.activePassiveIncomes[assetType] ?? 0;
+                  final hasBuilding = game.cityLayout.any(
+                    (b) => b.name == info.buildingName,
+                  );
+                  final ownedAssets = game.assets.count(assetType);
+                  final canInvest = investedCount < ownedAssets;
 
-                final multiplier = game.getPassiveIncomeMultiplier(assetType);
-                final activeDisaster = game.getActiveDisasterForAsset(
-                  assetType,
-                );
+                  final multiplier = game.getPassiveIncomeMultiplier(assetType);
+                  final activeDisaster = game.getActiveDisasterForAsset(
+                    assetType,
+                  );
 
-                return _PassiveIncomeCard(
-                  info: info,
-                  ownedAssets: ownedAssets,
-                  investedCount: investedCount,
-                  hasBuilding: hasBuilding,
-                  canInvest: canInvest,
-                  multiplier: multiplier,
-                  activeDisaster: activeDisaster,
-                  gems: game.gems,
-                  game: game,
-                  onInvest: () {
-                    sfx.playBuy();
-                    game.investInPassiveIncome(assetType);
-                  },
-                );
-              }),
-            ],
+                  return _PassiveIncomeCard(
+                    info: info,
+                    ownedAssets: ownedAssets,
+                    investedCount: investedCount,
+                    hasBuilding: hasBuilding,
+                    canInvest: canInvest,
+                    multiplier: multiplier,
+                    activeDisaster: activeDisaster,
+                    gems: game.gems,
+                    game: game,
+                    onInvest: () {
+                      sfx.playBuy();
+                      game.investInPassiveIncome(assetType);
+                    },
+                  );
+                }),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
 
 class _PassiveIncomeCard extends StatelessWidget {
@@ -280,9 +281,10 @@ class _PassiveIncomeCard extends StatelessWidget {
                                 text: "$potentialIncome",
                                 style: TextStyle(
                                   decoration: TextDecoration.lineThrough,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant
+                                      .withValues(alpha: 0.7),
                                 ),
                               ),
                             ...IconText.parseText(
@@ -296,10 +298,16 @@ class _PassiveIncomeCard extends StatelessWidget {
                               ),
                               context,
                             ),
-                            if (getStreakRewards(game.dailyQuizStreak).passiveIncomeMultiplier > 1.0)
+                            if (getStreakRewards(
+                                  game.dailyQuizStreak,
+                                ).passiveIncomeMultiplier >
+                                1.0)
                               TextSpan(
                                 text: " (${rewards.label} Bonus)",
-                                style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.normal),
+                                style: const TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.normal,
+                                ),
                               ),
                             if (multiplier < 1.0 && activeDisaster != null)
                               TextSpan(

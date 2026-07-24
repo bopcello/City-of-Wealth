@@ -58,7 +58,6 @@ class _CareerScreenState extends State<CareerScreen> {
                   return;
                 }
               }
-              widget.sfx.playClick();
               Navigator.pop(context);
             },
           ),
@@ -425,6 +424,7 @@ class _CareerHeroCard extends StatelessWidget {
                 onPressed: canAdvance
                     ? () {
                         if (career.track == CareerTrack.student) {
+                          sfx.playClick();
                           _openCareerChoice(context);
                         } else {
                           _advance();

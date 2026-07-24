@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/sfx_manager.dart';
 import '../game_state.dart';
 import '../logic/game_manager.dart';
 import '../services/notification_service.dart';
@@ -15,6 +16,7 @@ class SettingsTab extends StatelessWidget {
   final bool isDarkMode;
   final double musicVolume;
   final double sfxVolume;
+  final SfxManager sfx;
   final void Function(bool) onThemeToggle;
   final void Function(double, {bool saveToDisk}) onMusicVolumeChanged;
   final void Function(double, {bool saveToDisk}) onSfxVolumeChanged;
@@ -28,6 +30,7 @@ class SettingsTab extends StatelessWidget {
     required this.isDarkMode,
     required this.musicVolume,
     required this.sfxVolume,
+    required this.sfx,
     required this.onThemeToggle,
     required this.onMusicVolumeChanged,
     required this.onSfxVolumeChanged,
@@ -138,7 +141,10 @@ class SettingsTab extends StatelessWidget {
                     leading: Icon(Icons.cloud_done, color: brandColor),
                     title: const Text("Backup Data"),
                     subtitle: const Text("Save progress to your account"),
-                    onTap: onCloudSync,
+                    onTap: () {
+                      sfx.playClick();
+                      onCloudSync();
+                    },
                     trailing: Icon(Icons.sync, color: brandColor, size: 20),
                   ),
                 ],
@@ -163,6 +169,7 @@ class SettingsTab extends StatelessWidget {
                     ),
                     trailing: Icon(Icons.edit, color: brandColor, size: 20),
                     onTap: () async {
+                      sfx.playClick();
                       final picked = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay(
@@ -183,6 +190,7 @@ class SettingsTab extends StatelessWidget {
                     title: const Text("Manage Alerts"),
                     subtitle: const Text("Customize system notifications"),
                     onTap: () {
+                      sfx.playClick();
                       NotificationService().openSettings();
                     },
                   ),
@@ -206,6 +214,7 @@ class SettingsTab extends StatelessWidget {
                     title: const Text("Player Manual"),
                     subtitle: const Text("Read manual, mechanics & tips"),
                     onTap: () {
+                      sfx.playClick();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -220,6 +229,7 @@ class SettingsTab extends StatelessWidget {
                     title: const Text("Redo Tutorial"),
                     subtitle: const Text("Replay the interactive onboarding"),
                     onTap: () async {
+                      sfx.playClick();
                       final confirm = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -264,6 +274,7 @@ class SettingsTab extends StatelessWidget {
                     subtitle: const Text("Your lifetime financial record"),
                     trailing: Icon(Icons.chevron_right, color: brandColor, size: 20),
                     onTap: () {
+                      sfx.playClick();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -279,6 +290,7 @@ class SettingsTab extends StatelessWidget {
                     subtitle: Text(game.playerName),
                     trailing: Icon(Icons.edit, color: brandColor, size: 20),
                     onTap: () {
+                      sfx.playClick();
                       final TextEditingController controller =
                           TextEditingController(text: game.playerName);
                       showDialog(
@@ -323,6 +335,7 @@ class SettingsTab extends StatelessWidget {
                     ),
                     subtitle: const Text("Sign out safely"),
                     onTap: () async {
+                      sfx.playClick();
                       final confirm = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(

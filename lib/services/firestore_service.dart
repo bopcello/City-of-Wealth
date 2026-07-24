@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:async';
+import 'dart:convert';
 import '../data/quote_data.dart';
+import '../models/city_sharing_models.dart';
+import '../game_state.dart';
+
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -30,6 +35,17 @@ class FirestoreService {
         'lastUpdated': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
       debugPrint("✅ CLOUD SAVE: Success");
+
+      // Also update public_cities snapshot so friends always see the up-to-date city
+      try {
+        final playerDoc = await _db.collection('players').doc(uid).get();
+        if (playerDoc.exists && playerDoc.data() != null) {
+          final snapshot = buildSnapshotFromPlayerData(uid, playerDoc.data()!);
+          await savePublicCitySnapshot(snapshot);
+        }
+      } catch (e) {
+        debugPrint("Notice: could not sync public_cities on save: $e");
+      }
     } catch (e) {
       debugPrint("❌ CLOUD SAVE: Error - $e");
       rethrow;
@@ -107,7 +123,6 @@ class FirestoreService {
     }
   }
 
-  /// Updates the player's streak, revivals and last quiz date.
   Future<void> updatePlayerStreak(String uid, int streak, String date, int revivals, String? lastRevival) async {
     try {
       await _db.collection('players').doc(uid).update({
@@ -118,7 +133,291 @@ class FirestoreService {
         'lastUpdated': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      debugPrint("❌ Error updating streak: $e");
+      debugPrint("❌ Error updating player streak: $e");
     }
+  }
+
+  String getFriendshipId(String uidA, String uidB) =>
+      uidA.compareTo(uidB) < 0 ? '${uidA}_$uidB' : '${uidB}_$uidA';
+
+  Future<void> sendFriendRequest(String sourceUid, String targetUid) async {
+    final docId = getFriendshipId(sourceUid, targetUid);
+    await _db.collection('friendships').doc(docId).set({
+      'playerA': sourceUid.compareTo(targetUid) < 0 ? sourceUid : targetUid,
+      'playerB': sourceUid.compareTo(targetUid) < 0 ? targetUid : sourceUid,
+      'status': 'pending',
+      'createdAt': FieldValue.serverTimestamp(),
+      'requestedBy': sourceUid,
+      'mutedBy': [],
+    }, SetOptions(merge: true));
+
+    try {
+      final sourceSnap = await _db.collection('players').doc(sourceUid).get();
+      final sourceName = sourceSnap.data()?['playerName'] as String? ?? 'A player';
+      await _db.collection('players').doc(targetUid).collection('activity_feed').add({
+        'sourcePlayerId': sourceUid,
+        'sourcePlayerName': sourceName,
+        'targetPlayerId': targetUid,
+        'type': 'friend_request_sent',
+        'payload': {'text': 'sent you a friend request'},
+        'createdAt': FieldValue.serverTimestamp(),
+        'seen': false,
+      });
+    } catch (e) {
+      debugPrint("Error logging friend request activity: $e");
+    }
+  }
+
+  Future<void> acceptFriendRequest(String friendshipId) async {
+    await _db.collection('friendships').doc(friendshipId).update({
+      'status': 'accepted',
+    });
+
+    try {
+      final docSnap = await _db.collection('friendships').doc(friendshipId).get();
+      if (docSnap.exists && docSnap.data() != null) {
+        final data = docSnap.data()!;
+        final playerA = data['playerA'] as String;
+        final playerB = data['playerB'] as String;
+        final requestedBy = data['requestedBy'] as String;
+        final acceptorUid = requestedBy == playerA ? playerB : playerA;
+        final requestorUid = requestedBy;
+
+        final acceptorSnap = await _db.collection('players').doc(acceptorUid).get();
+        final acceptorName = acceptorSnap.data()?['playerName'] as String? ?? 'A player';
+
+        await _db.collection('players').doc(requestorUid).collection('activity_feed').add({
+          'sourcePlayerId': acceptorUid,
+          'sourcePlayerName': acceptorName,
+          'targetPlayerId': requestorUid,
+          'type': 'friend_request_accepted',
+          'payload': {'text': 'accepted your friend request'},
+          'createdAt': FieldValue.serverTimestamp(),
+          'seen': false,
+        });
+      }
+    } catch (e) {
+      debugPrint("Error logging friend acceptance activity: $e");
+    }
+  }
+
+  Future<void> declineFriendRequest(String friendshipId) async {
+    await _db.collection('friendships').doc(friendshipId).delete();
+  }
+
+  Future<void> blockUser(String friendshipId, String blockingUid) async {
+    await _db.collection('friendships').doc(friendshipId).set({
+      'status': 'blocked',
+      'requestedBy': blockingUid,
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> unblockUser(String friendshipId) async {
+    await _db.collection('friendships').doc(friendshipId).delete();
+  }
+
+
+  Future<void> toggleMuteFriend(String friendshipId, String uid, bool mute) async {
+    if (mute) {
+      await _db.collection('friendships').doc(friendshipId).update({
+        'mutedBy': FieldValue.arrayUnion([uid]),
+      });
+    } else {
+      await _db.collection('friendships').doc(friendshipId).update({
+        'mutedBy': FieldValue.arrayRemove([uid]),
+      });
+    }
+  }
+
+  Stream<List<Friendship>> getFriendshipsStream(String uid) {
+    final controller = StreamController<List<Friendship>>();
+    
+    StreamSubscription? subA;
+    StreamSubscription? subB;
+    
+    List<Friendship> listA = [];
+    List<Friendship> listB = [];
+    
+    void emit() {
+      final mergedMap = <String, Friendship>{};
+      for (var f in listA) { mergedMap[f.id] = f; }
+      for (var f in listB) { mergedMap[f.id] = f; }
+      controller.add(mergedMap.values.toList());
+    }
+    
+    subA = _db.collection('friendships')
+        .where('playerA', isEqualTo: uid)
+        .snapshots()
+        .listen((snap) {
+          listA = snap.docs.map((doc) => Friendship.fromJson(doc.data(), doc.id)).toList();
+          emit();
+        }, onError: (e) {
+          debugPrint("Stream playerA error: $e");
+        });
+
+    subB = _db.collection('friendships')
+        .where('playerB', isEqualTo: uid)
+        .snapshots()
+        .listen((snap) {
+          listB = snap.docs.map((doc) => Friendship.fromJson(doc.data(), doc.id)).toList();
+          emit();
+        }, onError: (e) {
+          debugPrint("Stream playerB error: $e");
+        });
+
+    controller.onCancel = () {
+      subA?.cancel();
+      subB?.cancel();
+    };
+
+    return controller.stream;
+  }
+
+  Future<List<Map<String, dynamic>>> searchUserByCodeOrName(String query) async {
+    if (query.trim().isEmpty) return [];
+    final cleanQuery = query.trim();
+    
+    try {
+      final allPlayersSnap = await _db.collection('players').get();
+      final allPlayers = allPlayersSnap.docs.map((doc) => {...doc.data(), 'uid': doc.id}).toList();
+      
+      RegExp regex;
+      try {
+        regex = RegExp(cleanQuery, caseSensitive: false);
+      } catch (_) {
+        final escaped = RegExp.escape(cleanQuery);
+        regex = RegExp(escaped, caseSensitive: false);
+      }
+
+      final results = allPlayers.where((player) {
+        final playerName = player['playerName'] as String? ?? '';
+        final friendCode = player['friendCode'] as String? ?? '';
+        return regex.hasMatch(playerName) || regex.hasMatch(friendCode);
+      }).toList();
+
+      if (results.length > 15) {
+        return results.sublist(0, 15);
+      }
+      return results;
+    } catch (e) {
+      debugPrint("❌ Error searching users: $e");
+      return [];
+    }
+  }
+
+  Future<PublicCitySnapshot?> getPublicCitySnapshot(String uid) async {
+    try {
+      final doc = await _db.collection('public_cities').doc(uid).get();
+      if (doc.exists && doc.data() != null) {
+        return PublicCitySnapshot.fromJson(doc.data()!);
+      }
+
+      // Fallback: If public_cities/{uid} doc does not exist yet, construct from players/{uid}
+      final playerDoc = await _db.collection('players').doc(uid).get();
+      if (playerDoc.exists && playerDoc.data() != null) {
+        final snapshot = buildSnapshotFromPlayerData(uid, playerDoc.data()!);
+        // Asynchronously save to public_cities so future reads are instant
+        savePublicCitySnapshot(snapshot).catchError((e) {
+          debugPrint("Notice: Auto-caching public city snapshot error: $e");
+        });
+        return snapshot;
+      }
+    } catch (e) {
+      debugPrint("❌ Error getting public city snapshot for $uid: $e");
+    }
+    return null;
+  }
+
+  PublicCitySnapshot buildSnapshotFromPlayerData(String uid, Map<String, dynamic> data) {
+    List<PlacedBuilding> buildings = [];
+    final layoutData = data['cityLayout'];
+    if (layoutData != null) {
+      try {
+        if (layoutData is String && layoutData.isNotEmpty) {
+          final decoded = jsonDecode(layoutData);
+          if (decoded is List) {
+            buildings = decoded
+                .map((b) => PlacedBuilding.fromJson(Map<String, dynamic>.from(b)))
+                .toList();
+          }
+        } else if (layoutData is List) {
+          buildings = layoutData
+              .map((b) => PlacedBuilding.fromJson(Map<String, dynamic>.from(b)))
+              .toList();
+        }
+      } catch (e) {
+        debugPrint("Error parsing fallback city layout: $e");
+      }
+    }
+
+    final trackStr = (data['careerTrack'] as String?) ?? 'student';
+    CareerTrack track = CareerTrack.student;
+    if (trackStr == 'job') track = CareerTrack.job;
+    if (trackStr == 'business') track = CareerTrack.business;
+    final level = (data['careerLevel'] as num?)?.toInt() ?? 1;
+
+    final titleStr = (data['title'] as String?) ?? levelName(track, level);
+
+    return PublicCitySnapshot(
+      playerId: uid,
+      playerName: (data['playerName'] as String?) ?? 'Unknown Player',
+      friendCode: (data['friendCode'] as String?) ?? '',
+      track: trackStr,
+      level: level,
+      title: titleStr,
+      streak: (data['dailyQuizStreak'] as num?)?.toInt() ?? 0,
+      kp: (data['kp'] as num?)?.toInt() ?? 0,
+      buildings: buildings,
+      buildingCount: buildings.length,
+      lastUpdatedAt: DateTime.now(),
+    );
+  }
+
+  Future<void> savePublicCitySnapshot(PublicCitySnapshot snapshot) async {
+    await _db.collection('public_cities').doc(snapshot.playerId).set({
+      ...snapshot.toJson(),
+      'lastUpdatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+
+  Stream<List<ActivityEntry>> getActivityFeedStream(String uid) {
+    return _db.collection('players').doc(uid).collection('activity_feed')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => ActivityEntry.fromJson(doc.data(), doc.id)).toList());
+  }
+
+  Future<void> markActivityAsSeen(String uid, String activityId) async {
+    await _db.collection('players').doc(uid).collection('activity_feed').doc(activityId).update({
+      'seen': true,
+    });
+  }
+
+  Future<void> markAllActivitiesAsSeen(String uid) async {
+    final query = await _db.collection('players').doc(uid).collection('activity_feed').where('seen', isEqualTo: false).get();
+    final batch = _db.batch();
+    for (var doc in query.docs) {
+      batch.update(doc.reference, {'seen': true});
+    }
+    await batch.commit();
+  }
+
+  Future<void> fanOutActivity(String sourceUid, String sourceName, List<String> targetUids, String type, Map<String, dynamic> payload) async {
+    if (targetUids.isEmpty) return;
+    final batch = _db.batch();
+    for (var targetUid in targetUids) {
+      final ref = _db.collection('players').doc(targetUid).collection('activity_feed').doc();
+      batch.set(ref, {
+        'sourcePlayerId': sourceUid,
+        'sourcePlayerName': sourceName,
+        'targetPlayerId': targetUid,
+        'type': type,
+        'payload': payload,
+        'createdAt': FieldValue.serverTimestamp(),
+        'seen': false,
+      });
+    }
+    await batch.commit();
   }
 }

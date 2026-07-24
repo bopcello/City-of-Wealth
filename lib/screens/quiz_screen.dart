@@ -71,7 +71,8 @@ class QuizMenuScreen extends StatelessWidget {
         );
         final isDailyCompleted = game.lastDailyQuizDate == today;
 
-        final bool isBackAllowed = !game.isTutorialActive || game.isTutorialBackAllowed;
+        final bool isBackAllowed =
+            !game.isTutorialActive || game.isTutorialBackAllowed;
 
         return PopScope(
           canPop: isBackAllowed,
@@ -100,115 +101,117 @@ class QuizMenuScreen extends StatelessWidget {
                       return;
                     }
                   }
-                  sfx.playClick();
                   Navigator.pop(context);
                 },
               ),
             ),
-          body: Column(
-            children: [
-              // DAILY QUIZ PANEL AT THE TOP
-              _buildDailyQuizPanel(context, today, isDailyCompleted),
+            body: Column(
+              children: [
+                // DAILY QUIZ PANEL AT THE TOP
+                _buildDailyQuizPanel(context, today, isDailyCompleted),
 
-              Expanded(
-                child: quizzes.isEmpty
-                    ? _buildEmptyState(context)
-                    : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: quizzes.length,
-                        itemBuilder: (context, index) {
-                          final quiz = quizzes[index];
-                          final scheme = quiz.markingScheme;
-                          final isCompleted = game.completedQuizzes.contains(
-                            quiz.id,
-                          );
+                Expanded(
+                  child: quizzes.isEmpty
+                      ? _buildEmptyState(context)
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: quizzes.length,
+                          itemBuilder: (context, index) {
+                            final quiz = quizzes[index];
+                            final scheme = quiz.markingScheme;
+                            final isCompleted = game.completedQuizzes.contains(
+                              quiz.id,
+                            );
 
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: isCompleted
-                                      ? AppColors.of(context, 'success')
-                                      : _getDifficultyColor(
-                                          context,
-                                          quiz.difficulty,
-                                        ),
-                                  width: 3,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                                color: isCompleted
-                                    ? AppColors.of(
-                                        context,
-                                        'success',
-                                      ).withValues(alpha: 0.1)
-                                    : Theme.of(
-                                        context,
-                                      ).colorScheme.surfaceContainerHighest,
-                              ),
-                              child: ListTile(
-                                leading: Icon(
-                                  isCompleted ? Icons.check_circle : Icons.quiz,
-                                  color: isCompleted
-                                      ? AppColors.of(context, 'success')
-                                      : _getDifficultyColor(
-                                          context,
-                                          quiz.difficulty,
-                                        ),
-                                ),
-                                title: IconText(
-                                  quiz.title,
-                                  style: TextStyle(
-                                    decoration: isCompleted
-                                        ? TextDecoration.lineThrough
-                                        : null,
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
                                     color: isCompleted
-                                        ? Theme.of(context)
-                                              .colorScheme
-                                              .onSurface
-                                              .withValues(alpha: 0.5)
-                                        : Theme.of(
+                                        ? AppColors.of(context, 'success')
+                                        : _getDifficultyColor(
                                             context,
-                                          ).colorScheme.onSurface,
+                                            quiz.difficulty,
+                                          ),
+                                    width: 3,
                                   ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: isCompleted
+                                      ? AppColors.of(
+                                          context,
+                                          'success',
+                                        ).withValues(alpha: 0.1)
+                                      : Theme.of(
+                                          context,
+                                        ).colorScheme.surfaceContainerHighest,
                                 ),
-                                subtitle: IconText(
-                                  isCompleted
-                                      ? '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • Repeat Award: +${_getRepeatAward(quiz.difficulty)} KP'
-                                      : '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • +${scheme.correctPoints}/${scheme.wrongPoints} KP',
-                                  style: TextStyle(
+                                child: ListTile(
+                                  leading: Icon(
+                                    isCompleted
+                                        ? Icons.check_circle
+                                        : Icons.quiz,
                                     color: isCompleted
-                                        ? Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant
-                                              .withValues(alpha: 0.7)
-                                        : null,
+                                        ? AppColors.of(context, 'success')
+                                        : _getDifficultyColor(
+                                            context,
+                                            quiz.difficulty,
+                                          ),
                                   ),
-                                ),
-                                isThreeLine: true,
-                                trailing: const Icon(Icons.arrow_forward),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => QuizScreen(
-                                        game: game,
-                                        music: music,
-                                        sfx: sfx,
-                                        quiz: quiz,
-                                        isCompleted: isCompleted,
-                                      ),
+                                  title: IconText(
+                                    quiz.title,
+                                    style: TextStyle(
+                                      decoration: isCompleted
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                      color: isCompleted
+                                          ? Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withValues(alpha: 0.5)
+                                          : Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                     ),
-                                  );
-                                },
+                                  ),
+                                  subtitle: IconText(
+                                    isCompleted
+                                        ? '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • Repeat Award: +${_getRepeatAward(quiz.difficulty)} KP'
+                                        : '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • +${scheme.correctPoints}/${scheme.wrongPoints} KP',
+                                    style: TextStyle(
+                                      color: isCompleted
+                                          ? Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant
+                                                .withValues(alpha: 0.7)
+                                          : null,
+                                    ),
+                                  ),
+                                  isThreeLine: true,
+                                  trailing: const Icon(Icons.arrow_forward),
+                                  onTap: () {
+                                    sfx.playClick();
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => QuizScreen(
+                                          game: game,
+                                          music: music,
+                                          sfx: sfx,
+                                          quiz: quiz,
+                                          isCompleted: isCompleted,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-              ),
-            ],
-          ),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -268,6 +271,7 @@ class QuizMenuScreen extends StatelessWidget {
             ),
             child: InkWell(
               onTap: () async {
+                sfx.playClick();
                 if (isCompleted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -414,6 +418,7 @@ class QuizMenuScreen extends StatelessWidget {
                           const SizedBox(height: 12),
                           OutlinedButton.icon(
                             onPressed: () {
+                              sfx.playClick();
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -669,7 +674,8 @@ class _QuizScreenState extends State<QuizScreen> {
             widget.quiz.hash,
             isPractice: false,
           );
-          finalKpDelta = 20; // Daily correct = 20 KP (handled inside completeDailyQuiz)
+          finalKpDelta =
+              20; // Daily correct = 20 KP (handled inside completeDailyQuiz)
         } else if (widget.isPractice && widget.dailyDate != null) {
           widget.game.completeDailyQuiz(
             true,
@@ -677,7 +683,8 @@ class _QuizScreenState extends State<QuizScreen> {
             widget.quiz.hash,
             isPractice: true,
           );
-          finalKpDelta = 10; // Practice correct = 10 KP (handled inside completeDailyQuiz)
+          finalKpDelta =
+              10; // Practice correct = 10 KP (handled inside completeDailyQuiz)
         } else {
           finalKpDelta = award;
           widget.game.addKp(finalKpDelta);
@@ -1050,6 +1057,7 @@ class QuizAnalysisScreen extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
+                        sfx.playClick();
                         final quizzes = getQuizzesForLevel(level);
                         final currentIndex = quizzes.indexWhere(
                           (q) => q.id == currentQuizId,
@@ -1145,7 +1153,9 @@ class QuizAnalysisScreen extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.pop(context);
+              },
               child: const Text("Awesome!"),
             ),
           ],
@@ -1212,6 +1222,7 @@ class PastQuizzesScreen extends StatelessWidget {
                   subtitle: Text(displayDate),
                   trailing: const Icon(Icons.play_arrow),
                   onTap: () {
+                    sfx.playClick();
                     final quizData = QuizMetadata(
                       id: data['id'],
                       title: data['title'],

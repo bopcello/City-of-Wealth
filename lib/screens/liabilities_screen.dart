@@ -94,7 +94,6 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              widget.sfx.playClick();
               // Clear the fullscreen mode before the overlay auto-advances.
               if (widget.game.isTutorialActive) {
                 widget.game.setTutorialPopupActive(false);
@@ -141,7 +140,6 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                       return;
                     }
                   }
-                  widget.sfx.playClick();
                   Navigator.pop(context);
                 },
               ),

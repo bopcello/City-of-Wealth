@@ -10,6 +10,7 @@ import 'game_stats.dart';
 import '../data/quiz_data.dart';
 import '../services/notification_service.dart';
 import '../services/firestore_service.dart';
+import '../services/city_session_manager.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/music_manager.dart';
@@ -92,6 +93,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   double musicVolume = 0.7;
   double sfxVolume = 1.0;
   String playerName = "User";
+  String friendCode = "";
   int dailyQuizStreak = 0;
   String lastDailyQuizDate = "";
   Set<String> solvedQuizHashes = {};
@@ -128,14 +130,19 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   bool _isSaving = false;
   bool _syncRequestedWhileLoading = false;
 
+  String? get currentUid => FirebaseAuth.instance.currentUser?.uid;
+
   int get selectedIndex => _selectedIndex;
   set selectedIndex(int value) {
     if (_selectedIndex != value) {
       _selectedIndex = value;
       // Close edit mode if switching away from City tab (index 1)
       if (_selectedIndex != 1) {
-        isEditMode = false;
-        selectedBuilding = null;
+        if (isEditMode) {
+          isEditMode = false;
+          selectedBuilding = null;
+          CitySessionManager().closeSession(this);
+        }
       }
       notifyListeners();
     }
@@ -147,6 +154,11 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   void toggleEditMode() {
     isEditMode = !isEditMode;
     selectedBuilding = null;
+    if (isEditMode) {
+      CitySessionManager().notifyEdit(this);
+    } else {
+      CitySessionManager().closeSession(this);
+    }
     notifyListeners();
   }
 
@@ -157,7 +169,12 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
   void clearSelection() {
     selectedBuilding = null;
-    isEditMode = false;
+    if (isEditMode) {
+      isEditMode = false;
+      CitySessionManager().closeSession(this);
+    } else {
+      isEditMode = false;
+    }
     notifyListeners();
   }
 
@@ -353,6 +370,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         savedWakeUpMinute,
         savedDisasterAlertsEnabled,
         savedStats,
+        savedFriendCode,
       ) = await loadGameState(
         uid: uid,
         useCloud: useCloud,
@@ -380,6 +398,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       activePassiveIncomes = savedActivePassiveIncomes;
       activeDisasterEffects = savedActiveDisasterEffects;
       playerName = savedPlayerName;
+      friendCode = savedFriendCode;
       isDarkMode = savedIsDarkMode;
       musicVolume = savedMusicVolume;
       sfxVolume = savedSfxVolume;
@@ -512,6 +531,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       activePassiveIncomes: activePassiveIncomes,
       activeDisasterEffects: activeDisasterEffects,
       playerName: playerName,
+      friendCode: friendCode,
       isDarkMode: isDarkMode,
       musicVolume: musicVolume,
       sfxVolume: sfxVolume,
@@ -559,6 +579,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         activePassiveIncomes: activePassiveIncomes,
         activeDisasterEffects: activeDisasterEffects,
         playerName: playerName,
+        friendCode: friendCode,
         isDarkMode: isDarkMode,
         musicVolume: musicVolume,
         sfxVolume: sfxVolume,
@@ -1283,6 +1304,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     saveFields({
       cityLayoutKey: jsonEncode(cityLayout.map((b) => b.toJson()).toList()),
     });
+    CitySessionManager().notifyEdit(this);
     notifyListeners();
   }
 
@@ -1292,6 +1314,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     saveFields({
       cityLayoutKey: jsonEncode(cityLayout.map((b) => b.toJson()).toList()),
     });
+    CitySessionManager().notifyEdit(this);
     notifyListeners();
   }
 

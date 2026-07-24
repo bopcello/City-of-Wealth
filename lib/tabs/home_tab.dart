@@ -65,70 +65,53 @@ class HomeTab extends StatelessWidget {
   }
 
   Widget _buildDailyQuoteBanner(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.primaryContainer,
-            Theme.of(context).colorScheme.secondaryContainer,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withAlpha(80),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.format_quote_rounded,
-                size: 20,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                "DAILY FINANCIAL QUOTE",
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.1,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "\"${dailyQuoteText!}\"",
-            style: TextStyle(
-              fontSize: 14,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.onSurface,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.format_quote_rounded,
+              size: 20,
+              color: AppColors.of(context, 'kp'),
             ),
-          ),
-          if (dailyQuoteAuthor != null && dailyQuoteAuthor!.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                "— ${dailyQuoteAuthor!}",
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+            const SizedBox(width: 8),
+            Text(
+              "DAILY FINANCIAL QUOTE",
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.1,
+                color: AppColors.of(context, 'kp'),
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          "\"${dailyQuoteText!}\"",
+          style: TextStyle(
+            fontSize: 14,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w500,
+            color: AppColors.of(context, 'onSurface'),
+          ),
+        ),
+        if (dailyQuoteAuthor != null && dailyQuoteAuthor!.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              "— ${dailyQuoteAuthor!}",
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: AppColors.of(context, 'onSurfaceVariant'),
+              ),
+            ),
+          ),
         ],
-      ),
+      ],
     );
   }
 

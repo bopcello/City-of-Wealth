@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import 'dart:math' as math;
 import '../widgets/icon_text.dart';
 import '../theme/app_colors.dart';
 import '../services/sfx_manager.dart';
+import '../services/friends_service.dart';
 import '../game_state.dart';
 import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';
+import '../models/city_sharing_models.dart';
+import '../widgets/add_friend_dialog.dart';
+import '../screens/city_viewer_screen.dart';
+import '../screens/activity_feed_screen.dart';
+import '../screens/leaderboard_screen.dart';
 
 class CityTab extends StatefulWidget {
   final CareerState career;
@@ -40,16 +48,83 @@ class CityTab extends StatefulWidget {
   });
 
   @override
-  State<CityTab> createState() => _CityTabState();
+  State<CityTab> createState() => CityTabState();
 }
 
-class _CityTabState extends State<CityTab> {
+class CityTabState extends State<CityTab> {
   final TransformationController _transformationController =
       TransformationController();
+
+  // 0 = My City, 1 = Friends
+  int _selectedSegment = 0;
+
+  List<Friendship> get friendships => _friendships;
+  List<ActivityEntry> get activityFeed => _activityFeed;
+  Map<String, PublicCitySnapshot> get friendSnapshots => _friendSnapshots;
+
+  void setSelectedSegment(int index) {
+    if (mounted) {
+      setState(() {
+        _selectedSegment = index;
+      });
+    }
+  }
+
+  // Friends
+  List<Friendship> _friendships = [];
+  List<ActivityEntry> _activityFeed = [];
+  Map<String, PublicCitySnapshot> _friendSnapshots = {};
+  StreamSubscription<List<Friendship>>? _friendsSub;
+  StreamSubscription<List<ActivityEntry>>? _activitySub;
+  final FriendsService _friendsService = FriendsService();
+
+  @override
+  void initState() {
+    super.initState();
+    _setupFriendStreams();
+  }
+
+  void _loadFriendSnapshots(List<Friendship> friendships) async {
+    final currentUid = widget.game.currentUid;
+    if (currentUid == null) return;
+    final accepted = friendships.where((f) => f.status == 'accepted').toList();
+
+    final Map<String, PublicCitySnapshot> newSnaps = {};
+    for (var f in accepted) {
+      final friendUid = f.playerA == currentUid ? f.playerB : f.playerA;
+      try {
+        final snap = await _friendsService.getFriendSnapshot(friendUid);
+        if (snap != null) {
+          newSnaps[friendUid] = snap;
+        }
+      } catch (e) {
+        debugPrint("Error loading snapshot for $friendUid: $e");
+      }
+    }
+    if (mounted) {
+      setState(() {
+        _friendSnapshots = newSnaps;
+      });
+    }
+  }
+
+  void _setupFriendStreams() {
+    _friendsSub = _friendsService.getFriendshipsStream().listen((friendships) {
+      if (mounted) {
+        setState(() => _friendships = friendships);
+        _loadFriendSnapshots(friendships);
+      }
+    });
+    _activitySub = _friendsService.getActivityFeedStream().listen((feed) {
+      if (mounted) setState(() => _activityFeed = feed);
+    });
+  }
 
   @override
   void dispose() {
     _transformationController.dispose();
+    _friendsSub?.cancel();
+    _activitySub?.cancel();
     super.dispose();
   }
 
@@ -63,6 +138,168 @@ class _CityTabState extends State<CityTab> {
 
   @override
   Widget build(BuildContext context) {
+    final int unseenCount = _activityFeed.where((e) => !e.seen).length;
+    final currentUid = widget.game.currentUid;
+
+    final pendingRequests = _friendships
+        .where((f) => f.status == 'pending' && f.requestedBy != currentUid)
+        .toList();
+    final accepted = _friendships.where((f) => f.status == 'accepted').toList();
+    accepted.sort((a, b) {
+      // sort by kp descending - need to load snapshots for this, so skip for now and sort by createdAt
+      return b.createdAt.compareTo(a.createdAt);
+    });
+
+    return Column(
+      children: [
+        // ── Header Bar ──
+        Container(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: Row(
+            children: [
+              // Segmented control
+              Expanded(
+                child: SegmentedButton<int>(
+                  key: TutorialKeys.friendsSegmentKey,
+                  segments: const [
+                    ButtonSegment(
+                      value: 0,
+                      label: Text("My City"),
+                      icon: Icon(Icons.location_city),
+                    ),
+                    ButtonSegment(
+                      value: 1,
+                      label: Text("Friends"),
+                      icon: Icon(Icons.group),
+                    ),
+                  ],
+                  selected: {_selectedSegment},
+                  onSelectionChanged: (val) {
+                    widget.sfx.playClick();
+                    setState(() {
+                      _selectedSegment = val.first;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Add friend button
+              IconButton(
+                key: TutorialKeys.addFriendButtonKey,
+                icon: const Icon(Icons.person_add),
+                tooltip: "Add Friend",
+                onPressed: () {
+                  widget.sfx.playClick();
+                  showDialog(
+                    context: context,
+                    builder: (_) => AddFriendDialog(
+                      myFriendCode: widget.game.friendCode,
+                      currentFriendships: _friendships,
+                    ),
+                  );
+                },
+              ),
+              // Leaderboard button
+              IconButton(
+                key: TutorialKeys.leaderboardButtonKey,
+                icon: const Icon(Icons.leaderboard),
+                tooltip: "Leaderboard",
+                onPressed: () {
+                  widget.sfx.playClick();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LeaderboardScreen(
+                        currentUid: currentUid ?? '',
+                        myPlayerName: widget.game.playerName,
+                        myKp: widget.game.kp,
+                        myStreak: widget.game.dailyQuizStreak,
+                        myTitle: levelName(
+                          widget.career.track,
+                          widget.career.level,
+                        ),
+                        friendSnapshots: _friendSnapshots,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // Bell badge
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    key: TutorialKeys.activityFeedButtonKey,
+                    icon: const Icon(Icons.notifications),
+                    tooltip: "Activity Feed",
+                    onPressed: () {
+                      widget.sfx.playClick();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ActivityFeedScreen(
+                            initialActivities: _activityFeed,
+                            myPlayerName: widget.game.playerName,
+                            friendships: _friendships,
+                            friendNames: {
+                              for (var f in _friendships)
+                                (f.playerA == currentUid
+                                        ? f.playerB
+                                        : f.playerA):
+                                    "Friend",
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  if (unseenCount > 0)
+                    Positioned(
+                      right: 6,
+                      top: 6,
+                      child: Container(
+                        width: 16,
+                        height: 16,
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            unseenCount > 9 ? '9+' : '$unseenCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+
+        // ── Tab Body ──
+        Expanded(
+          child: _selectedSegment == 0
+              ? _buildMyCityView(context)
+              : _buildFriendsView(
+                  context,
+                  currentUid,
+                  pendingRequests,
+                  accepted,
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMyCityView(BuildContext context) {
     final Map<String, PlacedBuilding> cityMap = {
       for (var b in widget.cityLayout) "${b.x},${b.y}": b,
     };
@@ -84,11 +321,15 @@ class _CityTabState extends State<CityTab> {
             final double vw = constraints.maxWidth;
             final double vh = constraints.maxHeight;
 
-            final double side = gridSize * 52.0;
+            final double side = gridSize * 52.0 + 200.0; // Account for the padding of 100 on each side
             final double tx = (vw - side) / 2;
             final double ty = (vh - side) / 2;
 
-            _transformationController.value = Matrix4.translationValues(tx, ty, 0.0);
+            _transformationController.value = Matrix4.translationValues(
+              tx,
+              ty,
+              0.0,
+            );
           }
 
           return Stack(
@@ -240,7 +481,6 @@ class _CityTabState extends State<CityTab> {
                   heroTag: "city_add_fab",
                   onPressed: () {
                     widget.sfx.playClick();
-                    // Close edit mode if it's on
                     if (widget.game.isEditMode) {
                       widget.game.toggleEditMode();
                     }
@@ -267,7 +507,6 @@ class _CityTabState extends State<CityTab> {
                               widget.onBuyWall();
                               Navigator.pop(context);
                             } else {
-                              widget.sfx.playClick();
                               Navigator.pop(context);
                               setState(() {
                                 widget.game.setBuildingSelection(building);
@@ -288,6 +527,356 @@ class _CityTabState extends State<CityTab> {
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildFriendsView(
+    BuildContext context,
+    String? currentUid,
+    List<Friendship> pendingRequests,
+    List<Friendship> accepted,
+  ) {
+    // Gather recent activity per accepted friend for the "most recent" snippet
+    final Map<String, ActivityEntry?> recentActivityByFriend = {};
+    for (final f in accepted) {
+      final friendUid = f.playerA == currentUid ? f.playerB : f.playerA;
+      final entries = _activityFeed
+          .where((e) => e.sourcePlayerId == friendUid)
+          .toList();
+      recentActivityByFriend[friendUid] = entries.isEmpty
+          ? null
+          : entries.first;
+    }
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // Pending requests
+        if (pendingRequests.isNotEmpty) ...[
+          const Text(
+            "Friend Requests",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          ...pendingRequests.map(
+            (f) => PendingRequestCard(
+              friendship: f,
+              friendsService: _friendsService,
+              sfx: widget.sfx,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Divider(),
+          const SizedBox(height: 8),
+        ],
+
+        // Friends section header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Friends (${accepted.length})",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+
+        if (accepted.isEmpty)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.group_outlined,
+                    size: 64,
+                    color: Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    "No friends yet!\nTap the person+ icon to add friends.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 15),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          ...accepted.map((f) {
+            final friendUid = f.playerA == currentUid ? f.playerB : f.playerA;
+            final recent = recentActivityByFriend[friendUid];
+            final isMuted = f.mutedBy.contains(currentUid);
+
+            return FutureFriendCard(
+              friendshipId: f.id,
+              friendUid: friendUid,
+              recentActivity: recent,
+              isMuted: isMuted,
+              myPlayerName: widget.game.playerName,
+              sfx: widget.sfx,
+              onMuteToggle: (mute) =>
+                  _friendsService.toggleMuteFriend(f.id, mute),
+              onBlock: () => _friendsService.blockFriend(f.id),
+            );
+          }),
+      ],
+    );
+  }
+}
+
+/// A card that fetches a friend's PublicCitySnapshot and displays their info.
+class FutureFriendCard extends StatefulWidget {
+  final String friendshipId;
+  final String friendUid;
+  final ActivityEntry? recentActivity;
+  final bool isMuted;
+  final String myPlayerName;
+  final SfxManager sfx;
+  final Future<void> Function(bool) onMuteToggle;
+  final VoidCallback onBlock;
+
+  const FutureFriendCard({
+    super.key,
+    required this.friendshipId,
+    required this.friendUid,
+    required this.recentActivity,
+    required this.isMuted,
+    required this.myPlayerName,
+    required this.sfx,
+    required this.onMuteToggle,
+    required this.onBlock,
+  });
+
+  @override
+  State<FutureFriendCard> createState() => _FutureFriendCardState();
+}
+
+class _FutureFriendCardState extends State<FutureFriendCard> {
+  PublicCitySnapshot? _snapshot;
+  bool _loadingSnapshot = true;
+  String _backupName = "Loading...";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSnapshot();
+  }
+
+  Future<void> _loadSnapshot() async {
+    final snap = await FriendsService().getFriendSnapshot(widget.friendUid);
+    if (snap != null) {
+      if (mounted) {
+        setState(() {
+          _snapshot = snap;
+          _loadingSnapshot = false;
+        });
+      }
+    } else {
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('players')
+            .doc(widget.friendUid)
+            .get();
+        if (doc.exists && doc.data() != null) {
+          if (mounted) {
+            setState(() {
+              _backupName =
+                  doc.data()?['playerName'] as String? ?? "Unknown User";
+              _loadingSnapshot = false;
+            });
+          }
+        } else {
+          if (mounted) {
+            setState(() {
+              _backupName = "New Player";
+              _loadingSnapshot = false;
+            });
+          }
+        }
+      } catch (_) {
+        if (mounted) {
+          setState(() {
+            _backupName = "Unknown User";
+            _loadingSnapshot = false;
+          });
+        }
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final name = _snapshot?.playerName ?? _backupName;
+    final title = _snapshot?.title ?? "";
+    final streak = _snapshot?.streak ?? 0;
+    final kp = _snapshot?.kp ?? 0;
+    String? recentText;
+    if (widget.recentActivity != null) {
+      final type = widget.recentActivity!.type;
+      recentText = switch (type) {
+        'cheer' => 'Sent you a cheer.',
+        'friend_request_sent' => 'Sent you a friend request.',
+        'friend_request_accepted' => 'Accepted your friend request.',
+        _ =>
+          widget.recentActivity!.payload['text'] as String? ??
+              'Updated their city.',
+      };
+    }
+
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: _snapshot == null
+            ? null
+            : () {
+                widget.sfx.playClick();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CityViewerScreen(
+                      snapshot: _snapshot!,
+                      myPlayerName: widget.myPlayerName,
+                    ),
+                  ),
+                );
+              },
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 26,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                child: _loadingSnapshot
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        name.isNotEmpty ? name[0].toUpperCase() : "?",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (title.isNotEmpty)
+                      Text(
+                        title,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontSize: 13,
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: IconText(
+                        "[KP] $kp   [STREAK] $streak",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    if (recentText != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          recentText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                    if (_snapshot == null && !_loadingSnapshot)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          "City not built yet",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              // Mute toggle icon (green = unmuted, red = muted)
+              IconButton(
+                icon: Icon(
+                  widget.isMuted ? Icons.volume_off : Icons.volume_up,
+                  size: 20,
+                  color: widget.isMuted ? Colors.red : Colors.green,
+                ),
+                tooltip: widget.isMuted ? "Unmute" : "Mute",
+                onPressed: () async {
+                  widget.sfx.playClick();
+                  await widget.onMuteToggle(!widget.isMuted);
+                },
+              ),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, size: 20),
+                onSelected: (value) async {
+                  if (value == 'block') {
+                    widget.onBlock();
+                  }
+                },
+                itemBuilder: (_) => [
+                  const PopupMenuItem(
+                    value: 'block',
+                    child: Row(
+                      children: [
+                        Icon(Icons.block, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text("Block", style: TextStyle(color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -440,8 +1029,6 @@ class _BuildingCard extends StatelessWidget {
     } else {
       canBuild = career.level >= building.requiredLevel && hasAssetRequirements;
     }
-
-
 
     final hasLevel = isKeystone
         ? isLevel5
@@ -657,6 +1244,103 @@ class _Palace extends StatelessWidget {
           width: 48,
           height: 48,
           fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+}
+
+class PendingRequestCard extends StatefulWidget {
+  final Friendship friendship;
+  final FriendsService friendsService;
+  final SfxManager sfx;
+
+  const PendingRequestCard({
+    super.key,
+    required this.friendship,
+    required this.friendsService,
+    required this.sfx,
+  });
+
+  @override
+  State<PendingRequestCard> createState() => _PendingRequestCardState();
+}
+
+class _PendingRequestCardState extends State<PendingRequestCard> {
+  String _senderName = "Loading...";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSenderName();
+  }
+
+  void _loadSenderName() async {
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection('players')
+          .doc(widget.friendship.requestedBy)
+          .get();
+      if (snap.exists && snap.data() != null) {
+        if (mounted) {
+          setState(() {
+            _senderName =
+                snap.data()?['playerName'] as String? ?? "Unknown User";
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _senderName = "New Player";
+          });
+        }
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _senderName = "Unknown User";
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              child: const Icon(Icons.person, color: Colors.white),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                _senderName,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                widget.sfx.playClick();
+                widget.friendsService.acceptRequest(widget.friendship.id);
+              },
+              child: const Text("Accept"),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              onPressed: () {
+                widget.sfx.playClick();
+                widget.friendsService.declineRequest(widget.friendship.id);
+              },
+              child: const Text("Decline"),
+            ),
+          ],
         ),
       ),
     );

@@ -1,5 +1,7 @@
 # City of Wealth 💎
 
+**v2.0.0-beta**
+
 A premium, interactive personal finance simulation game designed to teach real-world financial literacy through active gameplay. Built with a modern cross-platform **Flutter** frontend, backed by **Firebase Auth & Firestore**, and powered by an automated **OpenRouter AI** quiz generation pipeline running on **GitHub Actions**.
 
 ---
@@ -13,6 +15,7 @@ graph TD
     OpenRouter -->|Format Quiz JSON| Cron
     Cron -->|Write daily_YYYY-MM-DD| Firebase
     Client -->|Retrieve Quiz| Firebase
+    Client <-->|Friends, Cheers, Activity| Firebase
 ```
 
 ---
@@ -32,12 +35,47 @@ graph TD
 - **Cloud Firestore**:
   - **Progress Sync**: Stores user metrics, inventory, building coordinates, active disaster status, and streak configurations in the `players` collection. On login, the client performs a timestamp-comparison merge protocol (local vs. cloud `lastUpdated` timestamp) to prevent state overwriting.
   - **Daily Quiz Repository**: Serves daily challenges to users and maintains a history of past quizzes (last 30 days) to enable "Practice Mode" for players.
+  - **Social Graph**: Manages friendships, friend requests, cheer interactions, and activity feeds via dedicated Firestore collections with real-time stream listeners.
 
 ### 🤖 Quiz Generation Pipeline (OpenRouter AI & GitHub Actions)
 - **GitHub Workflow**: An automated cron job defined in `.github/workflows/daily-question.yml` runs daily at **18:30 UTC / 00:00 IST** (`30 18 * * *`).
 - **Topic De-duplication**: The Node.js worker script (`scripts/daily_quiz_generator.js`) reads the last 30 daily quiz records from Cloud Firestore. It compiles their titles, questions, and answers to inject into the AI system prompt, ensuring the generated content is unique.
 - **Dynamic AI Generation**: Calls **OpenRouter API (`google/gemini-2.0-flash-001`)** with search grounding enabled using a detailed prompt. The model acts as a financial analyst, producing a new multiple-choice question, options, correct options, and extensive correct/incorrect answers explanations.
 - **Automated Validation**: Parses the raw JSON response from Gemini, injects metadata (such as the target IST date and required level), and writes the document directly to the Firestore `daily_quizzes` collection.
+
+---
+
+## ✨ What's New in v2.0.0-beta
+
+### 🤝 Friends System
+- **Friend Codes**: Each player is assigned a unique friend code. Share it with others to connect.
+- **Add Friends**: Search for players by name or friend code and send friend requests.
+- **Accept / Decline Requests**: Incoming friend requests appear in the Friends tab with one-tap accept or decline actions.
+- **Mute & Block**: Mute a friend's activity notifications or block them entirely.
+
+### 🏙️ City Sharing & Viewing
+- **Public City Snapshots**: Your city layout, career level, KP, streak, and title are published as a snapshot to Firestore so friends can view your city.
+- **Visit Friend Cities**: Tap on any accepted friend to open an interactive isometric view of their city, complete with pan and zoom controls.
+
+### 📣 Cheering
+- **Send Cheers**: While viewing a friend's city, send them a cheer to encourage their progress. Cheers have a 24-hour cooldown.
+- **Toggle Cheers**: Remove a previously sent cheer if desired.
+
+### 📢 Activity Feed
+- **Real-time Notifications**: A bell icon with an unseen-count badge shows new activity — friend requests, cheers, and other social interactions.
+- **Activity Feed Screen**: View a chronological feed of all social events from your friends.
+
+### 🏆 Leaderboard
+- **Friend Leaderboard**: Compare KP, streak, and title against all accepted friends in a ranked leaderboard view.
+
+### 🎓 Interactive Tutorial
+- **Spotlight Tutorial Overlay**: A guided, step-by-step tutorial highlights key UI elements (KP, Gems, Streak, Revivals, City tab, Friends segment, Add Friend button, Leaderboard, Activity Feed) with contextual explanations for new players.
+
+### 💬 Daily Financial Quotes
+- **Inspirational Quotes**: The home screen displays a daily financial quote with attribution, refreshed each day.
+
+### 🏰 City View Centering Fix
+- **Accurate Initial View**: The yellow palace/castle block now appears exactly centered on screen when opening the City tab for the first time, regardless of device or screen size.
 
 ---
 
@@ -51,23 +89,43 @@ graph TD
 ├── lib/
 │   ├── assets/                   # Fonts, music, sound effects, and building sprites
 │   ├── data/
-│   │   └── notification_data.dart # Templates and variations for scheduled notification messages
+│   │   ├── notification_data.dart # Templates and variations for scheduled notification messages
+│   │   └── quiz_data.dart        # Embedded quiz question bank for practice mode
 │   ├── logic/
+│   │   ├── game_manager.dart     # Core game loop, state mutations, save/load orchestration
 │   │   └── tutorial_keys.dart    # GlobalKeys used for spotlight tutorial overlays
+│   ├── models/
+│   │   └── city_sharing_models.dart # Data models for PublicCitySnapshot, Friendship, ActivityEntry
 │   ├── services/
 │   │   ├── auth_service.dart      # Interface for Firebase Auth and Google Sign-In
+│   │   ├── city_session_manager.dart # Publishes city snapshots to Firestore for sharing
 │   │   ├── firestore_service.dart # Handles cloud saves, progress loads, and quiz fetching
+│   │   ├── friends_service.dart   # Friend requests, cheers, activity feeds, mute/block logic
 │   │   ├── music_manager.dart     # Handles background music loops
 │   │   ├── sfx_manager.dart       # Handles UI and event sound effects
 │   │   └── notification_service.dart # Notification scheduling, permissions, and workmanager hooks
-│   ├── screens/                  # Game screens (Assets, Liabilities, Passive Income, Login, Quiz)
-│   ├── widgets/                  # Isometric board renderer, custom overlays, and custom dialogs
-│   ├── game_state.dart           # Central state manager (GameManager), holds core business logic
+│   ├── screens/
+│   │   ├── activity_feed_screen.dart # Chronological social activity feed
+│   │   ├── city_viewer_screen.dart   # Interactive isometric view of a friend's city
+│   │   ├── leaderboard_screen.dart   # Friend leaderboard ranked by KP/streak
+│   │   └── ...                       # Assets, Liabilities, Passive Income, Login, Quiz, Career, Stats
+│   ├── tabs/
+│   │   ├── city_tab.dart          # Main city view with My City / Friends segmented control
+│   │   ├── home_tab.dart          # Home dashboard with daily quotes and quick actions
+│   │   ├── money_tab.dart         # Financial overview and money management
+│   │   └── settings_tab.dart      # Settings, audio controls, and account management
+│   ├── widgets/
+│   │   ├── add_friend_dialog.dart # Dialog for searching and adding friends by code/name
+│   │   ├── tutorial_overlay.dart  # Step-by-step spotlight tutorial system
+│   │   └── ...                    # Isometric board renderer, custom overlays, and dialogs
+│   ├── theme/
+│   │   └── app_colors.dart        # Centralized color palette and theme tokens
+│   ├── game_state.dart           # Central state definitions, save/load serialization, career data
 │   └── main.dart                 # Application entry point & service initialization
 ├── scripts/
 │   ├── daily_quiz_generator.js   # Node.js backend cron script for quiz generation
 │   └── package.json              # Package manifest for quiz generation dependencies
-├── user_manual.txt               # In-depth mechanics reference manual
+├── firestore.rules               # Cloud Firestore security rules
 └── pubspec.yaml                  # Flutter package dependency configuration
 ```
 
@@ -202,3 +260,9 @@ Every 15-19 cycles, a random disaster strikes.
 - **Asset Disasters** (Floods, Fires, Earthquakes) destroy up to 50% of specific physical asset classes. Without Insurance (costs 5 Gems/cycle), assets are lost permanently. With Insurance, players receive an 80% cost payout.
 - **Passive Income Disasters** (Droughts, Landslides, Crashes, Mass Emigration, Pandemics) reduce passive income yields by 60%-90% for 20 cycles, with a 20% chance to permanently deactivate a building.
 - *Lesson*: Simulates unexpected life emergencies, illustrating the need for insurance risk mitigation and asset diversification to avoid single points of failure.
+
+### 9. Friends & Social Features *(New in v2.0.0-beta)*
+- **Friend Codes & Requests**: Players connect via unique codes. The social graph is managed through Firestore with accept/decline/block workflows.
+- **City Visiting & Cheering**: View friends' isometric cities and send daily cheers to encourage progress.
+- **Activity Feed & Leaderboard**: Track social interactions in real-time and compete on a KP/streak leaderboard.
+- *Lesson*: Encourages accountability and healthy financial competition. Seeing peers' progress motivates consistent engagement with financial learning.
