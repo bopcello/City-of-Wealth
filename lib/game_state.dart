@@ -445,6 +445,8 @@ const onboardingCompleteKey = 'onboardingComplete';
 const wakeUpHourKey = 'wakeUpHour';
 const wakeUpMinuteKey = 'wakeUpMinute';
 const disasterAlertsEnabledKey = 'disasterAlertsEnabled';
+const friendActivityNotificationsEnabledKey =
+    'friendActivityNotificationsEnabled';
 
 class StreakRewards {
   final double assetDiscount; // e.g. 0.05 for 5%
@@ -592,6 +594,7 @@ Future<void> saveGameState({
   int? wakeUpHour,
   int? wakeUpMinute,
   bool? disasterAlertsEnabled,
+  bool? friendActivityNotificationsEnabled,
   Map<String, dynamic>? stats,
 }) async {
   final prefs = await SharedPreferences.getInstance();
@@ -650,6 +653,7 @@ Future<void> saveGameState({
       wakeUpHourKey: wakeUpHour,
       wakeUpMinuteKey: wakeUpMinute,
       disasterAlertsEnabledKey: disasterAlertsEnabled,
+      friendActivityNotificationsEnabledKey: friendActivityNotificationsEnabled,
       'stats': stats != null ? jsonEncode(stats) : null,
     };
     // Remove null values to avoid overwriting with null if not intended
@@ -684,6 +688,7 @@ Future<void> saveGameState({
     isDarkModeKey,
     musicVolumeKey,
     sfxVolumeKey,
+    friendActivityNotificationsEnabledKey,
     lastUpdatedKey,
   ]) {
     if (!data.containsKey(key)) continue;
@@ -748,6 +753,7 @@ Future<
     int,
     int,
     bool,
+    bool,
     Map<String, dynamic>?,
     String,
   )
@@ -806,6 +812,7 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
           wakeUpHourKey,
           wakeUpMinuteKey,
           disasterAlertsEnabledKey,
+          friendActivityNotificationsEnabledKey,
           'tutorialComplete',
           'new_quiz_ready',
         ];
@@ -977,6 +984,11 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
   final bool disasterAlertsEnabled =
       (data[disasterAlertsEnabledKey] == true) ||
       (prefs.getBool(scopedKey(disasterAlertsEnabledKey)) ?? true);
+  final bool friendActivityNotificationsEnabled =
+      (data[friendActivityNotificationsEnabledKey] is bool)
+      ? data[friendActivityNotificationsEnabledKey] as bool
+      : (prefs.getBool(scopedKey(friendActivityNotificationsEnabledKey)) ??
+            true);
 
   final String? trackName =
       data[careerTrackKey]?.toString() ??
@@ -1192,6 +1204,7 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
     wakeUpHour,
     wakeUpMinute,
     disasterAlertsEnabled,
+    friendActivityNotificationsEnabled,
     stats,
     friendCode,
   );

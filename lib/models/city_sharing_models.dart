@@ -10,6 +10,7 @@ class PublicCitySnapshot {
   final String title;
   final int streak;
   final int kp;
+  final int bankruptcyCount;
   final List<PlacedBuilding> buildings;
   final int buildingCount;
   final DateTime lastUpdatedAt;
@@ -23,6 +24,7 @@ class PublicCitySnapshot {
     required this.title,
     required this.streak,
     required this.kp,
+    required this.bankruptcyCount,
     required this.buildings,
     required this.buildingCount,
     required this.lastUpdatedAt,
@@ -37,6 +39,7 @@ class PublicCitySnapshot {
         'title': title,
         'streak': streak,
         'kp': kp,
+        'bankruptcyCount': bankruptcyCount,
         'buildings': buildings.map((b) => b.toJson()).toList(),
         'buildingCount': buildingCount,
         'lastUpdatedAt': lastUpdatedAt,
@@ -65,6 +68,7 @@ class PublicCitySnapshot {
       title: json['title'] ?? 'Student',
       streak: json['streak'] ?? 0,
       kp: json['kp'] ?? 0,
+      bankruptcyCount: json['bankruptcyCount'] ?? 0,
       buildings: buildingsList,
       buildingCount: json['buildingCount'] ?? buildingsList.length,
       lastUpdatedAt: parsedTime,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/notification_data.dart';
 import '../models/city_sharing_models.dart';
 import '../services/friends_service.dart';
 import '../theme/app_colors.dart';
@@ -105,6 +106,11 @@ class _ActivityFeedScreenState extends State<ActivityFeedScreen> {
         return 'Sent you a friend request.';
       case 'friend_request_accepted':
         return 'Accepted your friend request.';
+      case 'session_summary':
+        return NotificationData.formatFriendActivitySummary(
+          entry.sourcePlayerName,
+          entry.payload,
+        );
       default:
         return entry.payload['text'] ?? 'Updated their city.';
     }

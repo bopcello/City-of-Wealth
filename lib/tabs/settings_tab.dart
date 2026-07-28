@@ -194,6 +194,24 @@ class SettingsTab extends StatelessWidget {
                       NotificationService().openSettings();
                     },
                   ),
+                  ListTile(
+                    leading: Icon(Icons.people_alt, color: brandColor),
+                    title: const Text("Friend Activity"),
+                    subtitle: const Text("Level-ups, milestones, streaks"),
+                    trailing: Switch(
+                      value: game.friendActivityNotificationsEnabled,
+                      onChanged: (enabled) {
+                        sfx.playClick();
+                        game.setFriendActivityNotificationsEnabled(enabled);
+                      },
+                    ),
+                    onTap: () {
+                      sfx.playClick();
+                      game.setFriendActivityNotificationsEnabled(
+                        !game.friendActivityNotificationsEnabled,
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

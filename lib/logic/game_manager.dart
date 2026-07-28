@@ -122,6 +122,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   int wakeUpHour = 8;
   int wakeUpMinute = 0;
   bool disasterAlertsEnabled = true;
+  bool friendActivityNotificationsEnabled = true;
   GameStats stats = GameStats();
   MusicManager? musicManager;
   int _selectedIndex = 0;
@@ -183,7 +184,6 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   List<String> recentVisitedMoneyTiles = [];
 
   Timer? _cycleTimer;
-  Timer? _notificationRescheduleTimer;
 
   GameManager() {
     final user = FirebaseAuth.instance.currentUser;
@@ -215,7 +215,6 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   @override
   void dispose() {
     _cycleTimer?.cancel();
-    _notificationRescheduleTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -239,28 +238,24 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       );
       musicManager?.resumeMusic();
       _checkNewQuizFlag();
-      _rescheduleNotificationsDebounced();
+      _rescheduleNotifications();
     }
   }
 
-  void _rescheduleNotificationsDebounced() {
-    _notificationRescheduleTimer?.cancel();
-    _notificationRescheduleTimer = Timer(const Duration(seconds: 5), () async {
-      if (!loaded || playerName == "User") return;
-      try {
-        debugPrint("🔔 Rescheduling all notifications (debounced)");
-        await NotificationService().rescheduleAllNotifications(
-          playerName: playerName,
-          dailyQuizStreak: dailyQuizStreak,
-          streakRevivals: streakRevivals,
-          lastDailyQuizDate: lastDailyQuizDate,
-          wakeUpHour: wakeUpHour,
-          wakeUpMinute: wakeUpMinute,
-        );
-      } catch (e) {
-        debugPrint("❌ Error rescheduling notifications: $e");
-      }
-    });
+  Future<void> _rescheduleNotifications() async {
+    if (!loaded || playerName == "User") return;
+    try {
+      await NotificationService().rescheduleAllNotifications(
+        playerName: playerName,
+        dailyQuizStreak: dailyQuizStreak,
+        streakRevivals: streakRevivals,
+        lastDailyQuizDate: lastDailyQuizDate,
+        wakeUpHour: wakeUpHour,
+        wakeUpMinute: wakeUpMinute,
+      );
+    } catch (e) {
+      debugPrint("❌ Error rescheduling notifications: $e");
+    }
   }
 
   Future<void> _checkNewQuizFlag() async {
@@ -320,6 +315,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     wakeUpHour = 8;
     wakeUpMinute = 0;
     disasterAlertsEnabled = true;
+    friendActivityNotificationsEnabled = true;
     stats = GameStats();
     recentVisitedMoneyTiles = [];
     loaded = false;
@@ -369,6 +365,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         savedWakeUpHour,
         savedWakeUpMinute,
         savedDisasterAlertsEnabled,
+        savedFriendActivityNotificationsEnabled,
         savedStats,
         savedFriendCode,
       ) = await loadGameState(
@@ -413,6 +410,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       wakeUpHour = savedWakeUpHour;
       wakeUpMinute = savedWakeUpMinute;
       disasterAlertsEnabled = savedDisasterAlertsEnabled;
+      friendActivityNotificationsEnabled =
+          savedFriendActivityNotificationsEnabled;
       if (savedStats != null) {
         stats = GameStats.fromJson(savedStats);
       }
@@ -443,7 +442,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         _checkDailyCycle();
         _checkStreakConsistency();
         _syncDailyQuiz(); // Check for new quiz on load
-        _rescheduleNotificationsDebounced();
+        _rescheduleNotifications();
       }
       _fetchDailyQuote();
 
@@ -546,6 +545,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       wakeUpHour: wakeUpHour,
       wakeUpMinute: wakeUpMinute,
       disasterAlertsEnabled: disasterAlertsEnabled,
+      friendActivityNotificationsEnabled: friendActivityNotificationsEnabled,
       stats: stats.toJson(),
     );
   }
@@ -594,6 +594,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         wakeUpHour: wakeUpHour,
         wakeUpMinute: wakeUpMinute,
         disasterAlertsEnabled: disasterAlertsEnabled,
+        friendActivityNotificationsEnabled: friendActivityNotificationsEnabled,
         stats: stats.toJson(),
       );
 
@@ -2366,6 +2367,26 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       hour,
       minute,
     );
+    notifyListeners();
+  }
+
+  void setFriendActivityNotificationsEnabled(bool enabled) {
+    if (friendActivityNotificationsEnabled == enabled) return;
+    friendActivityNotificationsEnabled = enabled;
+    saveFields({
+      friendActivityNotificationsEnabledKey: friendActivityNotificationsEnabled,
+    });
+    final uid = currentUid;
+    if (uid != null) {
+      firestoreService
+          .savePlayerProgress(uid, {
+            friendActivityNotificationsEnabledKey:
+                friendActivityNotificationsEnabled,
+          })
+          .catchError((e) {
+            debugPrint('Unable to sync friend activity preference: $e');
+          });
+    }
     notifyListeners();
   }
 

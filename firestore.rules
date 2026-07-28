@@ -55,5 +55,10 @@ service cloud.firestore {
     match /daily_quotes/{quoteId} {
       allow read: if request.auth != null;
     }
+
+    // Cooldowns are maintained exclusively by the Admin SDK in Cloud Functions.
+    match /friendNotifyCooldowns/{docId} {
+      allow read, write: if false;
+    }
   }
 }

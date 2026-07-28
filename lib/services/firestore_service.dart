@@ -52,6 +52,22 @@ class FirestoreService {
     }
   }
 
+  Future<void> updateFcmToken(String uid, String token) async {
+    if (uid.isEmpty || token.isEmpty) return;
+    await _db.collection('players').doc(uid).set({
+      'fcmToken': token,
+      'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> removeFcmToken(String uid) async {
+    if (uid.isEmpty) return;
+    await _db.collection('players').doc(uid).update({
+      'fcmToken': FieldValue.delete(),
+      'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   /// Retrieves the player's progress from Firestore.
   /// Returns null if no progress is found.
   Future<Map<String, dynamic>?> getPlayerProgress(String uid) async {
@@ -367,6 +383,7 @@ class FirestoreService {
       title: titleStr,
       streak: (data['dailyQuizStreak'] as num?)?.toInt() ?? 0,
       kp: (data['kp'] as num?)?.toInt() ?? 0,
+      bankruptcyCount: (data['bankruptcyCount'] as num?)?.toInt() ?? 0,
       buildings: buildings,
       buildingCount: buildings.length,
       lastUpdatedAt: DateTime.now(),

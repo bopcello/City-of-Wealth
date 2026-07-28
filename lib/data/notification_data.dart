@@ -61,6 +61,40 @@ class NotificationData {
     ("Momentum is building", "You'll feel it before you can prove it."),
   ];
 
+  static const Map<String, List<(String, String)>> friendActivityTemplates = {
+    'level_up': [
+      ('{friend} leveled up! 🏢', '{friend} is now a {title}.'),
+      ('New milestone for {friend}', '{friend} just reached {title}.'),
+    ],
+    'streak_milestone': [
+      ('{friend} hit a {streak}-day streak',
+          'Consistency pays off — go check it out.'),
+    ],
+    'building_built': [
+      ('{friend} built {building}', 'Their city just got a new addition.'),
+    ],
+    'bankruptcy': [
+      ('{friend} is starting over',
+          'Bankruptcy declared — maybe send a cheer?'),
+    ],
+    'session_summary': [
+      ('{friend} made moves', '{summary}'),
+    ],
+  };
+
+  /// Source of truth for friend push copy. The Render worker reads this JSON
+  /// during startup so closed-app notifications use the same copy as Flutter.
+  static const String friendActivityNotificationTemplatesJson = r'''{
+    "level_up": [["{name} leveled up!", "{name} reached {level}."], ["A new level for {name}", "{name} is now {level}."], ["{name} moved up", "Level {level} is officially unlocked."], ["Level-up alert", "{name} advanced to {level}."], ["{name} is climbing", "They just reached {level}."]],
+    "building_built": [["{name} is expanding", "{name} built {buildings}."], ["New construction in {name}'s city", "{buildings} just joined the skyline."], ["{name} built something new", "{buildings} is now part of the city."], ["City growth alert", "{name} added {buildings}."], ["{name} is building wealth", "New build: {buildings}."]],
+    "building_destroyed": [["A building fell in {name}'s city", "{name} lost {buildings}."], ["{name}'s skyline changed", "{buildings} was destroyed."], ["Setback for {name}", "{buildings} is gone from the city."], ["Demolition alert", "{name} lost {buildings}."], ["{name} is rebuilding", "{buildings} was removed from the city."]],
+    "kp_gained": [["{name} gained KP", "+{kp} KP for {name}."], ["Knowledge pays off", "{name} earned {kp} KP."], ["KP boost for {name}", "They are up {kp} KP."], ["{name} is getting sharper", "+{kp} KP added to their total."], ["More KP in the bank", "{name} gained {kp} KP."]],
+    "kp_lost": [["{name} lost KP", "-{kp} KP from their total."], ["KP setback for {name}", "They are down {kp} KP."], ["{name} took a knowledge hit", "{kp} KP was lost."], ["A dip in KP", "{name} lost {kp} KP."], ["{name} needs a comeback", "-{kp} KP recorded."]],
+    "streak_continued": [["{name} kept the streak alive", "Their streak is now {streak} days."], ["Streak continued!", "{name} reached {streak} days."], ["{name} stayed consistent", "{streak} days and counting."], ["Another day, another streak", "{name} is at {streak} days."], ["{name} is on a roll", "Their streak grew to {streak} days."]],
+    "streak_lost": [["{name}'s streak reset", "Their {previousStreak}-day streak is over."], ["Streak lost for {name}", "They dropped from {previousStreak} days to {streak}."], ["Consistency slipped", "{name}'s {previousStreak}-day streak was broken."], ["{name} lost the streak", "{previousStreak} days reset to {streak}."], ["A reset for {name}", "Their streak fell from {previousStreak} to {streak}."]],
+    "bankruptcy": [["{name} declared bankruptcy", "Their city has reset to level 1."], ["Fresh start for {name}", "Bankruptcy reset their city to level 1."], ["{name} is starting over", "Their city has been reset to level 1."], ["Bankruptcy declared", "{name} is back at level 1."], ["A full reset for {name}", "Their city returned to level 1."]]
+  }''';
+
   static const Map<DisasterType, List<(String, String)>> disasterInsured = {
     DisasterType.flood: [
       (
@@ -784,5 +818,80 @@ class NotificationData {
       _format(choice.$1, {'name': name}),
       _format(choice.$2, {'name': name}),
     );
+  }
+
+  static (String, String) getRandomFriendActivityNotification(
+    String friendName,
+    String eventType,
+    Map<String, dynamic> payload,
+  ) {
+    final list =
+        friendActivityTemplates[eventType] ?? friendActivityTemplates['session_summary']!;
+    final choice = _randomElement(list);
+    final buildings = (payload['newBuildings'] as List? ?? const [])
+        .map((building) => building.toString())
+        .toList();
+    final values = <String, String>{
+      'friend': friendName,
+      'title': payload['newLevel']?.toString() ?? 'a new level',
+      'streak': payload['streak']?.toString() ?? 'new',
+      'building': buildings.isNotEmpty ? buildings.first : 'a new building',
+      'summary': formatFriendActivitySummary(friendName, payload),
+    };
+    return (_format(choice.$1, values), _format(choice.$2, values));
+  }
+
+  static String formatFriendActivitySummary(
+    String friendName,
+    Map<String, dynamic> payload,
+  ) {
+    final events = (payload['events'] as List? ?? const [])
+        .map((event) => event.toString())
+        .toSet();
+    final parts = <String>[];
+    final level = payload['newLevel']?.toString();
+    final streak = payload['streak'];
+    final previousStreak = payload['previousStreak'];
+    final kpChange = (payload['kpChange'] as num?)?.toInt();
+    final buildings = (payload['newBuildings'] as List? ?? const [])
+        .map((building) => building.toString())
+        .toList();
+    final destroyedBuildings =
+        (payload['destroyedBuildings'] as List? ?? const [])
+            .map((building) => building.toString())
+            .toList();
+
+    if (events.contains('level_up') && level != null && level.isNotEmpty) {
+      parts.add('leveled up to $level');
+    }
+    if ((events.contains('streak_milestone') ||
+            events.contains('streak_continued')) &&
+        streak != null) {
+      parts.add('hit a $streak-day streak');
+    }
+    if (events.contains('streak_lost') && previousStreak != null) {
+      parts.add('lost their $previousStreak-day streak');
+    }
+    if (events.contains('building_built')) {
+      parts.add(buildings.length == 1
+          ? 'built ${buildings.first}'
+          : 'built ${buildings.length} new buildings');
+    }
+    if (events.contains('building_destroyed')) {
+      parts.add(destroyedBuildings.length == 1
+          ? 'lost ${destroyedBuildings.first}'
+          : 'lost ${destroyedBuildings.length} buildings');
+    }
+    if (events.contains('kp_gained') && kpChange != null) {
+      parts.add('gained $kpChange KP');
+    }
+    if (events.contains('kp_lost') && kpChange != null) {
+      parts.add('lost ${kpChange.abs()} KP');
+    }
+    if (events.contains('bankruptcy')) parts.add('is starting over');
+
+    if (parts.isEmpty) return '$friendName made progress in their city.';
+    if (parts.length == 1) return '$friendName ${parts.first}.';
+    return '$friendName ${parts.sublist(0, parts.length - 1).join(', ')} and ${parts.last}.';
   }
 }

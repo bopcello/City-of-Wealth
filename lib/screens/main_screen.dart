@@ -17,7 +17,9 @@ import 'career_screen.dart';
 import 'assets_screen.dart';
 import 'liabilities_screen.dart';
 import 'passive_income_screen.dart';
+import 'city_viewer_screen.dart';
 import '../services/notification_service.dart';
+import '../services/firestore_service.dart';
 
 class MainScreen extends StatefulWidget {
   final GameManager game;
@@ -82,6 +84,12 @@ class _MainScreenState extends State<MainScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _navigateToQuizScreen();
       });
+    } else if (payload != null && payload.startsWith('friend_activity:')) {
+      final friendPlayerId = payload.substring('friend_activity:'.length);
+      NotificationService.notificationPayloadNotifier.value = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _navigateToFriendCity(friendPlayerId);
+      });
     }
   }
 
@@ -94,6 +102,21 @@ class _MainScreenState extends State<MainScreen> {
           game: widget.game,
           music: widget.music,
           sfx: widget.sfx,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _navigateToFriendCity(String friendPlayerId) async {
+    if (!mounted || friendPlayerId.isEmpty) return;
+    final snapshot = await FirestoreService().getPublicCitySnapshot(friendPlayerId);
+    if (!mounted || snapshot == null) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CityViewerScreen(
+          snapshot: snapshot,
+          myPlayerName: widget.game.playerName,
         ),
       ),
     );

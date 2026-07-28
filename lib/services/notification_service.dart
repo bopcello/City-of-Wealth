@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -7,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import '../game_state.dart';
 import '../data/notification_data.dart';
+import 'firestore_service.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -18,6 +21,10 @@ class NotificationService {
 
   static final ValueNotifier<String?> notificationPayloadNotifier =
       ValueNotifier<String?>(null);
+  StreamSubscription<String>? _tokenRefreshSubscription;
+  StreamSubscription<RemoteMessage>? _foregroundMessageSubscription;
+  StreamSubscription<RemoteMessage>? _messageOpenedSubscription;
+  String? _fcmUid;
 
   Future<void> initialize() async {
     tz.initializeTimeZones();
@@ -103,6 +110,14 @@ class NotificationService {
           importance: Importance.high,
         );
 
+    const AndroidNotificationChannel friendActivityChannel =
+        AndroidNotificationChannel(
+          'friend_city_activity',
+          'Friend Activity',
+          description: 'Level-ups, milestones, and activity from your friends',
+          importance: Importance.high,
+        );
+
     final androidPlugin = _notifications
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
@@ -113,6 +128,7 @@ class NotificationService {
     await androidPlugin?.createNotificationChannel(streakChannel);
     await androidPlugin?.createNotificationChannel(inactivityChannel);
     await androidPlugin?.createNotificationChannel(dailyRoutineChannel);
+    await androidPlugin?.createNotificationChannel(friendActivityChannel);
 
     // Clean up any lingering streak warning notifications from previous version
     final cancelFutures = <Future<void>>[];
@@ -121,6 +137,104 @@ class NotificationService {
     }
     await Future.wait(cancelFutures);
   }
+
+  /// Registers this device for friend-activity pushes while the user is signed in.
+  Future<void> initializeFcm(String uid) async {
+    if (uid.isEmpty) return;
+    if (_fcmUid == uid) return;
+
+    _fcmUid = uid;
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      if (token != null) {
+        await FirestoreService().updateFcmToken(uid, token);
+      }
+    } catch (e) {
+      debugPrint('Unable to register FCM token: $e');
+    }
+
+    await _tokenRefreshSubscription?.cancel();
+    _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh.listen(
+      (token) {
+        final activeUid = _fcmUid;
+        if (activeUid != null) {
+          FirestoreService().updateFcmToken(activeUid, token).catchError((e) {
+            debugPrint('Unable to refresh FCM token: $e');
+          });
+        }
+      },
+    );
+
+    handleFcmForegroundMessages();
+
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      _publishFriendActivityPayload(initialMessage);
+    }
+  }
+
+  Future<void> clearFcmToken(String uid) async {
+    if (_fcmUid != uid) return;
+    _fcmUid = null;
+    await _tokenRefreshSubscription?.cancel();
+    _tokenRefreshSubscription = null;
+    try {
+      await FirestoreService().removeFcmToken(uid);
+    } catch (e) {
+      debugPrint('Unable to remove FCM token: $e');
+    }
+  }
+
+  void handleFcmForegroundMessages() {
+    _foregroundMessageSubscription ??= FirebaseMessaging.onMessage.listen(
+      _showForegroundFriendActivity,
+    );
+    _messageOpenedSubscription ??= FirebaseMessaging.onMessageOpenedApp.listen(
+      _publishFriendActivityPayload,
+    );
+  }
+
+  Future<void> _showForegroundFriendActivity(RemoteMessage message) async {
+    if (message.data['kind'] != 'friend_activity') return;
+
+    final title = message.notification?.title ?? 'Friend activity';
+    final body = message.notification?.body ?? 'A friend updated their city.';
+
+    const androidDetails = AndroidNotificationDetails(
+      'friend_city_activity',
+      'Friend Activity',
+      channelDescription: 'Level-ups, milestones, and activity from your friends',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    await _notifications.show(
+      id: 7000,
+      title: title,
+      body: body,
+      notificationDetails: const NotificationDetails(android: androidDetails),
+      payload: _friendActivityPayload(message),
+    );
+  }
+
+  void _publishFriendActivityPayload(RemoteMessage message) {
+    final payload = _friendActivityPayload(message);
+    if (payload != null) notificationPayloadNotifier.value = payload;
+  }
+
+  String? _friendActivityPayload(RemoteMessage message) {
+    if (message.data['kind'] != 'friend_activity') return null;
+    final friendPlayerId = message.data['friendPlayerId']?.toString();
+    if (friendPlayerId == null || friendPlayerId.isEmpty) return null;
+    return 'friend_activity:$friendPlayerId';
+  }
+
 
   Future<void> requestPermissions() async {
     // Android 13+ requires explicit permission

@@ -46,3 +46,9 @@ app.*.map.json
 
 # Node.js modules
 **/node_modules/
+
+# Firebase and service-account credentials
+serviceAccountKey.json
+*key*.json
+*.key.json
+*-service-account.json

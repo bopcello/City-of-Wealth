@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'game_state.dart';
 import 'logic/game_manager.dart';
@@ -17,8 +18,15 @@ import 'screens/main_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   final launchPrefs = await _LaunchPreferences.load();
 
@@ -109,6 +117,8 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
   // Initialised from SharedPreferences before runApp — correct on first frame
   late bool _isDarkMode;
   Object? _bootstrapError;
+  StreamSubscription<User?>? _authSubscription;
+  String? _fcmUid;
 
   @override
   void initState() {
@@ -145,18 +155,31 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
     }
 
     try {
-      await Future.wait([
-        Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
-        BackgroundTaskManager.initialize(),
-      ]);
+      await BackgroundTaskManager.initialize();
 
       BackgroundTaskManager.scheduleTasks().ignore();
-      NotificationService().initialize().ignore();
-
+      await NotificationService().initialize();
       final game = GameManager();
       game.attachMusicManager(_music);
       game.addListener(_syncVolume);
       game.addListener(_handleGameThemeChange);
+      _authSubscription?.cancel();
+      _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
+        final previousUid = _fcmUid;
+        if (user == null) {
+          _fcmUid = null;
+          if (previousUid != null) {
+            NotificationService().clearFcmToken(previousUid).ignore();
+          }
+          return;
+        }
+
+        if (previousUid != null && previousUid != user.uid) {
+          NotificationService().clearFcmToken(previousUid).ignore();
+        }
+        _fcmUid = user.uid;
+        NotificationService().initializeFcm(user.uid).ignore();
+      });
 
       if (!mounted) {
         game.removeListener(_syncVolume);
@@ -181,6 +204,7 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
 
   @override
   void dispose() {
+    _authSubscription?.cancel();
     _game?.removeListener(_syncVolume);
     _game?.removeListener(_handleGameThemeChange);
     _game?.dispose();
