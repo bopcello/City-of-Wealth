@@ -1,7 +1,0 @@
-node_modules
-npm-debug.log
-serviceAccountKey.json
-*.key.json
-*.json
-!package.json
-!package-lock.json

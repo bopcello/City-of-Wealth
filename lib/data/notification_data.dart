@@ -23,7 +23,7 @@ class NotificationData {
       "Quiet day, real progress",
       "Compounding works best when nobody's watching.",
     ),
-    ("Cha-ching, {name}", "Today's income cycle just landed."),
+    ("Income received, {name}", "Today's income cycle just landed."),
     (
       "Nothing dramatic today",
       "Which is exactly what a healthy portfolio looks like.",
@@ -63,37 +63,94 @@ class NotificationData {
 
   static const Map<String, List<(String, String)>> friendActivityTemplates = {
     'level_up': [
-      ('{friend} leveled up! 🏢', '{friend} is now a {title}.'),
+      ('{friend} just leveled up!', '{friend} is now a {title}. Big moment.'),
       ('New milestone for {friend}', '{friend} just reached {title}.'),
+      ('{friend} is climbing fast', 'They just became {title}.'),
     ],
     'streak_milestone': [
-      ('{friend} hit a {streak}-day streak',
-          'Consistency pays off — go check it out.'),
+      (
+        '{friend} hit a {streak}-day streak',
+        'That kind of consistency is rare — go cheer them on.',
+      ),
+      ('{friend} is on fire', '{streak} days straight. Worth a shoutout.'),
     ],
     'building_built': [
       ('{friend} built {building}', 'Their city just got a new addition.'),
+      ('{friend}\'s skyline is growing', '{building} just went up.'),
     ],
     'bankruptcy': [
-      ('{friend} is starting over',
-          'Bankruptcy declared — maybe send a cheer?'),
+      (
+        '{friend} is starting over',
+        'Bankruptcy declared. This is the moment to show up for them.',
+      ),
+      (
+        'A hard reset for {friend}',
+        'Their city fell back to level 1 — a cheer might help.',
+      ),
     ],
-    'session_summary': [
-      ('{friend} made moves', '{summary}'),
-    ],
+    'session_summary': [('{friend} made moves', '{summary}')],
   };
 
   /// Source of truth for friend push copy. The Render worker reads this JSON
   /// during startup so closed-app notifications use the same copy as Flutter.
   static const String friendActivityNotificationTemplatesJson = r'''{
-    "level_up": [["{name} leveled up!", "{name} reached {level}."], ["A new level for {name}", "{name} is now {level}."], ["{name} moved up", "Level {level} is officially unlocked."], ["Level-up alert", "{name} advanced to {level}."], ["{name} is climbing", "They just reached {level}."]],
-    "building_built": [["{name} is expanding", "{name} built {buildings}."], ["New construction in {name}'s city", "{buildings} just joined the skyline."], ["{name} built something new", "{buildings} is now part of the city."], ["City growth alert", "{name} added {buildings}."], ["{name} is building wealth", "New build: {buildings}."]],
-    "building_destroyed": [["A building fell in {name}'s city", "{name} lost {buildings}."], ["{name}'s skyline changed", "{buildings} was destroyed."], ["Setback for {name}", "{buildings} is gone from the city."], ["Demolition alert", "{name} lost {buildings}."], ["{name} is rebuilding", "{buildings} was removed from the city."]],
-    "kp_gained": [["{name} gained KP", "+{kp} KP for {name}."], ["Knowledge pays off", "{name} earned {kp} KP."], ["KP boost for {name}", "They are up {kp} KP."], ["{name} is getting sharper", "+{kp} KP added to their total."], ["More KP in the bank", "{name} gained {kp} KP."]],
-    "kp_lost": [["{name} lost KP", "-{kp} KP from their total."], ["KP setback for {name}", "They are down {kp} KP."], ["{name} took a knowledge hit", "{kp} KP was lost."], ["A dip in KP", "{name} lost {kp} KP."], ["{name} needs a comeback", "-{kp} KP recorded."]],
-    "streak_continued": [["{name} kept the streak alive", "Their streak is now {streak} days."], ["Streak continued!", "{name} reached {streak} days."], ["{name} stayed consistent", "{streak} days and counting."], ["Another day, another streak", "{name} is at {streak} days."], ["{name} is on a roll", "Their streak grew to {streak} days."]],
-    "streak_lost": [["{name}'s streak reset", "Their {previousStreak}-day streak is over."], ["Streak lost for {name}", "They dropped from {previousStreak} days to {streak}."], ["Consistency slipped", "{name}'s {previousStreak}-day streak was broken."], ["{name} lost the streak", "{previousStreak} days reset to {streak}."], ["A reset for {name}", "Their streak fell from {previousStreak} to {streak}."]],
-    "bankruptcy": [["{name} declared bankruptcy", "Their city has reset to level 1."], ["Fresh start for {name}", "Bankruptcy reset their city to level 1."], ["{name} is starting over", "Their city has been reset to level 1."], ["Bankruptcy declared", "{name} is back at level 1."], ["A full reset for {name}", "Their city returned to level 1."]]
-  }''';
+  "level_up": [
+    ["{name} just leveled up!", "They're officially {level} now. Big moves."],
+    ["Level up for {name}", "Say hello to {level}."],
+    ["{name} broke through", "New level unlocked: {level}."],
+    ["Rising star alert", "{name} just became {level}."],
+    ["{name} is moving up fast", "{level} status: achieved."]
+  ],
+  "building_built": [
+    ["{name}'s city just grew", "{buildings} is now standing tall."],
+    ["New addition in {name}'s skyline", "{buildings} just went up."],
+    ["{name} is building an empire", "{buildings} joined the city."],
+    ["Construction complete", "{name} finished {buildings}."],
+    ["{name}'s city keeps expanding", "{buildings} is now part of the skyline."]
+  ],
+  "building_destroyed": [
+    ["{name}'s city just lost {buildings}", "A rough day for their skyline."],
+    ["{buildings} came down", "{name} will need to rebuild."],
+    ["Bad news for {name}", "{buildings} was destroyed."],
+    ["{name}'s skyline took a hit", "{buildings} is gone."],
+    ["{name} is picking up the pieces", "{buildings} didn't make it."]
+  ],
+  "kp_gained": [
+    ["{name}'s KP is climbing", "+{kp} KP added to their total."],
+    ["Smart move, {name}", "+{kp} KP just landed."],
+    ["{name} is getting sharper", "+{kp} KP gained."],
+    ["KP boost for {name}", "Up {kp} points and counting."],
+    ["{name} is stacking KP", "+{kp} KP this round."]
+  ],
+  "kp_lost": [
+    ["{name}'s KP took a hit", "-{kp} KP lost."],
+    ["A costly call for {name}", "-{kp} KP gone."],
+    ["{name} slipped up", "-{kp} KP this round."],
+    ["KP drop for {name}", "Down {kp} points."],
+    ["{name} needs to recover", "-{kp} KP lost just now."]
+  ],
+  "streak_continued": [
+    ["{name}'s streak lives on", "Now at {streak} days."],
+    ["{name} showed up again", "Streak: {streak} days strong."],
+    ["Consistency win for {name}", "{streak} days and climbing."],
+    ["{name} is on a roll", "{streak}-day streak intact."],
+    ["Another day, another win", "{name} hit {streak} days."]
+  ],
+  "streak_lost": [
+    ["{name}'s streak just ended", "{previousStreak} days reset to {streak}."],
+    ["Streak broken for {name}", "Down from {previousStreak} to {streak}."],
+    ["{name} lost the momentum", "Their {previousStreak}-day streak is gone."],
+    ["A tough break for {name}", "Streak fell from {previousStreak} to {streak}."],
+    ["{name} is starting a new streak", "{previousStreak} days came to an end."]
+  ],
+  "bankruptcy": [
+    ["{name} declared bankruptcy", "Back to level 1 — a tough moment."],
+    ["A hard reset for {name}", "Their city dropped to level 1."],
+    ["{name} is starting from scratch", "Bankruptcy hit hard this time."],
+    ["A rough day for {name}", "Their empire reset to level 1."],
+    ["{name} could use some support", "Bankruptcy declared — level 1 again."]
+  ]
+}''';
 
   static const Map<DisasterType, List<(String, String)>> disasterInsured = {
     DisasterType.flood: [
@@ -532,14 +589,14 @@ class NotificationData {
   ];
 
   static const List<(String, String)> morningQuizNotifications = [
-    ("Good morning, {name} ☀️", "Today's quiz is ready — answer it for KP."),
+    ("Good morning, {name}", "Today's quiz is ready — answer it for KP."),
     (
-      "Rise and check your city ☕",
+      "Rise and check your city",
       "Start the day by sharpening your financial knowledge.",
     ),
     ("New day, new quiz", "Keep the streak going, {name}."),
     ("Your morning quiz is here", "Earn KP early and expand your city today."),
-    ("Wakey wakey ⏰", "Today's challenge is ready when you are, {name}."),
+    ("Daily Challenge", "Today's challenge is ready when you are, {name}."),
   ];
 
   static const Map<String, List<(String, String)>>
@@ -636,73 +693,58 @@ class NotificationData {
         ],
       };
 
-  static const Map<String, List<(String, String)>> challengeReminderZeroStreak =
-      {
-        "6h": [
-          (
-            "6 hours left, {name}",
-            "Start your daily financial learning habit today!",
-          ),
-          ("Start your streak", "6 hours remaining to complete today's quiz."),
-          (
-            "Knowledge is wealth, {name}",
-            "Attempt today's challenge before time runs out.",
-          ),
-          (
-            "Daily Challenge: 6h left",
-            "Take today's quiz and kickstart your daily streak.",
-          ),
-          (
-            "Kickstart your streak",
-            "6 hours left to start building your consistency.",
-          ),
-        ],
-        "2h": [
-          (
-            "2 hours left, {name}",
-            "A new streak is waiting. Start it tonight!",
-          ),
-          ("Start your streak", "Only 2 hours left to attempt today's quiz."),
-          (
-            "Don't miss today's KP",
-            "2 hours to play today's challenge, {name}.",
-          ),
-          (
-            "Daily Challenge: 2h left",
-            "Learn something new today and earn some KP.",
-          ),
-          ("Opportunity knocking", "2 hours left before today's quiz resets."),
-        ],
-        "1h": [
-          ("1 hour left, {name}", "Kickstart your streak before midnight!"),
-          (
-            "Critical: 1 hour remaining",
-            "Start your daily financial habit now.",
-          ),
-          (
-            "Final hour",
-            "Attempt today's challenge and learn something new, {name}.",
-          ),
-          ("Streak waiting for you", "60 minutes left to start your daily streak."),
-          ("Act fast", "1 hour left to complete today's quiz, {name}."),
-        ],
-        "15m": [
-          (
-            "15 minutes left, {name}",
-            "Last chance to start your daily streak today!",
-          ),
-          ("Final warning", "15 minutes to take today's quiz."),
-          (
-            "Almost out of time",
-            "Today's challenge resets in 15 minutes, {name}.",
-          ),
-          (
-            "Last chance",
-            "15 minutes left to earn today's knowledge points.",
-          ),
-          ("Play now", "Only 15 minutes left to start your streak, {name}!"),
-        ],
-      };
+  static const Map<String, List<(String, String)>>
+  challengeReminderZeroStreak = {
+    "6h": [
+      (
+        "6 hours left, {name}",
+        "Start your daily financial learning habit today!",
+      ),
+      ("Start your streak", "6 hours remaining to complete today's quiz."),
+      (
+        "Knowledge is wealth, {name}",
+        "Attempt today's challenge before time runs out.",
+      ),
+      (
+        "Daily Challenge: 6h left",
+        "Take today's quiz and kickstart your daily streak.",
+      ),
+      (
+        "Kickstart your streak",
+        "6 hours left to start building your consistency.",
+      ),
+    ],
+    "2h": [
+      ("2 hours left, {name}", "A new streak is waiting. Start it tonight!"),
+      ("Start your streak", "Only 2 hours left to attempt today's quiz."),
+      ("Don't miss today's KP", "2 hours to play today's challenge, {name}."),
+      (
+        "Daily Challenge: 2h left",
+        "Learn something new today and earn some KP.",
+      ),
+      ("Opportunity knocking", "2 hours left before today's quiz resets."),
+    ],
+    "1h": [
+      ("1 hour left, {name}", "Kickstart your streak before midnight!"),
+      ("Critical: 1 hour remaining", "Start your daily financial habit now."),
+      (
+        "Final hour",
+        "Attempt today's challenge and learn something new, {name}.",
+      ),
+      ("Streak waiting for you", "60 minutes left to start your daily streak."),
+      ("Act fast", "1 hour left to complete today's quiz, {name}."),
+    ],
+    "15m": [
+      (
+        "15 minutes left, {name}",
+        "Last chance to start your daily streak today!",
+      ),
+      ("Final warning", "15 minutes to take today's quiz."),
+      ("Almost out of time", "Today's challenge resets in 15 minutes, {name}."),
+      ("Last chance", "15 minutes left to earn today's knowledge points."),
+      ("Play now", "Only 15 minutes left to start your streak, {name}!"),
+    ],
+  };
 
   // Original list kept for compatibility
   static const List<(String, String)> dailyQuiz = [
@@ -826,7 +868,8 @@ class NotificationData {
     Map<String, dynamic> payload,
   ) {
     final list =
-        friendActivityTemplates[eventType] ?? friendActivityTemplates['session_summary']!;
+        friendActivityTemplates[eventType] ??
+        friendActivityTemplates['session_summary']!;
     final choice = _randomElement(list);
     final buildings = (payload['newBuildings'] as List? ?? const [])
         .map((building) => building.toString())
@@ -873,14 +916,18 @@ class NotificationData {
       parts.add('lost their $previousStreak-day streak');
     }
     if (events.contains('building_built')) {
-      parts.add(buildings.length == 1
-          ? 'built ${buildings.first}'
-          : 'built ${buildings.length} new buildings');
+      parts.add(
+        buildings.length == 1
+            ? 'built ${buildings.first}'
+            : 'built ${buildings.length} new buildings',
+      );
     }
     if (events.contains('building_destroyed')) {
-      parts.add(destroyedBuildings.length == 1
-          ? 'lost ${destroyedBuildings.first}'
-          : 'lost ${destroyedBuildings.length} buildings');
+      parts.add(
+        destroyedBuildings.length == 1
+            ? 'lost ${destroyedBuildings.first}'
+            : 'lost ${destroyedBuildings.length} buildings',
+      );
     }
     if (events.contains('kp_gained') && kpChange != null) {
       parts.add('gained $kpChange KP');

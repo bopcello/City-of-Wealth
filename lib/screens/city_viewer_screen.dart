@@ -4,6 +4,7 @@ import '../models/city_sharing_models.dart';
 import '../game_state.dart';
 import '../theme/app_colors.dart';
 import '../services/friends_service.dart';
+import '../widgets/profile_avatar.dart';
 
 class CityViewerScreen extends StatefulWidget {
   final PublicCitySnapshot snapshot;
@@ -146,7 +147,9 @@ class _CityViewerScreenState extends State<CityViewerScreen> {
                 final double vw = constraints.maxWidth;
                 final double vh = constraints.maxHeight;
 
-                final double side = gridSize * 52.0 + 200.0; // Account for the padding of 100 on each side
+                final double side =
+                    gridSize * 52.0 +
+                    200.0; // Account for the padding of 100 on each side
                 final double tx = (vw - side) / 2;
                 final double ty = (vh - side) / 2;
 
@@ -232,13 +235,15 @@ class _CityViewerScreenState extends State<CityViewerScreen> {
                             width: 60,
                             height: 60,
                             decoration: BoxDecoration(
-                              color: Colors.amber.shade600,
+                              color: AppColors.of(context, 'kp'),
                               borderRadius: BorderRadius.circular(8),
-                              boxShadow: const [
+                              boxShadow: [
                                 BoxShadow(
                                   blurRadius: 6,
                                   offset: Offset(2, 4),
-                                  color: Colors.black26,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.shadow.withValues(alpha: 0.26),
                                 ),
                               ],
                             ),
@@ -275,19 +280,10 @@ class _CityViewerScreenState extends State<CityViewerScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    CircleAvatar(
+                    ProfileAvatar(
+                      profilePic: widget.snapshot.profilePic,
+                      fallbackName: widget.snapshot.playerName,
                       radius: 24,
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      child: Text(
-                        widget.snapshot.playerName.isNotEmpty
-                            ? widget.snapshot.playerName[0].toUpperCase()
-                            : "?",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -322,9 +318,9 @@ class _CityViewerScreenState extends State<CityViewerScreen> {
                       children: [
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.flash_on,
-                              color: Colors.orange,
+                              color: AppColors.of(context, 'warning'),
                               size: 18,
                             ),
                             const SizedBox(width: 4),
@@ -339,9 +335,9 @@ class _CityViewerScreenState extends State<CityViewerScreen> {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.workspace_premium,
-                              color: Colors.amber,
+                              color: AppColors.of(context, 'kp'),
                               size: 18,
                             ),
                             const SizedBox(width: 4),
@@ -366,20 +362,25 @@ class _CityViewerScreenState extends State<CityViewerScreen> {
             bottom: 24,
             right: 24,
             child: _cheerLoading
-                ? const FloatingActionButton(
+                ? FloatingActionButton(
                     onPressed: null,
-                    backgroundColor: Colors.grey,
+                    backgroundColor: Theme.of(context).colorScheme.outline,
                     child: SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
                   )
                 : FloatingActionButton.extended(
                     onPressed: _toggleCheer,
+                    icon: Icon(
+                      _activeCheerDocId != null
+                          ? Icons.campaign
+                          : Icons.campaign_outlined,
+                    ),
                     label: Text(
                       _activeCheerDocId != null ? "Undo Cheer" : "Cheer!",
                     ),

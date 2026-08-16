@@ -16,7 +16,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final TextEditingController _nameController = TextEditingController();
 
   TimeOfDay _wakeUpTime = const TimeOfDay(hour: 8, minute: 0);
-  bool _disasterAlertsEnabled = true;
   int _currentPage = 0;
 
   @override
@@ -62,7 +61,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       name: _nameController.text.trim(),
       hour: _wakeUpTime.hour,
       minute: _wakeUpTime.minute,
-      alertsEnabled: _disasterAlertsEnabled,
+      alertsEnabled: true,
     );
   }
 
@@ -214,34 +213,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 40),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Notify me when a disaster hits my city",
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Disasters can destroy up to 50% of your assets. Stay informed.",
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Switch(
-                value: _disasterAlertsEnabled,
-                onChanged: (val) =>
-                    setState(() => _disasterAlertsEnabled = val),
-              ),
-            ],
           ),
         ],
       ),

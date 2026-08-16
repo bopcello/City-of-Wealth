@@ -14,6 +14,7 @@ class PublicCitySnapshot {
   final List<PlacedBuilding> buildings;
   final int buildingCount;
   final DateTime lastUpdatedAt;
+  final String? profilePic;
 
   PublicCitySnapshot({
     required this.playerId,
@@ -28,6 +29,7 @@ class PublicCitySnapshot {
     required this.buildings,
     required this.buildingCount,
     required this.lastUpdatedAt,
+    this.profilePic,
   });
 
   Map<String, dynamic> toJson() => {
@@ -43,7 +45,24 @@ class PublicCitySnapshot {
         'buildings': buildings.map((b) => b.toJson()).toList(),
         'buildingCount': buildingCount,
         'lastUpdatedAt': lastUpdatedAt,
+        if (profilePic != null) 'profilePic': profilePic,
       };
+
+  PublicCitySnapshot copyWith({String? profilePic}) => PublicCitySnapshot(
+        playerId: playerId,
+        playerName: playerName,
+        friendCode: friendCode,
+        track: track,
+        level: level,
+        title: title,
+        streak: streak,
+        kp: kp,
+        bankruptcyCount: bankruptcyCount,
+        buildings: buildings,
+        buildingCount: buildingCount,
+        lastUpdatedAt: lastUpdatedAt,
+        profilePic: profilePic,
+      );
 
   factory PublicCitySnapshot.fromJson(Map<String, dynamic> json) {
     var rawBuildings = json['buildings'] as List? ?? [];
@@ -72,6 +91,7 @@ class PublicCitySnapshot {
       buildings: buildingsList,
       buildingCount: json['buildingCount'] ?? buildingsList.length,
       lastUpdatedAt: parsedTime,
+      profilePic: json['profilePic'] as String?,
     );
   }
 }

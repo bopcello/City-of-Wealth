@@ -229,24 +229,36 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
                       final wasRequestedByMe = friendship.requestedBy == _friendsService.currentUid;
                       actionButton = Text(
                         wasRequestedByMe ? "Requested" : "Incoming",
-                        style: const TextStyle(color: Colors.grey),
+                        style: TextStyle(
+                          color: AppColors.of(context, 'onSurfaceVariant'),
+                        ),
                       );
                     } else if (friendship.status == 'accepted') {
-                      actionButton = const Icon(Icons.check, color: Colors.green);
+                      actionButton = Icon(
+                        Icons.check,
+                        color: AppColors.of(context, 'success'),
+                      );
                     } else if (friendship.status == 'blocked') {
                       // Only show Unblock if the current user was the one who blocked
                       final iBlockedThem = friendship.requestedBy == _friendsService.currentUid;
                       if (iBlockedThem) {
                         actionButton = OutlinedButton(
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.red,
-                            side: const BorderSide(color: Colors.red),
+                            foregroundColor: AppColors.of(context, 'error'),
+                            side: BorderSide(
+                              color: AppColors.of(context, 'error'),
+                            ),
                           ),
                           onPressed: () => _unblockUser(friendship.id),
                           child: const Text("Unblock"),
                         );
                       } else {
-                        actionButton = const Text("Blocked", style: TextStyle(color: Colors.grey));
+                        actionButton = Text(
+                          "Blocked",
+                          style: TextStyle(
+                            color: AppColors.of(context, 'onSurfaceVariant'),
+                          ),
+                        );
                       }
                     } else {
                       actionButton = const SizedBox.shrink();

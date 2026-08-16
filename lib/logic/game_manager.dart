@@ -90,10 +90,12 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   Map<AssetType, int> activePassiveIncomes = {};
   Map<DisasterType, int> activeDisasterEffects = {};
   bool isDarkMode = false;
-  double musicVolume = 0.7;
-  double sfxVolume = 1.0;
+  double musicVolume = 0.0;
+  double sfxVolume = 0.0;
   String playerName = "User";
   String friendCode = "";
+  String profilePic = "avatar_1";
+  bool showPfpPublicly = false;
   int dailyQuizStreak = 0;
   String lastDailyQuizDate = "";
   Set<String> solvedQuizHashes = {};
@@ -185,10 +187,14 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
   Timer? _cycleTimer;
 
+  Future<void>? _loadFuture;
+  Future<void> get loadFuture => _loadFuture ?? Future.value();
+  bool _isLoading = false;
+
   GameManager() {
     final user = FirebaseAuth.instance.currentUser;
     _currentUid = user?.uid;
-    _loadGame(useCloud: user != null);
+    _loadFuture = _loadGame(useCloud: user != null);
     _cycleTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (loaded) _checkDailyCycle();
     });
@@ -200,7 +206,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       if (user != null) {
         if (_currentUid == null || _currentUid != user.uid) {
           _currentUid = user.uid;
-          _loadGame(useCloud: true);
+          _loadGame(useCloud: true, force: true);
         }
       } else {
         _currentUid = null;
@@ -299,8 +305,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     activePassiveIncomes = {};
     activeDisasterEffects = {};
     isDarkMode = false;
-    musicVolume = 0.7;
-    sfxVolume = 1.0;
+    musicVolume = 0.0;
+    sfxVolume = 0.0;
     playerName = "User";
     dailyQuizStreak = 0;
     lastDailyQuizDate = "";
@@ -323,6 +329,14 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> _loadGame({bool useCloud = false, bool force = false}) async {
+    if (_isLoading && !force) {
+      await _loadFuture;
+      return;
+    }
+    _isLoading = true;
+    final completer = Completer<void>();
+    _loadFuture = completer.future;
+
     try {
       if (loaded) {
         loaded = false;
@@ -368,6 +382,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         savedFriendActivityNotificationsEnabled,
         savedStats,
         savedFriendCode,
+        savedProfilePic,
+        savedShowPfpPublicly,
       ) = await loadGameState(
         uid: uid,
         useCloud: useCloud,
@@ -396,6 +412,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       activeDisasterEffects = savedActiveDisasterEffects;
       playerName = savedPlayerName;
       friendCode = savedFriendCode;
+      profilePic = savedProfilePic;
+      showPfpPublicly = savedShowPfpPublicly;
       isDarkMode = savedIsDarkMode;
       musicVolume = savedMusicVolume;
       sfxVolume = savedSfxVolume;
@@ -450,16 +468,22 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         _syncRequestedWhileLoading = false;
         syncWithCloud(force: true);
       }
+      completer.complete();
     } catch (e) {
       debugPrint("❌ Error loading game: $e");
       // Fallback to local if cloud fails?
       if (useCloud) {
         debugPrint("🔄 Attempting fallback to local load...");
+        _isLoading = false;
         await _loadGame(useCloud: false);
+        completer.complete();
       } else {
         loaded = true; // Ensure we stop the loading state
         notifyListeners();
+        completer.completeError(e);
       }
+    } finally {
+      _isLoading = false;
     }
   }
 
@@ -531,6 +555,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       activeDisasterEffects: activeDisasterEffects,
       playerName: playerName,
       friendCode: friendCode,
+      profilePic: profilePic,
+      showPfpPublicly: showPfpPublicly,
       isDarkMode: isDarkMode,
       musicVolume: musicVolume,
       sfxVolume: sfxVolume,
@@ -547,6 +573,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       disasterAlertsEnabled: disasterAlertsEnabled,
       friendActivityNotificationsEnabled: friendActivityNotificationsEnabled,
       stats: stats.toJson(),
+      publicProfilePic: showPfpPublicly ? profilePic : null,
+      updatePublicProfilePic: true,
     );
   }
 
@@ -580,6 +608,8 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         activeDisasterEffects: activeDisasterEffects,
         playerName: playerName,
         friendCode: friendCode,
+        profilePic: profilePic,
+        showPfpPublicly: showPfpPublicly,
         isDarkMode: isDarkMode,
         musicVolume: musicVolume,
         sfxVolume: sfxVolume,
@@ -2404,5 +2434,42 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
           : "recent_money_tiles";
       prefs.setStringList(key, recentVisitedMoneyTiles);
     });
+  }
+
+  void updateProfile({
+    required String name,
+    required String pfp,
+    required String newFriendCode,
+  }) {
+    playerName = name;
+    profilePic = pfp;
+    friendCode = newFriendCode;
+    saveFields({
+      playerNameKey: playerName,
+      profilePicKey: profilePic,
+      friendCodeKey: friendCode,
+      showPfpPubliclyKey: showPfpPublicly,
+    });
+    save();
+    syncWithCloud(force: true);
+    notifyListeners();
+  }
+
+  void setShowPfpPublicly(bool show) {
+    if (showPfpPublicly == show) return;
+    showPfpPublicly = show;
+    saveFields({
+      showPfpPubliclyKey: showPfpPublicly,
+      profilePicKey: profilePic,
+    });
+    save();
+    syncWithCloud(force: true);
+    notifyListeners();
+  }
+
+  String generateNewFriendCode() {
+    friendCode = generateRandomFriendCode();
+    notifyListeners();
+    return friendCode;
   }
 }

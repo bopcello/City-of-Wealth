@@ -136,7 +136,9 @@ class _UserManualScreenState extends State<UserManualScreen> {
               color: surfaceColor,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: Theme.of(context).colorScheme.shadow.withValues(
+                    alpha: 0.05,
+                  ),
                   blurRadius: 4,
                   offset: const Offset(0, -2),
                 )

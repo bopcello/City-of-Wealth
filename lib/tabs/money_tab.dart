@@ -230,7 +230,7 @@ class _MoneyTile extends StatelessWidget {
             BoxShadow(
               blurRadius: 4,
               offset: const Offset(1, 2),
-              color: Colors.black.withValues(alpha: 0.0),
+              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0),
             ),
           ],
         ),

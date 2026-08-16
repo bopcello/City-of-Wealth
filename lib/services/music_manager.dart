@@ -9,8 +9,8 @@ class MusicManager {
   String? _currentTrack;
   double _volume;
 
-  MusicManager({double initialVolume = 0.7}) : _volume = initialVolume {
-    // Apply saved volume immediately so the player never starts at 1.0
+  MusicManager({double initialVolume = 0.0}) : _volume = initialVolume {
+    // Start muted; the real volume is applied after settings are loaded.
     _player.setVolume(_volume);
 
     // prefix is empty since we use lib/assets/...

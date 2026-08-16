@@ -4,6 +4,7 @@ import '../widgets/icon_text.dart';
 import '../services/sfx_manager.dart';
 import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';
+import '../theme/app_colors.dart';
 
 class AssetsScreen extends StatelessWidget {
   final AssetInventory assets;
@@ -88,16 +89,20 @@ class AssetsScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 20),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withValues(alpha: 0.1),
+                      color: AppColors.of(context, 'gem').withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.blue.withValues(alpha: 0.3),
+                        color: AppColors.of(context, 'gem').withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.stars, color: Colors.blue, size: 28),
+                        Icon(
+                          Icons.stars,
+                          color: AppColors.of(context, 'gem'),
+                          size: 28,
+                        ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
@@ -105,10 +110,10 @@ class AssetsScreen extends StatelessWidget {
                             children: [
                               Text(
                                 rewards.label,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
-                                  color: Colors.blue,
+                                  color: AppColors.of(context, 'gem'),
                                 ),
                               ),
                               Text(
@@ -163,7 +168,11 @@ class AssetsScreen extends StatelessWidget {
                             ),
                             Text(
                               "Owned: $ownedCount",
-                              style: const TextStyle(color: Colors.blueGrey),
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
                             ),
                           ],
                         ),
@@ -173,10 +182,10 @@ class AssetsScreen extends StatelessWidget {
                           children: [
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red.withValues(
+                                backgroundColor: AppColors.of(context, 'error').withValues(
                                   alpha: 0.1,
                                 ),
-                                foregroundColor: Colors.red.shade400,
+                                foregroundColor: AppColors.of(context, 'error'),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
                                 ),

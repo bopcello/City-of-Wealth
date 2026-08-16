@@ -98,7 +98,9 @@ class _StatsScreenState extends State<StatsScreen> {
           border: Border.all(color: outline.withValues(alpha: 0.5)),
         ),
         child: Theme(
-          data: theme.copyWith(dividerColor: Colors.transparent),
+          data: theme.copyWith(
+            dividerColor: theme.colorScheme.surface.withValues(alpha: 0),
+          ),
           child: ExpansionTile(
             initiallyExpanded: _query.isNotEmpty,
             leading: Icon(icon, color: brandColor, size: 20),

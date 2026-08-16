@@ -230,6 +230,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                     state.widget.career.level,
                   ),
                   friendSnapshots: state.friendSnapshots,
+                  sfx: widget.sfx,
                 ),
               ),
             );
@@ -271,6 +272,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                               : f.playerA):
                           "Friend",
                   },
+                  sfx: widget.sfx,
                 ),
               ),
             );
@@ -837,14 +839,22 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           if (step.needsSelection)
             ClipPath(
               clipper: SpotlightClipper(rect),
-              child: Container(color: Colors.black.withValues(alpha: 0.78)),
+              child: Container(
+                color: Theme.of(
+                  context,
+                ).colorScheme.scrim.withValues(alpha: 0.78),
+              ),
             )
           else ...[
             // Visual dimming (always ignore its own pointer events)
             IgnorePointer(
               child: ClipPath(
                 clipper: SpotlightClipper(rect),
-                child: Container(color: Colors.black.withValues(alpha: 0.78)),
+                child: Container(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.scrim.withValues(alpha: 0.78),
+                ),
               ),
             ),
             // Full-screen tap blocker / handler for non-needsSelection steps
@@ -863,7 +873,11 @@ class _TutorialOverlayState extends State<TutorialOverlay>
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: _handleInteractiveStep,
-              child: Container(color: Colors.transparent),
+              child: Container(
+                color: Theme.of(
+                  context,
+                ).colorScheme.surface.withValues(alpha: 0),
+              ),
             ),
           ),
 
@@ -888,9 +902,12 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                         ? Icons.arrow_upward_rounded
                         : Icons.arrow_downward_rounded,
                     size: 42,
-                    color: Colors.amberAccent,
-                    shadows: const [
-                      Shadow(blurRadius: 10, color: Colors.black87),
+                    color: Theme.of(context).colorScheme.primary,
+                    shadows: [
+                      Shadow(
+                        blurRadius: 10,
+                        color: Theme.of(context).colorScheme.scrim,
+                      ),
                     ],
                   ),
                 ),
@@ -918,10 +935,15 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.amber, width: 1.4),
-                      boxShadow: const [
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 1.4,
+                      ),
+                      boxShadow: [
                         BoxShadow(
-                          color: Colors.black54,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.shadow.withValues(alpha: 0.54),
                           blurRadius: 20,
                           offset: Offset(0, 10),
                         ),
@@ -939,13 +961,15 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.amber,
+                                color: Theme.of(context).colorScheme.primary,
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
                                 "Step ${_currentStep + 1}/${_steps.length}",
-                                style: const TextStyle(
-                                  color: Colors.black87,
+                                style: TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -1011,8 +1035,12 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                                           : _nextStep)
                                     : null,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.amber,
-                                  foregroundColor: Colors.black87,
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primary,
+                                  foregroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -1040,7 +1068,9 @@ class _TutorialOverlayState extends State<TutorialOverlay>
             child: Material(
               type: MaterialType.transparency,
               child: Container(
-                color: Colors.black54,
+                color: Theme.of(
+                  context,
+                ).colorScheme.scrim.withValues(alpha: 0.54),
                 child: Center(
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 28),
@@ -1052,9 +1082,9 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.warning_amber_rounded,
-                          color: Colors.amber,
+                          color: Theme.of(context).colorScheme.primary,
                           size: 40,
                         ),
                         const SizedBox(height: 14),
@@ -1092,8 +1122,12 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                             ElevatedButton(
                               onPressed: _finishTutorial,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.amber,
-                                foregroundColor: Colors.black87,
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.primary,
+                                foregroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimary,
                               ),
                               child: const Text("Exit"),
                             ),

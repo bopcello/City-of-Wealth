@@ -3,6 +3,7 @@ import '../game_state.dart';
 import '../theme/app_colors.dart';
 import '../services/sfx_manager.dart';
 import '../widgets/icon_text.dart';
+import '../widgets/profile_avatar.dart';
 
 class HomeTab extends StatelessWidget {
   final int kp;
@@ -19,6 +20,7 @@ class HomeTab extends StatelessWidget {
   final List<String> recentVisitedMoneyTiles;
   final void Function(String) onMoneyTileTap;
   final String playerName;
+  final String profilePic;
   final String? dailyQuoteText;
   final String? dailyQuoteAuthor;
 
@@ -38,6 +40,7 @@ class HomeTab extends StatelessWidget {
     required this.recentVisitedMoneyTiles,
     required this.onMoneyTileTap,
     required this.playerName,
+    required this.profilePic,
     this.dailyQuoteText,
     this.dailyQuoteAuthor,
   });
@@ -125,10 +128,10 @@ class HomeTab extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
+          ProfileAvatar(
+            profilePic: profilePic,
+            fallbackName: playerName,
             radius: 30,
-            backgroundColor: AppColors.of(context, 'kp'),
-            child: const Icon(Icons.person, color: Colors.white, size: 30),
           ),
           const SizedBox(width: 16),
           Column(
@@ -185,11 +188,13 @@ class HomeTab extends StatelessWidget {
             border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: (events.isEmpty && !dailyQuizAvailable)
-              ? const Center(
+              ? Center(
                   child: Text(
                     "No events yet.\nChoices affect your daily cycle.",
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 )
               : ListView.builder(
@@ -269,19 +274,22 @@ class HomeTab extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        const Text(
+        Text(
           "Owned Assets",
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Colors.grey,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 8),
         if (assets.items.isEmpty)
-          const Text(
+          Text(
             "No assets owned yet.",
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           )
         else
           Wrap(
@@ -295,12 +303,12 @@ class HomeTab extends StatelessWidget {
           ),
         if (recentVisitedMoneyTiles.isNotEmpty) ...[
           const SizedBox(height: 24),
-          const Text(
+          Text(
             "Recently Visited",
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: Colors.grey,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),

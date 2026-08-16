@@ -198,13 +198,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: _isLoading ? null : _handleEmailAuth,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.of(context, 'kp'),
-                    foregroundColor: Colors.white,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
+                      ? CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        )
                       : Text(_isSignUp ? "Register" : "Sign In"),
                 ),
               ),

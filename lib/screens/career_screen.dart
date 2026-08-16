@@ -433,9 +433,9 @@ class _CareerHeroCard extends StatelessWidget {
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: canAdvance
-                      ? Colors.green.shade600
-                      : Colors.grey.shade300,
-                  foregroundColor: Colors.white,
+                      ? AppColors.of(context, 'success')
+                      : Theme.of(context).colorScheme.outline,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -463,8 +463,8 @@ class _CareerHeroCard extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(
                     color: isWorkingOvertime
-                        ? Colors.grey.shade400
-                        : Colors.amber.shade700,
+                        ? Theme.of(context).colorScheme.outline
+                        : AppColors.of(context, 'kp'),
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -483,8 +483,8 @@ class _CareerHeroCard extends StatelessWidget {
                                 : "Work overtime"),
                       style: TextStyle(
                         color: isWorkingOvertime
-                            ? Colors.grey.shade600
-                            : Colors.amber.shade900,
+                            ? Theme.of(context).colorScheme.onSurfaceVariant
+                            : AppColors.of(context, 'kp'),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -495,8 +495,8 @@ class _CareerHeroCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10,
                         color: isWorkingOvertime
-                            ? Colors.grey.shade500
-                            : Colors.brown.shade400,
+                            ? Theme.of(context).colorScheme.onSurfaceVariant
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],

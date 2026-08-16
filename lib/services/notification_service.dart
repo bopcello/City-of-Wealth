@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -9,7 +8,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import '../game_state.dart';
 import '../data/notification_data.dart';
-import 'firestore_service.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -21,10 +19,6 @@ class NotificationService {
 
   static final ValueNotifier<String?> notificationPayloadNotifier =
       ValueNotifier<String?>(null);
-  StreamSubscription<String>? _tokenRefreshSubscription;
-  StreamSubscription<RemoteMessage>? _foregroundMessageSubscription;
-  StreamSubscription<RemoteMessage>? _messageOpenedSubscription;
-  String? _fcmUid;
 
   Future<void> initialize() async {
     tz.initializeTimeZones();
@@ -138,6 +132,7 @@ class NotificationService {
     await Future.wait(cancelFutures);
   }
 
+  /* Retired FCM implementation. Local WorkManager notifications replace it.
   /// Registers this device for friend-activity pushes while the user is signed in.
   Future<void> initializeFcm(String uid) async {
     if (uid.isEmpty) return;
@@ -236,6 +231,7 @@ class NotificationService {
   }
 
 
+  */
   Future<void> requestPermissions() async {
     // Android 13+ requires explicit permission
     final androidPlugin = _notifications
@@ -250,6 +246,31 @@ class NotificationService {
           IOSFlutterLocalNotificationsPlugin
         >();
     await iosPlugin?.requestPermissions(alert: true, badge: true, sound: true);
+  }
+
+  Future<void> showFriendActivityNotification({
+    required String friendId,
+    required String friendName,
+    required String playerName,
+    required Map<String, dynamic> event,
+  }) async {
+    final notification = NotificationData.getRandomFriendActivityNotification(
+      friendName,
+      event['type'] as String,
+      event,
+    );
+    const details = AndroidNotificationDetails(
+      'friend_city_activity', 'Friend Activity',
+      channelDescription: 'Updates from your friends',
+      importance: Importance.high, priority: Priority.high,
+    );
+    await _notifications.show(
+      id: friendId.hashCode ^ event.hashCode,
+      title: notification.$1,
+      body: notification.$2,
+      notificationDetails: const NotificationDetails(android: details),
+      payload: 'friend_activity:$friendId',
+    );
   }
 
   /// Cancels all notifications and schedules daily, morning, and challenge reminders.
@@ -619,6 +640,17 @@ class NotificationService {
     for (int day = 0; day < 7; day++) {
       final deadline = baseMidnight.add(Duration(days: day + 1));
 
+      // Calculate the projected streak and revival values for this future day
+      int projectedStreak = dailyQuizStreak;
+      int projectedRevivals = streakRevivals;
+      for (int d = 0; d < day; d++) {
+        if (projectedRevivals > 0) {
+          projectedRevivals--;
+        } else {
+          projectedStreak = 0;
+        }
+      }
+
       for (int i = 0; i < intervals.length; i++) {
         final interval = intervals[i];
         final scheduledDate = deadline.subtract(interval.$2);
@@ -638,8 +670,8 @@ class NotificationService {
 
         final notification = NotificationData.getRandomChallengeReminder(
           playerName,
-          dailyQuizStreak,
-          streakRevivals,
+          projectedStreak,
+          projectedRevivals,
           interval.$1,
         );
 

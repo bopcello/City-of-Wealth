@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/city_sharing_models.dart';
-import '../theme/app_colors.dart';
 import '../widgets/icon_text.dart';
+import '../theme/app_colors.dart';
 import 'city_viewer_screen.dart';
+import '../services/sfx_manager.dart';
 
 class LeaderboardEntry {
   final String uid;
@@ -20,6 +21,7 @@ class LeaderboardEntry {
     required this.streak,
     required this.title,
     required this.isSelf,
+
     this.snapshot,
   });
 }
@@ -31,6 +33,7 @@ class LeaderboardScreen extends StatelessWidget {
   final int myStreak;
   final String myTitle;
   final Map<String, PublicCitySnapshot> friendSnapshots;
+  final SfxManager sfx;
 
   const LeaderboardScreen({
     super.key,
@@ -40,6 +43,7 @@ class LeaderboardScreen extends StatelessWidget {
     required this.myStreak,
     required this.myTitle,
     required this.friendSnapshots,
+    required this.sfx,
   });
 
   @override
@@ -47,28 +51,32 @@ class LeaderboardScreen extends StatelessWidget {
     final List<LeaderboardEntry> entries = [];
 
     // Add player themselves
-    entries.add(LeaderboardEntry(
-      uid: currentUid,
-      name: myPlayerName,
-      kp: myKp,
-      streak: myStreak,
-      title: myTitle,
-      isSelf: true,
-    ));
+    entries.add(
+      LeaderboardEntry(
+        uid: currentUid,
+        name: myPlayerName,
+        kp: myKp,
+        streak: myStreak,
+        title: myTitle,
+        isSelf: true,
+      ),
+    );
 
     // Add friends
     for (final entry in friendSnapshots.entries) {
       final friendUid = entry.key;
       final snap = entry.value;
-      entries.add(LeaderboardEntry(
-        uid: friendUid,
-        name: snap.playerName,
-        kp: snap.kp,
-        streak: snap.streak,
-        title: snap.title,
-        isSelf: false,
-        snapshot: snap,
-      ));
+      entries.add(
+        LeaderboardEntry(
+          uid: friendUid,
+          name: snap.playerName,
+          kp: snap.kp,
+          streak: snap.streak,
+          title: snap.title,
+          isSelf: false,
+          snapshot: snap,
+        ),
+      );
     }
 
     // Sort by KP descending
@@ -83,11 +91,14 @@ class LeaderboardScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: entries.isEmpty
-          ? const Center(
+          ? Center(
               child: Text(
                 "No participants yet.\nAdd friends to compete!",
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 16,
+                ),
               ),
             )
           : ListView.builder(
@@ -110,7 +121,9 @@ class LeaderboardScreen extends StatelessWidget {
                     height: 32,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       shape: BoxShape.circle,
                     ),
                     child: Text(
@@ -128,7 +141,7 @@ class LeaderboardScreen extends StatelessWidget {
                 if (entry.isSelf) {
                   borderColor = Theme.of(context).colorScheme.primary;
                 } else if (rank == 1) {
-                  borderColor = Colors.amber;
+                  borderColor = AppColors.of(context, 'kp');
                 }
 
                 return Card(
@@ -137,7 +150,10 @@ class LeaderboardScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                     side: borderColor != null
-                        ? BorderSide(color: borderColor, width: entry.isSelf ? 2 : 1.5)
+                        ? BorderSide(
+                            color: borderColor,
+                            width: entry.isSelf ? 2 : 1.5,
+                          )
                         : BorderSide.none,
                   ),
                   child: InkWell(
@@ -156,23 +172,31 @@ class LeaderboardScreen extends StatelessWidget {
                             );
                           },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       child: Row(
                         children: [
-                          SizedBox(
-                            width: 36,
-                            child: Center(child: rankBadge),
-                          ),
+                          SizedBox(width: 36, child: Center(child: rankBadge)),
                           const SizedBox(width: 12),
                           CircleAvatar(
                             radius: 22,
                             backgroundColor: entry.isSelf
                                 ? Theme.of(context).colorScheme.primary
-                                : AppColors.of(context, 'primary'),
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
                             child: Text(
-                              entry.name.isNotEmpty ? entry.name[0].toUpperCase() : "?",
-                              style: const TextStyle(
-                                color: Colors.white,
+                              entry.name.isNotEmpty
+                                  ? entry.name[0].toUpperCase()
+                                  : "?",
+                              style: TextStyle(
+                                color: entry.isSelf
+                                    ? Theme.of(context).colorScheme.onPrimary
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryContainer,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                               ),
@@ -189,8 +213,9 @@ class LeaderboardScreen extends StatelessWidget {
                                       child: Text(
                                         entry.name,
                                         style: TextStyle(
-                                          fontWeight:
-                                              entry.isSelf ? FontWeight.bold : FontWeight.w600,
+                                          fontWeight: entry.isSelf
+                                              ? FontWeight.bold
+                                              : FontWeight.w600,
                                           fontSize: 16,
                                         ),
                                         overflow: TextOverflow.ellipsis,
@@ -200,19 +225,25 @@ class LeaderboardScreen extends StatelessWidget {
                                       const SizedBox(width: 6),
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 6, vertical: 2),
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.primaryContainer,
-                                          borderRadius: BorderRadius.circular(6),
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primaryContainer,
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
                                         ),
                                         child: Text(
                                           "You",
                                           style: TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.bold,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryContainer,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onPrimaryContainer,
                                           ),
                                         ),
                                       ),
@@ -225,7 +256,9 @@ class LeaderboardScreen extends StatelessWidget {
                                     entry.title,
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -246,7 +279,9 @@ class LeaderboardScreen extends StatelessWidget {
                             Icon(
                               Icons.chevron_right,
                               size: 20,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ],
                         ],

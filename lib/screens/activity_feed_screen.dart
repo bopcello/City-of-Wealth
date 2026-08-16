@@ -4,12 +4,14 @@ import '../models/city_sharing_models.dart';
 import '../services/friends_service.dart';
 import '../theme/app_colors.dart';
 import 'city_viewer_screen.dart';
+import '../services/sfx_manager.dart';
 
 class ActivityFeedScreen extends StatefulWidget {
   final List<ActivityEntry> initialActivities;
   final String myPlayerName;
   final List<Friendship> friendships;
   final Map<String, String> friendNames; // uid -> name
+  final SfxManager sfx;
 
   const ActivityFeedScreen({
     super.key,
@@ -17,6 +19,7 @@ class ActivityFeedScreen extends StatefulWidget {
     required this.myPlayerName,
     required this.friendships,
     required this.friendNames,
+    required this.sfx,
   });
 
   @override
@@ -137,9 +140,9 @@ class _ActivityFeedScreenState extends State<ActivityFeedScreen> {
     switch (entry.type) {
       case 'friend_request_sent':
       case 'friend_request_accepted':
-        return Colors.green.shade600;
+        return AppColors.of(context, 'success');
       default:
-        return AppColors.of(context, 'primary');
+        return Theme.of(context).colorScheme.primary;
     }
   }
 
@@ -150,11 +153,14 @@ class _ActivityFeedScreenState extends State<ActivityFeedScreen> {
       body: Stack(
         children: [
           _activities.isEmpty
-              ? const Center(
+              ? Center(
                   child: Text(
                     "No notifications yet.\nFriends' progress updates will appear here!",
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 16,
+                    ),
                   ),
                 )
               : ListView.separated(
@@ -174,15 +180,17 @@ class _ActivityFeedScreenState extends State<ActivityFeedScreen> {
                         child: isSocial
                             ? Icon(
                                 _getActivityIcon(entry),
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.onPrimary,
                                 size: 20,
                               )
                             : Text(
                                 entry.sourcePlayerName.isNotEmpty
                                     ? entry.sourcePlayerName[0].toUpperCase()
                                     : "?",
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -217,7 +225,9 @@ class _ActivityFeedScreenState extends State<ActivityFeedScreen> {
                 ),
           if (_isLoadingFriend)
             Container(
-              color: Colors.black45,
+              color: Theme.of(
+                context,
+              ).colorScheme.scrim.withValues(alpha: 0.45),
               child: const Center(child: CircularProgressIndicator()),
             ),
         ],

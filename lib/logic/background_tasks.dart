@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import '../firebase_options.dart';
 import '../services/firestore_service.dart';
+import '../services/friend_activity_monitor.dart';
 
 class BackgroundTaskManager {
   static const String dailyQuizSyncTask = "daily_quiz_sync";
@@ -30,6 +31,7 @@ class BackgroundTaskManager {
             options: DefaultFirebaseOptions.currentPlatform,
           );
         }
+        await FriendActivityMonitor.instance.check(showAndroidNotifications: true);
 
         final now = DateTime.now();
         final dateStr = DateFormat('yyyy-MM-dd').format(now);
@@ -75,8 +77,7 @@ class BackgroundTaskManager {
     await Workmanager().registerPeriodicTask(
       dailyQuizSyncTask,
       quizSyncTag,
-      frequency: const Duration(hours: 24),
-      initialDelay: initialDelay,
+      frequency: const Duration(hours: 1),
       existingWorkPolicy: ExistingWorkPolicy.replace,
       constraints: Constraints(
         networkType: NetworkType.connected,

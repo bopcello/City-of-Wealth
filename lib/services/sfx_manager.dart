@@ -7,7 +7,7 @@ class SfxManager {
   factory SfxManager() => _instance;
 
   final Map<String, AudioPlayer> _players = {};
-  double _volume = 1.0;
+  double _volume = 0.0;
   bool _isDisposed = false;
 
   final Map<String, Source> _cachedSources = {};

@@ -56,9 +56,5 @@ service cloud.firestore {
       allow read: if request.auth != null;
     }
 
-    // Cooldowns are maintained exclusively by the Admin SDK in Cloud Functions.
-    match /friendNotifyCooldowns/{docId} {
-      allow read, write: if false;
-    }
   }
 }

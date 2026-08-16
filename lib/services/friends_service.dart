@@ -122,7 +122,8 @@ class FriendsService {
     if (sentAt == null) return null;
 
     final age = DateTime.now().difference(sentAt);
-    if (age.inHours < 24) {
+    if (age.inSeconds < 86400) {
+      // Exactly 24 hours = 86400 seconds
       return data['activityDocId'] as String?;
     }
 

@@ -378,9 +378,11 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.2),
+        color: AppColors.of(context, 'error').withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: AppColors.of(context, 'error').withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -544,7 +546,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     return Card(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       elevation: 0,
-      surfaceTintColor: Colors.transparent,
+      surfaceTintColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -593,7 +595,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
 
     return Card(
       elevation: 0,
-      surfaceTintColor: Colors.transparent,
+      surfaceTintColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Padding(
@@ -742,7 +744,11 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                 ),
                 if (isLocked) ...[
                   const Spacer(),
-                  const Icon(Icons.lock, size: 16, color: Colors.grey),
+                  Icon(
+                    Icons.lock,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     "Locked",
@@ -787,7 +793,9 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                             onSelected(val);
                           }
                         },
-                  selectedColor: Colors.amber.withValues(alpha: 0.1),
+                  selectedColor: AppColors.of(context, 'kp').withValues(
+                    alpha: 0.1,
+                  ),
                 );
               }).toList(),
             ),

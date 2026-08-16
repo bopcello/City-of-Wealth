@@ -447,6 +447,8 @@ const wakeUpMinuteKey = 'wakeUpMinute';
 const disasterAlertsEnabledKey = 'disasterAlertsEnabled';
 const friendActivityNotificationsEnabledKey =
     'friendActivityNotificationsEnabled';
+const profilePicKey = 'profilePic';
+const showPfpPubliclyKey = 'showPfpPublicly';
 
 class StreakRewards {
   final double assetDiscount; // e.g. 0.05 for 5%
@@ -530,6 +532,8 @@ int requiredKpFor(CareerTrack track, int nextLevel) {
   return 0;
 }
 
+
+
 const studentLevelInfo = CareerLevelInfo(
   name: "Student",
   dailyIncome: 20,
@@ -580,6 +584,8 @@ Future<void> saveGameState({
   Map<DisasterType, int>? activeDisasterEffects,
   String? playerName,
   String? friendCode,
+  String? profilePic,
+  bool? showPfpPublicly,
   bool? isDarkMode,
   double? musicVolume,
   double? sfxVolume,
@@ -596,6 +602,8 @@ Future<void> saveGameState({
   bool? disasterAlertsEnabled,
   bool? friendActivityNotificationsEnabled,
   Map<String, dynamic>? stats,
+  String? publicProfilePic,
+  bool updatePublicProfilePic = false,
 }) async {
   final prefs = await SharedPreferences.getInstance();
 
@@ -615,6 +623,8 @@ Future<void> saveGameState({
       bankruptcyCountKey: bankruptcyCount,
       playerNameKey: playerName,
       friendCodeKey: friendCode ?? prefs.getString(uid != null ? "${uid}_$friendCodeKey" : friendCodeKey),
+      profilePicKey: profilePic,
+      showPfpPubliclyKey: showPfpPublicly,
       cityLayoutKey: layout != null
           ? jsonEncode(layout.map((b) => b.toJson()).toList())
           : null,
@@ -656,13 +666,8 @@ Future<void> saveGameState({
       friendActivityNotificationsEnabledKey: friendActivityNotificationsEnabled,
       'stats': stats != null ? jsonEncode(stats) : null,
     };
-    // Remove null values to avoid overwriting with null if not intended
-    data.removeWhere((key, value) => value == null);
   }
 
-  debugPrint("💾 SAVING GAME LOCALLY (${data.keys.length} fields updated)");
-
-  // Local Save - Only iterate over keys in 'data'
   for (var entry in data.entries) {
     final key = entry.key;
     final value = entry.value;
@@ -704,13 +709,23 @@ Future<void> saveGameState({
     }
   }
 
-  // Cloud Save
   if (syncToCloud && uid != null) {
-    await FirestoreService().savePlayerProgress(uid, data);
+    final cloudData = Map<String, dynamic>.from(data);
+    final localProfilePic = profilePic ?? cloudData[profilePicKey] as String?;
+    if (localProfilePic != null && localProfilePic.startsWith('data:image')) {
+      // Custom photos stay off the private player document.
+      cloudData[profilePicKey] = null;
+    }
+    await FirestoreService().savePlayerProgress(
+      uid,
+      cloudData,
+      publicProfilePic: publicProfilePic,
+      updatePublicProfilePic: updatePublicProfilePic,
+    );
   }
 }
 
-String _generateRandomFriendCode() {
+String generateRandomFriendCode() {
   final chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   final rand = math.Random();
   return List.generate(6, (index) => chars[rand.nextInt(chars.length)]).join();
@@ -756,6 +771,8 @@ Future<
     bool,
     Map<String, dynamic>?,
     String,
+    String,
+    bool,
   )
 >
 loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
@@ -814,12 +831,12 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
           disasterAlertsEnabledKey,
           friendActivityNotificationsEnabledKey,
           'tutorialComplete',
-          'new_quiz_ready',
         ];
+        
         for (final key in keysToMigrate) {
+          final sKey = "${uid}_$key";
           if (prefs.containsKey(key)) {
             final val = prefs.get(key);
-            final sKey = "${uid}_$key";
             if (val is int) {
               await prefs.setInt(sKey, val);
             } else if (val is String) {
@@ -933,9 +950,14 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
       prefs.getString(scopedKey(friendCodeKey)) ??
       "";
   if (friendCode.isEmpty) {
-    friendCode = _generateRandomFriendCode();
+    friendCode = generateRandomFriendCode();
     await prefs.setString(scopedKey(friendCodeKey), friendCode);
   }
+  final String profilePic = data[profilePicKey]?.toString() ??
+      prefs.getString(scopedKey(profilePicKey)) ??
+      "avatar_1";
+  final bool showPfpPublicly = (data[showPfpPubliclyKey] == true) ||
+      (prefs.getBool(scopedKey(showPfpPubliclyKey)) ?? false);
   final double musicVolume =
       (data[musicVolumeKey] as num?)?.toDouble() ??
       prefs.getDouble(scopedKey(musicVolumeKey)) ??
@@ -1207,12 +1229,13 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
     friendActivityNotificationsEnabled,
     stats,
     friendCode,
+    profilePic,
+    showPfpPublicly,
   );
 }
 
 // Helper methods for quiz progression
 bool isMediumQuiz(String quizId) {
-  // ID format: l{level}_q{num}
   final parts = quizId.split('_');
   if (parts.length != 2) return false;
   final numPart = parts[1].substring(1); // remove 'q'

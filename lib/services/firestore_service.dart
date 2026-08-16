@@ -13,7 +13,12 @@ class FirestoreService {
   /// Saves the player's progress to Firestore.
   /// The [uid] is the user's unique identifier from Firebase Auth.
   /// The [data] is a map containing all game state information.
-  Future<void> savePlayerProgress(String uid, Map<String, dynamic> data) async {
+  Future<void> savePlayerProgress(
+    String uid,
+    Map<String, dynamic> data, {
+    String? publicProfilePic,
+    bool updatePublicProfilePic = false,
+  }) async {
     if (uid.isEmpty) {
       debugPrint("⚠️ Skipping Firestore save: UID is empty");
       return;
@@ -40,8 +45,14 @@ class FirestoreService {
       try {
         final playerDoc = await _db.collection('players').doc(uid).get();
         if (playerDoc.exists && playerDoc.data() != null) {
-          final snapshot = buildSnapshotFromPlayerData(uid, playerDoc.data()!);
-          await savePublicCitySnapshot(snapshot);
+          var snapshot = buildSnapshotFromPlayerData(uid, playerDoc.data()!);
+          if (updatePublicProfilePic) {
+            snapshot = snapshot.copyWith(profilePic: publicProfilePic);
+          }
+          await savePublicCitySnapshot(
+            snapshot,
+            includeProfilePic: updatePublicProfilePic,
+          );
         }
       } catch (e) {
         debugPrint("Notice: could not sync public_cities on save: $e");
@@ -289,6 +300,27 @@ class FirestoreService {
     return controller.stream;
   }
 
+  Future<List<Friendship>> getAcceptedFriendships(String uid) async {
+    final results = await Future.wait([
+      _db.collection('friendships').where('playerA', isEqualTo: uid).where('status', isEqualTo: 'accepted').get(),
+      _db.collection('friendships').where('playerB', isEqualTo: uid).where('status', isEqualTo: 'accepted').get(),
+    ]);
+    return [...results[0].docs, ...results[1].docs]
+        .map((doc) => Friendship.fromJson(doc.data(), doc.id)).toList();
+  }
+
+  Future<void> recordFriendActivity(String uid, String eventId, String friendId, String friendName, Map<String, dynamic> payload) {
+    return _db.collection('players').doc(uid).collection('activity_feed').doc(eventId).set({
+      'sourcePlayerId': friendId,
+      'sourcePlayerName': friendName,
+      'targetPlayerId': uid,
+      'type': 'session_summary',
+      'payload': payload,
+      'createdAt': FieldValue.serverTimestamp(),
+      'seen': false,
+    });
+  }
+
   Future<List<Map<String, dynamic>>> searchUserByCodeOrName(String query) async {
     if (query.trim().isEmpty) return [];
     final cleanQuery = query.trim();
@@ -373,6 +405,8 @@ class FirestoreService {
     final level = (data['careerLevel'] as num?)?.toInt() ?? 1;
 
     final titleStr = (data['title'] as String?) ?? levelName(track, level);
+    final showPfpPublicly = (data['showPfpPublicly'] as bool?) ?? false;
+    final profilePic = showPfpPublicly ? (data['profilePic'] as String?) : null;
 
     return PublicCitySnapshot(
       playerId: uid,
@@ -387,16 +421,34 @@ class FirestoreService {
       buildings: buildings,
       buildingCount: buildings.length,
       lastUpdatedAt: DateTime.now(),
+      profilePic: profilePic,
     );
   }
 
-  Future<void> savePublicCitySnapshot(PublicCitySnapshot snapshot) async {
+  Future<void> savePublicCitySnapshot(
+    PublicCitySnapshot snapshot, {
+    bool includeProfilePic = true,
+  }) async {
+    final data = snapshot.toJson();
+    if (!includeProfilePic) {
+      data.remove('profilePic');
+    } else if (snapshot.profilePic == null) {
+      data['profilePic'] = FieldValue.delete();
+    }
     await _db.collection('public_cities').doc(snapshot.playerId).set({
-      ...snapshot.toJson(),
+      ...data,
       'lastUpdatedAt': FieldValue.serverTimestamp(),
-    });
+    }, SetOptions(merge: true));
   }
 
+  Future<void> deleteUserData(String uid) async {
+    try {
+      await _db.collection('players').doc(uid).delete();
+      await _db.collection('public_cities').doc(uid).delete();
+    } catch (e) {
+      debugPrint("Error deleting user data from Firestore: $e");
+    }
+  }
 
   Stream<List<ActivityEntry>> getActivityFeedStream(String uid) {
     return _db.collection('players').doc(uid).collection('activity_feed')

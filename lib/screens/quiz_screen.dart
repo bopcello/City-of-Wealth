@@ -248,21 +248,21 @@ class QuizMenuScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isCompleted
-                    ? Colors.grey.withValues(alpha: 0.5)
+                    ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)
                     : (isAvailable
-                          ? Colors.blue
-                          : Colors.grey.withValues(alpha: 0.5)),
+                          ? AppColors.of(context, 'gem')
+                          : Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
                 width: isCompleted ? 1 : 3,
               ),
               color: isCompleted
-                  ? Colors.grey.withValues(alpha: 0.1)
+                  ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.1)
                   : (isAvailable
-                        ? Colors.blue.withValues(alpha: 0.1)
-                        : Colors.grey.withValues(alpha: 0.1)),
+                        ? AppColors.of(context, 'gem').withValues(alpha: 0.1)
+                        : Theme.of(context).colorScheme.outline.withValues(alpha: 0.1)),
               boxShadow: (isAvailable && !isCompleted)
                   ? [
                       BoxShadow(
-                        color: Colors.blue.withValues(alpha: 0.3),
+                        color: AppColors.of(context, 'gem').withValues(alpha: 0.3),
                         blurRadius: 8,
                         spreadRadius: 2,
                       ),
@@ -336,7 +336,9 @@ class QuizMenuScreen extends StatelessWidget {
                     Icon(
                       isCompleted ? Icons.event_available : Icons.auto_awesome,
                       size: 48, // Bigger icon
-                      color: isCompleted ? Colors.grey : Colors.blue,
+                      color: isCompleted
+                          ? Theme.of(context).colorScheme.onSurfaceVariant
+                          : AppColors.of(context, 'gem'),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
@@ -352,8 +354,8 @@ class QuizMenuScreen extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.2,
                                   color: isCompleted
-                                      ? Colors.grey
-                                      : Colors.blue.shade700,
+                                      ? Theme.of(context).colorScheme.onSurfaceVariant
+                                      : AppColors.of(context, 'gem'),
                                 ),
                               ),
                               if (isAvailable && !isCompleted) ...[
@@ -364,13 +366,13 @@ class QuizMenuScreen extends StatelessWidget {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.blue,
+                                    color: AppColors.of(context, 'gem'),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     "NEW",
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: Theme.of(context).colorScheme.onPrimary,
                                       fontSize: 8,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -386,7 +388,7 @@ class QuizMenuScreen extends StatelessWidget {
                               fontSize: 22, // Bigger title
                               fontWeight: FontWeight.bold,
                               color: isCompleted
-                                  ? Colors.grey
+                                  ? Theme.of(context).colorScheme.onSurfaceVariant
                                   : Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
@@ -437,10 +439,12 @@ class QuizMenuScreen extends StatelessWidget {
                             ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: isCompleted
-                                  ? Colors.grey
-                                  : Colors.blue,
+                                  ? Theme.of(context).colorScheme.onSurfaceVariant
+                                  : AppColors.of(context, 'gem'),
                               side: BorderSide(
-                                color: isCompleted ? Colors.grey : Colors.blue,
+                                color: isCompleted
+                                    ? Theme.of(context).colorScheme.onSurfaceVariant
+                                    : AppColors.of(context, 'gem'),
                               ),
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -452,10 +456,10 @@ class QuizMenuScreen extends StatelessWidget {
                       ),
                     ),
                     if (!isCompleted && isAvailable)
-                      const Icon(
+                      Icon(
                         Icons.arrow_forward_ios,
                         size: 20,
-                        color: Colors.blue,
+                        color: AppColors.of(context, 'gem'),
                       ),
                   ],
                 ),
@@ -580,7 +584,9 @@ class _QuizScreenState extends State<QuizScreen> {
         title: Text(
           wasCorrect ? 'Correct!' : 'Incorrect',
           style: TextStyle(
-            color: wasCorrect ? Colors.green : Colors.red,
+            color: wasCorrect
+                ? AppColors.of(context, 'success')
+                : AppColors.of(context, 'error'),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -770,7 +776,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 child: LinearProgressIndicator(
                   value: progress,
                   minHeight: 10,
-                  color: Colors.amber.shade600,
+                  color: AppColors.of(context, 'kp'),
                 ),
               ),
               const SizedBox(height: 16),
@@ -817,9 +823,9 @@ class _QuizScreenState extends State<QuizScreen> {
                         ).colorScheme.surfaceContainerHighest;
                         if (selected != null) {
                           if (originalIndex == q.correctIndex) {
-                            bg = Colors.green.withValues(alpha: 0.3);
+                            bg = AppColors.of(context, 'success').withValues(alpha: 0.3);
                           } else if (uiIndex == selected) {
-                            bg = Colors.red.withValues(alpha: 0.3);
+                            bg = AppColors.of(context, 'error').withValues(alpha: 0.3);
                           }
                         }
                         return Padding(
@@ -955,8 +961,10 @@ class QuizAnalysisScreen extends StatelessWidget {
                         value: progress,
                         strokeWidth: 50,
                         color: progress >= 0.8
-                            ? Colors.green
-                            : (progress >= 0.5 ? Colors.orange : Colors.red),
+                            ? AppColors.of(context, 'success')
+                            : (progress >= 0.5
+                                  ? AppColors.of(context, 'warning')
+                                  : AppColors.of(context, 'error')),
                       ),
                       Text(
                         "$score/$total",
@@ -996,14 +1004,14 @@ class QuizAnalysisScreen extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.amber.withValues(alpha: 0.2),
+                        color: AppColors.of(context, 'kp').withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.amber),
+                        border: Border.all(color: AppColors.of(context, 'kp')),
                       ),
                       child: Text(
                         getStreakRewards(game.dailyQuizStreak).label,
-                        style: const TextStyle(
-                          color: Colors.amber,
+                        style: TextStyle(
+                          color: AppColors.of(context, 'kp'),
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -1020,12 +1028,14 @@ class QuizAnalysisScreen extends StatelessWidget {
                       width: 30,
                       height: 30,
                       decoration: BoxDecoration(
-                        color: isCorrect ? Colors.green : Colors.red,
+                        color: isCorrect
+                            ? AppColors.of(context, 'success')
+                            : AppColors.of(context, 'error'),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         isCorrect ? Icons.check : Icons.close,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                         size: 18,
                       ),
                     );
@@ -1114,7 +1124,7 @@ class QuizAnalysisScreen extends StatelessWidget {
         builder: (context) => AlertDialog(
           title: Row(
             children: [
-              const Icon(Icons.stars, color: Colors.amber),
+              Icon(Icons.stars, color: AppColors.of(context, 'kp')),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -1217,7 +1227,10 @@ class PastQuizzesScreen extends StatelessWidget {
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
-                  leading: const Icon(Icons.history, color: Colors.blue),
+                  leading: Icon(
+                    Icons.history,
+                    color: AppColors.of(context, 'gem'),
+                  ),
                   title: Text(data['title'] ?? "Daily Challenge"),
                   subtitle: Text(displayDate),
                   trailing: const Icon(Icons.play_arrow),

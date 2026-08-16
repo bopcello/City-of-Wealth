@@ -51,7 +51,9 @@ class _MainScreenState extends State<MainScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateTutorialOverlay();
     });
-    NotificationService.notificationPayloadNotifier.addListener(_handleNotificationPayload);
+    NotificationService.notificationPayloadNotifier.addListener(
+      _handleNotificationPayload,
+    );
     // Trigger initial check in case app launched via notification click
     _handleNotificationPayload();
   }
@@ -59,7 +61,9 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void dispose() {
     widget.game.removeListener(_handleGameStateChange);
-    NotificationService.notificationPayloadNotifier.removeListener(_handleNotificationPayload);
+    NotificationService.notificationPayloadNotifier.removeListener(
+      _handleNotificationPayload,
+    );
     if (_tutorialOverlayEntry != null && _overlayInserted) {
       _tutorialOverlayEntry?.remove();
     }
@@ -109,7 +113,9 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> _navigateToFriendCity(String friendPlayerId) async {
     if (!mounted || friendPlayerId.isEmpty) return;
-    final snapshot = await FirestoreService().getPublicCitySnapshot(friendPlayerId);
+    final snapshot = await FirestoreService().getPublicCitySnapshot(
+      friendPlayerId,
+    );
     if (!mounted || snapshot == null) return;
     await Navigator.push(
       context,
@@ -227,6 +233,12 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     final bool canPop = !game.isTutorialActive && game.selectedIndex == 0;
+    final compactCounters = CounterChip.needsCompactLayout(context, [
+      ('KP', game.kp),
+      ('Gems', game.gems),
+      ('Streak', game.dailyQuizStreak),
+      ('Revivals', game.streakRevivals),
+    ]);
 
     return PopScope(
       canPop: canPop,
@@ -248,7 +260,12 @@ class _MainScreenState extends State<MainScreen> {
             children: [
               KeyedSubtree(
                 key: TutorialKeys.kpKey,
-                child: CounterChip(label: "[KP]", value: game.kp, prefix: "KP"),
+                child: CounterChip(
+                  label: "[KP]",
+                  value: game.kp,
+                  prefix: "KP",
+                  compact: compactCounters,
+                ),
               ),
               KeyedSubtree(
                 key: TutorialKeys.gemsKey,
@@ -256,6 +273,7 @@ class _MainScreenState extends State<MainScreen> {
                   label: "[GEM]",
                   value: game.gems,
                   prefix: "Gems",
+                  compact: compactCounters,
                 ),
               ),
             ],
@@ -268,6 +286,7 @@ class _MainScreenState extends State<MainScreen> {
                 label: "[STREAK]",
                 value: game.dailyQuizStreak,
                 prefix: "Streak",
+                compact: compactCounters,
               ),
             ),
             KeyedSubtree(
@@ -276,6 +295,7 @@ class _MainScreenState extends State<MainScreen> {
                 label: "[REVIVAL]",
                 value: game.streakRevivals,
                 prefix: "Revivals",
+                compact: compactCounters,
               ),
             ),
             const SizedBox(width: 8),
@@ -285,6 +305,7 @@ class _MainScreenState extends State<MainScreen> {
           index: game.selectedIndex,
           children: [
             HomeTab(
+              profilePic: game.profilePic,
               kp: game.kp,
               gems: game.gems,
               career: game.career,
@@ -358,7 +379,8 @@ class _MainScreenState extends State<MainScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => PassiveIncomeScreen(game: game, sfx: widget.sfx),
+                      builder: (_) =>
+                          PassiveIncomeScreen(game: game, sfx: widget.sfx),
                     ),
                   );
                 }
@@ -469,7 +491,10 @@ class _MainScreenState extends State<MainScreen> {
           selectedItemColor: Theme.of(context).colorScheme.primary,
           unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
           items: [
-            const BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Home",
+            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.location_city, key: TutorialKeys.tabCityKey),
               label: "City",
@@ -564,10 +589,10 @@ class DisasterReportDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Row(
-        children: const [
-          Icon(Icons.warning, color: Colors.orange),
-          SizedBox(width: 8),
-          Flexible(child: Text("City Disaster Report")),
+        children: [
+          Icon(Icons.warning, color: AppColors.of(context, 'warning')),
+          const SizedBox(width: 8),
+          const Flexible(child: Text("City Disaster Report")),
         ],
       ),
       content: SizedBox(
@@ -580,48 +605,48 @@ class DisasterReportDialog extends StatelessWidget {
             final result = results[index];
             String title = "";
             IconData icon = Icons.warning;
-            Color color = Colors.orange;
+            Color color = AppColors.of(context, 'warning');
 
             switch (result.type) {
               case DisasterType.flood:
                 title = "Flood Alert!";
                 icon = Icons.water;
-                color = Colors.blue;
+                color = AppColors.of(context, 'gem');
                 break;
               case DisasterType.fire:
                 title = "Fire Outbreak!";
                 icon = Icons.local_fire_department;
-                color = Colors.red;
+                color = AppColors.of(context, 'error');
                 break;
               case DisasterType.earthquake:
                 title = "Earthquake!";
                 icon = Icons.landscape;
-                color = Colors.brown;
+                color = Theme.of(context).colorScheme.secondary;
                 break;
               case DisasterType.economyCrash:
                 title = "Economy Crash!";
                 icon = Icons.trending_down;
-                color = Colors.purple;
+                color = Theme.of(context).colorScheme.tertiary;
                 break;
               case DisasterType.drought:
                 title = "Severe Drought!";
                 icon = Icons.wb_sunny;
-                color = Colors.orange;
+                color = AppColors.of(context, 'warning');
                 break;
               case DisasterType.landslide:
                 title = "Landslide!";
                 icon = Icons.terrain;
-                color = Colors.deepOrange;
+                color = Theme.of(context).colorScheme.secondary;
                 break;
               case DisasterType.massEmigration:
                 title = "Mass Emigration!";
                 icon = Icons.people_outline;
-                color = Colors.blueGrey;
+                color = Theme.of(context).colorScheme.onSurfaceVariant;
                 break;
               case DisasterType.pandemic:
                 title = "Pandemic!";
                 icon = Icons.health_and_safety;
-                color = Colors.teal;
+                color = AppColors.of(context, 'passive');
                 break;
             }
 

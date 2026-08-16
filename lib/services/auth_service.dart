@@ -71,4 +71,26 @@ class AuthService {
       await _auth.signOut();
     }
   }
+
+  // Change Password
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    final user = _auth.currentUser;
+    if (user == null || user.email == null) {
+      throw Exception("No authenticated user found.");
+    }
+    final cred = EmailAuthProvider.credential(
+      email: user.email!,
+      password: oldPassword,
+    );
+    await user.reauthenticateWithCredential(cred);
+    await user.updatePassword(newPassword);
+  }
+
+  // Delete Account & Clean Up Data
+  Future<void> deleteAccount(String uid) async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      await user.delete();
+    }
+  }
 }

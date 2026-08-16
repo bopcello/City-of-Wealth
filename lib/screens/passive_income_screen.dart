@@ -146,7 +146,7 @@ class _PassiveIncomeCard extends StatelessWidget {
     return Card(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       elevation: 0,
-      surfaceTintColor: Colors.transparent,
+      surfaceTintColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0),
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -304,8 +304,8 @@ class _PassiveIncomeCard extends StatelessWidget {
                                 1.0)
                               TextSpan(
                                 text: " (${rewards.label} Bonus)",
-                                style: const TextStyle(
-                                  color: Colors.blue,
+                                style: TextStyle(
+                                  color: AppColors.of(context, 'gem'),
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),

@@ -14,6 +14,7 @@ import '../widgets/add_friend_dialog.dart';
 import '../screens/city_viewer_screen.dart';
 import '../screens/activity_feed_screen.dart';
 import '../screens/leaderboard_screen.dart';
+import '../services/friend_activity_monitor.dart';
 
 class CityTab extends StatefulWidget {
   final CareerState career;
@@ -67,6 +68,11 @@ class CityTabState extends State<CityTab> {
       setState(() {
         _selectedSegment = index;
       });
+      if (index == 1) {
+        FriendActivityMonitor.instance
+            .check(showAndroidNotifications: false)
+            .ignore();
+      }
     }
   }
 
@@ -106,6 +112,7 @@ class CityTabState extends State<CityTab> {
         _friendSnapshots = newSnaps;
       });
     }
+    await FriendActivityMonitor.instance.check(showAndroidNotifications: false);
   }
 
   void _setupFriendStreams() {
@@ -220,6 +227,7 @@ class CityTabState extends State<CityTab> {
                           widget.career.level,
                         ),
                         friendSnapshots: _friendSnapshots,
+                        sfx: widget.sfx,
                       ),
                     ),
                   );
@@ -249,6 +257,7 @@ class CityTabState extends State<CityTab> {
                                         : f.playerA):
                                     "Friend",
                             },
+                            sfx: widget.sfx,
                           ),
                         ),
                       );
@@ -321,7 +330,9 @@ class CityTabState extends State<CityTab> {
             final double vw = constraints.maxWidth;
             final double vh = constraints.maxHeight;
 
-            final double side = gridSize * 52.0 + 200.0; // Account for the padding of 100 on each side
+            final double side =
+                gridSize * 52.0 +
+                200.0; // Account for the padding of 100 on each side
             final double tx = (vw - side) / 2;
             final double ty = (vh - side) / 2;
 
@@ -620,6 +631,7 @@ class CityTabState extends State<CityTab> {
               onMuteToggle: (mute) =>
                   _friendsService.toggleMuteFriend(f.id, mute),
               onBlock: () => _friendsService.blockFriend(f.id),
+              onUnfriend: () => _friendsService.declineRequest(f.id),
             );
           }),
       ],
@@ -637,6 +649,7 @@ class FutureFriendCard extends StatefulWidget {
   final SfxManager sfx;
   final Future<void> Function(bool) onMuteToggle;
   final VoidCallback onBlock;
+  final VoidCallback onUnfriend;
 
   const FutureFriendCard({
     super.key,
@@ -648,6 +661,7 @@ class FutureFriendCard extends StatefulWidget {
     required this.sfx,
     required this.onMuteToggle,
     required this.onBlock,
+    required this.onUnfriend,
   });
 
   @override
@@ -659,10 +673,48 @@ class _FutureFriendCardState extends State<FutureFriendCard> {
   bool _loadingSnapshot = true;
   String _backupName = "Loading...";
 
+  // Cheer state: null = can cheer, non-null = active cheer doc id
+  String? _activeCheerDocId;
+  bool _cheerLoading = true;
+
   @override
   void initState() {
     super.initState();
     _loadSnapshot();
+    _loadCheerStatus();
+  }
+
+  Future<void> _loadCheerStatus() async {
+    try {
+      final docId = await FriendsService().getCheerStatus(widget.friendUid);
+      if (mounted) setState(() => _activeCheerDocId = docId);
+    } catch (_) {
+      // safe default: allow cheering
+    } finally {
+      if (mounted) setState(() => _cheerLoading = false);
+    }
+  }
+
+  Future<void> _toggleCheer() async {
+    if (_activeCheerDocId != null) {
+      final docId = _activeCheerDocId!;
+      setState(() => _activeCheerDocId = null);
+      try {
+        await FriendsService().removeCheer(widget.friendUid, docId);
+      } catch (_) {
+        if (mounted) setState(() => _activeCheerDocId = docId);
+      }
+    } else {
+      try {
+        final newDocId = await FriendsService().sendCheer(
+          widget.friendUid,
+          widget.myPlayerName,
+        );
+        if (mounted) setState(() => _activeCheerDocId = newDocId);
+      } catch (_) {
+        // ignore
+      }
+    }
   }
 
   Future<void> _loadSnapshot() async {
@@ -755,18 +807,18 @@ class _FutureFriendCardState extends State<FutureFriendCard> {
                 radius: 26,
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 child: _loadingSnapshot
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       )
                     : Text(
                         name.isNotEmpty ? name[0].toUpperCase() : "?",
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary,
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
@@ -859,14 +911,46 @@ class _FutureFriendCardState extends State<FutureFriendCard> {
                 onSelected: (value) async {
                   if (value == 'block') {
                     widget.onBlock();
+                  } else if (value == 'unfriend') {
+                    widget.onUnfriend();
+                  } else if (value == 'cheer') {
+                    await _toggleCheer();
                   }
                 },
                 itemBuilder: (_) => [
+                  PopupMenuItem(
+                    value: 'cheer',
+                    enabled: !_cheerLoading,
+                    child: Row(
+                      children: [
+                        Icon(
+                          _activeCheerDocId != null
+                              ? Icons.campaign
+                              : Icons.campaign_outlined,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _activeCheerDocId != null ? "Undo Cheer" : "Cheer",
+                        ),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'unfriend',
+                    child: Row(
+                      children: [
+                        Icon(Icons.person_remove, size: 20),
+                        SizedBox(width: 8),
+                        Text("Unfriend"),
+                      ],
+                    ),
+                  ),
                   const PopupMenuItem(
                     value: 'block',
                     child: Row(
                       children: [
-                        Icon(Icons.block, color: Colors.red),
+                        Icon(Icons.block, size: 20, color: Colors.red),
                         SizedBox(width: 8),
                         Text("Block", style: TextStyle(color: Colors.red)),
                       ],

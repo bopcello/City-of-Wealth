@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'game_state.dart';
 import 'logic/game_manager.dart';
@@ -9,6 +8,7 @@ import 'logic/background_tasks.dart';
 import 'services/music_manager.dart';
 import 'services/sfx_manager.dart';
 import 'services/notification_service.dart';
+import 'services/friend_activity_monitor.dart';
 import 'theme/app_colors.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,22 +18,14 @@ import 'screens/main_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-@pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   final launchPrefs = await _LaunchPreferences.load();
 
   runApp(
     CityOfWealthApp(
-      initialMusicVolume: launchPrefs.musicVolume,
-      initialSfxVolume: launchPrefs.sfxVolume,
       initialIsDarkMode: launchPrefs.isDarkMode,
     ),
   );
@@ -41,26 +33,14 @@ void main() async {
 
 class _LaunchPreferences {
   const _LaunchPreferences({
-    required this.musicVolume,
-    required this.sfxVolume,
     required this.isDarkMode,
   });
 
-  final double musicVolume;
-  final double sfxVolume;
   final bool isDarkMode;
 
   static Future<_LaunchPreferences> load() async {
     final prefs = await SharedPreferences.getInstance();
     final latestScopedPrefix = _findLatestScopedPrefix(prefs);
-
-    double readDouble(String key, double fallback) {
-      return prefs.getDouble(key) ??
-          (latestScopedPrefix != null
-              ? prefs.getDouble('${latestScopedPrefix}_$key')
-              : null) ??
-          fallback;
-    }
 
     bool readBool(String key, bool fallback) {
       return prefs.getBool(key) ??
@@ -71,8 +51,6 @@ class _LaunchPreferences {
     }
 
     return _LaunchPreferences(
-      musicVolume: readDouble(musicVolumeKey, 0.7),
-      sfxVolume: readDouble(sfxVolumeKey, 1.0),
       isDarkMode: readBool(isDarkModeKey, false),
     );
   }
@@ -95,14 +73,10 @@ class _LaunchPreferences {
 }
 
 class CityOfWealthApp extends StatefulWidget {
-  final double initialMusicVolume;
-  final double initialSfxVolume;
   final bool initialIsDarkMode;
 
   const CityOfWealthApp({
     super.key,
-    required this.initialMusicVolume,
-    required this.initialSfxVolume,
     required this.initialIsDarkMode,
   });
 
@@ -118,16 +92,14 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
   late bool _isDarkMode;
   Object? _bootstrapError;
   StreamSubscription<User?>? _authSubscription;
-  String? _fcmUid;
 
   @override
   void initState() {
     super.initState();
     _isDarkMode = widget.initialIsDarkMode;
 
-    _music = MusicManager(initialVolume: widget.initialMusicVolume);
-    _music.setVolume(widget.initialMusicVolume);
-    _sfx.setVolume(widget.initialSfxVolume);
+    // Start audio managers muted; volumes are applied once game state loads.
+    _music = MusicManager();
     _bootstrapApp();
   }
 
@@ -165,20 +137,9 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
       game.addListener(_handleGameThemeChange);
       _authSubscription?.cancel();
       _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
-        final previousUid = _fcmUid;
-        if (user == null) {
-          _fcmUid = null;
-          if (previousUid != null) {
-            NotificationService().clearFcmToken(previousUid).ignore();
-          }
-          return;
+        if (user != null) {
+          FriendActivityMonitor.instance.check(showAndroidNotifications: false).ignore();
         }
-
-        if (previousUid != null && previousUid != user.uid) {
-          NotificationService().clearFcmToken(previousUid).ignore();
-        }
-        _fcmUid = user.uid;
-        NotificationService().initializeFcm(user.uid).ignore();
       });
 
       if (!mounted) {
@@ -193,6 +154,10 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
         _bootstrapError = null;
       });
 
+      // Wait for game state (including saved volumes) to fully load
+      // before starting any audio playback.
+      await game.loadFuture;
+      _syncVolume();
       _music.playHomeMusic();
     } catch (error) {
       if (!mounted) return;
@@ -264,6 +229,7 @@ class AuthWrapper extends StatefulWidget {
 
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _showLoader = true;
+  bool _checkedFriendActivityAfterLoad = false;
 
   @override
   void initState() {
@@ -279,6 +245,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   void _checkLoading() {
     if (widget.game.loaded && _showLoader) {
+      if (!_checkedFriendActivityAfterLoad) {
+        _checkedFriendActivityAfterLoad = true;
+        FriendActivityMonitor.instance.check(showAndroidNotifications: false).ignore();
+      }
       // Small delay to ensure the underlying UI has a frame to render with the correct theme
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {

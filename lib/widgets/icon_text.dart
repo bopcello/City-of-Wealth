@@ -76,10 +76,10 @@ class IconText extends StatelessWidget {
             iconColor = AppColors.of(context, 'kp');
           } else if (match == '[STREAK]') {
             icon = Icons.bolt;
-            iconColor = Colors.orange;
+            iconColor = AppColors.of(context, 'warning');
           } else if (match == '[REVIVAL]') {
             icon = Icons.favorite;
-            iconColor = Colors.redAccent;
+            iconColor = AppColors.of(context, 'error');
           }
 
           if (icon != null) {
@@ -108,24 +108,47 @@ class CounterChip extends StatelessWidget {
   final String label; // Use placeholders like [KP], [GEM], etc.
   final int value;
   final String prefix; // e.g. "KP" or "Gems" for the non-placeholder version
+  final bool? compact;
 
   const CounterChip({
     super.key,
     required this.label,
     required this.value,
     required this.prefix,
+    this.compact,
   });
+
+  static bool needsCompactLayout(
+    BuildContext context,
+    List<(String prefix, int value)> counters,
+  ) {
+    const style = TextStyle(fontWeight: FontWeight.bold, fontSize: 11);
+    final scaler = MediaQuery.textScalerOf(context);
+    final direction = Directionality.of(context);
+    var requiredWidth = 8.0; // AppBar end padding.
+    for (final (prefix, value) in counters) {
+      final text = '$prefix: $value';
+      final painter = TextPainter(
+        text: TextSpan(text: text, style: style),
+        textDirection: direction,
+        textScaler: scaler,
+      )..layout();
+      // Icon, icon gap, chip padding, and the chip's horizontal margin.
+      requiredWidth += painter.width + 16 + 4 + 16 + 4;
+    }
+    return requiredWidth > MediaQuery.sizeOf(context).width;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bool isSmall = MediaQuery.of(context).size.width < 300;
+    final bool isCompact = compact ?? false;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 2),
       child: Chip(
         padding: EdgeInsets.zero,
-        labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+        labelPadding: EdgeInsets.symmetric(horizontal: isCompact ? 5 : 8),
         label: IconText(
-          isSmall ? "$label $value" : "$label $prefix: $value",
+          isCompact ? "$label $value" : "$label $prefix: $value",
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
         ),
         backgroundColor: Theme.of(
