@@ -73,14 +73,6 @@ class NotificationService {
       importance: Importance.max,
     );
 
-    const AndroidNotificationChannel routineChannel =
-        AndroidNotificationChannel(
-          'routine_updates',
-          'Routine Updates',
-          description: 'Daily city updates and reminders',
-          importance: Importance.defaultImportance,
-        );
-
     const AndroidNotificationChannel streakChannel = AndroidNotificationChannel(
       'streak_warnings',
       'Streak Warnings',
@@ -98,8 +90,8 @@ class NotificationService {
 
     const AndroidNotificationChannel dailyRoutineChannel =
         AndroidNotificationChannel(
-          'daily_routine',
-          'Daily Routine',
+          'routine_updates',
+          'Routine Updates',
           description: 'Daily reminders for quizzes and city management',
           importance: Importance.high,
         );
@@ -118,7 +110,6 @@ class NotificationService {
         >();
 
     await androidPlugin?.createNotificationChannel(gameChannel);
-    await androidPlugin?.createNotificationChannel(routineChannel);
     await androidPlugin?.createNotificationChannel(streakChannel);
     await androidPlugin?.createNotificationChannel(inactivityChannel);
     await androidPlugin?.createNotificationChannel(dailyRoutineChannel);
@@ -132,106 +123,6 @@ class NotificationService {
     await Future.wait(cancelFutures);
   }
 
-  /* Retired FCM implementation. Local WorkManager notifications replace it.
-  /// Registers this device for friend-activity pushes while the user is signed in.
-  Future<void> initializeFcm(String uid) async {
-    if (uid.isEmpty) return;
-    if (_fcmUid == uid) return;
-
-    _fcmUid = uid;
-    await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    try {
-      final token = await FirebaseMessaging.instance.getToken();
-      if (token != null) {
-        await FirestoreService().updateFcmToken(uid, token);
-      }
-    } catch (e) {
-      debugPrint('Unable to register FCM token: $e');
-    }
-
-    await _tokenRefreshSubscription?.cancel();
-    _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh.listen(
-      (token) {
-        final activeUid = _fcmUid;
-        if (activeUid != null) {
-          FirestoreService().updateFcmToken(activeUid, token).catchError((e) {
-            debugPrint('Unable to refresh FCM token: $e');
-          });
-        }
-      },
-    );
-
-    handleFcmForegroundMessages();
-
-    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-    if (initialMessage != null) {
-      _publishFriendActivityPayload(initialMessage);
-    }
-  }
-
-  Future<void> clearFcmToken(String uid) async {
-    if (_fcmUid != uid) return;
-    _fcmUid = null;
-    await _tokenRefreshSubscription?.cancel();
-    _tokenRefreshSubscription = null;
-    try {
-      await FirestoreService().removeFcmToken(uid);
-    } catch (e) {
-      debugPrint('Unable to remove FCM token: $e');
-    }
-  }
-
-  void handleFcmForegroundMessages() {
-    _foregroundMessageSubscription ??= FirebaseMessaging.onMessage.listen(
-      _showForegroundFriendActivity,
-    );
-    _messageOpenedSubscription ??= FirebaseMessaging.onMessageOpenedApp.listen(
-      _publishFriendActivityPayload,
-    );
-  }
-
-  Future<void> _showForegroundFriendActivity(RemoteMessage message) async {
-    if (message.data['kind'] != 'friend_activity') return;
-
-    final title = message.notification?.title ?? 'Friend activity';
-    final body = message.notification?.body ?? 'A friend updated their city.';
-
-    const androidDetails = AndroidNotificationDetails(
-      'friend_city_activity',
-      'Friend Activity',
-      channelDescription: 'Level-ups, milestones, and activity from your friends',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
-
-    await _notifications.show(
-      id: 7000,
-      title: title,
-      body: body,
-      notificationDetails: const NotificationDetails(android: androidDetails),
-      payload: _friendActivityPayload(message),
-    );
-  }
-
-  void _publishFriendActivityPayload(RemoteMessage message) {
-    final payload = _friendActivityPayload(message);
-    if (payload != null) notificationPayloadNotifier.value = payload;
-  }
-
-  String? _friendActivityPayload(RemoteMessage message) {
-    if (message.data['kind'] != 'friend_activity') return null;
-    final friendPlayerId = message.data['friendPlayerId']?.toString();
-    if (friendPlayerId == null || friendPlayerId.isEmpty) return null;
-    return 'friend_activity:$friendPlayerId';
-  }
-
-
-  */
   Future<void> requestPermissions() async {
     // Android 13+ requires explicit permission
     final androidPlugin = _notifications
@@ -260,9 +151,11 @@ class NotificationService {
       event,
     );
     const details = AndroidNotificationDetails(
-      'friend_city_activity', 'Friend Activity',
+      'friend_city_activity',
+      'Friend Activity',
       channelDescription: 'Updates from your friends',
-      importance: Importance.high, priority: Priority.high,
+      importance: Importance.high,
+      priority: Priority.high,
     );
     await _notifications.show(
       id: friendId.hashCode ^ event.hashCode,
@@ -379,7 +272,10 @@ class NotificationService {
     );
   }
 
-  Future<void> scheduleDailyNotifications(String playerName, {bool skipCancel = false}) async {
+  Future<void> scheduleDailyNotifications(
+    String playerName, {
+    bool skipCancel = false,
+  }) async {
     if (!skipCancel) {
       // Cancel previous daily notifications (IDs 1000-1100)
       final cancelFutures = <Future<void>>[];
@@ -421,14 +317,16 @@ class NotificationService {
           playerName,
         );
 
-        scheduleFutures.add(_notifications.zonedSchedule(
-          id: 1000 + scheduledCount,
-          title: notification.$1,
-          body: notification.$2,
-          scheduledDate: scheduledDate,
-          notificationDetails: NotificationDetails(android: androidDetails),
-          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        ));
+        scheduleFutures.add(
+          _notifications.zonedSchedule(
+            id: 1000 + scheduledCount,
+            title: notification.$1,
+            body: notification.$2,
+            scheduledDate: scheduledDate,
+            notificationDetails: NotificationDetails(android: androidDetails),
+            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          ),
+        );
         scheduledCount++;
       }
     }
@@ -472,14 +370,16 @@ class NotificationService {
         key,
       );
 
-      scheduleFutures.add(_notifications.zonedSchedule(
-        id: 2000 + i,
-        title: notification.$1,
-        body: notification.$2,
-        scheduledDate: tz.TZDateTime.now(tz.local).add(duration),
-        notificationDetails: NotificationDetails(android: androidDetails),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      ));
+      scheduleFutures.add(
+        _notifications.zonedSchedule(
+          id: 2000 + i,
+          title: notification.$1,
+          body: notification.$2,
+          scheduledDate: tz.TZDateTime.now(tz.local).add(duration),
+          notificationDetails: NotificationDetails(android: androidDetails),
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        ),
+      );
       i++;
     }
     await Future.wait(scheduleFutures);
@@ -661,8 +561,12 @@ class NotificationService {
         }
 
         // Convert the scheduled local date to IST date string to check if already attempted
-        final scheduledDateIST = scheduledDate.toUtc().add(const Duration(hours: 5, minutes: 30));
-        final targetQuizDateStr = DateFormat('yyyy-MM-dd').format(scheduledDateIST);
+        final scheduledDateIST = scheduledDate.toUtc().add(
+          const Duration(hours: 5, minutes: 30),
+        );
+        final targetQuizDateStr = DateFormat(
+          'yyyy-MM-dd',
+        ).format(scheduledDateIST);
 
         if (lastDailyQuizDate == targetQuizDateStr) {
           continue;
@@ -677,23 +581,23 @@ class NotificationService {
 
         final notificationId = 3000 + (day * 4) + i;
 
-        scheduleFutures.add(_notifications.zonedSchedule(
-          id: notificationId,
-          title: notification.$1,
-          body: notification.$2,
-          scheduledDate: scheduledDate,
-          notificationDetails: NotificationDetails(android: androidDetails),
-          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-          payload: 'quiz',
-        ));
+        scheduleFutures.add(
+          _notifications.zonedSchedule(
+            id: notificationId,
+            title: notification.$1,
+            body: notification.$2,
+            scheduledDate: scheduledDate,
+            notificationDetails: NotificationDetails(android: androidDetails),
+            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+            payload: 'quiz',
+          ),
+        );
         scheduledCount++;
       }
     }
     await Future.wait(scheduleFutures);
     debugPrint("🔔 Scheduled $scheduledCount daily challenge reminders");
   }
-
-
 
   Future<bool> requestPermission() async {
     if (await Permission.notification.isGranted) return true;

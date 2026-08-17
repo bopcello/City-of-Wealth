@@ -746,17 +746,6 @@ class NotificationData {
     ],
   };
 
-  // Original list kept for compatibility
-  static const List<(String, String)> dailyQuiz = [
-    (
-      "New Daily Quiz",
-      "A fresh challenge just dropped — test your money skills.",
-    ),
-    ("Today's Quiz is Here", "Answer it to earn KP and grow your city."),
-    ("Don't Miss Today's Quiz", "Keep your streak alive."),
-    ("Knowledge Is Wealth", "Your daily quiz is ready."),
-  ];
-
   static (String, String) getRandomDisasterNotification(
     String name,
     DisasterType type,
