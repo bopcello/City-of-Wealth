@@ -17,8 +17,10 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 
-    kotlinOptions {
-        jvmTarget = "21"
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+        }
     }
 
     defaultConfig {
@@ -53,4 +55,43 @@ coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
 implementation("com.google.firebase:firebase-analytics")
 }
-
+
+val copyReleaseApks = tasks.register("copyReleaseApks") {
+    doLast {
+        val apkDir = layout.buildDirectory
+            .dir("outputs/flutter-apk")
+            .get()
+            .asFile
+
+        if (!apkDir.exists()) {
+            logger.lifecycle("APK directory not found: ${apkDir.absolutePath}")
+            return@doLast
+        }
+
+        apkDir.listFiles()
+            ?.filter {
+                it.isFile &&
+                    Regex("^app(-.*)?-release\\.apk$").matches(it.name)
+            }
+            ?.forEach { apk ->
+                val customName = apk.name.replace(
+                    Regex("^app(-.*)?-release\\.apk$"),
+                    "City of Wealth\$1-release.apk"
+                )
+
+                val customApk = apk.parentFile.resolve(customName)
+
+                apk.copyTo(customApk, overwrite = true)
+
+                logger.lifecycle(
+                    "Created: ${customApk.absolutePath}"
+                )
+            }
+    }
+}
+
+tasks.configureEach {
+    if (name == "assembleRelease") {
+        finalizedBy(copyReleaseApks)
+    }
+}

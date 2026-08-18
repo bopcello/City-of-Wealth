@@ -48,7 +48,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   CareerState _career = const CareerState(track: CareerTrack.student, level: 1);
   CareerState get career => _career;
   set career(CareerState newCareer) {
-    if (_career.track == newCareer.track && _career.level == newCareer.level) return;
+    if (_career.track == newCareer.track && _career.level == newCareer.level) {
+      return;
+    }
     _career = newCareer;
     if (loaded) {
       final newTitle = levelName(_career.track, _career.level);
@@ -461,6 +463,13 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         _checkStreakConsistency();
         _syncDailyQuiz(); // Check for new quiz on load
         _rescheduleNotifications();
+        // Self-heal: create public_profiles/public_cities if this account
+        // predates them, and scrub any leftover FCM fields.
+        _ensurePublicRecords();
+        final uidForCleanup = currentUid;
+        if (uidForCleanup != null) {
+          firestoreService.purgeFcmToken(uidForCleanup);
+        }
       }
       _fetchDailyQuote();
 
@@ -502,6 +511,28 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       notifyListeners();
     } catch (e) {
       debugPrint("❌ Error in _fetchDailyQuote: $e");
+    }
+  }
+
+  Future<void> _ensurePublicRecords() async {
+    final uid = currentUid;
+    if (uid == null || playerName == "User") return;
+    try {
+      await firestoreService.ensurePublicRecords(
+        uid: uid,
+        playerName: playerName,
+        friendCode: friendCode,
+        track: career.track.name,
+        level: career.level,
+        title: levelName(career.track, career.level),
+        streak: dailyQuizStreak,
+        kp: kp,
+        bankruptcyCount: bankruptcyCount,
+        buildings: cityLayout,
+        profilePic: showPfpPublicly ? profilePic : null,
+      );
+    } catch (e) {
+      debugPrint("Notice: could not ensure public records: $e");
     }
   }
 
@@ -993,14 +1024,14 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       String kpStr = dayKp > 0
           ? "[success][KP] +$dayKp[/success]"
           : (dayKp < 0
-              ? "[error][KP] $dayKp[/error]"
-              : "[warning][KP] 0[/warning]");
+                ? "[error][KP] $dayKp[/error]"
+                : "[warning][KP] 0[/warning]");
 
       String gemStr = dayGems > 0
           ? "[success][GEM] +$dayGems[/success]"
           : (dayGems < 0
-              ? "[error][GEM] $dayGems[/error]"
-              : "[warning][GEM] 0[/warning]");
+                ? "[error][GEM] $dayGems[/error]"
+                : "[warning][GEM] 0[/warning]");
 
       String event = "Day $dayNumber: $kpStr, $gemStr";
       if (isWorkingOvertime && i == 0) {
@@ -1291,6 +1322,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     );
     _updateDailyChallengeReminders();
     save();
+    _ensurePublicRecords();
     notifyListeners();
   }
 
@@ -1308,7 +1340,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     );
     NotificationService().scheduleInactivityNotification(playerName);
     _updateDailyChallengeReminders();
-
+    _ensurePublicRecords();
     notifyListeners();
   }
 
@@ -2452,6 +2484,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     });
     save();
     syncWithCloud(force: true);
+    _ensurePublicRecords();
     notifyListeners();
   }
 
@@ -2464,6 +2497,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     });
     save();
     syncWithCloud(force: true);
+    _ensurePublicRecords();
     notifyListeners();
   }
 

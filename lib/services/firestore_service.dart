@@ -6,7 +6,6 @@ import '../data/quote_data.dart';
 import '../models/city_sharing_models.dart';
 import '../game_state.dart';
 
-
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
@@ -29,19 +28,25 @@ class FirestoreService {
       return;
     }
 
+    // FCM is fully removed — never persist these fields again even if a
+    // stale call site still passes them.
+    final sanitized = Map<String, dynamic>.from(data)
+      ..remove('fcmToken')
+      ..remove('fcmTokenUpdatedAt');
+
     try {
       debugPrint(
-        "📤 CLOUD SAVE: Syncing ${data.keys.length} fields for user: $uid",
+        "📤 CLOUD SAVE: Syncing ${sanitized.keys.length} fields for user: $uid",
       );
-      // debugPrint("📤 Full Data Map: $data"); // Uncomment if verbose debug is needed
 
       await _db.collection('players').doc(uid).set({
-        ...data,
+        ...sanitized,
         'lastUpdated': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
       debugPrint("✅ CLOUD SAVE: Success");
 
-      // Also update public_cities snapshot so friends always see the up-to-date city
+      // Refresh the public_cities snapshot and public_profiles entry —
+      // small, intentionally-public documents, never the full private doc.
       try {
         final playerDoc = await _db.collection('players').doc(uid).get();
         if (playerDoc.exists && playerDoc.data() != null) {
@@ -53,9 +58,16 @@ class FirestoreService {
             snapshot,
             includeProfilePic: updatePublicProfilePic,
           );
+          await savePublicProfile(
+            uid,
+            snapshot.playerName,
+            snapshot.friendCode,
+          );
         }
       } catch (e) {
-        debugPrint("Notice: could not sync public_cities on save: $e");
+        debugPrint(
+          "Notice: could not sync public_cities/public_profiles on save: $e",
+        );
       }
     } catch (e) {
       debugPrint("❌ CLOUD SAVE: Error - $e");
@@ -63,20 +75,77 @@ class FirestoreService {
     }
   }
 
-  Future<void> updateFcmToken(String uid, String token) async {
-    if (uid.isEmpty || token.isEmpty) return;
-    await _db.collection('players').doc(uid).set({
-      'fcmToken': token,
-      'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+  /// Publishes only the fields needed for friend search — never the full
+  /// private game state. A plain (non-merge) `.set()` so the doc can only
+  /// ever contain exactly these two fields, matching the security rule.
+  Future<void> savePublicProfile(
+    String uid,
+    String playerName,
+    String friendCode,
+  ) async {
+    if (uid.isEmpty) return;
+    try {
+      await _db.collection('public_profiles').doc(uid).set({
+        'playerName': playerName,
+        'friendCode': friendCode,
+      });
+    } catch (e) {
+      debugPrint("Notice: could not sync public_profiles: $e");
+    }
   }
 
-  Future<void> removeFcmToken(String uid) async {
+  /// Self-heals `public_profiles` + `public_cities` from in-memory state
+  /// without waiting for a full cloud sync. Called on every app load so
+  /// accounts created before these collections existed catch up
+  /// automatically instead of being locked out of search/city-viewing.
+  Future<void> ensurePublicRecords({
+    required String uid,
+    required String playerName,
+    required String friendCode,
+    required String track,
+    required int level,
+    required String title,
+    required int streak,
+    required int kp,
+    required int bankruptcyCount,
+    required List<PlacedBuilding> buildings,
+    String? profilePic,
+  }) async {
+    await savePublicProfile(uid, playerName, friendCode);
+    final snapshot = PublicCitySnapshot(
+      playerId: uid,
+      playerName: playerName,
+      friendCode: friendCode,
+      track: track,
+      level: level,
+      title: title,
+      streak: streak,
+      kp: kp,
+      bankruptcyCount: bankruptcyCount,
+      buildings: buildings,
+      buildingCount: buildings.length,
+      lastUpdatedAt: DateTime.now(),
+      profilePic: profilePic,
+    );
+    await savePublicCitySnapshot(
+      snapshot,
+      includeProfilePic: profilePic != null,
+    );
+  }
+
+  /// One-time cleanup: strips the deprecated FCM fields from a player's
+  /// private doc now that push notifications go through local scheduling
+  /// only. Safe to call repeatedly; no-ops once the fields are gone.
+  Future<void> purgeFcmToken(String uid) async {
     if (uid.isEmpty) return;
-    await _db.collection('players').doc(uid).update({
-      'fcmToken': FieldValue.delete(),
-      'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
-    });
+    try {
+      await _db.collection('players').doc(uid).update({
+        'fcmToken': FieldValue.delete(),
+        'fcmTokenUpdatedAt': FieldValue.delete(),
+      });
+    } catch (e) {
+      debugPrint("Notice: fcmToken purge skipped: $e");
+    }
   }
 
   /// Retrieves the player's progress from Firestore.
@@ -102,7 +171,10 @@ class FirestoreService {
   /// Retrieves the daily quiz for a specific date.
   Future<Map<String, dynamic>?> getDailyQuiz(String date) async {
     try {
-      final doc = await _db.collection('daily_quizzes').doc('daily_$date').get();
+      final doc = await _db
+          .collection('daily_quizzes')
+          .doc('daily_$date')
+          .get();
       return doc.exists ? doc.data() : null;
     } catch (e) {
       debugPrint("❌ Error fetching daily quiz: $e");
@@ -150,7 +222,13 @@ class FirestoreService {
     }
   }
 
-  Future<void> updatePlayerStreak(String uid, int streak, String date, int revivals, String? lastRevival) async {
+  Future<void> updatePlayerStreak(
+    String uid,
+    int streak,
+    String date,
+    int revivals,
+    String? lastRevival,
+  ) async {
     try {
       await _db.collection('players').doc(uid).update({
         'dailyQuizStreak': streak,
@@ -180,16 +258,21 @@ class FirestoreService {
 
     try {
       final sourceSnap = await _db.collection('players').doc(sourceUid).get();
-      final sourceName = sourceSnap.data()?['playerName'] as String? ?? 'A player';
-      await _db.collection('players').doc(targetUid).collection('activity_feed').add({
-        'sourcePlayerId': sourceUid,
-        'sourcePlayerName': sourceName,
-        'targetPlayerId': targetUid,
-        'type': 'friend_request_sent',
-        'payload': {'text': 'sent you a friend request'},
-        'createdAt': FieldValue.serverTimestamp(),
-        'seen': false,
-      });
+      final sourceName =
+          sourceSnap.data()?['playerName'] as String? ?? 'A player';
+      await _db
+          .collection('players')
+          .doc(targetUid)
+          .collection('activity_feed')
+          .add({
+            'sourcePlayerId': sourceUid,
+            'sourcePlayerName': sourceName,
+            'targetPlayerId': targetUid,
+            'type': 'friend_request_sent',
+            'payload': {'text': 'sent you a friend request'},
+            'createdAt': FieldValue.serverTimestamp(),
+            'seen': false,
+          });
     } catch (e) {
       debugPrint("Error logging friend request activity: $e");
     }
@@ -201,7 +284,10 @@ class FirestoreService {
     });
 
     try {
-      final docSnap = await _db.collection('friendships').doc(friendshipId).get();
+      final docSnap = await _db
+          .collection('friendships')
+          .doc(friendshipId)
+          .get();
       if (docSnap.exists && docSnap.data() != null) {
         final data = docSnap.data()!;
         final playerA = data['playerA'] as String;
@@ -210,18 +296,26 @@ class FirestoreService {
         final acceptorUid = requestedBy == playerA ? playerB : playerA;
         final requestorUid = requestedBy;
 
-        final acceptorSnap = await _db.collection('players').doc(acceptorUid).get();
-        final acceptorName = acceptorSnap.data()?['playerName'] as String? ?? 'A player';
+        final acceptorSnap = await _db
+            .collection('players')
+            .doc(acceptorUid)
+            .get();
+        final acceptorName =
+            acceptorSnap.data()?['playerName'] as String? ?? 'A player';
 
-        await _db.collection('players').doc(requestorUid).collection('activity_feed').add({
-          'sourcePlayerId': acceptorUid,
-          'sourcePlayerName': acceptorName,
-          'targetPlayerId': requestorUid,
-          'type': 'friend_request_accepted',
-          'payload': {'text': 'accepted your friend request'},
-          'createdAt': FieldValue.serverTimestamp(),
-          'seen': false,
-        });
+        await _db
+            .collection('players')
+            .doc(requestorUid)
+            .collection('activity_feed')
+            .add({
+              'sourcePlayerId': acceptorUid,
+              'sourcePlayerName': acceptorName,
+              'targetPlayerId': requestorUid,
+              'type': 'friend_request_accepted',
+              'payload': {'text': 'accepted your friend request'},
+              'createdAt': FieldValue.serverTimestamp(),
+              'seen': false,
+            });
       }
     } catch (e) {
       debugPrint("Error logging friend acceptance activity: $e");
@@ -243,8 +337,11 @@ class FirestoreService {
     await _db.collection('friendships').doc(friendshipId).delete();
   }
 
-
-  Future<void> toggleMuteFriend(String friendshipId, String uid, bool mute) async {
+  Future<void> toggleMuteFriend(
+    String friendshipId,
+    String uid,
+    bool mute,
+  ) async {
     if (mute) {
       await _db.collection('friendships').doc(friendshipId).update({
         'mutedBy': FieldValue.arrayUnion([uid]),
@@ -258,39 +355,55 @@ class FirestoreService {
 
   Stream<List<Friendship>> getFriendshipsStream(String uid) {
     final controller = StreamController<List<Friendship>>();
-    
+
     StreamSubscription? subA;
     StreamSubscription? subB;
-    
+
     List<Friendship> listA = [];
     List<Friendship> listB = [];
-    
+
     void emit() {
       final mergedMap = <String, Friendship>{};
-      for (var f in listA) { mergedMap[f.id] = f; }
-      for (var f in listB) { mergedMap[f.id] = f; }
+      for (var f in listA) {
+        mergedMap[f.id] = f;
+      }
+      for (var f in listB) {
+        mergedMap[f.id] = f;
+      }
       controller.add(mergedMap.values.toList());
     }
-    
-    subA = _db.collection('friendships')
+
+    subA = _db
+        .collection('friendships')
         .where('playerA', isEqualTo: uid)
         .snapshots()
-        .listen((snap) {
-          listA = snap.docs.map((doc) => Friendship.fromJson(doc.data(), doc.id)).toList();
-          emit();
-        }, onError: (e) {
-          debugPrint("Stream playerA error: $e");
-        });
+        .listen(
+          (snap) {
+            listA = snap.docs
+                .map((doc) => Friendship.fromJson(doc.data(), doc.id))
+                .toList();
+            emit();
+          },
+          onError: (e) {
+            debugPrint("Stream playerA error: $e");
+          },
+        );
 
-    subB = _db.collection('friendships')
+    subB = _db
+        .collection('friendships')
         .where('playerB', isEqualTo: uid)
         .snapshots()
-        .listen((snap) {
-          listB = snap.docs.map((doc) => Friendship.fromJson(doc.data(), doc.id)).toList();
-          emit();
-        }, onError: (e) {
-          debugPrint("Stream playerB error: $e");
-        });
+        .listen(
+          (snap) {
+            listB = snap.docs
+                .map((doc) => Friendship.fromJson(doc.data(), doc.id))
+                .toList();
+            emit();
+          },
+          onError: (e) {
+            debugPrint("Stream playerB error: $e");
+          },
+        );
 
     controller.onCancel = () {
       subA?.cancel();
@@ -302,33 +415,61 @@ class FirestoreService {
 
   Future<List<Friendship>> getAcceptedFriendships(String uid) async {
     final results = await Future.wait([
-      _db.collection('friendships').where('playerA', isEqualTo: uid).where('status', isEqualTo: 'accepted').get(),
-      _db.collection('friendships').where('playerB', isEqualTo: uid).where('status', isEqualTo: 'accepted').get(),
+      _db
+          .collection('friendships')
+          .where('playerA', isEqualTo: uid)
+          .where('status', isEqualTo: 'accepted')
+          .get(),
+      _db
+          .collection('friendships')
+          .where('playerB', isEqualTo: uid)
+          .where('status', isEqualTo: 'accepted')
+          .get(),
     ]);
-    return [...results[0].docs, ...results[1].docs]
-        .map((doc) => Friendship.fromJson(doc.data(), doc.id)).toList();
+    return [
+      ...results[0].docs,
+      ...results[1].docs,
+    ].map((doc) => Friendship.fromJson(doc.data(), doc.id)).toList();
   }
 
-  Future<void> recordFriendActivity(String uid, String eventId, String friendId, String friendName, Map<String, dynamic> payload) {
-    return _db.collection('players').doc(uid).collection('activity_feed').doc(eventId).set({
-      'sourcePlayerId': friendId,
-      'sourcePlayerName': friendName,
-      'targetPlayerId': uid,
-      'type': 'session_summary',
-      'payload': payload,
-      'createdAt': FieldValue.serverTimestamp(),
-      'seen': false,
-    });
+  Future<void> recordFriendActivity(
+    String uid,
+    String eventId,
+    String friendId,
+    String friendName,
+    Map<String, dynamic> payload,
+  ) {
+    return _db
+        .collection('players')
+        .doc(uid)
+        .collection('activity_feed')
+        .doc(eventId)
+        .set({
+          'sourcePlayerId': friendId,
+          'sourcePlayerName': friendName,
+          'targetPlayerId': uid,
+          'type': 'session_summary',
+          'payload': payload,
+          'createdAt': FieldValue.serverTimestamp(),
+          'seen': false,
+        });
   }
 
-  Future<List<Map<String, dynamic>>> searchUserByCodeOrName(String query) async {
+  Future<List<Map<String, dynamic>>> searchUserByCodeOrName(
+    String query,
+  ) async {
     if (query.trim().isEmpty) return [];
     final cleanQuery = query.trim();
-    
+
     try {
-      final allPlayersSnap = await _db.collection('players').get();
-      final allPlayers = allPlayersSnap.docs.map((doc) => {...doc.data(), 'uid': doc.id}).toList();
-      
+      // Only the small, intentionally-public profile collection is read now
+      // (playerName + friendCode). The private `players` collection is
+      // never bulk-downloaded for search.
+      final publicProfilesSnap = await _db.collection('public_profiles').get();
+      final allProfiles = publicProfilesSnap.docs
+          .map((doc) => {...doc.data(), 'uid': doc.id})
+          .toList();
+
       RegExp regex;
       try {
         regex = RegExp(cleanQuery, caseSensitive: false);
@@ -337,9 +478,9 @@ class FirestoreService {
         regex = RegExp(escaped, caseSensitive: false);
       }
 
-      final results = allPlayers.where((player) {
-        final playerName = player['playerName'] as String? ?? '';
-        final friendCode = player['friendCode'] as String? ?? '';
+      final results = allProfiles.where((profile) {
+        final playerName = profile['playerName'] as String? ?? '';
+        final friendCode = profile['friendCode'] as String? ?? '';
         return regex.hasMatch(playerName) || regex.hasMatch(friendCode);
       }).toList();
 
@@ -359,24 +500,22 @@ class FirestoreService {
       if (doc.exists && doc.data() != null) {
         return PublicCitySnapshot.fromJson(doc.data()!);
       }
-
-      // Fallback: If public_cities/{uid} doc does not exist yet, construct from players/{uid}
-      final playerDoc = await _db.collection('players').doc(uid).get();
-      if (playerDoc.exists && playerDoc.data() != null) {
-        final snapshot = buildSnapshotFromPlayerData(uid, playerDoc.data()!);
-        // Asynchronously save to public_cities so future reads are instant
-        savePublicCitySnapshot(snapshot).catchError((e) {
-          debugPrint("Notice: Auto-caching public city snapshot error: $e");
-        });
-        return snapshot;
-      }
+      // No fallback to players/{uid} anymore — that collection is private
+      // and no longer cross-readable. Every signed-in client now
+      // self-publishes its own public_cities doc on load (see
+      // GameManager._ensurePublicRecords), so a null here should only
+      // happen for an account that hasn't opened the app since this
+      // change shipped.
     } catch (e) {
       debugPrint("❌ Error getting public city snapshot for $uid: $e");
     }
     return null;
   }
 
-  PublicCitySnapshot buildSnapshotFromPlayerData(String uid, Map<String, dynamic> data) {
+  PublicCitySnapshot buildSnapshotFromPlayerData(
+    String uid,
+    Map<String, dynamic> data,
+  ) {
     List<PlacedBuilding> buildings = [];
     final layoutData = data['cityLayout'];
     if (layoutData != null) {
@@ -385,7 +524,9 @@ class FirestoreService {
           final decoded = jsonDecode(layoutData);
           if (decoded is List) {
             buildings = decoded
-                .map((b) => PlacedBuilding.fromJson(Map<String, dynamic>.from(b)))
+                .map(
+                  (b) => PlacedBuilding.fromJson(Map<String, dynamic>.from(b)),
+                )
                 .toList();
           }
         } else if (layoutData is List) {
@@ -441,30 +582,74 @@ class FirestoreService {
     }, SetOptions(merge: true));
   }
 
+  // Delete user data completely
   Future<void> deleteUserData(String uid) async {
-    try {
-      await _db.collection('players').doc(uid).delete();
-      await _db.collection('public_cities').doc(uid).delete();
-    } catch (e) {
-      debugPrint("Error deleting user data from Firestore: $e");
+    await _deleteSubcollection(
+      _db.collection('players').doc(uid).collection('activity_feed'),
+    );
+    await _deleteSubcollection(
+      _db.collection('players').doc(uid).collection('cheers_sent'),
+    );
+
+    final asA = await _db
+        .collection('friendships')
+        .where('playerA', isEqualTo: uid)
+        .get();
+    final asB = await _db
+        .collection('friendships')
+        .where('playerB', isEqualTo: uid)
+        .get();
+    final batch = _db.batch();
+    for (final doc in [...asA.docs, ...asB.docs]) {
+      batch.delete(doc.reference);
     }
+    await batch.commit();
+
+    await _db.collection('players').doc(uid).delete();
+    await _db.collection('public_cities').doc(uid).delete();
+    await _db.collection('public_profiles').doc(uid).delete();
+  }
+
+  Future<void> _deleteSubcollection(CollectionReference ref) async {
+    final snap = await ref.get();
+    if (snap.docs.isEmpty) return;
+    final batch = _db.batch();
+    for (final doc in snap.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
   }
 
   Stream<List<ActivityEntry>> getActivityFeedStream(String uid) {
-    return _db.collection('players').doc(uid).collection('activity_feed')
+    return _db
+        .collection('players')
+        .doc(uid)
+        .collection('activity_feed')
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs.map((doc) => ActivityEntry.fromJson(doc.data(), doc.id)).toList());
+        .map(
+          (snap) => snap.docs
+              .map((doc) => ActivityEntry.fromJson(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
   Future<void> markActivityAsSeen(String uid, String activityId) async {
-    await _db.collection('players').doc(uid).collection('activity_feed').doc(activityId).update({
-      'seen': true,
-    });
+    await _db
+        .collection('players')
+        .doc(uid)
+        .collection('activity_feed')
+        .doc(activityId)
+        .update({'seen': true});
   }
 
   Future<void> markAllActivitiesAsSeen(String uid) async {
-    final query = await _db.collection('players').doc(uid).collection('activity_feed').where('seen', isEqualTo: false).get();
+    final query = await _db
+        .collection('players')
+        .doc(uid)
+        .collection('activity_feed')
+        .where('seen', isEqualTo: false)
+        .get();
     final batch = _db.batch();
     for (var doc in query.docs) {
       batch.update(doc.reference, {'seen': true});
@@ -472,11 +657,21 @@ class FirestoreService {
     await batch.commit();
   }
 
-  Future<void> fanOutActivity(String sourceUid, String sourceName, List<String> targetUids, String type, Map<String, dynamic> payload) async {
+  Future<void> fanOutActivity(
+    String sourceUid,
+    String sourceName,
+    List<String> targetUids,
+    String type,
+    Map<String, dynamic> payload,
+  ) async {
     if (targetUids.isEmpty) return;
     final batch = _db.batch();
     for (var targetUid in targetUids) {
-      final ref = _db.collection('players').doc(targetUid).collection('activity_feed').doc();
+      final ref = _db
+          .collection('players')
+          .doc(targetUid)
+          .collection('activity_feed')
+          .doc();
       batch.set(ref, {
         'sourcePlayerId': sourceUid,
         'sourcePlayerName': sourceName,

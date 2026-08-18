@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'services/firestore_service.dart';
 
-
 enum CareerTrack { student, job, business }
 
 enum AssetType { land, properties, machinery, vehicles, officeEquipment }
@@ -532,8 +531,6 @@ int requiredKpFor(CareerTrack track, int nextLevel) {
   return 0;
 }
 
-
-
 const studentLevelInfo = CareerLevelInfo(
   name: "Student",
   dailyIncome: 20,
@@ -622,7 +619,11 @@ Future<void> saveGameState({
       lastIncomeTimeKey: lastIncomeTime?.millisecondsSinceEpoch,
       bankruptcyCountKey: bankruptcyCount,
       playerNameKey: playerName,
-      friendCodeKey: friendCode ?? prefs.getString(uid != null ? "${uid}_$friendCodeKey" : friendCodeKey),
+      friendCodeKey:
+          friendCode ??
+          prefs.getString(
+            uid != null ? "${uid}_$friendCodeKey" : friendCodeKey,
+          ),
       profilePicKey: profilePic,
       showPfpPubliclyKey: showPfpPublicly,
       cityLayoutKey: layout != null
@@ -832,7 +833,7 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
           friendActivityNotificationsEnabledKey,
           'tutorialComplete',
         ];
-        
+
         for (final key in keysToMigrate) {
           final sKey = "${uid}_$key";
           if (prefs.containsKey(key)) {
@@ -946,22 +947,25 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
       data[playerNameKey]?.toString() ??
       prefs.getString(scopedKey(playerNameKey)) ??
       "User";
-  String friendCode = data[friendCodeKey]?.toString() ??
+  String friendCode =
+      data[friendCodeKey]?.toString() ??
       prefs.getString(scopedKey(friendCodeKey)) ??
       "";
   if (friendCode.isEmpty) {
     friendCode = generateRandomFriendCode();
     await prefs.setString(scopedKey(friendCodeKey), friendCode);
   }
-  final String profilePic = data[profilePicKey]?.toString() ??
+  final String profilePic =
+      data[profilePicKey]?.toString() ??
       prefs.getString(scopedKey(profilePicKey)) ??
       "avatar_1";
-  final bool showPfpPublicly = (data[showPfpPubliclyKey] == true) ||
+  final bool showPfpPublicly =
+      (data[showPfpPubliclyKey] == true) ||
       (prefs.getBool(scopedKey(showPfpPubliclyKey)) ?? false);
   final double musicVolume =
       (data[musicVolumeKey] as num?)?.toDouble() ??
       prefs.getDouble(scopedKey(musicVolumeKey)) ??
-      0.7;
+      0.0;
   final double sfxVolume =
       (data[sfxVolumeKey] as num?)?.toDouble() ??
       prefs.getDouble(scopedKey(sfxVolumeKey)) ??

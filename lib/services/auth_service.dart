@@ -1,3 +1,4 @@
+import 'package:city_of_wealth/services/firestore_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -87,10 +88,12 @@ class AuthService {
   }
 
   // Delete Account & Clean Up Data
+  // auth_service.dart
   Future<void> deleteAccount(String uid) async {
     final user = _auth.currentUser;
-    if (user != null) {
-      await user.delete();
-    }
+    if (user == null) return;
+
+    await FirestoreService().deleteUserData(uid); // clean up first
+    await user.delete(); // then remove the login
   }
 }
