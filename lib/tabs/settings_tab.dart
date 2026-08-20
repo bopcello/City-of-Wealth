@@ -9,6 +9,8 @@ import '../screens/user_manual_screen.dart';
 import '../screens/stats_screen.dart';
 import '../logic/tutorial_keys.dart';
 import '../widgets/profile_avatar.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../screens/about_screen.dart';
 
 class SettingsTab extends StatefulWidget {
   final bool isActive;
@@ -393,8 +395,10 @@ class _SettingsTabState extends State<SettingsTab> {
                             widget.sfx.playClick();
                             showDialog(
                               context: context,
-                              builder: (context) =>
-                                  EditProfileDialog(game: widget.game),
+                              builder: (context) => EditProfileDialog(
+                                game: widget.game,
+                                sfx: widget.sfx,
+                              ),
                             );
                           },
                           icon: const Icon(Icons.edit, size: 16),
@@ -552,7 +556,10 @@ class _SettingsTabState extends State<SettingsTab> {
                     title: const Text("Dark Theme"),
                     subtitle: const Text("Easier on the eyes at night"),
                     value: widget.isDarkMode,
-                    onChanged: widget.onThemeToggle,
+                    onChanged: (val) {
+                      widget.sfx.playClick();
+                      widget.onThemeToggle(val);
+                    },
                     secondary: Icon(Icons.brightness_4, color: brandColor),
                   ),
                 ],
@@ -697,6 +704,53 @@ class _SettingsTabState extends State<SettingsTab> {
                       setState(() {});
                     },
                   ),
+                  const Divider(height: 1, indent: 56),
+                  ListTile(
+                    leading: Icon(Icons.info_outline, color: brandColor),
+                    title: const Text("About"),
+                    subtitle: const Text("Version, developer & contact info"),
+                    onTap: () {
+                      widget.sfx.playClick();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AboutScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(height: 1, indent: 56),
+                  ListTile(
+                    leading: Icon(
+                      Icons.privacy_tip_outlined,
+                      color: brandColor,
+                    ),
+                    title: const Text("Privacy Policy"),
+                    subtitle: const Text("How your data is collected and used"),
+                    trailing: Icon(
+                      Icons.open_in_new,
+                      color: brandColor,
+                      size: 20,
+                    ),
+                    onTap: () async {
+                      widget.sfx.playClick();
+                      final uri = Uri.parse(
+                        'https://sites.google.com/view/city-of-wealth/privacy-policy',
+                      );
+                      final launched = await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      );
+                      if (!launched && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Couldn't open the link."),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  const Divider(height: 1, indent: 56),
                   const Divider(height: 1, indent: 56),
                   ListTile(
                     leading: Icon(Icons.logout, color: brandColor),

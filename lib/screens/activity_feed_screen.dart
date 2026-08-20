@@ -5,6 +5,7 @@ import '../services/friends_service.dart';
 import '../theme/app_colors.dart';
 import 'city_viewer_screen.dart';
 import '../services/sfx_manager.dart';
+import '../widgets/profile_avatar.dart';
 
 class ActivityFeedScreen extends StatefulWidget {
   final List<ActivityEntry> initialActivities;
@@ -31,6 +32,11 @@ class _ActivityFeedScreenState extends State<ActivityFeedScreen> {
   bool _isLoadingFriend = false;
   late List<ActivityEntry> _activities;
 
+  // Cache of sourcePlayerId -> profilePic (or null) so each friend's avatar
+  // is only fetched once per screen visit instead of on every rebuild.
+  final Map<String, String?> _profilePicCache = {};
+  final Set<String> _fetchingProfilePics = {};
+
   @override
   void initState() {
     super.initState();
@@ -42,8 +48,35 @@ class _ActivityFeedScreenState extends State<ActivityFeedScreen> {
     await _friendsService.markAllAsSeen();
   }
 
+  void _loadProfilePic(String sourcePlayerId) {
+    if (_profilePicCache.containsKey(sourcePlayerId) ||
+        _fetchingProfilePics.contains(sourcePlayerId)) {
+      return;
+    }
+    _fetchingProfilePics.add(sourcePlayerId);
+    _friendsService
+        .getFriendSnapshot(sourcePlayerId)
+        .then((snapshot) {
+          if (!mounted) return;
+          setState(() {
+            _profilePicCache[sourcePlayerId] = snapshot?.profilePic;
+          });
+        })
+        .catchError((_) {
+          if (mounted) {
+            setState(() {
+              _profilePicCache[sourcePlayerId] = null;
+            });
+          }
+        })
+        .whenComplete(() {
+          _fetchingProfilePics.remove(sourcePlayerId);
+        });
+  }
+
   void _onActivityTap(ActivityEntry entry) async {
     if (_isLoadingFriend) return;
+    widget.sfx.playClick();
     setState(() {
       _isLoadingFriend = true;
     });
@@ -60,6 +93,7 @@ class _ActivityFeedScreenState extends State<ActivityFeedScreen> {
               builder: (context) => CityViewerScreen(
                 snapshot: snapshot,
                 myPlayerName: widget.myPlayerName,
+                sfx: widget.sfx,
               ),
             ),
           );
@@ -174,27 +208,26 @@ class _ActivityFeedScreenState extends State<ActivityFeedScreen> {
                     final isSocial = _isSocialEvent(entry);
                     final avatarColor = _getAvatarColor(entry, context);
 
+                    if (!isSocial) {
+                      _loadProfilePic(entry.sourcePlayerId);
+                    }
+
                     return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: avatarColor,
-                        child: isSocial
-                            ? Icon(
+                      leading: isSocial
+                          ? CircleAvatar(
+                              backgroundColor: avatarColor,
+                              child: Icon(
                                 _getActivityIcon(entry),
                                 color: Theme.of(context).colorScheme.onPrimary,
                                 size: 20,
-                              )
-                            : Text(
-                                entry.sourcePlayerName.isNotEmpty
-                                    ? entry.sourcePlayerName[0].toUpperCase()
-                                    : "?",
-                                style: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onPrimary,
-                                  fontWeight: FontWeight.bold,
-                                ),
                               ),
-                      ),
+                            )
+                          : ProfileAvatar(
+                              profilePic:
+                                  _profilePicCache[entry.sourcePlayerId],
+                              fallbackName: entry.sourcePlayerName,
+                              radius: 20,
+                            ),
                       title: Text(
                         entry.sourcePlayerName,
                         style: const TextStyle(fontWeight: FontWeight.bold),

@@ -191,6 +191,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
               builder: (_) => AddFriendDialog(
                 myFriendCode: state.widget.game.friendCode,
                 currentFriendships: state.friendships,
+                sfx: widget.sfx,
               ),
             );
           }

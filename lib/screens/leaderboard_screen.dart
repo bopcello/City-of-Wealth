@@ -167,6 +167,7 @@ class LeaderboardScreen extends StatelessWidget {
                                 builder: (_) => CityViewerScreen(
                                   snapshot: entry.snapshot!,
                                   myPlayerName: myPlayerName,
+                                  sfx: sfx,
                                 ),
                               ),
                             );

@@ -39,36 +39,57 @@ class FirestoreService {
         "📤 CLOUD SAVE: Syncing ${sanitized.keys.length} fields for user: $uid",
       );
 
-      await _db.collection('players').doc(uid).set({
+      final playerRef = _db.collection('players').doc(uid);
+
+      // This used to be 1 write + 1 read + 2 more writes (4 separate round
+      // trips to Firestore) every single time progress synced — including
+      // once per lifecycle callback when the app closes. It's now a single
+      // read (to know the merged doc shape for the public snapshot)
+      // followed by one batched commit that writes
+      // players/public_cities/public_profiles together as one call.
+      final batch = _db.batch();
+      batch.set(playerRef, {
         ...sanitized,
         'lastUpdated': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-      debugPrint("✅ CLOUD SAVE: Success");
 
-      // Refresh the public_cities snapshot and public_profiles entry —
-      // small, intentionally-public documents, never the full private doc.
       try {
-        final playerDoc = await _db.collection('players').doc(uid).get();
-        if (playerDoc.exists && playerDoc.data() != null) {
-          var snapshot = buildSnapshotFromPlayerData(uid, playerDoc.data()!);
-          if (updatePublicProfilePic) {
-            snapshot = snapshot.copyWith(profilePic: publicProfilePic);
-          }
-          await savePublicCitySnapshot(
-            snapshot,
-            includeProfilePic: updatePublicProfilePic,
-          );
-          await savePublicProfile(
-            uid,
-            snapshot.playerName,
-            snapshot.friendCode,
-          );
+        final playerDoc = await playerRef.get();
+        final mergedData = <String, dynamic>{
+          if (playerDoc.exists && playerDoc.data() != null)
+            ...playerDoc.data()!,
+          ...sanitized,
+        };
+
+        var snapshot = buildSnapshotFromPlayerData(uid, mergedData);
+        if (updatePublicProfilePic) {
+          snapshot = snapshot.copyWith(profilePic: publicProfilePic);
         }
+
+        final publicCityData = snapshot.toJson();
+        if (!updatePublicProfilePic) {
+          publicCityData.remove('profilePic');
+        } else if (snapshot.profilePic == null) {
+          publicCityData['profilePic'] = FieldValue.delete();
+        }
+
+        batch.set(_db.collection('public_cities').doc(uid), {
+          ...publicCityData,
+          'lastUpdatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+
+        batch.set(_db.collection('public_profiles').doc(uid), {
+          'playerName': snapshot.playerName,
+          'friendCode': snapshot.friendCode,
+        });
       } catch (e) {
         debugPrint(
-          "Notice: could not sync public_cities/public_profiles on save: $e",
+          "Notice: could not prepare public_cities/public_profiles sync: $e",
         );
       }
+
+      await batch.commit();
+      debugPrint("✅ CLOUD SAVE: Success (single batched write)");
     } catch (e) {
       debugPrint("❌ CLOUD SAVE: Error - $e");
       rethrow;

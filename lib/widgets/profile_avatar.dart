@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import '../logic/game_manager.dart';
 import '../theme/app_colors.dart';
+import '../services/sfx_manager.dart';
 
 class AvatarPreset {
   final String id;
@@ -145,6 +146,19 @@ class ProfileAvatar extends StatelessWidget {
     this.showBorder = false,
   });
 
+  // Cache decoded custom-photo bytes across rebuilds, keyed by the raw
+  // base64 data string. Without this, every rebuild (typing in a text
+  // field, dragging a volume slider, toggling dark mode, or literally any
+  // GameManager.notifyListeners() call) re-decodes the same base64 string
+  // into a brand-new Uint8List instance. MemoryImage compares its `bytes`
+  // field using plain object equality, so a fresh Uint8List is treated as
+  // a completely new image every time — Flutter drops the previously
+  // rendered frame and briefly shows nothing while it "reloads", exposing
+  // the CircleAvatar's background color (amber/kp) underneath. That flash
+  // is the "blinking yellow" bug. Caching keeps the same Uint8List
+  // instance for the same picture, so the image never appears to reload.
+  static final Map<String, Uint8List> _customImageCache = {};
+
   @override
   Widget build(BuildContext context) {
     final preset = AvatarPresets.getById(profilePic);
@@ -162,6 +176,10 @@ class ProfileAvatar extends StatelessWidget {
           width: radius * 2,
           height: radius * 2,
           fit: BoxFit.cover,
+          // Belt-and-suspenders: even if a genuinely new image is ever
+          // provided, keep showing the last good frame instead of
+          // flashing back to the placeholder background while it loads.
+          gaplessPlayback: true,
           errorBuilder: (_, __, ___) => const Icon(Icons.person),
         ),
       );
@@ -204,10 +222,20 @@ class ProfileAvatar extends StatelessWidget {
 
   static Uint8List? _decodeCustomImage(String? value) {
     if (value == null || !value.startsWith('data:image')) return null;
+    final cached = _customImageCache[value];
+    if (cached != null) return cached;
     final separator = value.indexOf(',');
     if (separator == -1) return null;
     try {
-      return base64Decode(value.substring(separator + 1));
+      final decoded = base64Decode(value.substring(separator + 1));
+      // Keep the cache from growing without bound if a lot of distinct
+      // custom photos are viewed in one session (e.g. scrolling a large
+      // friends list).
+      if (_customImageCache.length > 30) {
+        _customImageCache.clear();
+      }
+      _customImageCache[value] = decoded;
+      return decoded;
     } catch (_) {
       return null;
     }
@@ -216,8 +244,9 @@ class ProfileAvatar extends StatelessWidget {
 
 class EditProfileDialog extends StatefulWidget {
   final GameManager game;
+  final SfxManager sfx;
 
-  const EditProfileDialog({super.key, required this.game});
+  const EditProfileDialog({super.key, required this.game, required this.sfx});
 
   @override
   State<EditProfileDialog> createState() => _EditProfileDialogState();
@@ -314,7 +343,10 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                   itemBuilder: (context, index) {
                     if (index == AvatarPresets.all.length - 1) {
                       return InkWell(
-                        onTap: _pickProfileImage,
+                        onTap: () {
+                          widget.sfx.playClick();
+                          _pickProfileImage();
+                        },
                         borderRadius: BorderRadius.circular(24),
                         child: Container(
                           decoration: BoxDecoration(
@@ -337,6 +369,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                     final isSelected = _selectedPfp == preset.id;
                     return InkWell(
                       onTap: () {
+                        widget.sfx.playClick();
                         setState(() {
                           _selectedPfp = preset.id;
                         });
@@ -418,6 +451,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                           tooltip: "Copy Code",
                           color: theme.colorScheme.onPrimaryContainer,
                           onPressed: () {
+                            widget.sfx.playClick();
                             Clipboard.setData(
                               ClipboardData(text: _currentFriendCode),
                             );
@@ -434,6 +468,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                           tooltip: "Regenerate Code",
                           color: theme.colorScheme.onPrimaryContainer,
                           onPressed: () {
+                            widget.sfx.playClick();
                             setState(() {
                               _currentFriendCode = widget.game
                                   .generateNewFriendCode();
@@ -452,7 +487,10 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       actions: [
         TextButton(
           child: const Text("Cancel"),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            widget.sfx.playClick();
+            Navigator.pop(context);
+          },
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -460,6 +498,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             foregroundColor: theme.colorScheme.onPrimary,
           ),
           onPressed: () {
+            widget.sfx.playClick();
             final newName = _nameController.text.trim();
             if (newName.isNotEmpty) {
               widget.game.updateProfile(

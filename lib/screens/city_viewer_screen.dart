@@ -1,3 +1,4 @@
+import 'package:city_of_wealth/services/sfx_manager.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import '../models/city_sharing_models.dart';
@@ -9,11 +10,13 @@ import '../widgets/profile_avatar.dart';
 class CityViewerScreen extends StatefulWidget {
   final PublicCitySnapshot snapshot;
   final String myPlayerName;
+  final SfxManager sfx;
 
   const CityViewerScreen({
     super.key,
     required this.snapshot,
     required this.myPlayerName,
+    required this.sfx,
   });
 
   @override
@@ -58,6 +61,7 @@ class _CityViewerScreenState extends State<CityViewerScreen> {
   }
 
   void _toggleCheer() async {
+    widget.sfx.playClick();
     if (_activeCheerDocId != null) {
       // --- Remove cheer ---
       final docId = _activeCheerDocId!;

@@ -15,6 +15,7 @@ import '../screens/city_viewer_screen.dart';
 import '../screens/activity_feed_screen.dart';
 import '../screens/leaderboard_screen.dart';
 import '../services/friend_activity_monitor.dart';
+import '../widgets/profile_avatar.dart';
 
 class CityTab extends StatefulWidget {
   final CareerState career;
@@ -203,6 +204,7 @@ class CityTabState extends State<CityTab> {
                     builder: (_) => AddFriendDialog(
                       myFriendCode: widget.game.friendCode,
                       currentFriendships: _friendships,
+                      sfx: widget.sfx,
                     ),
                   );
                 },
@@ -794,6 +796,7 @@ class _FutureFriendCardState extends State<FutureFriendCard> {
                     builder: (_) => CityViewerScreen(
                       snapshot: _snapshot!,
                       myPlayerName: widget.myPlayerName,
+                      sfx: widget.sfx,
                     ),
                   ),
                 );
@@ -803,27 +806,24 @@ class _FutureFriendCardState extends State<FutureFriendCard> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                radius: 26,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                child: _loadingSnapshot
-                    ? SizedBox(
+              _loadingSnapshot
+                  ? CircleAvatar(
+                      radius: 26,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      child: SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),
-                      )
-                    : Text(
-                        name.isNotEmpty ? name[0].toUpperCase() : "?",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
                       ),
-              ),
+                    )
+                  : ProfileAvatar(
+                      profilePic: _snapshot?.profilePic,
+                      fallbackName: name,
+                      radius: 26,
+                    ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -909,6 +909,7 @@ class _FutureFriendCardState extends State<FutureFriendCard> {
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert, size: 20),
                 onSelected: (value) async {
+                  widget.sfx.playClick();
                   if (value == 'block') {
                     widget.onBlock();
                   } else if (value == 'unfriend') {

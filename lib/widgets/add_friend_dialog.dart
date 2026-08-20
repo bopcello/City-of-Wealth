@@ -3,15 +3,18 @@ import 'package:flutter/services.dart';
 import '../services/friends_service.dart';
 import '../models/city_sharing_models.dart';
 import '../theme/app_colors.dart';
+import '../services/sfx_manager.dart';
 
 class AddFriendDialog extends StatefulWidget {
   final String myFriendCode;
   final List<Friendship> currentFriendships;
+  final SfxManager sfx;
 
   const AddFriendDialog({
     super.key,
     required this.myFriendCode,
     required this.currentFriendships,
+    required this.sfx,
   });
 
   @override
@@ -21,7 +24,7 @@ class AddFriendDialog extends StatefulWidget {
 class _AddFriendDialogState extends State<AddFriendDialog> {
   final TextEditingController _searchController = TextEditingController();
   final FriendsService _friendsService = FriendsService();
-  
+
   List<Map<String, dynamic>> _searchResults = [];
   bool _isLoading = false;
   String? _errorMessage;
@@ -30,6 +33,7 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
     final query = _searchController.text.trim();
     if (query.isEmpty) return;
 
+    widget.sfx.playClick();
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -39,7 +43,9 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
     try {
       final results = await _friendsService.searchUsers(query);
       setState(() {
-        _searchResults = results.where((user) => user['uid'] != _friendsService.currentUid).toList();
+        _searchResults = results
+            .where((user) => user['uid'] != _friendsService.currentUid)
+            .toList();
         if (_searchResults.isEmpty) {
           _errorMessage = "No users found matching '$query'";
         }
@@ -56,6 +62,7 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
   }
 
   void _sendRequest(String targetUid) async {
+    widget.sfx.playClick();
     try {
       await _friendsService.sendRequest(targetUid);
       if (!mounted) return;
@@ -78,6 +85,7 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
   }
 
   void _unblockUser(String friendshipId) async {
+    widget.sfx.playClick();
     try {
       await _friendsService.unblockFriend(friendshipId);
       if (!mounted) return;
@@ -105,7 +113,9 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
     // Map of friendship status by user ID
     final Map<String, Friendship> friendMap = {};
     for (var f in widget.currentFriendships) {
-      final otherUid = f.playerA == _friendsService.currentUid ? f.playerB : f.playerA;
+      final otherUid = f.playerA == _friendsService.currentUid
+          ? f.playerB
+          : f.playerA;
       friendMap[otherUid] = f;
     }
 
@@ -126,17 +136,22 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    widget.sfx.playClick();
+                    Navigator.pop(context);
+                  },
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Show current user friend code
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primaryContainer.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -151,7 +166,10 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
                   ),
                   TextButton.icon(
                     onPressed: () {
-                      Clipboard.setData(ClipboardData(text: widget.myFriendCode));
+                      widget.sfx.playClick();
+                      Clipboard.setData(
+                        ClipboardData(text: widget.myFriendCode),
+                      );
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text("Friend code copied!"),
@@ -176,26 +194,28 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
                     decoration: const InputDecoration(
                       hintText: "Enter Friend Code or Name",
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                     ),
                     onSubmitted: (_) => _search(),
                   ),
                 ),
                 const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _search,
-                  child: const Text("Search"),
-                ),
+                ElevatedButton(onPressed: _search, child: const Text("Search")),
               ],
             ),
             const SizedBox(height: 16),
 
             // Results / Loading / Errors
             if (_isLoading)
-              const Center(child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: CircularProgressIndicator(),
-              ))
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(),
+                ),
+              )
             else if (_errorMessage != null)
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -216,7 +236,7 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
                     final userUid = user['uid'] as String;
                     final username = user['playerName'] as String? ?? 'User';
                     final userCode = user['friendCode'] as String? ?? '';
-                    
+
                     final friendship = friendMap[userUid];
                     Widget actionButton;
 
@@ -226,7 +246,8 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
                         child: const Text("Add"),
                       );
                     } else if (friendship.status == 'pending') {
-                      final wasRequestedByMe = friendship.requestedBy == _friendsService.currentUid;
+                      final wasRequestedByMe =
+                          friendship.requestedBy == _friendsService.currentUid;
                       actionButton = Text(
                         wasRequestedByMe ? "Requested" : "Incoming",
                         style: TextStyle(
@@ -240,7 +261,8 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
                       );
                     } else if (friendship.status == 'blocked') {
                       // Only show Unblock if the current user was the one who blocked
-                      final iBlockedThem = friendship.requestedBy == _friendsService.currentUid;
+                      final iBlockedThem =
+                          friendship.requestedBy == _friendsService.currentUid;
                       if (iBlockedThem) {
                         actionButton = OutlinedButton(
                           style: OutlinedButton.styleFrom(
@@ -264,14 +286,12 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
                       actionButton = const SizedBox.shrink();
                     }
 
-
                     return ListTile(
                       title: Text(username),
                       subtitle: Text("Code: $userCode"),
                       trailing: actionButton,
                     );
                   },
-
                 ),
               ),
           ],

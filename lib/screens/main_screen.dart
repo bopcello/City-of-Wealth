@@ -123,6 +123,7 @@ class _MainScreenState extends State<MainScreen> {
         builder: (_) => CityViewerScreen(
           snapshot: snapshot,
           myPlayerName: widget.game.playerName,
+          sfx: widget.sfx,
         ),
       ),
     );

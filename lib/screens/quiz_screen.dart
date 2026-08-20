@@ -248,21 +248,30 @@ class QuizMenuScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isCompleted
-                    ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: 0.5)
                     : (isAvailable
                           ? AppColors.of(context, 'gem')
-                          : Theme.of(context).colorScheme.outline.withValues(alpha: 0.5)),
+                          : Theme.of(
+                              context,
+                            ).colorScheme.outline.withValues(alpha: 0.5)),
                 width: isCompleted ? 1 : 3,
               ),
               color: isCompleted
                   ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.1)
                   : (isAvailable
                         ? AppColors.of(context, 'gem').withValues(alpha: 0.1)
-                        : Theme.of(context).colorScheme.outline.withValues(alpha: 0.1)),
+                        : Theme.of(
+                            context,
+                          ).colorScheme.outline.withValues(alpha: 0.1)),
               boxShadow: (isAvailable && !isCompleted)
                   ? [
                       BoxShadow(
-                        color: AppColors.of(context, 'gem').withValues(alpha: 0.3),
+                        color: AppColors.of(
+                          context,
+                          'gem',
+                        ).withValues(alpha: 0.3),
                         blurRadius: 8,
                         spreadRadius: 2,
                       ),
@@ -354,7 +363,9 @@ class QuizMenuScreen extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.2,
                                   color: isCompleted
-                                      ? Theme.of(context).colorScheme.onSurfaceVariant
+                                      ? Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant
                                       : AppColors.of(context, 'gem'),
                                 ),
                               ),
@@ -372,7 +383,9 @@ class QuizMenuScreen extends StatelessWidget {
                                   child: Text(
                                     "NEW",
                                     style: TextStyle(
-                                      color: Theme.of(context).colorScheme.onPrimary,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimary,
                                       fontSize: 8,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -388,7 +401,9 @@ class QuizMenuScreen extends StatelessWidget {
                               fontSize: 22, // Bigger title
                               fontWeight: FontWeight.bold,
                               color: isCompleted
-                                  ? Theme.of(context).colorScheme.onSurfaceVariant
+                                  ? Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant
                                   : Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
@@ -439,11 +454,15 @@ class QuizMenuScreen extends StatelessWidget {
                             ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: isCompleted
-                                  ? Theme.of(context).colorScheme.onSurfaceVariant
+                                  ? Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant
                                   : AppColors.of(context, 'gem'),
                               side: BorderSide(
                                 color: isCompleted
-                                    ? Theme.of(context).colorScheme.onSurfaceVariant
+                                    ? Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant
                                     : AppColors.of(context, 'gem'),
                               ),
                               padding: const EdgeInsets.symmetric(
@@ -823,9 +842,15 @@ class _QuizScreenState extends State<QuizScreen> {
                         ).colorScheme.surfaceContainerHighest;
                         if (selected != null) {
                           if (originalIndex == q.correctIndex) {
-                            bg = AppColors.of(context, 'success').withValues(alpha: 0.3);
+                            bg = AppColors.of(
+                              context,
+                              'success',
+                            ).withValues(alpha: 0.3);
                           } else if (uiIndex == selected) {
-                            bg = AppColors.of(context, 'error').withValues(alpha: 0.3);
+                            bg = AppColors.of(
+                              context,
+                              'error',
+                            ).withValues(alpha: 0.3);
                           }
                         }
                         return Padding(
@@ -1004,7 +1029,10 @@ class QuizAnalysisScreen extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.of(context, 'kp').withValues(alpha: 0.2),
+                        color: AppColors.of(
+                          context,
+                          'kp',
+                        ).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: AppColors.of(context, 'kp')),
                       ),

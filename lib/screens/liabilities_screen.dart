@@ -578,6 +578,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                 ),
                 value: isInsured,
                 onChanged: (val) {
+                  widget.sfx.playClick();
                   widget.game.toggleInsurance(type);
                 },
                 activeTrackColor: AppColors.of(context, 'success'),

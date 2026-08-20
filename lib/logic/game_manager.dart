@@ -231,11 +231,30 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     musicManager = mm;
   }
 
+  // Tracks the previous app lifecycle state so a background-bound sync is
+  // only triggered once per "leaving the foreground" event, instead of
+  // once per lifecycle callback. Without this, Flutter's normal
+  // resumed -> inactive -> paused transition (which happens as a single
+  // backgrounding/close gesture) fired syncWithCloud(force: true) two or
+  // three times in a row, each one issuing its own set of Firestore writes.
+  AppLifecycleState? _lastLifecycleState;
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    final bool wasForeground =
+        _lastLifecycleState == null ||
+        _lastLifecycleState == AppLifecycleState.resumed;
+    _lastLifecycleState = state;
+
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive ||
         state == AppLifecycleState.detached) {
+      if (!wasForeground) {
+        debugPrint(
+          "📱 App state changed ($state): Already backgrounded, skipping duplicate sync",
+        );
+        return;
+      }
       debugPrint("📱 App state changed ($state): Triggering sync");
       musicManager?.pauseMusic();
       syncWithCloud(force: true);

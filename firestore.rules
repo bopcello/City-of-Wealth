@@ -1,60 +1,166 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Player progress: Only the owner can write; any logged-in user can read to allow search
+    // ---------- helpers ----------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function friendshipDocId(a, b) {
+      return a < b ? a + '_' + b : b + '_' + a;
+    }
+
+    function friendshipExists(a, b) {
+      return exists(/databases/$(database)/documents/friendships/$(friendshipDocId(a, b)));
+    }
+
+    function friendshipData(a, b) {
+      return get(/databases/$(database)/documents/friendships/$(friendshipDocId(a, b))).data;
+    }
+
+    function isAcceptedFriend(a, b) {
+      return friendshipExists(a, b) && friendshipData(a, b).status == 'accepted';
+    }
+
+    // ---------- private player data ----------
     match /players/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
-      
-      // Activity Feed subcollection
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create, update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+
       match /activity_feed/{activityId} {
-        allow read: if request.auth != null && request.auth.uid == userId;
-        // Allow any authenticated user to create (to post cheers or notifications)
-        allow create: if request.auth != null;
-        // Owner can update (mark as seen) or delete; sender can also delete their own cheer
-        allow update: if request.auth != null && request.auth.uid == userId;
-        allow delete: if request.auth != null &&
-          (request.auth.uid == userId || resource.data.sourcePlayerId == request.auth.uid);
+        allow read: if isOwner(userId);
+
+        allow create: if isSignedIn() &&
+          request.resource.data.targetPlayerId == userId &&
+          (
+            // Self-log: owner records something an accepted friend did,
+            // derived from that friend's own public data.
+            (userId == request.auth.uid &&
+             request.resource.data.type == 'session_summary' &&
+             isAcceptedFriend(request.auth.uid, request.resource.data.sourcePlayerId))
+            ||
+            // Push: sender writes an entry into someone else's feed, and
+            // must prove they are who they claim to be and (where relevant)
+            // that a friendship actually exists.
+            (request.auth.uid != userId &&
+             request.resource.data.sourcePlayerId == request.auth.uid &&
+             (
+               (request.resource.data.type == 'cheer' &&
+                isAcceptedFriend(request.auth.uid, userId)) ||
+               (request.resource.data.type == 'friend_request_sent' &&
+                friendshipExists(request.auth.uid, userId)) ||
+               (request.resource.data.type == 'friend_request_accepted' &&
+                isAcceptedFriend(request.auth.uid, userId))
+             ))
+          );
+
+        // Only the "seen" flag may ever be toggled by the feed owner.
+        allow update: if isOwner(userId) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['seen']);
+
+        // Feed owner can clean their own feed; a cheer sender can undo
+        // (delete) only their own cheer entry, nothing else.
+        allow delete: if isOwner(userId) ||
+          (isSignedIn() &&
+           resource.data.sourcePlayerId == request.auth.uid &&
+           resource.data.type == 'cheer');
       }
 
-      // Cheers sent: personal cooldown tracker — only the sender can read/write
-      match /cheers_sent/{targetId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Per-sender cooldown bookkeeping for cheers — purely private to the
+      // sender, never read by anyone else.
+      match /cheers_sent/{targetUid} {
+        allow read, write: if isOwner(userId);
       }
     }
 
-    // Friendships: Only the participating players can view, create, or update the friendship
-    match /friendships/{friendshipId} {
-      allow read, delete: if request.auth != null && 
-        (request.auth.uid == resource.data.playerA || request.auth.uid == resource.data.playerB);
-      allow create: if request.auth != null && 
-        (request.auth.uid == request.resource.data.playerA || request.auth.uid == request.resource.data.playerB);
-      allow update: if request.auth != null && 
-        (request.auth.uid == resource.data.playerA || request.auth.uid == resource.data.playerB) &&
-        (request.auth.uid == request.resource.data.playerA || request.auth.uid == request.resource.data.playerB);
+    // ---------- minimal, intentionally-public search profile ----------
+    match /public_profiles/{uid} {
+      allow get, list: if isSignedIn();
+      allow create, update: if isOwner(uid) &&
+        request.resource.data.keys().hasOnly(['playerName', 'friendCode']) &&
+        request.resource.data.playerName is string &&
+        request.resource.data.playerName.size() > 0 &&
+        request.resource.data.playerName.size() <= 20 &&
+        request.resource.data.friendCode is string &&
+        request.resource.data.friendCode.size() <= 10;
+      allow delete: if isOwner(uid);
     }
 
-    // Public Cities: Authenticated users can read snapshots; only the owner can save/overwrite
-    match /public_cities/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+    // ---------- public city snapshot (friends + self only) ----------
+    match /public_cities/{uid} {
+      allow read: if isSignedIn() &&
+        (isOwner(uid) || isAcceptedFriend(request.auth.uid, uid));
+      allow write: if isOwner(uid);
     }
 
-    // Daily Quizzes: Any logged-in player can read today's quiz
-    match /daily_quizzes/{quizId} {
-      allow read: if request.auth != null;
+    // ---------- friendships ----------
+    match /friendships/{fid} {
+      allow read: if isSignedIn() &&
+        (resource.data.playerA == request.auth.uid ||
+         resource.data.playerB == request.auth.uid);
+
+      allow create: if isSignedIn() &&
+        fid == friendshipDocId(request.resource.data.playerA, request.resource.data.playerB) &&
+        (request.auth.uid == request.resource.data.playerA ||
+         request.auth.uid == request.resource.data.playerB) &&
+        request.resource.data.requestedBy == request.auth.uid &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.playerA < request.resource.data.playerB &&
+        request.resource.data.mutedBy.size() == 0;
+
+      allow update: if isSignedIn() &&
+        (request.auth.uid == resource.data.playerA ||
+         request.auth.uid == resource.data.playerB) &&
+        request.resource.data.playerA == resource.data.playerA &&
+        request.resource.data.playerB == resource.data.playerB &&
+        (
+          // Accept: only the non-requester can flip pending -> accepted.
+          (resource.data.status == 'pending' &&
+           request.resource.data.status == 'accepted' &&
+           request.auth.uid != resource.data.requestedBy &&
+           request.resource.data.requestedBy == resource.data.requestedBy)
+          ||
+          // Block: either participant can block, recording themselves.
+          (request.resource.data.status == 'blocked' &&
+           request.resource.data.requestedBy == request.auth.uid)
+          ||
+          // Mute toggle only.
+          (request.resource.data.status == resource.data.status &&
+           request.resource.data.requestedBy == resource.data.requestedBy &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['mutedBy']))
+        );
+
+      // Decline / unfriend / unblock. A blocked relationship can only be
+      // removed by whoever placed the block.
+      allow delete: if isSignedIn() &&
+        (request.auth.uid == resource.data.playerA ||
+         request.auth.uid == resource.data.playerB) &&
+        (resource.data.status != 'blocked' ||
+         request.auth.uid == resource.data.requestedBy);
     }
 
-    // Metadata: For internal tracking
-    match /daily_quizzes_metadata/{docId} {
-      allow read: if request.auth != null;
+    // ---------- server-written content (Admin SDK bypasses these rules) ----------
+    match /daily_quizzes/{docId} {
+      allow read: if isSignedIn();
+      allow write: if false;
     }
 
-    // Daily Quotes: Any logged-in player can read daily quotes
-    match /daily_quotes/{quoteId} {
-      allow read: if request.auth != null;
+    match /daily_quotes/{docId} {
+      allow read: if isSignedIn();
+      allow write: if false;
     }
 
+    // ---------- default deny ----------
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }
