@@ -188,7 +188,7 @@ class ProfileAvatar extends StatelessWidget {
       avatarContent = Icon(
         preset.icon,
         size: radius * 1.1,
-        color: Colors.white,
+        color: AppColors.of(context, 'onSurface'),
       );
     } else {
       bgColor = AppColors.of(context, 'kp');
@@ -198,7 +198,7 @@ class ProfileAvatar extends StatelessWidget {
       avatarContent = Text(
         initial,
         style: TextStyle(
-          color: Colors.white,
+          color: AppColors.of(context, 'onSurface'),
           fontWeight: FontWeight.bold,
           fontSize: radius * 0.9,
         ),
@@ -389,7 +389,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                           backgroundColor: preset.color,
                           child: Icon(
                             preset.icon,
-                            color: Colors.white,
+                            color: AppColors.of(context, 'onSurface'),
                             size: 20,
                           ),
                         ),

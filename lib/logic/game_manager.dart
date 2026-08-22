@@ -127,6 +127,27 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   int wakeUpMinute = 0;
   bool disasterAlertsEnabled = true;
   bool friendActivityNotificationsEnabled = true;
+  /// Returns whether the player currently meets all criteria to level up / promote.
+  bool get canLevelUp {
+    if (_career.level >= 5) return false;
+    final reqKp = requiredKpFor(_career.track, _career.level + 1);
+    if (_kp < reqKp) return false;
+
+    if (_career.level > 1) {
+      final info = getCareerLevelInfo(_career);
+      if (info != null) {
+        for (var bName in info.unlockedBuildings) {
+          bool exists = cityLayout.any((pb) => pb.name == bName);
+          if (!exists) return false;
+        }
+      }
+    }
+
+    final mediumCount = countCompletedMediumQuizzes(completedQuizzes, _career.level);
+    final hardCount = countCompletedHardQuizzes(completedQuizzes, _career.level);
+    return mediumCount >= 10 && hardCount >= 1;
+  }
+
   GameStats stats = GameStats();
   MusicManager? musicManager;
   int _selectedIndex = 0;

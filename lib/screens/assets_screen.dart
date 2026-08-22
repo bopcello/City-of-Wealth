@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
 import '../widgets/icon_text.dart';
+import '../widgets/shiny_button.dart';
 import '../services/sfx_manager.dart';
 import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';
@@ -89,10 +90,16 @@ class AssetsScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 20),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.of(context, 'gem').withValues(alpha: 0.1),
+                      color: AppColors.of(
+                        context,
+                        'gem',
+                      ).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: AppColors.of(context, 'gem').withValues(alpha: 0.3),
+                        color: AppColors.of(
+                          context,
+                          'gem',
+                        ).withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -136,6 +143,7 @@ class AssetsScreen extends StatelessWidget {
                   final discountedCost = (originalCost * (1 - discount))
                       .round();
                   final sellPrice = assetSellPrice(type);
+                  final canAfford = gems >= discountedCost;
                   final ownedCount = game.assets.count(type);
 
                   return Container(
@@ -169,9 +177,9 @@ class AssetsScreen extends StatelessWidget {
                             Text(
                               "Owned: $ownedCount",
                               style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -182,13 +190,19 @@ class AssetsScreen extends StatelessWidget {
                           children: [
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.of(context, 'error').withValues(
-                                  alpha: 0.1,
-                                ),
+                                backgroundColor: AppColors.of(
+                                  context,
+                                  'error',
+                                ).withValues(alpha: 0.1),
                                 foregroundColor: AppColors.of(context, 'error'),
+                                shape: const StadiumBorder(),
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
+                                  horizontal: 14,
+                                  vertical: 10,
                                 ),
+                                elevation: 0,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                minimumSize: Size.zero,
                               ),
                               onPressed: ownedCount > 0
                                   ? () {
@@ -199,11 +213,14 @@ class AssetsScreen extends StatelessWidget {
                               child: IconText("Sell ($sellPrice [GEM])"),
                             ),
                             const SizedBox(width: 8),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                ),
+                            ShinyButton(
+                              isShiny: canAfford,
+                              backgroundColor: AppColors.of(context, 'success'),
+                              useStadiumShape: true,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 10,
                               ),
                               onPressed: () {
                                 sfx.playBuy();
@@ -219,10 +236,10 @@ class AssetsScreen extends StatelessWidget {
                                       style: TextStyle(
                                         decoration: TextDecoration.lineThrough,
                                         fontSize: 12,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant
-                                            .withValues(alpha: 0.7),
+                                        color: AppColors.of(
+                                          context,
+                                          'onSurfaceVariant',
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(width: 4),

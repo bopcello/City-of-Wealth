@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../game_state.dart';
 import '../widgets/icon_text.dart';
+import '../widgets/shiny_button.dart';
 import '../theme/app_colors.dart';
 import '../services/sfx_manager.dart';
 
@@ -29,7 +30,8 @@ class _CareerScreenState extends State<CareerScreen> {
   }
 
   Widget _buildScaffold(BuildContext context) {
-    final bool isBackAllowed = !widget.game.isTutorialActive || widget.game.isTutorialBackAllowed;
+    final bool isBackAllowed =
+        !widget.game.isTutorialActive || widget.game.isTutorialBackAllowed;
 
     return PopScope(
       canPop: isBackAllowed,
@@ -40,7 +42,8 @@ class _CareerScreenState extends State<CareerScreen> {
           }
           return;
         }
-        if (widget.game.isTutorialActive && !widget.game.isTutorialBackAllowed) {
+        if (widget.game.isTutorialActive &&
+            !widget.game.isTutorialBackAllowed) {
           widget.game.onBackGestureIntercepted?.call();
         }
       },
@@ -73,33 +76,33 @@ class _CareerScreenState extends State<CareerScreen> {
                   key: ValueKey(
                     '${widget.game.career.track}-${widget.game.career.level}',
                   ),
-              career: widget.game.career,
-              sfx: widget.sfx,
-              currentKp: widget.game.kp,
-              cityLayout: widget.game.cityLayout,
-              onCareerChange: widget.game.updateCareer,
-              completedQuizzes: widget.game.completedQuizzes,
-              isWorkingOvertime: widget.game.isWorkingOvertime,
-              onWorkOvertime: widget.game.workOvertime,
-              ),
-            ),
-            const SizedBox(height: 24),
-            _CareerProgress(career: widget.game.career),
-            if (widget.game.career.level == 1) ...[
-              const SizedBox(height: 32),
-              _CareerHint(),
-            ] else if (widget.game.career.level <= 4) ...[
-              const SizedBox(height: 32),
-              _CareerCard(
-                career: CareerState(
-                  track: widget.game.career.track,
-                  level: widget.game.career.level + 1,
+                  career: widget.game.career,
+                  sfx: widget.sfx,
+                  currentKp: widget.game.kp,
+                  cityLayout: widget.game.cityLayout,
+                  onCareerChange: widget.game.updateCareer,
+                  completedQuizzes: widget.game.completedQuizzes,
+                  isWorkingOvertime: widget.game.isWorkingOvertime,
+                  onWorkOvertime: widget.game.workOvertime,
                 ),
               ),
+              const SizedBox(height: 24),
+              _CareerProgress(career: widget.game.career),
+              if (widget.game.career.level == 1) ...[
+                const SizedBox(height: 32),
+                _CareerHint(),
+              ] else if (widget.game.career.level <= 4) ...[
+                const SizedBox(height: 32),
+                _CareerCard(
+                  career: CareerState(
+                    track: widget.game.career.track,
+                    level: widget.game.career.level + 1,
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -312,149 +315,155 @@ class _CareerHeroCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            if (hasNextLevel && _getRequiredBuildings().isNotEmpty) ...[
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
+          ],
+          if (hasNextLevel && _getRequiredBuildings().isNotEmpty) ...[
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: hasAllBuildings
+                    ? AppColors.of(context, 'success').withValues(alpha: 0.1)
+                    : AppColors.of(context, 'error').withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
                   color: hasAllBuildings
-                      ? AppColors.of(context, 'success').withValues(alpha: 0.1)
-                      : AppColors.of(context, 'error').withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: hasAllBuildings
-                        ? AppColors.of(
-                            context,
-                            'success',
-                          ).withValues(alpha: 0.5)
-                        : AppColors.of(context, 'error').withValues(alpha: 0.5),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      hasAllBuildings
-                          ? "Required Buildings (Complete):"
-                          : "Required Buildings:",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: hasAllBuildings
-                            ? AppColors.of(context, 'success')
-                            : AppColors.of(context, 'error'),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    ..._getRequiredBuildings().map((b) {
-                      final isBuilt = _isBuildingBuilt(b);
-                      return Text(
-                        "• $b",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isBuilt
-                              ? AppColors.of(context, 'success')
-                              : AppColors.of(context, 'error'),
-                        ),
-                      );
-                    }),
-                  ],
+                      ? AppColors.of(context, 'success').withValues(alpha: 0.5)
+                      : AppColors.of(context, 'error').withValues(alpha: 0.5),
                 ),
               ),
-              const SizedBox(height: 12),
-            ],
-            if (hasNextLevel) ...[
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: isQuizRequirementMet
-                      ? AppColors.of(context, 'success').withValues(alpha: 0.1)
-                      : AppColors.of(context, 'error').withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isQuizRequirementMet
-                        ? AppColors.of(
-                            context,
-                            'success',
-                          ).withValues(alpha: 0.5)
-                        : AppColors.of(context, 'error').withValues(alpha: 0.5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    hasAllBuildings
+                        ? "Required Buildings (Complete):"
+                        : "Required Buildings:",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: hasAllBuildings
+                          ? AppColors.of(context, 'success')
+                          : AppColors.of(context, 'error'),
+                    ),
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      isQuizRequirementMet
-                          ? "Required Quizzes (Complete):"
-                          : "Required Quizzes:",
+                  const SizedBox(height: 4),
+                  ..._getRequiredBuildings().map((b) {
+                    final isBuilt = _isBuildingBuilt(b);
+                    return Text(
+                      "• $b",
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: isQuizRequirementMet
+                        color: isBuilt
                             ? AppColors.of(context, 'success')
                             : AppColors.of(context, 'error'),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "• Medium Quizzes: ${_getMediumQuizCount()}/10",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: _getMediumQuizCount() >= 10
-                            ? AppColors.of(context, 'success')
-                            : AppColors.of(context, 'error'),
-                      ),
-                    ),
-                    Text(
-                      "• Hard Quizzes: ${_getHardQuizCount()}/1",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: _getHardQuizCount() >= 1
-                            ? AppColors.of(context, 'success')
-                            : AppColors.of(context, 'error'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: canAdvance
-                    ? () {
-                        if (career.track == CareerTrack.student) {
-                          sfx.playClick();
-                          _openCareerChoice(context);
-                        } else {
-                          _advance();
-                        }
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: canAdvance
-                      ? AppColors.of(context, 'success')
-                      : Theme.of(context).colorScheme.outline,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: Text(
-                  career.track == CareerTrack.student
-                      ? "Choose career path"
-                      : "Advance to next level",
-                ),
+                    );
+                  }),
+                ],
               ),
             ),
             const SizedBox(height: 12),
-            KeyedSubtree(
-              key: TutorialKeys.careerOvertimeKey,
-              child: SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: isWorkingOvertime
+          ],
+          if (hasNextLevel) ...[
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isQuizRequirementMet
+                    ? AppColors.of(context, 'success').withValues(alpha: 0.1)
+                    : AppColors.of(context, 'error').withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isQuizRequirementMet
+                      ? AppColors.of(context, 'success').withValues(alpha: 0.5)
+                      : AppColors.of(context, 'error').withValues(alpha: 0.5),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isQuizRequirementMet
+                        ? "Required Quizzes (Complete):"
+                        : "Required Quizzes:",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: isQuizRequirementMet
+                          ? AppColors.of(context, 'success')
+                          : AppColors.of(context, 'error'),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "• Medium Quizzes: ${_getMediumQuizCount()}/10",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _getMediumQuizCount() >= 10
+                          ? AppColors.of(context, 'success')
+                          : AppColors.of(context, 'error'),
+                    ),
+                  ),
+                  Text(
+                    "• Hard Quizzes: ${_getHardQuizCount()}/1",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _getHardQuizCount() >= 1
+                          ? AppColors.of(context, 'success')
+                          : AppColors.of(context, 'error'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+          SizedBox(
+            width: double.infinity,
+            child: canAdvance
+                ? ShinyButton(
+                    backgroundColor: AppColors.of(context, 'success'),
+                    onPressed: () {
+                      if (career.track == CareerTrack.student) {
+                        sfx.playClick();
+                        _openCareerChoice(context);
+                      } else {
+                        _advance();
+                      }
+                    },
+                    child: Text(
+                      career.track == CareerTrack.student
+                          ? "Choose career path"
+                          : "Advance to next level",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.of(context, 'onSurface'),
+                      ),
+                    ),
+                  )
+                : ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.outline,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    child: Text(
+                      career.track == CareerTrack.student
+                          ? "Choose career path"
+                          : "Advance to next level",
+                    ),
+                  ),
+          ),
+          const SizedBox(height: 12),
+          KeyedSubtree(
+            key: TutorialKeys.careerOvertimeKey,
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: isWorkingOvertime
                     ? null
                     : () {
                         sfx.playClick();
@@ -503,8 +512,7 @@ class _CareerHeroCard extends StatelessWidget {
                 ),
               ),
             ),
-            ),
-          ],
+          ),
         ],
       ),
     );

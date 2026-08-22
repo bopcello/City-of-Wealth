@@ -930,4 +930,316 @@ class NotificationData {
     if (parts.length == 1) return '$friendName ${parts.first}.';
     return '$friendName ${parts.sublist(0, parts.length - 1).join(', ')} and ${parts.last}.';
   }
+
+  // ---------------------------------------------------------------------------
+  // Daily Reminder Notification Sets (5 sets with rich, personalised data)
+  // ---------------------------------------------------------------------------
+
+  /// Set 1: KP Level Sprint — how close you are to the next level
+  static const List<(String, String)> dailyReminderKpSprint = [
+    (
+      "You are just {kpNeeded} KP away from the next level!",
+      "That's only {daysNeeded} days of 100 KP everyday.",
+    ),
+    (
+      "{kpNeeded} KP to go, {name}!",
+      "Keep it up for {daysNeeded} more days and you'll level up.",
+    ),
+    (
+      "So close to the next level",
+      "Just {kpNeeded} KP left — earn 100 KP a day and you're there in {daysNeeded} days.",
+    ),
+    (
+      "Level up is within reach, {name}",
+      "Only {kpNeeded} KP separates you from your next title.",
+    ),
+    (
+      "Almost there!",
+      "{kpNeeded} KP to your next milestone. That's roughly {daysNeeded} days of solid play.",
+    ),
+  ];
+
+  /// Set 2: Quiz Progression — quizzes needed to level up + gem boost teaser
+  static const List<(String, String)> dailyReminderQuizProgression = [
+    (
+      "You need to attempt just {quizzesNeeded} {difficulty} quizzes to level up!",
+      "Do just one quiz a day for {daysNeeded} days to level and get a massive boost of {gemYield} gems per day.",
+    ),
+    (
+      "Just {quizzesNeeded} quizzes away, {name}",
+      "Complete one {difficulty} quiz daily and unlock {gemYield} extra gems per day.",
+    ),
+    (
+      "{quizzesNeeded} quizzes to your next level",
+      "That's {daysNeeded} days of one quiz a day — then {gemYield} more gems daily.",
+    ),
+    (
+      "Level up in {daysNeeded} days?",
+      "Attempt {quizzesNeeded} {difficulty} quizzes and boost your gems by {gemYield}/day.",
+    ),
+    (
+      "Your gem boost is {quizzesNeeded} quizzes away",
+      "One {difficulty} quiz a day for {daysNeeded} days unlocks {gemYield} extra gems daily.",
+    ),
+  ];
+
+  /// Set 3: Passive Income & Building Opportunities (Level > 1 players)
+  static const List<(String, String)> dailyReminderPassiveIncome = [
+    (
+      "You can build {buildingCount} more {buildingName} to earn {gemYield} gems more per day!",
+      "Level up to expand your city skyline and scale your daily passive income.",
+    ),
+    (
+      "Ready to scale, {name}?",
+      "Constructing {buildingCount} more {buildingName} will boost your yield by {gemYield} gems daily.",
+    ),
+    (
+      "So many passive income streams waiting for you",
+      "{buildingCount} more {buildingName} could add {gemYield} gems to your daily income.",
+    ),
+    (
+      "Your city has room for {buildingCount} more {buildingName}",
+      "That's {gemYield} more gems flowing in every single day.",
+    ),
+    (
+      "Passive income upgrade available",
+      "Build {buildingCount} {buildingName} and watch {gemYield} extra gems roll in daily, {name}.",
+    ),
+  ];
+
+  /// Set 4: Career Track Decision (Level 1 players)
+  static const List<(String, String)> dailyReminderCareerTrack = [
+    (
+      "Which track will you choose, {name}?",
+      "Business or Job — start your journey in City of Wealth and build your first {buildingName}.",
+    ),
+    (
+      "Business or Job track?",
+      "Pick your path and earn your first {gemYield} gems per day.",
+    ),
+    (
+      "Your financial story starts with one decision",
+      "Business or Job? Choose your track and start earning gems, {name}.",
+    ),
+    (
+      "Two paths, one city, {name}",
+      "Business or Job — decide today and unlock your first income stream.",
+    ),
+    (
+      "Time to choose your career, {name}",
+      "Business or Job? Your first {buildingName} is waiting to be built.",
+    ),
+  ];
+
+  /// Set 5: Polite Motivational "Ragebait" — subtle, respectful nudges
+  static const List<(String, String)> dailyReminderMotivational = [
+    (
+      "Your city would love someone with more KP to lead it",
+      "You're just {kpNeeded} KP away from proving your strategy. Attempt today's quiz!",
+    ),
+    (
+      "Is {kpNeeded} KP really going to stand between you and level {level}?",
+      "Solve today's quiz and earn {gemYield} extra gems daily.",
+    ),
+    (
+      "You could be building {buildingCount} more {buildingName} right now...",
+      "A quick quiz today gets you the KP to unlock them.",
+    ),
+    (
+      "Your city skyline is looking a bit modest...",
+      "Nothing a few correct answers and {kpNeeded} more KP can't fix.",
+    ),
+    (
+      "Other mayors are expanding while you rest",
+      "Take 2 minutes to claim your edge and add {gemYield} gems to your daily yield.",
+    ),
+  ];
+
+  // ---------------------------------------------------------------------------
+  // Polite Retention Notifications (20 notifications with rich data)
+  // ---------------------------------------------------------------------------
+
+  static const List<(String, String)> politeRetentionNotifications = [
+    (
+      "Think fast, you're in a room of investors",
+      "How can you participate in the conversation if you haven't played City of Wealth?",
+    ),
+    (
+      "Your future self called",
+      "They wanted to see if you built your empire and claimed your {gemYield} gems today.",
+    ),
+    (
+      "Markets move fast, {name}",
+      "Take 2 minutes to inspect your {buildingName} and keep your income growing.",
+    ),
+    (
+      "Quiet day in your portfolio?",
+      "Log in to claim your yield and build {buildingCount} more {buildingName} for {gemYield} extra gems daily.",
+    ),
+    (
+      "Your city needs its mayor",
+      "Decisions don't make themselves — come back and manage your {buildingName}!",
+    ),
+    (
+      "Ready for today's board meeting?",
+      "Your assets are working hard — time to plan your next {gemYield} gem expansion.",
+    ),
+    (
+      "Consistency compounds",
+      "A quick 1-minute check-in keeps your {buildingName} yield compounding.",
+    ),
+    (
+      "Don't leave {gemYield} gems on the table",
+      "Your passive cash flow from your {buildingName} is waiting.",
+    ),
+    (
+      "Small decisions, massive returns",
+      "Attempt today's quiz to unlock {buildingCount} more {buildingName}.",
+    ),
+    (
+      "Your financial empire is waiting",
+      "Check in now to optimise your building yields by {gemYield} gems/day.",
+    ),
+    (
+      "Is your portfolio ready for level {level}?",
+      "You are just {kpNeeded} KP away. Open City of Wealth and see.",
+    ),
+    (
+      "A quick financial sanity check?",
+      "See how your {buildingName} income stands against top players today.",
+    ),
+    (
+      "Wealth isn't built overnight — it's built daily",
+      "Take 60 seconds to boost your yield by {gemYield} gems.",
+    ),
+    (
+      "Your assets don't sleep, {name}",
+      "Make sure your {buildingName} strategy is set for maximum growth.",
+    ),
+    (
+      "Got 2 minutes to spare?",
+      "Turn idle time into {gemYield} gems per day with today's quick quiz.",
+    ),
+    (
+      "Your competition is making moves",
+      "Other mayors are building {buildingName} — check your stats and keep pace.",
+    ),
+    (
+      "From rookie to real estate mogul",
+      "Every daily check-in brings you {gemYield} gems closer to top rank.",
+    ),
+    (
+      "Smart money moves start with daily practice",
+      "Test your knowledge, gain {kpNeeded} KP, and level up.",
+    ),
+    (
+      "Your city's economy is buzzing",
+      "Come see how many gems your {buildingName} banked while you were away.",
+    ),
+    (
+      "The best time to build your next {buildingName} was yesterday",
+      "The second best time is right now!",
+    ),
+  ];
+
+  // ---------------------------------------------------------------------------
+  // Helper: random building name for placeholder defaults
+  // ---------------------------------------------------------------------------
+
+  static const List<String> _buildingNames = [
+    'Farms',
+    'IT Service Centers',
+    'Distribution Centers',
+    'Apartments',
+    'Factories',
+  ];
+
+  static String _randomBuildingName() => _randomElement(_buildingNames);
+
+  // ---------------------------------------------------------------------------
+  // Daily Reminder helper
+  // ---------------------------------------------------------------------------
+
+  /// Returns a personalised daily reminder notification.
+  ///
+  /// [level] drives which set is used:
+  /// - Level 1 players may receive career-track prompts (Set 4).
+  /// - Level > 1 players may receive passive-income building prompts (Set 3).
+  /// - Sets 1, 2, and 5 are available at any level.
+  ///
+  /// All placeholder values have sensible defaults so the template is always
+  /// safe to format even if the caller cannot supply every value.
+  static (String, String) getRandomDailyReminderNotification({
+    required String name,
+    int level = 1,
+    int kpNeeded = 100,
+    int daysNeeded = 3,
+    int quizzesNeeded = 3,
+    String difficulty = 'medium',
+    int buildingCount = 2,
+    String? buildingName,
+    int gemYield = 50,
+  }) {
+    final effectiveBuildingName = buildingName ?? _randomBuildingName();
+
+    // Build a pool of eligible sets based on the player's level
+    final pool = <List<(String, String)>>[
+      dailyReminderKpSprint,
+      dailyReminderQuizProgression,
+      dailyReminderMotivational,
+    ];
+    if (level <= 1) {
+      pool.add(dailyReminderCareerTrack);
+    } else {
+      pool.add(dailyReminderPassiveIncome);
+    }
+
+    final selectedSet = _randomElement(pool);
+    final choice = _randomElement(selectedSet);
+
+    final placeholders = <String, String>{
+      'name': name,
+      'level': level.toString(),
+      'kpNeeded': kpNeeded.toString(),
+      'daysNeeded': daysNeeded.toString(),
+      'quizzesNeeded': quizzesNeeded.toString(),
+      'difficulty': difficulty,
+      'buildingCount': buildingCount.toString(),
+      'buildingName': effectiveBuildingName,
+      'gemYield': gemYield.toString(),
+    };
+
+    return (_format(choice.$1, placeholders), _format(choice.$2, placeholders));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Polite Retention helper
+  // ---------------------------------------------------------------------------
+
+  /// Returns a personalised polite retention notification.
+  ///
+  /// All placeholder values have sensible defaults so the template is always
+  /// safe to format even if the caller cannot supply every value.
+  static (String, String) getRandomPoliteRetentionNotification({
+    required String name,
+    int level = 2,
+    int kpNeeded = 100,
+    int buildingCount = 2,
+    String? buildingName,
+    int gemYield = 50,
+  }) {
+    final effectiveBuildingName = buildingName ?? _randomBuildingName();
+    final choice = _randomElement(politeRetentionNotifications);
+
+    final placeholders = <String, String>{
+      'name': name,
+      'level': level.toString(),
+      'kpNeeded': kpNeeded.toString(),
+      'buildingCount': buildingCount.toString(),
+      'buildingName': effectiveBuildingName,
+      'gemYield': gemYield.toString(),
+    };
+
+    return (_format(choice.$1, placeholders), _format(choice.$2, placeholders));
+  }
 }

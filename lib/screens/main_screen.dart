@@ -7,6 +7,7 @@ import '../services/music_manager.dart';
 import '../services/sfx_manager.dart';
 import '../widgets/icon_text.dart';
 import '../widgets/tutorial_overlay.dart';
+import '../widgets/shiny_button.dart';
 import '../tabs/home_tab.dart';
 import '../tabs/city_tab.dart';
 import '../tabs/money_tab.dart';
@@ -226,11 +227,13 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {});
   }
 
+  bool _dismissedLevelUpPopup = false;
+
   @override
   Widget build(BuildContext context) {
     final game = widget.game;
     if (!game.loaded) {
-      return const LoadingScreen();
+      return LoadingScreen(game: game, sfx: widget.sfx);
     }
 
     final bool canPop = !game.isTutorialActive && game.selectedIndex == 0;
@@ -241,276 +244,292 @@ class _MainScreenState extends State<MainScreen> {
       ('Revivals', game.streakRevivals),
     ]);
 
-    return PopScope(
-      canPop: canPop,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        if (game.isTutorialActive) {
-          game.onBackGestureIntercepted?.call();
-          return;
-        }
-        widget.sfx.playBack();
-        if (game.selectedIndex != 0) {
-          game.selectedIndex = 0;
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              KeyedSubtree(
-                key: TutorialKeys.kpKey,
-                child: CounterChip(
-                  label: "[KP]",
-                  value: game.kp,
-                  prefix: "KP",
-                  compact: compactCounters,
-                ),
-              ),
-              KeyedSubtree(
-                key: TutorialKeys.gemsKey,
-                child: CounterChip(
-                  label: "[GEM]",
-                  value: game.gems,
-                  prefix: "Gems",
-                  compact: compactCounters,
-                ),
-              ),
-            ],
-          ),
-          centerTitle: false,
-          actions: [
-            KeyedSubtree(
-              key: TutorialKeys.streakKey,
-              child: CounterChip(
-                label: "[STREAK]",
-                value: game.dailyQuizStreak,
-                prefix: "Streak",
-                compact: compactCounters,
-              ),
-            ),
-            KeyedSubtree(
-              key: TutorialKeys.revivalsKey,
-              child: CounterChip(
-                label: "[REVIVAL]",
-                value: game.streakRevivals,
-                prefix: "Revivals",
-                compact: compactCounters,
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-        ),
-        body: IndexedStack(
-          index: game.selectedIndex,
-          children: [
-            HomeTab(
-              profilePic: game.profilePic,
-              kp: game.kp,
-              gems: game.gems,
-              career: game.career,
-              events: game.pendingEvents,
-              rentChoice: game.rentChoice,
-              foodChoice: game.foodChoice,
-              transportChoice: game.transportChoice,
-              assets: game.assets,
-              onClearEvents: game.clearEvents,
-              dailyQuizAvailable:
-                  game.lastDailyQuizDate !=
-                  DateFormat('yyyy-MM-dd').format(DateTime.now()),
-              sfx: widget.sfx,
-              recentVisitedMoneyTiles: game.recentVisitedMoneyTiles,
-              playerName: game.playerName,
-              dailyQuoteText: game.todayQuoteText,
-              dailyQuoteAuthor: game.todayQuoteAuthor,
-              onMoneyTileTap: (title) {
-                if (title == "Quiz") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => QuizMenuScreen(
-                        game: game,
-                        music: widget.music,
-                        sfx: widget.sfx,
-                      ),
-                    ),
-                  );
-                }
-                if (title == "Career") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CareerScreen(game: game, sfx: widget.sfx),
-                    ),
-                  );
-                }
-                if (title == "Assets") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AssetsScreen(
-                        assets: game.assets,
-                        gems: game.gems,
-                        streak: game.dailyQuizStreak,
-                        onBuyAsset: (type) => game.buyAsset(type, 1, context),
-                        onSellAsset: (type) => game.sellAsset(type),
-                        sfx: widget.sfx,
-                        game: game,
-                      ),
-                    ),
-                  );
-                }
-                if (title == "Liabilities") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LiabilitiesScreen(
-                        game: game,
-                        currentRent: game.rentChoice,
-                        currentFood: game.foodChoice,
-                        currentTransport: game.transportChoice,
-                        onSelectionChanged: game.updateLiabilities,
-                        sfx: widget.sfx,
-                      ),
-                    ),
-                  );
-                }
-                if (title == "Passive Income") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          PassiveIncomeScreen(game: game, sfx: widget.sfx),
-                    ),
-                  );
-                }
-              },
-            ),
-            CityTab(
-              key: TutorialKeys.cityTabKey,
-              career: game.career,
-              gems: game.gems,
-              assets: game.assets,
-              cityLayout: game.cityLayout,
-              insurances: game.insurances,
-              activePassiveIncomes: game.activePassiveIncomes,
-              hasWall: game.hasWall,
-              sfx: widget.sfx,
-              onBuyAsset: (AssetType type, int amount) {
-                game.buyAsset(type, amount, context);
-              },
-              onPlaceBuilding: game.placeBuilding,
-              onRemoveBuilding: game.removeBuilding,
-              onBuyWall: game.buyWall,
-              game: game,
-            ),
-            MoneyTab(
-              game: game,
-              music: widget.music,
-              sfx: widget.sfx,
-              currentKp: game.kp,
-              playerName: game.playerName,
-              career: game.career,
-              gems: game.gems,
-              assets: game.assets,
-              rent: game.rentChoice,
-              food: game.foodChoice,
-              transport: game.transportChoice,
-              cityLayout: game.cityLayout,
-              insurances: game.insurances,
-              bankruptcyCount: game.bankruptcyCount,
-              completedQuizzes: game.completedQuizzes,
-              onKpChange: game.updateKp,
-              onInsuranceToggle: game.toggleInsurance,
-              onSellAsset: game.sellAsset,
-              onBankruptcy: () => game.declareBankruptcy(context),
-              onCareerChange: game.updateCareer,
-              onBuyAsset: (type, amount) {
-                game.buyAsset(type, amount, context);
-              },
-              onLiabilitiesChange: game.updateLiabilities,
-              onQuizComplete: game.markQuizCompleted,
-              isWorkingOvertime: game.isWorkingOvertime,
-              onWorkOvertime: game.workOvertime,
-              activePassiveIncomes: game.activePassiveIncomes,
-              onInvestInPassiveIncome: game.investInPassiveIncome,
-              gameListenable: game,
-            ),
-            SettingsTab(
-              isActive: game.selectedIndex == 3,
-              game: game,
-              career: game.career,
-              isDarkMode: game.isDarkMode,
-              musicVolume: game.musicVolume,
-              sfxVolume: game.sfxVolume,
-              sfx: widget.sfx,
-              onThemeToggle: game.toggleTheme,
-              onMusicVolumeChanged: game.updateMusicVolume,
-              onSfxVolumeChanged: game.updateSfxVolume,
-              onCloudSync: () async {
-                final confirm = await showDialog<bool>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text("Cloud Sync"),
-                    content: const Text(
-                      "Do you want to reload your progress from the cloud? This will overwrite your current local session data.",
-                    ),
-                    actions: [
-                      TextButton(
-                        child: const Text("Cancel"),
-                        onPressed: () => Navigator.pop(context, false),
-                      ),
-                      TextButton(
-                        child: const Text("Reload from Cloud"),
-                        onPressed: () => Navigator.pop(context, true),
-                      ),
-                    ],
-                  ),
-                );
-
-                if (confirm == true) {
-                  await game.forceCloudLoad();
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Cloud progress loaded!")),
-                    );
-                  }
-                }
-              },
-            ),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: game.selectedIndex,
-          onTap: (index) {
-            widget.sfx.playClick();
-            game.selectedIndex = index;
+    return Stack(
+      children: [
+        PopScope(
+          canPop: canPop,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            if (game.isTutorialActive) {
+              game.onBackGestureIntercepted?.call();
+              return;
+            }
+            widget.sfx.playBack();
+            if (game.selectedIndex != 0) {
+              game.selectedIndex = 0;
+            }
           },
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          selectedItemColor: Theme.of(context).colorScheme.primary,
-          unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
-          items: [
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: "Home",
+          child: Scaffold(
+            appBar: AppBar(
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  KeyedSubtree(
+                    key: TutorialKeys.kpKey,
+                    child: CounterChip(
+                      label: "[KP]",
+                      value: game.kp,
+                      prefix: "KP",
+                      compact: compactCounters,
+                    ),
+                  ),
+                  KeyedSubtree(
+                    key: TutorialKeys.gemsKey,
+                    child: CounterChip(
+                      label: "[GEM]",
+                      value: game.gems,
+                      prefix: "Gems",
+                      compact: compactCounters,
+                    ),
+                  ),
+                ],
+              ),
+              centerTitle: false,
+              actions: [
+                KeyedSubtree(
+                  key: TutorialKeys.streakKey,
+                  child: CounterChip(
+                    label: "[STREAK]",
+                    value: game.dailyQuizStreak,
+                    prefix: "Streak",
+                    compact: compactCounters,
+                  ),
+                ),
+                KeyedSubtree(
+                  key: TutorialKeys.revivalsKey,
+                  child: CounterChip(
+                    label: "[REVIVAL]",
+                    value: game.streakRevivals,
+                    prefix: "Revivals",
+                    compact: compactCounters,
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.location_city, key: TutorialKeys.tabCityKey),
-              label: "City",
+            body: IndexedStack(
+              index: game.selectedIndex,
+              children: [
+                HomeTab(
+                  profilePic: game.profilePic,
+                  kp: game.kp,
+                  gems: game.gems,
+                  career: game.career,
+                  events: game.pendingEvents,
+                  rentChoice: game.rentChoice,
+                  foodChoice: game.foodChoice,
+                  transportChoice: game.transportChoice,
+                  assets: game.assets,
+                  onClearEvents: game.clearEvents,
+                  dailyQuizAvailable:
+                      game.lastDailyQuizDate !=
+                      DateFormat('yyyy-MM-dd').format(DateTime.now()),
+                  sfx: widget.sfx,
+                  recentVisitedMoneyTiles: game.recentVisitedMoneyTiles,
+                  playerName: game.playerName,
+                  dailyQuoteText: game.todayQuoteText,
+                  dailyQuoteAuthor: game.todayQuoteAuthor,
+                  onMoneyTileTap: (title) {
+                    if (title == "Quiz") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => QuizMenuScreen(
+                            game: game,
+                            music: widget.music,
+                            sfx: widget.sfx,
+                          ),
+                        ),
+                      );
+                    }
+                    if (title == "Career") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              CareerScreen(game: game, sfx: widget.sfx),
+                        ),
+                      );
+                    }
+                    if (title == "Assets") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AssetsScreen(
+                            assets: game.assets,
+                            gems: game.gems,
+                            streak: game.dailyQuizStreak,
+                            onBuyAsset: (type) =>
+                                game.buyAsset(type, 1, context),
+                            onSellAsset: (type) => game.sellAsset(type),
+                            sfx: widget.sfx,
+                            game: game,
+                          ),
+                        ),
+                      );
+                    }
+                    if (title == "Liabilities") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => LiabilitiesScreen(
+                            game: game,
+                            currentRent: game.rentChoice,
+                            currentFood: game.foodChoice,
+                            currentTransport: game.transportChoice,
+                            onSelectionChanged: game.updateLiabilities,
+                            sfx: widget.sfx,
+                          ),
+                        ),
+                      );
+                    }
+                    if (title == "Passive Income") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              PassiveIncomeScreen(game: game, sfx: widget.sfx),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                CityTab(
+                  key: TutorialKeys.cityTabKey,
+                  career: game.career,
+                  gems: game.gems,
+                  assets: game.assets,
+                  cityLayout: game.cityLayout,
+                  insurances: game.insurances,
+                  activePassiveIncomes: game.activePassiveIncomes,
+                  hasWall: game.hasWall,
+                  sfx: widget.sfx,
+                  onBuyAsset: (AssetType type, int amount) {
+                    game.buyAsset(type, amount, context);
+                  },
+                  onPlaceBuilding: game.placeBuilding,
+                  onRemoveBuilding: game.removeBuilding,
+                  onBuyWall: game.buyWall,
+                  game: game,
+                ),
+                MoneyTab(
+                  game: game,
+                  music: widget.music,
+                  sfx: widget.sfx,
+                  currentKp: game.kp,
+                  playerName: game.playerName,
+                  career: game.career,
+                  gems: game.gems,
+                  assets: game.assets,
+                  rent: game.rentChoice,
+                  food: game.foodChoice,
+                  transport: game.transportChoice,
+                  cityLayout: game.cityLayout,
+                  insurances: game.insurances,
+                  bankruptcyCount: game.bankruptcyCount,
+                  completedQuizzes: game.completedQuizzes,
+                  onKpChange: game.updateKp,
+                  onInsuranceToggle: game.toggleInsurance,
+                  onSellAsset: game.sellAsset,
+                  onBankruptcy: () => game.declareBankruptcy(context),
+                  onCareerChange: game.updateCareer,
+                  onBuyAsset: (type, amount) {
+                    game.buyAsset(type, amount, context);
+                  },
+                  onLiabilitiesChange: game.updateLiabilities,
+                  onQuizComplete: game.markQuizCompleted,
+                  isWorkingOvertime: game.isWorkingOvertime,
+                  onWorkOvertime: game.workOvertime,
+                  activePassiveIncomes: game.activePassiveIncomes,
+                  onInvestInPassiveIncome: game.investInPassiveIncome,
+                  gameListenable: game,
+                ),
+                SettingsTab(
+                  isActive: game.selectedIndex == 3,
+                  game: game,
+                  career: game.career,
+                  isDarkMode: game.isDarkMode,
+                  musicVolume: game.musicVolume,
+                  sfxVolume: game.sfxVolume,
+                  sfx: widget.sfx,
+                  onThemeToggle: game.toggleTheme,
+                  onMusicVolumeChanged: game.updateMusicVolume,
+                  onSfxVolumeChanged: game.updateSfxVolume,
+                  onCloudSync: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text("Restore data?"),
+                        content: const Text(
+                          "Do you want to reload your progress from the cloud? This will overwrite your current local data. Any unsaved progress you made while being offline will be lost.",
+                        ),
+                        actions: [
+                          TextButton(
+                            child: const Text("Cancel"),
+                            onPressed: () => Navigator.pop(context, false),
+                          ),
+                          TextButton(
+                            child: const Text("Reload from Cloud"),
+                            onPressed: () => Navigator.pop(context, true),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirm == true) {
+                      await game.forceCloudLoad();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Cloud progress loaded!"),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.work, key: TutorialKeys.tabMoneyKey),
-              label: "Money",
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: game.selectedIndex,
+              onTap: (index) {
+                widget.sfx.playClick();
+                game.selectedIndex = index;
+              },
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              selectedItemColor: Theme.of(context).colorScheme.primary,
+              unselectedItemColor: Theme.of(
+                context,
+              ).colorScheme.onSurfaceVariant,
+              items: [
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.location_city, key: TutorialKeys.tabCityKey),
+                  label: "City",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.work, key: TutorialKeys.tabMoneyKey),
+                  label: "Money",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings, key: TutorialKeys.tabSettingsKey),
+                  label: "Settings",
+                ),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings, key: TutorialKeys.tabSettingsKey),
-              label: "Settings",
-            ),
-          ],
+          ),
         ),
-      ),
+        if (game.canLevelUp && !_dismissedLevelUpPopup)
+          LevelUpFlyupPopup(
+            game: game,
+            sfx: widget.sfx,
+            onDismiss: () => setState(() => _dismissedLevelUpPopup = true),
+          ),
+      ],
     );
   }
 }
@@ -769,9 +788,11 @@ class DisasterReportDialog extends StatelessWidget {
 }
 
 class LoadingScreen extends StatefulWidget {
+  final GameManager? game;
+  final SfxManager? sfx;
   final double progress; // 0.0 to 1.0 (Kept for compatibility)
 
-  const LoadingScreen({super.key, this.progress = 1.0});
+  const LoadingScreen({super.key, this.game, this.sfx, this.progress = 1.0});
 
   @override
   State<LoadingScreen> createState() => _LoadingScreenState();
@@ -780,6 +801,7 @@ class LoadingScreen extends StatefulWidget {
 class _LoadingScreenState extends State<LoadingScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _rotationController;
+  bool _dismissedPopup = false;
 
   @override
   void initState() {
@@ -800,50 +822,224 @@ class _LoadingScreenState extends State<LoadingScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final gemColor = AppColors.of(context, 'gem');
+    final game = widget.game;
 
     return Scaffold(
       backgroundColor: AppColors.of(context, 'background'),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Bigger Logo
-            Image.asset('lib/assets/app_icon.png', height: 120),
-            const SizedBox(height: 24),
-            // Bigger Title
-            Text(
-              "City of Wealth",
-              style: theme.textTheme.headlineLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.of(context, 'onBackground'),
-              ),
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Bigger Logo
+                Image.asset('lib/assets/app_icon.png', height: 120),
+                const SizedBox(height: 24),
+                // Bigger Title
+                Text(
+                  "City of Wealth",
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.of(context, 'onBackground'),
+                  ),
+                ),
+                const SizedBox(height: 80),
+                // Spinning Gem Indicator
+                RotationTransition(
+                  turns: _rotationController,
+                  child: Icon(
+                    Icons.diamond_outlined,
+                    color: gemColor,
+                    size: 80,
+                    shadows: [
+                      Shadow(
+                        color: gemColor.withValues(alpha: 0.5),
+                        blurRadius: 20,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 48),
+                // Subtext
+                Text(
+                  "Master your Money",
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: AppColors.of(context, 'onSurfaceVariant'),
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 80),
-            // Spinning Gem Indicator
-            RotationTransition(
-              turns: _rotationController,
-              child: Icon(
-                Icons.diamond_outlined,
-                color: gemColor,
-                size: 80,
-                shadows: [
-                  Shadow(
-                    color: gemColor.withValues(alpha: 0.5),
-                    blurRadius: 20,
+          ),
+          if (game != null &&
+              widget.sfx != null &&
+              game.canLevelUp &&
+              !_dismissedPopup)
+            LevelUpFlyupPopup(
+              game: game,
+              sfx: widget.sfx!,
+              onDismiss: () => setState(() => _dismissedPopup = true),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class LevelUpFlyupPopup extends StatefulWidget {
+  final GameManager game;
+  final SfxManager sfx;
+  final VoidCallback onDismiss;
+
+  const LevelUpFlyupPopup({
+    super.key,
+    required this.game,
+    required this.sfx,
+    required this.onDismiss,
+  });
+
+  @override
+  State<LevelUpFlyupPopup> createState() => _LevelUpFlyupPopupState();
+}
+
+class _LevelUpFlyupPopupState extends State<LevelUpFlyupPopup> {
+  bool _visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() => _visible = true);
+        widget.sfx.playLevelUp();
+      }
+    });
+  }
+
+  void _dismiss() {
+    setState(() => _visible = false);
+    Future.delayed(const Duration(milliseconds: 350), () {
+      if (mounted) widget.onDismiss();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return AnimatedSlide(
+      offset: _visible ? Offset.zero : const Offset(0.0, 1.2),
+      duration: const Duration(milliseconds: 650),
+      curve: Curves.easeOutBack,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          width: double.infinity,
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            //Need to adjust gradient
+            gradient: LinearGradient(
+              colors: [
+                AppColors.of(context, 'kp'),
+                AppColors.of(context, 'warning'),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(
+              color: AppColors.of(context, 'primary').withValues(alpha: 0.8),
+              width: 2.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.of(context, 'kp').withValues(alpha: 0.35),
+                blurRadius: 28,
+                spreadRadius: 6,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 8),
+                  Text(
+                    "You can level up!",
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.of(context, 'background'),
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                "Congratulations! You've completed all the required quizzes and earned the needed KP! Your path to a lucrative career promotion is wide open!",
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: AppColors.of(context, 'background'),
+                  fontSize: 14.5,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: ShinyButton(
+                      backgroundColor: AppColors.of(context, 'success'),
+                      onPressed: () {
+                        _dismiss();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CareerScreen(
+                              game: widget.game,
+                              sfx: widget.sfx,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.workspace_premium,
+                            color: AppColors.of(context, 'onSurface'),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "Level up now!",
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: AppColors.of(context, 'onSurface'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 48),
-            // Subtext
-            Text(
-              "Master your Money",
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: AppColors.of(context, 'onSurfaceVariant'),
-                fontStyle: FontStyle.italic,
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: _dismiss,
+                child: Text(
+                  "Maybe Later",
+                  style: TextStyle(
+                    color: AppColors.of(context, 'background'),
+                    fontSize: 13,
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

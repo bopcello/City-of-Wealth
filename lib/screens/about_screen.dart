@@ -88,9 +88,9 @@ class AboutScreen extends StatelessWidget {
                           color: brandColor,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.location_city,
-                          color: Colors.white,
+                          color: AppColors.of(context, 'onSurface'),
                           size: 48,
                         ),
                       ),

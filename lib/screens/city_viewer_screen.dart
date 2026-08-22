@@ -6,6 +6,7 @@ import '../game_state.dart';
 import '../theme/app_colors.dart';
 import '../services/friends_service.dart';
 import '../widgets/profile_avatar.dart';
+import '../widgets/shiny_button.dart';
 
 class CityViewerScreen extends StatefulWidget {
   final PublicCitySnapshot snapshot;
@@ -361,37 +362,270 @@ class _CityViewerScreenState extends State<CityViewerScreen> {
             ),
           ),
 
-          // Cheer / Uncheer Floating Action Button
+          // Cheer / Uncheer Floating Action Button (Item #32 with YouTube style pop & particle burst)
           Positioned(
             bottom: 24,
             right: 24,
-            child: _cheerLoading
-                ? FloatingActionButton(
-                    onPressed: null,
-                    backgroundColor: Theme.of(context).colorScheme.outline,
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                    ),
-                  )
-                : FloatingActionButton.extended(
-                    onPressed: _toggleCheer,
-                    icon: Icon(
-                      _activeCheerDocId != null
-                          ? Icons.campaign
-                          : Icons.campaign_outlined,
-                    ),
-                    label: Text(
-                      _activeCheerDocId != null ? "Undo Cheer" : "Cheer!",
-                    ),
-                  ),
+            child: AnimatedCheerButton(
+              isCheered: _activeCheerDocId != null,
+              isLoading: _cheerLoading,
+              playerName: widget.snapshot.playerName,
+              onPressed: _toggleCheer,
+            ),
           ),
         ],
       ),
     );
   }
+}
+
+class AnimatedCheerButton extends StatefulWidget {
+  final bool isCheered;
+  final bool isLoading;
+  final String playerName;
+  final VoidCallback onPressed;
+
+  const AnimatedCheerButton({
+    super.key,
+    required this.isCheered,
+    required this.isLoading,
+    required this.playerName,
+    required this.onPressed,
+  });
+
+  @override
+  State<AnimatedCheerButton> createState() => _AnimatedCheerButtonState();
+}
+
+class _AnimatedCheerButtonState extends State<AnimatedCheerButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  final List<_CheerParticle> _particles = [];
+  bool? _justCheered;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 750),
+    );
+
+    _scaleAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.82), weight: 18),
+      TweenSequenceItem(
+        tween: Tween(
+          begin: 0.82,
+          end: 1.25,
+        ).chain(CurveTween(curve: Curves.elasticOut)),
+        weight: 52,
+      ),
+      TweenSequenceItem(tween: Tween(begin: 1.25, end: 1.0), weight: 30),
+    ]).animate(_controller);
+
+    _generateParticles();
+  }
+
+  void _generateParticles() {
+    _particles.clear();
+    final rand = math.Random();
+    const particleIcons = [
+      Icons.star,
+      Icons.campaign,
+      Icons.auto_awesome,
+      Icons.favorite,
+      Icons.bolt,
+    ];
+    const particleColors = [
+      Color(0xFFFFD700),
+      Color(0xFFFF4081),
+      Color(0xFF00E5FF),
+      Color(0xFF00E676),
+      Color(0xFFFF9100),
+    ];
+
+    // 36 particles (3x particle count)
+    for (int i = 0; i < 50; i++) {
+      final angle = (i * 10 + rand.nextDouble() * 10) * math.pi / 180;
+      final distance = 300.0 + rand.nextDouble() * 300.0;
+      // Size randomized in range 0.1x to 2.5x of base 32.0px (3.2px to 80.0px)
+      final scaleFactor = 0.1 + rand.nextDouble() * 2.4;
+      final size = 32.0 * scaleFactor;
+      _particles.add(
+        _CheerParticle(
+          angle: angle,
+          distance: distance,
+          icon: particleIcons[i % particleIcons.length],
+          color: particleColors[i % particleColors.length],
+          size: size,
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    final bool willCheer = !widget.isCheered;
+    setState(() {
+      _justCheered = willCheer;
+    });
+    if (willCheer) {
+      _generateParticles();
+    } else {
+      _particles.clear();
+    }
+    _controller.forward(from: 0.0);
+    widget.onPressed();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.isLoading) {
+      return FloatingActionButton(
+        onPressed: null,
+        backgroundColor: Theme.of(context).colorScheme.outline,
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+        ),
+      );
+    }
+
+    final bool isCheerSent = _justCheered ?? widget.isCheered;
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final progress = _controller.value;
+
+        return Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          children: [
+            // YouTube-style 360-degree Particle Explosion Burst (Only when cheer is being sent)
+            if (isCheerSent && progress > 0.0 && progress < 1.0)
+              ..._particles.map((p) {
+                final curDistance = p.distance * progress;
+                final opacity = (1.0 - progress).clamp(0.0, 1.0);
+                final dx = math.cos(p.angle) * curDistance;
+                final dy = math.sin(p.angle) * curDistance;
+                final scale = (0.5 + progress * 0.8) * opacity;
+
+                return Transform.translate(
+                  offset: Offset(dx, dy),
+                  child: Transform.scale(
+                    scale: scale,
+                    child: Icon(
+                      p.icon,
+                      color: p.color.withValues(alpha: opacity),
+                      size: p.size,
+                    ),
+                  ),
+                );
+              }),
+
+            // Floating Toast/Label pop
+            if (progress > 0.08 && progress < 0.95)
+              Positioned(
+                top: -45 - (progress * 30),
+                child: Opacity(
+                  opacity: (1.0 - progress).clamp(0.0, 1.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isCheerSent
+                          ? AppColors.of(context, 'success')
+                          : AppColors.of(context, 'error'),
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: isCheerSent
+                              ? AppColors.of(context, 'success')
+                              : AppColors.of(context, 'error'),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      isCheerSent ? "Cheered!" : "Cheer Removed",
+                      style: TextStyle(
+                        color: AppColors.of(context, 'onSurface'),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+            // Shiny Animated Floating Button (Item #32)
+            Transform.scale(
+              scale: _scaleAnimation.value,
+              child: ShinyWidgetWrapper(
+                isShiny: !widget.isCheered,
+                borderRadius: BorderRadius.circular(28),
+                child: FloatingActionButton.extended(
+                  onPressed: _handleTap,
+                  elevation: widget.isCheered ? 0 : 4,
+                  backgroundColor: widget.isCheered
+                      ? Theme.of(context).colorScheme.surface
+                      : AppColors.of(context, 'kp'),
+                  foregroundColor: widget.isCheered
+                      ? AppColors.of(context, 'success')
+                      : Colors.white,
+                  shape: widget.isCheered
+                      ? StadiumBorder(
+                          side: BorderSide(
+                            color: AppColors.of(context, 'success'),
+                            width: 2.0,
+                          ),
+                        )
+                      : const StadiumBorder(),
+                  icon: Icon(
+                    widget.isCheered ? Icons.campaign : Icons.campaign_outlined,
+                  ),
+                  label: Text(
+                    widget.isCheered
+                        ? "Undo Cheer"
+                        : "Cheer ${widget.playerName}",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _CheerParticle {
+  final double angle;
+  final double distance;
+  final IconData icon;
+  final Color color;
+  final double size;
+
+  _CheerParticle({
+    required this.angle,
+    required this.distance,
+    required this.icon,
+    required this.color,
+    required this.size,
+  });
 }

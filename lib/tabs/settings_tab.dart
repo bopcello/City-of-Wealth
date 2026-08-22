@@ -451,8 +451,10 @@ class _SettingsTabState extends State<SettingsTab> {
 
                   ListTile(
                     leading: Icon(Icons.cloud_done, color: brandColor),
-                    title: const Text("Backup Data"),
-                    subtitle: const Text("Save progress to your account"),
+                    title: const Text("Restore Data"),
+                    subtitle: const Text(
+                      "Restore progress to your account from cloud",
+                    ),
                     onTap: () {
                       widget.sfx.playClick();
                       widget.onCloudSync();
@@ -475,28 +477,16 @@ class _SettingsTabState extends State<SettingsTab> {
               child: Column(
                 children: [
                   ListTile(
-                    leading: _buildAudioMuteButton(
-                      icon: Icon(
+                    leading: Tooltip(
+                      message: widget.musicVolume == 0.0
+                          ? "Unmute Music"
+                          : "Mute Music",
+                      child: Icon(
                         widget.musicVolume == 0.0
                             ? Icons.music_off
                             : Icons.music_note,
                         color: brandColor,
                       ),
-                      tooltip: widget.musicVolume == 0.0
-                          ? "Unmute Music"
-                          : "Mute Music",
-                      onPressed: () {
-                        widget.sfx.playClick();
-                        if (widget.musicVolume > 0.0) {
-                          _lastMusicVolume = widget.musicVolume;
-                          widget.onMusicVolumeChanged(0.0, saveToDisk: true);
-                        } else {
-                          widget.onMusicVolumeChanged(
-                            _lastMusicVolume > 0.0 ? _lastMusicVolume : 0.7,
-                            saveToDisk: true,
-                          );
-                        }
-                      },
                     ),
                     title: const Text("Music Volume"),
                     subtitle: Slider(
@@ -511,31 +501,31 @@ class _SettingsTabState extends State<SettingsTab> {
                       min: 0.0,
                       max: 1.0,
                     ),
+                    onTap: () {
+                      widget.sfx.playClick();
+                      if (widget.musicVolume > 0.0) {
+                        _lastMusicVolume = widget.musicVolume;
+                        widget.onMusicVolumeChanged(0.0, saveToDisk: true);
+                      } else {
+                        widget.onMusicVolumeChanged(
+                          _lastMusicVolume > 0.0 ? _lastMusicVolume : 0.7,
+                          saveToDisk: true,
+                        );
+                      }
+                    },
                   ),
                   const Divider(height: 1, indent: 56),
                   ListTile(
-                    leading: _buildAudioMuteButton(
-                      icon: Icon(
+                    leading: Tooltip(
+                      message: widget.sfxVolume == 0.0
+                          ? "Unmute Sound"
+                          : "Mute Sound",
+                      child: Icon(
                         widget.sfxVolume == 0.0
                             ? Icons.volume_off
                             : Icons.volume_up,
                         color: brandColor,
                       ),
-                      tooltip: widget.sfxVolume == 0.0
-                          ? "Unmute Sound"
-                          : "Mute Sound",
-                      onPressed: () {
-                        widget.sfx.playClick();
-                        if (widget.sfxVolume > 0.0) {
-                          _lastSfxVolume = widget.sfxVolume;
-                          widget.onSfxVolumeChanged(0.0, saveToDisk: true);
-                        } else {
-                          widget.onSfxVolumeChanged(
-                            _lastSfxVolume > 0.0 ? _lastSfxVolume : 1.0,
-                            saveToDisk: true,
-                          );
-                        }
-                      },
                     ),
                     title: const Text("Sound Effects"),
                     subtitle: Slider(
@@ -550,6 +540,18 @@ class _SettingsTabState extends State<SettingsTab> {
                       min: 0.0,
                       max: 1.0,
                     ),
+                    onTap: () {
+                      widget.sfx.playClick();
+                      if (widget.sfxVolume > 0.0) {
+                        _lastSfxVolume = widget.sfxVolume;
+                        widget.onSfxVolumeChanged(0.0, saveToDisk: true);
+                      } else {
+                        widget.onSfxVolumeChanged(
+                          _lastSfxVolume > 0.0 ? _lastSfxVolume : 1.0,
+                          saveToDisk: true,
+                        );
+                      }
+                    },
                   ),
                   const Divider(height: 1, indent: 56),
                   SwitchListTile(
@@ -822,43 +824,6 @@ class _SettingsTabState extends State<SettingsTab> {
           color: AppColors.of(context, 'kp'),
           letterSpacing: 1.2,
         ),
-      ),
-    );
-  }
-
-  Widget _buildAudioMuteButton({
-    required Widget icon,
-    required String tooltip,
-    required VoidCallback onPressed,
-  }) {
-    const double tapAreaInset = 12; // 24 + 12 + 12 = 48x48 square tap area
-
-    return SizedBox(
-      width: 24,
-      height: 24,
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            left: -tapAreaInset,
-            right: -tapAreaInset,
-            top: -tapAreaInset,
-            bottom: -tapAreaInset,
-            child: Tooltip(
-              message: tooltip,
-              child: Material(
-                color: Colors.transparent,
-                shape: const RoundedRectangleBorder(), // square, not circular
-                child: InkWell(
-                  onTap: onPressed,
-                  child: const SizedBox.expand(),
-                ),
-              ),
-            ),
-          ),
-          IgnorePointer(child: icon),
-        ],
       ),
     );
   }

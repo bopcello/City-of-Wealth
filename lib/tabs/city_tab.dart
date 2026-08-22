@@ -272,15 +272,15 @@ class CityTabState extends State<CityTab> {
                       child: Container(
                         width: 16,
                         height: 16,
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
+                        decoration: BoxDecoration(
+                          color: AppColors.of(context, 'error'),
                           shape: BoxShape.circle,
                         ),
                         child: Center(
                           child: Text(
-                            unseenCount > 9 ? '9+' : '$unseenCount',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            unseenCount > 99 ? '99+' : '$unseenCount',
+                            style: TextStyle(
+                              color: AppColors.of(context, 'onSurface'),
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
@@ -605,13 +605,16 @@ class CityTabState extends State<CityTab> {
                   Icon(
                     Icons.group_outlined,
                     size: 64,
-                    color: Colors.grey.shade400,
+                    color: AppColors.of(context, 'outline'),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     "No friends yet!\nTap the person+ icon to add friends.",
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey.shade500, fontSize: 15),
+                    style: TextStyle(
+                      color: AppColors.of(context, 'outline'),
+                      fontSize: 15,
+                    ),
                   ),
                 ],
               ),
@@ -898,7 +901,9 @@ class _FutureFriendCardState extends State<FutureFriendCard> {
                 icon: Icon(
                   widget.isMuted ? Icons.volume_off : Icons.volume_up,
                   size: 20,
-                  color: widget.isMuted ? Colors.red : Colors.green,
+                  color: widget.isMuted
+                      ? AppColors.of(context, 'error')
+                      : AppColors.of(context, 'success'),
                 ),
                 tooltip: widget.isMuted ? "Unmute" : "Mute",
                 onPressed: () async {
@@ -1317,7 +1322,7 @@ class _Palace extends StatelessWidget {
       width: 60,
       height: 60,
       decoration: BoxDecoration(
-        color: Colors.amber.shade600,
+        color: AppColors.of(context, 'kp'),
         borderRadius: BorderRadius.circular(8),
         boxShadow: const [
           BoxShadow(blurRadius: 6, offset: Offset(2, 4), color: Colors.black26),
@@ -1401,7 +1406,10 @@ class _PendingRequestCardState extends State<PendingRequestCard> {
           children: [
             CircleAvatar(
               backgroundColor: Theme.of(context).colorScheme.secondary,
-              child: const Icon(Icons.person, color: Colors.white),
+              child: Icon(
+                Icons.person,
+                color: AppColors.of(context, 'onSurface'),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

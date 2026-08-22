@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../game_state.dart';
 import '../data/quiz_data.dart';
 import '../widgets/icon_text.dart';
+import '../widgets/shiny_button.dart';
 import '../theme/app_colors.dart';
 import '../services/music_manager.dart';
 import '../services/sfx_manager.dart';
@@ -239,252 +240,390 @@ class QuizMenuScreen extends StatelessWidget {
         final subtitle =
             dailyData?['subtitle'] ?? "Test your knowledge & earn rewards!";
         final isAvailable = dailyData != null;
+        final showShine = isAvailable && !isCompleted;
 
         return Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Container(
-            key: TutorialKeys.quizDailyPanelKey,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isCompleted
-                    ? Theme.of(
-                        context,
-                      ).colorScheme.outline.withValues(alpha: 0.5)
-                    : (isAvailable
-                          ? AppColors.of(context, 'gem')
-                          : Theme.of(
-                              context,
-                            ).colorScheme.outline.withValues(alpha: 0.5)),
-                width: isCompleted ? 1 : 3,
-              ),
-              color: isCompleted
-                  ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.1)
-                  : (isAvailable
-                        ? AppColors.of(context, 'gem').withValues(alpha: 0.1)
-                        : Theme.of(
-                            context,
-                          ).colorScheme.outline.withValues(alpha: 0.1)),
-              boxShadow: (isAvailable && !isCompleted)
-                  ? [
-                      BoxShadow(
-                        color: AppColors.of(
-                          context,
-                          'gem',
-                        ).withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        spreadRadius: 2,
+          child: showShine
+              ? ShinyWidgetWrapper(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    key: TutorialKeys.quizDailyPanelKey,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.of(context, 'gem'),
+                        width: 3,
                       ),
-                    ]
-                  : [],
-            ),
-            child: InkWell(
-              onTap: () async {
-                sfx.playClick();
-                if (isCompleted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Daily quiz already completed! Check back tomorrow.",
-                      ),
+                      color: AppColors.of(context, 'gem').withValues(alpha: 0.1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.of(context, 'gem').withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        ),
+                      ],
                     ),
-                  );
-                  return;
-                }
-
-                if (!isAvailable) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Daily quiz not available yet. Please try again later.",
-                      ),
-                    ),
-                  );
-                  return;
-                }
-
-                final dailyQuiz = QuizMetadata(
-                  id: dailyData['id'],
-                  title: dailyData['title'],
-                  subtitle: dailyData['subtitle'],
-                  difficulty: _parseDifficulty(dailyData['difficulty']),
-                  requiredLevel: 1,
-                  questions: (dailyData['options'] != null)
-                      ? [
-                          QuizQuestion(
-                            question: dailyData['question'],
-                            options: List<String>.from(dailyData['options']),
-                            correctIndex: dailyData['correctIndex'],
-                            correctExplanation: dailyData['correctExplanation'],
-                            wrongExplanation: dailyData['wrongExplanation'],
-                          ),
-                        ]
-                      : [],
-                );
-
-                if (context.mounted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => QuizScreen(
-                        game: game,
-                        music: music,
-                        sfx: sfx,
-                        quiz: dailyQuiz,
-                        isDaily: true,
-                        dailyDate: today,
-                      ),
-                    ),
-                  );
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(20.0), // Bigger box
-                child: Row(
-                  children: [
-                    Icon(
-                      isCompleted ? Icons.event_available : Icons.auto_awesome,
-                      size: 48, // Bigger icon
-                      color: isCompleted
-                          ? Theme.of(context).colorScheme.onSurfaceVariant
-                          : AppColors.of(context, 'gem'),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                "DAILY CHALLENGE",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.2,
-                                  color: isCompleted
-                                      ? Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant
-                                      : AppColors.of(context, 'gem'),
-                                ),
+                    child: InkWell(
+                      onTap: () async {
+                        sfx.playClick();
+                        if (isCompleted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "Daily quiz already completed! Check back tomorrow.",
                               ),
-                              if (isAvailable && !isCompleted) ...[
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (!isAvailable) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "Daily quiz not available yet. Please try again later.",
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
+                        final dailyQuiz = QuizMetadata(
+                          id: dailyData['id'],
+                          title: dailyData['title'],
+                          subtitle: dailyData['subtitle'],
+                          difficulty: _parseDifficulty(dailyData['difficulty']),
+                          requiredLevel: 1,
+                          questions: (dailyData['options'] != null)
+                              ? [
+                                  QuizQuestion(
+                                    question: dailyData['question'],
+                                    options: List<String>.from(dailyData['options']),
+                                    correctIndex: dailyData['correctIndex'],
+                                    correctExplanation: dailyData['correctExplanation'],
+                                    wrongExplanation: dailyData['wrongExplanation'],
                                   ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.of(context, 'gem'),
-                                    borderRadius: BorderRadius.circular(4),
+                                ]
+                              : [],
+                        );
+
+                        if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => QuizScreen(
+                                game: game,
+                                music: music,
+                                sfx: sfx,
+                                quiz: dailyQuiz,
+                                isDaily: true,
+                                dailyDate: today,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isCompleted ? Icons.event_available : Icons.auto_awesome,
+                              size: 48,
+                              color: isCompleted
+                                  ? Theme.of(context).colorScheme.onSurfaceVariant
+                                  : AppColors.of(context, 'gem'),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "DAILY CHALLENGE",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 1.2,
+                                          color: isCompleted
+                                              ? Theme.of(context).colorScheme.onSurfaceVariant
+                                              : AppColors.of(context, 'gem'),
+                                        ),
+                                      ),
+                                      if (isAvailable && !isCompleted) ...[
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.of(context, 'gem'),
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            "NEW",
+                                            style: TextStyle(
+                                              color: Theme.of(context).colorScheme.onPrimary,
+                                              fontSize: 8,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
-                                  child: Text(
-                                    "NEW",
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    title,
                                     style: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onPrimary,
-                                      fontSize: 8,
+                                      fontSize: 22,
                                       fontWeight: FontWeight.bold,
+                                      color: isCompleted
+                                          ? Theme.of(context).colorScheme.onSurfaceVariant
+                                          : Theme.of(context).colorScheme.onSurface,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    subtitle,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    children: [
+                                      CounterChip(
+                                        label: "[STREAK]",
+                                        value: game.dailyQuizStreak,
+                                        prefix: "Streak",
+                                      ),
+                                      CounterChip(
+                                        label: "[REVIVAL]",
+                                        value: game.streakRevivals,
+                                        prefix: "Revivals",
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  OutlinedButton.icon(
+                                    onPressed: () {
+                                      sfx.playClick();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => PastQuizzesScreen(
+                                            game: game,
+                                            music: music,
+                                            sfx: sfx,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.history, size: 16),
+                                    label: const Text(
+                                      "Past Challenges",
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: isCompleted
+                                          ? Theme.of(context).colorScheme.onSurfaceVariant
+                                          : AppColors.of(context, 'gem'),
+                                      side: BorderSide(
+                                        color: isCompleted
+                                            ? Theme.of(context).colorScheme.onSurfaceVariant
+                                            : AppColors.of(context, 'gem'),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 0,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (!isCompleted && isAvailable)
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                size: 20,
+                                color: AppColors.of(context, 'gem'),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : Container(
+                  key: TutorialKeys.quizDailyPanelKey,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                      width: 1,
+                    ),
+                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
+                  ),
+                  child: InkWell(
+                    onTap: () async {
+                      sfx.playClick();
+                      if (isCompleted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Daily quiz already completed! Check back tomorrow.",
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+
+                      if (!isAvailable) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Daily quiz not available yet. Please try again later.",
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+
+                      final dailyQuiz = QuizMetadata(
+                        id: dailyData['id'],
+                        title: dailyData['title'],
+                        subtitle: dailyData['subtitle'],
+                        difficulty: _parseDifficulty(dailyData['difficulty']),
+                        requiredLevel: 1,
+                        questions: (dailyData['options'] != null)
+                            ? [
+                                QuizQuestion(
+                                  question: dailyData['question'],
+                                  options: List<String>.from(dailyData['options']),
+                                  correctIndex: dailyData['correctIndex'],
+                                  correctExplanation: dailyData['correctExplanation'],
+                                  wrongExplanation: dailyData['wrongExplanation'],
+                                ),
+                              ]
+                            : [],
+                      );
+
+                      if (context.mounted) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => QuizScreen(
+                              game: game,
+                              music: music,
+                              sfx: sfx,
+                              quiz: dailyQuiz,
+                              isDaily: true,
+                              dailyDate: today,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        children: [
+                          Icon(
+                            isCompleted ? Icons.event_available : Icons.auto_awesome,
+                            size: 48,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "DAILY CHALLENGE",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  title,
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  subtitle,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    CounterChip(
+                                      label: "[STREAK]",
+                                      value: game.dailyQuizStreak,
+                                      prefix: "Streak",
+                                    ),
+                                    CounterChip(
+                                      label: "[REVIVAL]",
+                                      value: game.streakRevivals,
+                                      prefix: "Revivals",
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                OutlinedButton.icon(
+                                  onPressed: () {
+                                    sfx.playClick();
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => PastQuizzesScreen(
+                                          game: game,
+                                          music: music,
+                                          sfx: sfx,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.history, size: 16),
+                                  label: const Text(
+                                    "Past Challenges",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    side: BorderSide(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 0,
                                     ),
                                   ),
                                 ),
                               ],
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            title,
-                            style: TextStyle(
-                              fontSize: 22, // Bigger title
-                              fontWeight: FontWeight.bold,
-                              color: isCompleted
-                                  ? Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant
-                                  : Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            subtitle,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurface.withValues(alpha: 0.7),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              CounterChip(
-                                label: "[STREAK]",
-                                value: game.dailyQuizStreak,
-                                prefix: "Streak",
-                              ),
-                              CounterChip(
-                                label: "[REVIVAL]",
-                                value: game.streakRevivals,
-                                prefix: "Revivals",
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          OutlinedButton.icon(
-                            onPressed: () {
-                              sfx.playClick();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => PastQuizzesScreen(
-                                    game: game,
-                                    music: music,
-                                    sfx: sfx,
-                                  ),
-                                ),
-                              );
-                            },
-                            icon: const Icon(Icons.history, size: 16),
-                            label: const Text(
-                              "Past Challenges",
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: isCompleted
-                                  ? Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant
-                                  : AppColors.of(context, 'gem'),
-                              side: BorderSide(
-                                color: isCompleted
-                                    ? Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant
-                                    : AppColors.of(context, 'gem'),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 0,
-                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    if (!isCompleted && isAvailable)
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 20,
-                        color: AppColors.of(context, 'gem'),
-                      ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ),
         );
       },
     );

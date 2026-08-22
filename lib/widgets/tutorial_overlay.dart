@@ -101,47 +101,55 @@ class _TutorialOverlayState extends State<TutorialOverlay>
     );
 
     _steps = [
+      //Step 1
       TutorialStep(
         title: "Welcome to City of Wealth!",
         description:
             "This game will help you master personal finance while building a city! Let's start with your stats at the top.",
       ),
+      // Step 2
       TutorialStep(
         title: "Knowledge Points (KP)",
         description:
             "Your [KP] represents your financial literacy and determines your career path and promotion opportunities.",
         targetKey: TutorialKeys.kpKey,
       ),
+      // Step 3
       TutorialStep(
         title: "Earning KP",
         description:
             "You earn [KP] by answering daily quizzes. High [KP] is required for promotions to higher-paying careers.",
         targetKey: TutorialKeys.kpKey,
       ),
+      //Step 4
       TutorialStep(
         title: "Gems Balance",
         description:
             "Your Gems represent your liquidity. Use them to buy assets, construct buildings, and pay daily expenses.",
         targetKey: TutorialKeys.gemsKey,
       ),
+      // Step 5
       TutorialStep(
         title: "Managing Cash Flow",
         description:
             "Keep a close eye on your Gems! If your lifestyle liabilities or building maintenance exceed your earnings, you might run out of Gems and face bankruptcy.",
         targetKey: TutorialKeys.gemsKey,
       ),
+      //Step 6
       TutorialStep(
         title: "Daily Streak",
         description:
             "Answering the Daily Quiz builds your streak. Higher streaks offer asset discounts and passive income boosts!",
         targetKey: TutorialKeys.streakKey,
       ),
+      // Step 7
       TutorialStep(
         title: "Streak Revivals",
         description:
             "Revivals protect your streak if you miss a day. You start with 3 and can earn more at milestones.",
         targetKey: TutorialKeys.revivalsKey,
       ),
+      // Step 8
       TutorialStep(
         title: "City View",
         description:
@@ -152,18 +160,21 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           widget.game.selectedIndex = 1;
         },
       ),
+      // Step 9
       TutorialStep(
         title: "Your City Skyline",
         description:
             "This is your City view. Every asset you buy will appear as a beautiful building here in real time.",
         targetKey: TutorialKeys.cityBodyKey,
       ),
+      // Step 10
       TutorialStep(
         title: "City Development",
         description:
             "You can place, move, or remove buildings. Protect them from natural disasters by buying insurance.",
         targetKey: TutorialKeys.cityBodyKey,
       ),
+      // Step 11
       TutorialStep(
         title: "Social & Friends",
         description:
@@ -177,6 +188,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      // Step 12
       TutorialStep(
         title: "Adding Friends",
         description:
@@ -197,6 +209,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      // Step 13
       TutorialStep(
         title: "Search and Connect",
         description:
@@ -209,6 +222,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      // Step 14
       TutorialStep(
         title: "Friends Leaderboard",
         description:
@@ -238,6 +252,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      // Step 15
       TutorialStep(
         title: "Compare and Compete",
         description:
@@ -250,6 +265,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      // Step 16
       TutorialStep(
         title: "Activity Feed & Cheers",
         description:
@@ -280,6 +296,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      // Step 17
       TutorialStep(
         title: "Recent Activity",
         description:
@@ -293,6 +310,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      // Step 18
       TutorialStep(
         title: "Money Tab",
         description:
@@ -303,6 +321,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           widget.game.selectedIndex = 2;
         },
       ),
+      // Step 19
       TutorialStep(
         title: "Career",
         description:
@@ -323,18 +342,21 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      //Step 20
       TutorialStep(
         title: "Your Job Card",
         description:
             "This card shows your current job title, level, active salary, and promotion requirements.",
         targetKey: TutorialKeys.careerHeroCardKey,
       ),
+      // Step 21
       TutorialStep(
         title: "Working Overtime",
         description:
             "You can work overtime to earn extra Gems immediately, but it drains your health and costs KP if done too often.",
         targetKey: TutorialKeys.careerOvertimeKey,
       ),
+      //Step 22
       TutorialStep(
         title: "Return to Money Tab",
         description: "Tap the Back button to return to the Money tab.",
@@ -348,6 +370,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      //Step 23
       TutorialStep(
         title: "Passive Income",
         description:
@@ -368,12 +391,14 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      //Step 24
       TutorialStep(
         title: "Dividends & Assets",
         description:
             "Passive income investments (like Index Funds or Bonds) pay you automatic dividends for each asset of that type you own.",
         targetKey: TutorialKeys.passiveIncomeBodyKey,
       ),
+      //Step 25
       TutorialStep(
         title: "Return to Money Tab",
         description: "Tap the Back button to go back to the Money tab.",
@@ -387,6 +412,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      //Step 26
       TutorialStep(
         title: "Asset Management",
         description:
@@ -415,12 +441,14 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      //Step 27
       TutorialStep(
         title: "Assets Screen",
         description:
             "Here you can buy properties (like Residential, Commercial, or Industrial). They can also be sold for quick Gems.",
         targetKey: TutorialKeys.assetsBodyKey,
       ),
+      //Step 28
       TutorialStep(
         title: "Return to Money Tab",
         description: "Tap the Back button to return to the Money tab.",
@@ -434,6 +462,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      //Step 29
       TutorialStep(
         title: "Liabilities & Lifestyle",
         description:
@@ -460,6 +489,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      //Step 30
       TutorialStep(
         title: "Choose Your Rent",
         description: widget.game.rentChoice != null
@@ -473,6 +503,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
             ? null
             : (game) => game.rentChoice != null,
       ),
+      //Step 31
       TutorialStep(
         title: "Choose Your Food",
         description: widget.game.foodChoice != null
@@ -486,6 +517,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
             ? null
             : (game) => game.foodChoice != null,
       ),
+      //Step 32
       TutorialStep(
         title: "Choose Your Transport",
         description: widget.game.transportChoice != null
@@ -499,6 +531,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
             ? null
             : (game) => game.transportChoice != null,
       ),
+      //Step 33
       TutorialStep(
         title: "Return to Money Tab",
         description:
@@ -513,6 +546,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      //Step 34
       TutorialStep(
         title: "Financial Quizzes",
         description:
@@ -536,12 +570,14 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      //Step 35
       TutorialStep(
         title: "Daily Challenge",
         description:
             "Complete the daily quiz challenge to earn KP and maintain your daily streak!",
         targetKey: TutorialKeys.quizDailyPanelKey,
       ),
+      //Step 36
       TutorialStep(
         title: "Return to Money Tab",
         description: "Tap the Back button to return to the Money tab.",
@@ -555,6 +591,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           }
         },
       ),
+      //Step 37
       TutorialStep(
         title: "App Settings",
         description:
@@ -565,18 +602,21 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           widget.game.selectedIndex = 3;
         },
       ),
+      //Step 38
       TutorialStep(
         title: "Settings Menu",
         description:
             "Here you can customize your player name, set the time for your daily quiz reminders, toggle dark mode, or adjust volume.",
         targetKey: TutorialKeys.settingsBodyKey,
       ),
+      //Step 39
       TutorialStep(
         title: "Player Manual",
         description:
             "Tap the 'Player Manual' to read in-depth explanations of every game mechanic, strategy tips, and the real-world financial concepts behind the game.",
         targetKey: TutorialKeys.settingsManualKey,
       ),
+      //Step 40
       TutorialStep(
         title: "Ready to Build Wealth!",
         description:
