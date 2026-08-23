@@ -450,7 +450,7 @@ class _AnimatedCheerButtonState extends State<AnimatedCheerButton>
       final angle = (i * 10 + rand.nextDouble() * 10) * math.pi / 180;
       final distance = 300.0 + rand.nextDouble() * 300.0;
       // Size randomized in range 0.1x to 2.5x of base 32.0px (3.2px to 80.0px)
-      final scaleFactor = 0.1 + rand.nextDouble() * 2.4;
+      final scaleFactor = 0.1 + rand.nextDouble() * 5;
       final size = 32.0 * scaleFactor;
       _particles.add(
         _CheerParticle(

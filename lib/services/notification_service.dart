@@ -115,6 +115,9 @@ class NotificationService {
     await androidPlugin?.createNotificationChannel(dailyRoutineChannel);
     await androidPlugin?.createNotificationChannel(friendActivityChannel);
 
+    // Delete obsolete notification channels from Android OS settings
+    await androidPlugin?.deleteNotificationChannel(channelId: 'daily_routine');
+
     // Clean up any lingering streak warning notifications from previous version
     final cancelFutures = <Future<void>>[];
     for (int i = 3000; i <= 3050; i++) {
@@ -275,6 +278,15 @@ class NotificationService {
   Future<void> scheduleDailyNotifications(
     String playerName, {
     bool skipCancel = false,
+    int level = 1,
+    int kpNeeded = 100,
+    int daysNeeded = 3,
+    int quizzesNeeded = 3,
+    String difficulty = 'medium',
+    int buildingCount = 2,
+    String? buildingName,
+    List<String>? builtBuildings,
+    int gemYield = 50,
   }) async {
     if (!skipCancel) {
       // Cancel previous daily notifications (IDs 1000-1100)
@@ -286,6 +298,7 @@ class NotificationService {
     }
 
     int scheduledCount = 0;
+    int cycleIndex = 0;
 
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
@@ -299,10 +312,9 @@ class NotificationService {
     final now = tz.TZDateTime.now(tz.local);
     final scheduleFutures = <Future<void>>[];
 
-    // Schedule for the next 7 days
+    // Schedule every 6 hours for the next 7 days (0, 6, 12, 18)
     for (int day = 0; day < 7; day++) {
-      for (int hour in [6, 12, 18]) {
-        // 6 AM, 12 PM, 6 PM
+      for (int hour in [0, 6, 12, 18]) {
         var scheduledDate = tz.TZDateTime(
           tz.local,
           now.year,
@@ -313,25 +325,38 @@ class NotificationService {
 
         if (scheduledDate.isBefore(now)) continue;
 
-        final notification = NotificationData.getRandomDailyGeneralNotification(
-          playerName,
-        );
+        final notification =
+            NotificationData.getAlternatingRetentionNotification(
+              cycleIndex: cycleIndex,
+              name: playerName,
+              level: level,
+              kpNeeded: kpNeeded,
+              daysNeeded: daysNeeded,
+              quizzesNeeded: quizzesNeeded,
+              difficulty: difficulty,
+              buildingCount: buildingCount,
+              buildingName: buildingName,
+              builtBuildings: builtBuildings,
+              gemYield: gemYield,
+            );
 
         scheduleFutures.add(
-          _notifications.zonedSchedule(
+          _safeZonedSchedule(
             id: 1000 + scheduledCount,
             title: notification.$1,
             body: notification.$2,
             scheduledDate: scheduledDate,
             notificationDetails: NotificationDetails(android: androidDetails),
-            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
           ),
         );
         scheduledCount++;
+        cycleIndex++;
       }
     }
     await Future.wait(scheduleFutures);
-    debugPrint("📅 Scheduled $scheduledCount general notifications for 1 week");
+    debugPrint(
+      "📅 Scheduled $scheduledCount alternating retention notifications for 1 week",
+    );
   }
 
   Future<void> scheduleInactivityNotification(String playerName) async {
@@ -371,13 +396,12 @@ class NotificationService {
       );
 
       scheduleFutures.add(
-        _notifications.zonedSchedule(
+        _safeZonedSchedule(
           id: 2000 + i,
           title: notification.$1,
           body: notification.$2,
           scheduledDate: tz.TZDateTime.now(tz.local).add(duration),
           notificationDetails: NotificationDetails(android: androidDetails),
-          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         ),
       );
       i++;
@@ -432,13 +456,12 @@ class NotificationService {
           priority: Priority.high,
         );
 
-    await _notifications.zonedSchedule(
+    await _safeZonedSchedule(
       id: 5000,
       title: notification.$1,
       body: notification.$2,
       scheduledDate: tz.TZDateTime.from(time, tz.local),
       notificationDetails: NotificationDetails(android: androidDetails),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
 
@@ -455,8 +478,8 @@ class NotificationService {
 
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-          'daily_routine',
-          'Daily Routine',
+          'routine_updates',
+          'Routine Updates',
           channelDescription: 'Daily reminders for quizzes and city management',
           importance: Importance.high,
           priority: Priority.high,
@@ -479,13 +502,12 @@ class NotificationService {
       playerName,
     );
 
-    await _notifications.zonedSchedule(
+    await _safeZonedSchedule(
       id: 6000,
       title: notification.$1,
       body: notification.$2,
       scheduledDate: scheduledDate,
       notificationDetails: NotificationDetails(android: androidDetails),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'quiz',
     );
@@ -582,13 +604,12 @@ class NotificationService {
         final notificationId = 3000 + (day * 4) + i;
 
         scheduleFutures.add(
-          _notifications.zonedSchedule(
+          _safeZonedSchedule(
             id: notificationId,
             title: notification.$1,
             body: notification.$2,
             scheduledDate: scheduledDate,
             notificationDetails: NotificationDetails(android: androidDetails),
-            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
             payload: 'quiz',
           ),
         );
@@ -597,6 +618,47 @@ class NotificationService {
     }
     await Future.wait(scheduleFutures);
     debugPrint("🔔 Scheduled $scheduledCount daily challenge reminders");
+  }
+
+  Future<void> _safeZonedSchedule({
+    required int id,
+    required String title,
+    required String body,
+    required tz.TZDateTime scheduledDate,
+    required NotificationDetails notificationDetails,
+    String? payload,
+    DateTimeComponents? matchDateTimeComponents,
+  }) async {
+    try {
+      await _notifications.zonedSchedule(
+        id: id,
+        title: title,
+        body: body,
+        scheduledDate: scheduledDate,
+        notificationDetails: notificationDetails,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        payload: payload,
+        matchDateTimeComponents: matchDateTimeComponents,
+      );
+    } catch (e) {
+      debugPrint(
+        "⚠️ Exact alarm scheduling failed ($e), falling back to inexactAllowWhileIdle",
+      );
+      try {
+        await _notifications.zonedSchedule(
+          id: id,
+          title: title,
+          body: body,
+          scheduledDate: scheduledDate,
+          notificationDetails: notificationDetails,
+          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+          payload: payload,
+          matchDateTimeComponents: matchDateTimeComponents,
+        );
+      } catch (innerErr) {
+        debugPrint("❌ Failed to schedule notification $id: $innerErr");
+      }
+    }
   }
 
   Future<bool> requestPermission() async {

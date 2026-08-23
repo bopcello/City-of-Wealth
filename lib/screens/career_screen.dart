@@ -441,7 +441,9 @@ class _CareerHeroCard extends StatelessWidget {
                     ),
                   )
                 : ElevatedButton(
-                    onPressed: null,
+                    onPressed: () {
+                      sfx.playClick();
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.outline,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -464,7 +466,9 @@ class _CareerHeroCard extends StatelessWidget {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: isWorkingOvertime
-                    ? null
+                    ? () {
+                        sfx.playClick();
+                      }
                     : () {
                         sfx.playClick();
                         onWorkOvertime();

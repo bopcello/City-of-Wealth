@@ -1056,10 +1056,10 @@ class NotificationData {
   ];
 
   // ---------------------------------------------------------------------------
-  // Polite Retention Notifications (20 notifications with rich data)
+  // Retention Notifications (20 notifications with rich data)
   // ---------------------------------------------------------------------------
 
-  static const List<(String, String)> politeRetentionNotifications = [
+  static const List<(String, String)> retentionNotifications = [
     (
       "Think fast, you're in a room of investors",
       "How can you participate in the conversation if you haven't played City of Wealth?",
@@ -1143,10 +1143,10 @@ class NotificationData {
   ];
 
   // ---------------------------------------------------------------------------
-  // Helper: random building name for placeholder defaults
+  // Helper: random building name from player's actual city buildings
   // ---------------------------------------------------------------------------
 
-  static const List<String> _buildingNames = [
+  static const List<String> _defaultFallbackBuildingNames = [
     'Farms',
     'IT Service Centers',
     'Distribution Centers',
@@ -1154,7 +1154,51 @@ class NotificationData {
     'Factories',
   ];
 
-  static String _randomBuildingName() => _randomElement(_buildingNames);
+  /// Pluralizes a building name based on count or general plural format.
+  static String _pluralizeBuildingName(String name, int count) {
+    if (count == 1) return name;
+    if (name.endsWith('y')) {
+      return '${name.substring(0, name.length - 1)}ies';
+    }
+    if (name.endsWith('s')) {
+      return name;
+    }
+    return '${name}s';
+  }
+
+  /// Helper: returns a random building name selected from the player's actually built city buildings.
+  /// Counts the occurrences of each building type in the city (e.g. "3 Farms" or "1 Farm").
+  /// Falls back to default building names if [builtBuildings] is empty or null.
+  static String getRandomBuildingFromCity(
+    List<String>? builtBuildings, {
+    bool includeCount = true,
+  }) {
+    if (builtBuildings == null || builtBuildings.isEmpty) {
+      return _randomElement(_defaultFallbackBuildingNames);
+    }
+
+    final Map<String, int> counts = {};
+    for (final name in builtBuildings) {
+      if (name.trim().isEmpty) continue;
+      counts[name] = (counts[name] ?? 0) + 1;
+    }
+
+    if (counts.isEmpty) {
+      return _randomElement(_defaultFallbackBuildingNames);
+    }
+
+    final uniqueNames = counts.keys.toList();
+    final selectedName = _randomElement(uniqueNames);
+    final count = counts[selectedName]!;
+    final formattedName = _pluralizeBuildingName(selectedName, count);
+
+    if (includeCount && count > 1) {
+      return '$count $formattedName';
+    } else if (includeCount && count == 1) {
+      return '1 $selectedName';
+    }
+    return formattedName;
+  }
 
   // ---------------------------------------------------------------------------
   // Daily Reminder helper
@@ -1178,9 +1222,11 @@ class NotificationData {
     String difficulty = 'medium',
     int buildingCount = 2,
     String? buildingName,
+    List<String>? builtBuildings,
     int gemYield = 50,
   }) {
-    final effectiveBuildingName = buildingName ?? _randomBuildingName();
+    final effectiveBuildingName =
+        buildingName ?? getRandomBuildingFromCity(builtBuildings, includeCount: true);
 
     // Build a pool of eligible sets based on the player's level
     final pool = <List<(String, String)>>[
@@ -1213,23 +1259,25 @@ class NotificationData {
   }
 
   // ---------------------------------------------------------------------------
-  // Polite Retention helper
+  // Retention helper
   // ---------------------------------------------------------------------------
 
-  /// Returns a personalised polite retention notification.
+  /// Returns a personalised retention notification.
   ///
   /// All placeholder values have sensible defaults so the template is always
   /// safe to format even if the caller cannot supply every value.
-  static (String, String) getRandomPoliteRetentionNotification({
+  static (String, String) getRandomRetentionNotification({
     required String name,
     int level = 2,
     int kpNeeded = 100,
     int buildingCount = 2,
     String? buildingName,
+    List<String>? builtBuildings,
     int gemYield = 50,
   }) {
-    final effectiveBuildingName = buildingName ?? _randomBuildingName();
-    final choice = _randomElement(politeRetentionNotifications);
+    final effectiveBuildingName =
+        buildingName ?? getRandomBuildingFromCity(builtBuildings, includeCount: true);
+    final choice = _randomElement(retentionNotifications);
 
     final placeholders = <String, String>{
       'name': name,
@@ -1241,5 +1289,55 @@ class NotificationData {
     };
 
     return (_format(choice.$1, placeholders), _format(choice.$2, placeholders));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Alternating 6-hour retention notification
+  // ---------------------------------------------------------------------------
+
+  /// Returns a notification that alternates between the 5 personalised daily
+  /// reminder sets and the 20 retention notifications every 6 hours.
+  ///
+  /// Even [cycleIndex] → one of the 5 personalised sets (chosen at random)
+  /// Odd  [cycleIndex] → retentionNotifications
+  static (String, String) getAlternatingRetentionNotification({
+    required int cycleIndex,
+    required String name,
+    int level = 1,
+    int kpNeeded = 100,
+    int daysNeeded = 3,
+    int quizzesNeeded = 3,
+    String difficulty = 'medium',
+    int buildingCount = 2,
+    String? buildingName,
+    List<String>? builtBuildings,
+    int gemYield = 50,
+  }) {
+    if (cycleIndex.isEven) {
+      // Personalised set turn
+      return getRandomDailyReminderNotification(
+        name: name,
+        level: level,
+        kpNeeded: kpNeeded,
+        daysNeeded: daysNeeded,
+        quizzesNeeded: quizzesNeeded,
+        difficulty: difficulty,
+        buildingCount: buildingCount,
+        buildingName: buildingName,
+        builtBuildings: builtBuildings,
+        gemYield: gemYield,
+      );
+    } else {
+      // Retention set turn
+      return getRandomRetentionNotification(
+        name: name,
+        level: level,
+        kpNeeded: kpNeeded,
+        buildingCount: buildingCount,
+        buildingName: buildingName,
+        builtBuildings: builtBuildings,
+        gemYield: gemYield,
+      );
+    }
   }
 }

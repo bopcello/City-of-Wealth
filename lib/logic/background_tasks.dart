@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../firebase_options.dart';
 import '../services/firestore_service.dart';
 import '../services/friend_activity_monitor.dart';
+import '../services/notification_service.dart';
 
 class BackgroundTaskManager {
   static const String dailyQuizSyncTask = "daily_quiz_sync";
@@ -31,6 +32,10 @@ class BackgroundTaskManager {
             options: DefaultFirebaseOptions.currentPlatform,
           );
         }
+
+        // Initialize NotificationService in the background isolate
+        await NotificationService().initialize();
+
         await FriendActivityMonitor.instance.check(showAndroidNotifications: true);
 
         final now = DateTime.now();
@@ -41,7 +46,8 @@ class BackgroundTaskManager {
         
         if (quiz != null) {
           final prefs = await SharedPreferences.getInstance();
-          final uid = FirebaseAuth.instance.currentUser?.uid;
+          final uid = FirebaseAuth.instance.currentUser?.uid ??
+              prefs.getString('current_logged_in_uid');
           final lastDailyQuizDateKeyScoped = uid != null ? "${uid}_lastDailyQuizDate" : 'lastDailyQuizDate';
           final lastDate = prefs.getString(lastDailyQuizDateKeyScoped) ?? "";
           
@@ -78,10 +84,10 @@ class BackgroundTaskManager {
       dailyQuizSyncTask,
       quizSyncTag,
       frequency: const Duration(hours: 1),
-      existingWorkPolicy: ExistingWorkPolicy.replace,
+      initialDelay: initialDelay,
+      existingWorkPolicy: ExistingWorkPolicy.keep,
       constraints: Constraints(
         networkType: NetworkType.connected,
-        requiresBatteryNotLow: true,
       ),
     );
   }

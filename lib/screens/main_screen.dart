@@ -995,6 +995,7 @@ class _LevelUpFlyupPopupState extends State<LevelUpFlyupPopup> {
                     child: ShinyButton(
                       backgroundColor: AppColors.of(context, 'success'),
                       onPressed: () {
+                        widget.sfx.playClick();
                         _dismiss();
                         Navigator.push(
                           context,
@@ -1029,7 +1030,10 @@ class _LevelUpFlyupPopupState extends State<LevelUpFlyupPopup> {
               ),
               const SizedBox(height: 8),
               TextButton(
-                onPressed: _dismiss,
+                onPressed: () {
+                  widget.sfx.playClick();
+                  _dismiss();
+                },
                 child: Text(
                   "Maybe Later",
                   style: TextStyle(

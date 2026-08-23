@@ -480,6 +480,16 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       }
 
       final prefs = await SharedPreferences.getInstance();
+      if (uid != null) {
+        await prefs.setString('current_logged_in_uid', uid);
+        await prefs.setString('last_logged_in_uid', uid);
+      }
+      final bNames = cityLayout.map((b) => b.name).toList();
+      if (uid != null) {
+        await prefs.setStringList('${uid}_built_building_names', bNames);
+      }
+      await prefs.setStringList('built_building_names', bNames);
+
       tutorialComplete =
           prefs.getBool(
             uid != null ? "${uid}_tutorialComplete" : 'tutorialComplete',

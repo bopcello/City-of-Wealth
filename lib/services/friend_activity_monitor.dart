@@ -15,9 +15,11 @@ class FriendActivityMonitor {
   final _firestore = FirestoreService();
 
   Future<void> check({required bool showAndroidNotifications}) async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
     final prefs = await SharedPreferences.getInstance();
+    final uid = FirebaseAuth.instance.currentUser?.uid ??
+        prefs.getString('current_logged_in_uid') ??
+        prefs.getString('last_logged_in_uid');
+    if (uid == null) return;
 
     // Fetch latest user progress to keep notification schedules up to date
     String playerName = prefs.getString("${uid}_playerName") ?? "User";
@@ -67,13 +69,18 @@ class FriendActivityMonitor {
         for (final event in events) {
           final eventId = '${friendId}_${city.lastUpdatedAt.millisecondsSinceEpoch}_${event['type']}';
           await _firestore.recordFriendActivity(uid, eventId, friendId, city.playerName, event);
-          if (showAndroidNotifications) {
+
+          final notifiedKey = 'notified_event_$eventId';
+          final alreadyNotified = prefs.getBool(notifiedKey) ?? false;
+
+          if (showAndroidNotifications || !alreadyNotified) {
             await NotificationService().showFriendActivityNotification(
               friendId: friendId,
               friendName: city.playerName,
-              playerName: FirebaseAuth.instance.currentUser?.displayName ?? 'Player',
+              playerName: playerName,
               event: event,
             );
+            await prefs.setBool(notifiedKey, true);
           }
         }
       }
