@@ -942,7 +942,7 @@ loadGameState({String? uid, bool useCloud = false, bool force = false}) async {
           : null);
   final bool isDarkMode =
       data[isDarkModeKey] == true ||
-      (prefs.getBool(scopedKey(isDarkModeKey)) ?? false);
+      (prefs.getBool(isDarkModeKey) ?? prefs.getBool(scopedKey(isDarkModeKey)) ?? false);
   final String playerName =
       data[playerNameKey]?.toString() ??
       prefs.getString(scopedKey(playerNameKey)) ??

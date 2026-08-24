@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:math';
 import '../game_state.dart';
 
@@ -932,126 +934,198 @@ class NotificationData {
   }
 
   // ---------------------------------------------------------------------------
-  // Daily Reminder Notification Sets (5 sets with rich, personalised data)
+  // Daily Reminder Notification Sets (8 3-bit state sets with rich data)
   // ---------------------------------------------------------------------------
 
-  /// Set 1: KP Level Sprint — how close you are to the next level
-  static const List<(String, String)> dailyReminderKpSprint = [
+  /// Set 1: KP✅ Assets✅ Quizzes✅ (kp_yes_assets_yes_quizzes_yes) — Ready to level up right now.
+  static const List<(String, String)> kp_yes_assets_yes_quizzes_yes = [
     (
-      "You are just {kpNeeded} KP away from the next level!",
-      "That's only {daysNeeded} days of 100 KP everyday.",
+      "You're ready to level up, {name}!",
+      "You've met all requirements — open City of Wealth and claim your next title now!",
     ),
     (
-      "{kpNeeded} KP to go, {name}!",
-      "Keep it up for {daysNeeded} more days and you'll level up.",
+      "Level up is waiting for you!",
+      "KP, assets, and quizzes are all complete. Tap to advance your career!",
     ),
     (
-      "So close to the next level",
-      "Just {kpNeeded} KP left — earn 100 KP a day and you're there in {daysNeeded} days.",
+      "What are you waiting for, {name}?",
+      "Your hard work paid off. Advance to the next level and scale your daily yield!",
     ),
     (
-      "Level up is within reach, {name}",
-      "Only {kpNeeded} KP separates you from your next title.",
+      "Your next title is ready to claim",
+      "All requirements met! Open the app and take the next step in your financial journey.",
     ),
     (
-      "Almost there!",
-      "{kpNeeded} KP to your next milestone. That's roughly {daysNeeded} days of solid play.",
-    ),
-  ];
-
-  /// Set 2: Quiz Progression — quizzes needed to level up + gem boost teaser
-  static const List<(String, String)> dailyReminderQuizProgression = [
-    (
-      "You need to attempt just {quizzesNeeded} {difficulty} quizzes to level up!",
-      "Do just one quiz a day for {daysNeeded} days to level and get a massive boost of {gemYield} gems per day.",
-    ),
-    (
-      "Just {quizzesNeeded} quizzes away, {name}",
-      "Complete one {difficulty} quiz daily and unlock {gemYield} extra gems per day.",
-    ),
-    (
-      "{quizzesNeeded} quizzes to your next level",
-      "That's {daysNeeded} days of one quiz a day — then {gemYield} more gems daily.",
-    ),
-    (
-      "Level up in {daysNeeded} days?",
-      "Attempt {quizzesNeeded} {difficulty} quizzes and boost your gems by {gemYield}/day.",
-    ),
-    (
-      "Your gem boost is {quizzesNeeded} quizzes away",
-      "One {difficulty} quiz a day for {daysNeeded} days unlocks {gemYield} extra gems daily.",
+      "You've done the work, {name}",
+      "KP, buildings, and quizzes are cleared. Level up today!",
     ),
   ];
 
-  /// Set 3: Passive Income & Building Opportunities (Level > 1 players)
-  static const List<(String, String)> dailyReminderPassiveIncome = [
+  /// Set 2: KP✅ Assets❌ Quizzes❌ (kp_yes_assets_no_quizzes_no) — Has enough KP, missing buildings and quizzes.
+  static const List<(String, String)> kp_yes_assets_no_quizzes_no = [
     (
-      "You can build {buildingCount} more {buildingName} to earn {gemYield} gems more per day!",
-      "Level up to expand your city skyline and scale your daily passive income.",
+      "You have the KP needed, but you can't level up yet",
+      "That's because you don't have the infrastructure yet — can you build {buildingsNeeded} buildings before your friends?",
     ),
     (
-      "Ready to scale, {name}?",
-      "Constructing {buildingCount} more {buildingName} will boost your yield by {gemYield} gems daily.",
+      "Your KP is ready, {name}, but your city isn't",
+      "You still need {buildingsNeeded} buildings and {quizzesNeeded} to unlock your next level.",
     ),
     (
-      "So many passive income streams waiting for you",
-      "{buildingCount} more {buildingName} could add {gemYield} gems to your daily income.",
+      "Great KP, but missing foundation!",
+      "Build {buildingsNeeded} more buildings and complete {quizzesNeeded} to advance.",
     ),
     (
-      "Your city has room for {buildingCount} more {buildingName}",
-      "That's {gemYield} more gems flowing in every single day.",
+      "Capital without structure, {name}",
+      "You've got the KP, but you need {buildingsNeeded} buildings and {quizzesNeeded} to level up.",
     ),
     (
-      "Passive income upgrade available",
-      "Build {buildingCount} {buildingName} and watch {gemYield} extra gems roll in daily, {name}.",
-    ),
-  ];
-
-  /// Set 4: Career Track Decision (Level 1 players)
-  static const List<(String, String)> dailyReminderCareerTrack = [
-    (
-      "Which track will you choose, {name}?",
-      "Business or Job — start your journey in City of Wealth and build your first {buildingName}.",
-    ),
-    (
-      "Business or Job track?",
-      "Pick your path and earn your first {gemYield} gems per day.",
-    ),
-    (
-      "Your financial story starts with one decision",
-      "Business or Job? Choose your track and start earning gems, {name}.",
-    ),
-    (
-      "Two paths, one city, {name}",
-      "Business or Job — decide today and unlock your first income stream.",
-    ),
-    (
-      "Time to choose your career, {name}",
-      "Business or Job? Your first {buildingName} is waiting to be built.",
+      "KP is banked, but structure is missing",
+      "Construct {buildingsNeeded} buildings and finish {quizzesNeeded} to reach the next tier.",
     ),
   ];
 
-  /// Set 5: Polite Motivational "Ragebait" — subtle, respectful nudges
-  static const List<(String, String)> dailyReminderMotivational = [
+  /// Set 3: KP❌ Assets❌ Quizzes✅ (kp_no_assets_no_quizzes_yes) — Has completed required quizzes, missing KP and buildings.
+  static const List<(String, String)> kp_no_assets_no_quizzes_yes = [
     (
-      "Your city would love someone with more KP to lead it",
-      "You're just {kpNeeded} KP away from proving your strategy. Attempt today's quiz!",
+      "You've attempted the quizzes, but your performance wasn't enough.",
+      "Don't worry — it's part of the journey. You can still earn KP through good choices and daily quizzes.",
     ),
     (
-      "Is {kpNeeded} KP really going to stand between you and level {level}?",
-      "Solve today's quiz and earn {gemYield} extra gems daily.",
+      "Quizzes complete, but KP and city growth remain",
+      "You still need {kpNeeded} more KP and {buildingsNeeded} buildings to level up, {name}.",
     ),
     (
-      "You could be building {buildingCount} more {buildingName} right now...",
-      "A quick quiz today gets you the KP to unlock them.",
+      "Knowledge tested, now scale up!",
+      "Your quizzes are done. Earn {kpNeeded} more KP and construct {buildingsNeeded} buildings.",
     ),
     (
-      "Your city skyline is looking a bit modest...",
-      "Nothing a few correct answers and {kpNeeded} more KP can't fix.",
+      "The theory is done, {name}",
+      "Quizzes are checked off, but you need {kpNeeded} KP and {buildingsNeeded} buildings for your next title.",
     ),
     (
-      "Other mayors are expanding while you rest",
-      "Take 2 minutes to claim your edge and add {gemYield} gems to your daily yield.",
+      "Smart moves take time",
+      "Quizzes completed! Focus now on gaining {kpNeeded} KP and expanding by {buildingsNeeded} buildings.",
+    ),
+  ];
+
+  /// Set 4: KP❌ Assets✅ Quizzes❌ (kp_no_assets_yes_quizzes_no) — Has enough buildings, missing KP and quizzes.
+  static const List<(String, String)> kp_no_assets_yes_quizzes_no = [
+    (
+      "You've acquired the assets, but what about the wisdom to handle them?",
+      "That's decided by your KP — complete your quizzes to earn the KP you need and unlock even more assets to expand your city!",
+    ),
+    (
+      "Your skyline is built, {name}, but your knowledge isn't complete",
+      "You need {kpNeeded} more KP and {quizzesNeeded} to reach your next level.",
+    ),
+    (
+      "Great buildings, now sharpen your skills!",
+      "You have the assets. Now earn {kpNeeded} KP and complete {quizzesNeeded} to advance.",
+    ),
+    (
+      "Infrastructure ready, mind in progress",
+      "Buildings are set, but {kpNeeded} KP and {quizzesNeeded} stand between you and promotion, {name}.",
+    ),
+    (
+      "Assets locked in!",
+      "Your buildings are built. Now tackle {quizzesNeeded} and gain {kpNeeded} KP.",
+    ),
+  ];
+
+  /// Set 5: KP✅ Assets❌ Quizzes✅ (kp_yes_assets_no_quizzes_yes) — Has KP and quizzes, missing buildings only.
+  static const List<(String, String)> kp_yes_assets_no_quizzes_yes = [
+    (
+      "Knowledge only turns to wealth when you apply it.",
+      "You need to build {buildingsNeeded} more buildings to turn knowledge into wealth.",
+    ),
+    (
+      "So close to promotion, {name}!",
+      "KP and quizzes are done. Just construct {buildingsNeeded} more buildings to level up!",
+    ),
+    (
+      "Your mind is ready, but your city is waiting",
+      "Build {buildingsNeeded} more buildings to claim your next career milestone.",
+    ),
+    (
+      "Just one piece left!",
+      "KP and quizzes complete. Construct {buildingsNeeded} buildings to advance, {name}.",
+    ),
+    (
+      "Infrastructure bottleneck!",
+      "You've got the wisdom and KP — now put up {buildingsNeeded} buildings to expand your empire.",
+    ),
+  ];
+
+  /// Set 6: KP❌ Assets✅ Quizzes✅ (kp_no_assets_yes_quizzes_yes) — Has buildings and quizzes, missing KP only.
+  static const List<(String, String)> kp_no_assets_yes_quizzes_yes = [
+    (
+      "Everything is built and tested, {name}",
+      "You just need {kpNeeded} more KP to unlock your next level!",
+    ),
+    (
+      "Buildings set, quizzes done!",
+      "You're only {kpNeeded} KP away from your promotion. Keep making smart choices!",
+    ),
+    (
+      "The final hurdle is KP",
+      "You have the assets and quiz credentials. Earn {kpNeeded} more KP to level up!",
+    ),
+    (
+      "Almost a mogul, {name}",
+      "Buildings and quizzes are checked off. Gain {kpNeeded} KP to claim your title.",
+    ),
+    (
+      "Precision planning paid off",
+      "Your city and quizzes are complete. Just bank {kpNeeded} more KP to advance!",
+    ),
+  ];
+
+  /// Set 7: KP✅ Assets✅ Quizzes❌ (kp_yes_assets_yes_quizzes_no) — Has KP and buildings, missing quizzes only.
+  static const List<(String, String)> kp_yes_assets_yes_quizzes_no = [
+    (
+      "You have the wealth and the city, {name}",
+      "Now prove your financial knowledge! Complete {quizzesNeeded} to level up.",
+    ),
+    (
+      "KP and buildings are ready!",
+      "You just need to complete {quizzesNeeded} to secure your promotion.",
+    ),
+    (
+      "Don't let the quizzes hold you back",
+      "You've built the assets and banked the KP. Finish {quizzesNeeded} to level up!",
+    ),
+    (
+      "Test your knowledge, {name}",
+      "Your empire is standing and your KP is high. Complete {quizzesNeeded} to advance.",
+    ),
+    (
+      "Final requirement: Quizzes!",
+      "You've got the KP and buildings. Complete {quizzesNeeded} to claim your new title.",
+    ),
+  ];
+
+  /// Set 8: KP❌ Assets❌ Quizzes❌ (kp_no_assets_no_quizzes_no) — Missing all three (early-game default state).
+  static const List<(String, String)> kp_no_assets_no_quizzes_no = [
+    (
+      "Your financial journey is just beginning, {name}",
+      "Earn {kpNeeded} KP, build {buildingsNeeded} buildings, and complete {quizzesNeeded} to level up!",
+    ),
+    (
+      "Every empire starts from scratch",
+      "Work towards {kpNeeded} KP, {buildingsNeeded} buildings, and {quizzesNeeded} for your next title.",
+    ),
+    (
+      "Time to make your mark!",
+      "You need {kpNeeded} KP, {buildingsNeeded} buildings, and {quizzesNeeded} to advance.",
+    ),
+    (
+      "Build, learn, and earn, {name}",
+      "Gain {kpNeeded} KP, construct {buildingsNeeded} buildings, and complete {quizzesNeeded} to reach level up.",
+    ),
+    (
+      "Ready for the grind?",
+      "Target {kpNeeded} KP, {buildingsNeeded} buildings, and {quizzesNeeded} to expand your city!",
     ),
   ];
 
@@ -1060,6 +1134,7 @@ class NotificationData {
   // ---------------------------------------------------------------------------
 
   static const List<(String, String)> retentionNotifications = [
+    // --- Original retention notifications ---
     (
       "Think fast, you're in a room of investors",
       "How can you participate in the conversation if you haven't played City of Wealth?",
@@ -1140,6 +1215,27 @@ class NotificationData {
       "The best time to build your next {buildingName} was yesterday",
       "The second best time is right now!",
     ),
+    // --- Merged from Set 5 (Motivational nudges) ---
+    (
+      "Your city would love someone with more KP to lead it",
+      "You're just {kpNeeded} KP away from proving your strategy. Attempt today's quiz!",
+    ),
+    (
+      "Is {kpNeeded} KP really going to stand between you and level {level}?",
+      "Solve today's quiz and earn {gemYield} extra gems daily.",
+    ),
+    (
+      "You could be building {buildingCount} more {buildingName} right now...",
+      "A quick quiz today gets you the KP to unlock them.",
+    ),
+    (
+      "Your city skyline is looking a bit modest...",
+      "Nothing a few correct answers and {kpNeeded} more KP can't fix.",
+    ),
+    (
+      "Other mayors are expanding while you rest",
+      "Take 2 minutes to claim your edge and add {gemYield} gems to your daily yield.",
+    ),
   ];
 
   // ---------------------------------------------------------------------------
@@ -1204,53 +1300,49 @@ class NotificationData {
   // Daily Reminder helper
   // ---------------------------------------------------------------------------
 
-  /// Returns a personalised daily reminder notification.
-  ///
-  /// [level] drives which set is used:
-  /// - Level 1 players may receive career-track prompts (Set 4).
-  /// - Level > 1 players may receive passive-income building prompts (Set 3).
-  /// - Sets 1, 2, and 5 are available at any level.
-  ///
-  /// All placeholder values have sensible defaults so the template is always
-  /// safe to format even if the caller cannot supply every value.
+  /// Returns a personalised daily reminder notification based on the player's
+  /// 3-bit level-up state (KP, Assets, Quizzes).
   static (String, String) getRandomDailyReminderNotification({
     required String name,
-    int level = 1,
-    int kpNeeded = 100,
-    int daysNeeded = 3,
-    int quizzesNeeded = 3,
-    String difficulty = 'medium',
-    int buildingCount = 2,
+    bool kpMet = false,
+    bool assetsMet = false,
+    bool quizzesMet = false,
+    int kpNeeded = 0,
+    int buildingsNeeded = 0,
+    String quizzesNeeded = '',
     String? buildingName,
     List<String>? builtBuildings,
     int gemYield = 50,
   }) {
-    final effectiveBuildingName =
-        buildingName ?? getRandomBuildingFromCity(builtBuildings, includeCount: true);
-
-    // Build a pool of eligible sets based on the player's level
-    final pool = <List<(String, String)>>[
-      dailyReminderKpSprint,
-      dailyReminderQuizProgression,
-      dailyReminderMotivational,
-    ];
-    if (level <= 1) {
-      pool.add(dailyReminderCareerTrack);
+    List<(String, String)> selectedSet;
+    if (kpMet && assetsMet && quizzesMet) {
+      selectedSet = kp_yes_assets_yes_quizzes_yes;
+    } else if (kpMet && !assetsMet && !quizzesMet) {
+      selectedSet = kp_yes_assets_no_quizzes_no;
+    } else if (!kpMet && !assetsMet && quizzesMet) {
+      selectedSet = kp_no_assets_no_quizzes_yes;
+    } else if (!kpMet && assetsMet && !quizzesMet) {
+      selectedSet = kp_no_assets_yes_quizzes_no;
+    } else if (kpMet && !assetsMet && quizzesMet) {
+      selectedSet = kp_yes_assets_no_quizzes_yes;
+    } else if (!kpMet && assetsMet && quizzesMet) {
+      selectedSet = kp_no_assets_yes_quizzes_yes;
+    } else if (kpMet && assetsMet && !quizzesMet) {
+      selectedSet = kp_yes_assets_yes_quizzes_no;
     } else {
-      pool.add(dailyReminderPassiveIncome);
+      selectedSet = kp_no_assets_no_quizzes_no;
     }
 
-    final selectedSet = _randomElement(pool);
     final choice = _randomElement(selectedSet);
+    final effectiveBuildingName =
+        buildingName ??
+        getRandomBuildingFromCity(builtBuildings, includeCount: true);
 
     final placeholders = <String, String>{
       'name': name,
-      'level': level.toString(),
       'kpNeeded': kpNeeded.toString(),
-      'daysNeeded': daysNeeded.toString(),
-      'quizzesNeeded': quizzesNeeded.toString(),
-      'difficulty': difficulty,
-      'buildingCount': buildingCount.toString(),
+      'buildingsNeeded': buildingsNeeded.toString(),
+      'quizzesNeeded': quizzesNeeded,
       'buildingName': effectiveBuildingName,
       'gemYield': gemYield.toString(),
     };
@@ -1276,7 +1368,8 @@ class NotificationData {
     int gemYield = 50,
   }) {
     final effectiveBuildingName =
-        buildingName ?? getRandomBuildingFromCity(builtBuildings, includeCount: true);
+        buildingName ??
+        getRandomBuildingFromCity(builtBuildings, includeCount: true);
     final choice = _randomElement(retentionNotifications);
 
     final placeholders = <String, String>{
@@ -1295,34 +1388,34 @@ class NotificationData {
   // Alternating 6-hour retention notification
   // ---------------------------------------------------------------------------
 
-  /// Returns a notification that alternates between the 5 personalised daily
-  /// reminder sets and the 20 retention notifications every 6 hours.
+  /// Returns a notification that alternates between the 8 3-bit state daily
+  /// reminder sets and the retention notifications every 6 hours.
   ///
-  /// Even [cycleIndex] → one of the 5 personalised sets (chosen at random)
+  /// Even [cycleIndex] → one of the 8 3-bit state sets (matching exact 3-bit state)
   /// Odd  [cycleIndex] → retentionNotifications
   static (String, String) getAlternatingRetentionNotification({
     required int cycleIndex,
     required String name,
-    int level = 1,
-    int kpNeeded = 100,
-    int daysNeeded = 3,
-    int quizzesNeeded = 3,
-    String difficulty = 'medium',
-    int buildingCount = 2,
+    bool kpMet = false,
+    bool assetsMet = false,
+    bool quizzesMet = false,
+    int kpNeeded = 0,
+    int buildingsNeeded = 0,
+    String quizzesNeeded = '',
     String? buildingName,
     List<String>? builtBuildings,
     int gemYield = 50,
   }) {
     if (cycleIndex.isEven) {
-      // Personalised set turn
+      // Personalised set turn (matching player's 3-bit state)
       return getRandomDailyReminderNotification(
         name: name,
-        level: level,
+        kpMet: kpMet,
+        assetsMet: assetsMet,
+        quizzesMet: quizzesMet,
         kpNeeded: kpNeeded,
-        daysNeeded: daysNeeded,
+        buildingsNeeded: buildingsNeeded,
         quizzesNeeded: quizzesNeeded,
-        difficulty: difficulty,
-        buildingCount: buildingCount,
         buildingName: buildingName,
         builtBuildings: builtBuildings,
         gemYield: gemYield,
@@ -1331,9 +1424,8 @@ class NotificationData {
       // Retention set turn
       return getRandomRetentionNotification(
         name: name,
-        level: level,
         kpNeeded: kpNeeded,
-        buildingCount: buildingCount,
+        buildingCount: buildingsNeeded,
         buildingName: buildingName,
         builtBuildings: builtBuildings,
         gemYield: gemYield,

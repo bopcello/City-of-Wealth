@@ -50,31 +50,7 @@ class MainActivity: FlutterActivity() {
 
     private fun resolveLaunchTheme(): Int {
         val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
-        val launchDarkMode = prefs.getBoolean("flutter.isDarkMode", findLatestScopedDarkMode(prefs))
-        return if (launchDarkMode) R.style.LaunchTheme_Dark else R.style.LaunchTheme_Light
-    }
-
-    private fun findLatestScopedDarkMode(prefs: android.content.SharedPreferences): Boolean {
-        val allEntries = prefs.all
-        var latestPrefix: String? = null
-        var latestUpdated = Long.MIN_VALUE
-
-        for ((key, value) in allEntries) {
-            if (!key.startsWith("flutter.") || !key.endsWith("_lastUpdated")) continue
-            val updatedAt = when (value) {
-                is Long -> value
-                is Int -> value.toLong()
-                else -> continue
-            }
-
-            if (updatedAt > latestUpdated) {
-                latestUpdated = updatedAt
-                latestPrefix = key.removePrefix("flutter.").removeSuffix("_lastUpdated")
-            }
-        }
-
-        if (latestPrefix == null) return false
-        return prefs.getBoolean("flutter.${latestPrefix}_isDarkMode", false)
+        return if (prefs.getBoolean("flutter.isDarkMode", false)) R.style.LaunchTheme_Dark else R.style.LaunchTheme_Light
     }
 }
 

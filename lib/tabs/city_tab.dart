@@ -734,7 +734,7 @@ class _FutureFriendCardState extends State<FutureFriendCard> {
     } else {
       try {
         final doc = await FirebaseFirestore.instance
-            .collection('players')
+            .collection('public_profiles')
             .doc(widget.friendUid)
             .get();
         if (doc.exists && doc.data() != null) {
@@ -1368,7 +1368,7 @@ class _PendingRequestCardState extends State<PendingRequestCard> {
   void _loadSenderName() async {
     try {
       final snap = await FirebaseFirestore.instance
-          .collection('players')
+          .collection('public_profiles')
           .doc(widget.friendship.requestedBy)
           .get();
       if (snap.exists && snap.data() != null) {

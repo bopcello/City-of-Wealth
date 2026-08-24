@@ -178,6 +178,13 @@ class NotificationService {
     required String lastDailyQuizDate,
     required int wakeUpHour,
     required int wakeUpMinute,
+    bool kpMet = false,
+    bool assetsMet = false,
+    bool quizzesMet = false,
+    int kpNeeded = 0,
+    int buildingsNeeded = 0,
+    String quizzesNeeded = '',
+    List<String>? builtBuildings,
   }) async {
     await _notifications.cancelAll();
 
@@ -198,7 +205,17 @@ class NotificationService {
     );
 
     await Future.delayed(const Duration(milliseconds: 300));
-    await scheduleDailyNotifications(playerName, skipCancel: true);
+    await scheduleDailyNotifications(
+      playerName,
+      skipCancel: true,
+      kpMet: kpMet,
+      assetsMet: assetsMet,
+      quizzesMet: quizzesMet,
+      kpNeeded: kpNeeded,
+      buildingsNeeded: buildingsNeeded,
+      quizzesNeeded: quizzesNeeded,
+      builtBuildings: builtBuildings,
+    );
   }
 
   Future<void> showDisasterNotification(
@@ -278,12 +295,12 @@ class NotificationService {
   Future<void> scheduleDailyNotifications(
     String playerName, {
     bool skipCancel = false,
-    int level = 1,
-    int kpNeeded = 100,
-    int daysNeeded = 3,
-    int quizzesNeeded = 3,
-    String difficulty = 'medium',
-    int buildingCount = 2,
+    bool kpMet = false,
+    bool assetsMet = false,
+    bool quizzesMet = false,
+    int kpNeeded = 0,
+    int buildingsNeeded = 0,
+    String quizzesNeeded = '',
     String? buildingName,
     List<String>? builtBuildings,
     int gemYield = 50,
@@ -329,12 +346,12 @@ class NotificationService {
             NotificationData.getAlternatingRetentionNotification(
               cycleIndex: cycleIndex,
               name: playerName,
-              level: level,
+              kpMet: kpMet,
+              assetsMet: assetsMet,
+              quizzesMet: quizzesMet,
               kpNeeded: kpNeeded,
-              daysNeeded: daysNeeded,
+              buildingsNeeded: buildingsNeeded,
               quizzesNeeded: quizzesNeeded,
-              difficulty: difficulty,
-              buildingCount: buildingCount,
               buildingName: buildingName,
               builtBuildings: builtBuildings,
               gemYield: gemYield,

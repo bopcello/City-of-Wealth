@@ -20,56 +20,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  final launchPrefs = await _LaunchPreferences.load();
+  final prefs = await SharedPreferences.getInstance();
+  final initialIsDarkMode = prefs.getBool(isDarkModeKey) ?? false;
 
   runApp(
     CityOfWealthApp(
-      initialIsDarkMode: launchPrefs.isDarkMode,
+      initialIsDarkMode: initialIsDarkMode,
     ),
   );
-}
-
-class _LaunchPreferences {
-  const _LaunchPreferences({
-    required this.isDarkMode,
-  });
-
-  final bool isDarkMode;
-
-  static Future<_LaunchPreferences> load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final latestScopedPrefix = _findLatestScopedPrefix(prefs);
-
-    bool readBool(String key, bool fallback) {
-      return prefs.getBool(key) ??
-          (latestScopedPrefix != null
-              ? prefs.getBool('${latestScopedPrefix}_$key')
-              : null) ??
-          fallback;
-    }
-
-    return _LaunchPreferences(
-      isDarkMode: readBool(isDarkModeKey, false),
-    );
-  }
-
-  static String? _findLatestScopedPrefix(SharedPreferences prefs) {
-    final suffix = '_$lastUpdatedKey';
-    String? latestPrefix;
-    var latestUpdated = -1;
-
-    for (final key in prefs.getKeys()) {
-      if (!key.endsWith(suffix)) continue;
-      final updatedAt = prefs.getInt(key);
-      if (updatedAt == null || updatedAt <= latestUpdated) continue;
-      latestUpdated = updatedAt;
-      latestPrefix = key.substring(0, key.length - suffix.length);
-    }
-
-    return latestPrefix;
-  }
 }
 
 class CityOfWealthApp extends StatefulWidget {
@@ -112,7 +70,7 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
 
   void _handleGameThemeChange() {
     final game = _game;
-    if (game != null && _isDarkMode != game.isDarkMode) {
+    if (game != null && game.loaded && _isDarkMode != game.isDarkMode) {
       setState(() {
         _isDarkMode = game.isDarkMode;
       });
@@ -127,6 +85,7 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
     }
 
     try {
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
       await BackgroundTaskManager.initialize();
 
       BackgroundTaskManager.scheduleTasks().ignore();

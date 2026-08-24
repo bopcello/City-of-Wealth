@@ -293,6 +293,42 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> _rescheduleNotifications() async {
     if (!loaded || playerName == "User") return;
     try {
+      final hasNextLevel = _career.level < 5;
+      final reqKp = hasNextLevel ? requiredKpFor(_career.track, _career.level + 1) : 0;
+      final kpMet = !hasNextLevel || _kp >= reqKp;
+      final kpNeeded = (reqKp - _kp).clamp(0, 999999);
+
+      int missingBuildingsCount = 0;
+      if (_career.level > 1) {
+        final info = getCareerLevelInfo(_career);
+        if (info != null) {
+          for (var bName in info.unlockedBuildings) {
+            bool exists = cityLayout.any((pb) => pb.name == bName);
+            if (!exists) missingBuildingsCount++;
+          }
+        }
+      }
+      final assetsMet = missingBuildingsCount == 0;
+
+      final mediumCount = countCompletedMediumQuizzes(completedQuizzes, _career.level);
+      final hardCount = countCompletedHardQuizzes(completedQuizzes, _career.level);
+      final mediumNeeded = (10 - mediumCount).clamp(0, 10);
+      final hardNeeded = (1 - hardCount).clamp(0, 1);
+      final quizzesMet = mediumNeeded == 0 && hardNeeded == 0;
+
+      String quizzesNeededStr = '';
+      if (mediumNeeded > 0 && hardNeeded > 0) {
+        quizzesNeededStr = '$mediumNeeded Medium and $hardNeeded Hard quizzes';
+      } else if (mediumNeeded > 0) {
+        quizzesNeededStr = '$mediumNeeded Medium quiz${mediumNeeded > 1 ? "zes" : ""}';
+      } else if (hardNeeded > 0) {
+        quizzesNeededStr = '$hardNeeded Hard quiz${hardNeeded > 1 ? "zes" : ""}';
+      } else {
+        quizzesNeededStr = '0 quizzes';
+      }
+
+      final builtNames = cityLayout.map((pb) => pb.name).toList();
+
       await NotificationService().rescheduleAllNotifications(
         playerName: playerName,
         dailyQuizStreak: dailyQuizStreak,
@@ -300,10 +336,66 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         lastDailyQuizDate: lastDailyQuizDate,
         wakeUpHour: wakeUpHour,
         wakeUpMinute: wakeUpMinute,
+        kpMet: kpMet,
+        assetsMet: assetsMet,
+        quizzesMet: quizzesMet,
+        kpNeeded: kpNeeded,
+        buildingsNeeded: missingBuildingsCount,
+        quizzesNeeded: quizzesNeededStr,
+        builtBuildings: builtNames,
       );
     } catch (e) {
       debugPrint("❌ Error rescheduling notifications: $e");
     }
+  }
+
+  void _scheduleDailyNotifications() {
+    final hasNextLevel = _career.level < 5;
+    final reqKp = hasNextLevel ? requiredKpFor(_career.track, _career.level + 1) : 0;
+    final kpMet = !hasNextLevel || _kp >= reqKp;
+    final kpNeeded = (reqKp - _kp).clamp(0, 999999);
+
+    int missingBuildingsCount = 0;
+    if (_career.level > 1) {
+      final info = getCareerLevelInfo(_career);
+      if (info != null) {
+        for (var bName in info.unlockedBuildings) {
+          bool exists = cityLayout.any((pb) => pb.name == bName);
+          if (!exists) missingBuildingsCount++;
+        }
+      }
+    }
+    final assetsMet = missingBuildingsCount == 0;
+
+    final mediumCount = countCompletedMediumQuizzes(completedQuizzes, _career.level);
+    final hardCount = countCompletedHardQuizzes(completedQuizzes, _career.level);
+    final mediumNeeded = (10 - mediumCount).clamp(0, 10);
+    final hardNeeded = (1 - hardCount).clamp(0, 1);
+    final quizzesMet = mediumNeeded == 0 && hardNeeded == 0;
+
+    String quizzesNeededStr = '';
+    if (mediumNeeded > 0 && hardNeeded > 0) {
+      quizzesNeededStr = '$mediumNeeded Medium and $hardNeeded Hard quizzes';
+    } else if (mediumNeeded > 0) {
+      quizzesNeededStr = '$mediumNeeded Medium quiz${mediumNeeded > 1 ? "zes" : ""}';
+    } else if (hardNeeded > 0) {
+      quizzesNeededStr = '$hardNeeded Hard quiz${hardNeeded > 1 ? "zes" : ""}';
+    } else {
+      quizzesNeededStr = '0 quizzes';
+    }
+
+    final builtNames = cityLayout.map((pb) => pb.name).toList();
+
+    NotificationService().scheduleDailyNotifications(
+      playerName,
+      kpMet: kpMet,
+      assetsMet: assetsMet,
+      quizzesMet: quizzesMet,
+      kpNeeded: kpNeeded,
+      buildingsNeeded: missingBuildingsCount,
+      quizzesNeeded: quizzesNeededStr,
+      builtBuildings: builtNames,
+    );
   }
 
   Future<void> _checkNewQuizFlag() async {
@@ -1364,7 +1456,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     _checkDailyCycle();
     _checkStreakConsistency();
     _syncDailyQuiz(); // Check for new quiz on load
-    NotificationService().scheduleDailyNotifications(playerName);
+    _scheduleDailyNotifications();
     NotificationService().scheduleDailyMorningNotification(
       playerName,
       wakeUpHour,
@@ -1382,7 +1474,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
     saveFields({playerNameKey: playerName});
 
     // Reschedule notifications with the new name
-    NotificationService().scheduleDailyNotifications(playerName);
+    _scheduleDailyNotifications();
     NotificationService().scheduleDailyMorningNotification(
       playerName,
       wakeUpHour,
