@@ -1,0 +1,24 @@
+#!/bin/sh
+# Gitleaks pre-push hook
+
+# Locate gitleaks executable
+GITLEAKS_BIN="gitleaks"
+if ! command -v gitleaks >/dev/null 2>&1; then
+  if [ -n "$LOCALAPPDATA" ] && [ -f "$LOCALAPPDATA/Microsoft/WinGet/Links/gitleaks.exe" ]; then
+    GITLEAKS_BIN="$LOCALAPPDATA/Microsoft/WinGet/Links/gitleaks.exe"
+  elif [ -f "C:/Users/Salil/AppData/Local/Microsoft/WinGet/Links/gitleaks.exe" ]; then
+    GITLEAKS_BIN="C:/Users/Salil/AppData/Local/Microsoft/WinGet/Links/gitleaks.exe"
+  fi
+fi
+
+echo "[Gitleaks Hook] Running pre-push secret scan on repository..."
+"$GITLEAKS_BIN" detect --verbose
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -ne 0 ]; then
+  echo "=================================================================="
+  echo " [GITLEAKS ERROR] Secret leak detected prior to push!"
+  echo " Push aborted. Remove the leaked secret or update .gitleaks.toml"
+  echo "=================================================================="
+  exit $EXIT_CODE
+fi

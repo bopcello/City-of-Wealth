@@ -1,6 +1,7 @@
 # City of Wealth 💎
 
-**v2.0.0-beta**
+**v3.2.0**
+
 
 A premium, interactive personal finance simulation game designed to teach real-world financial literacy through active gameplay. Built with a modern cross-platform **Flutter** frontend, backed by **Firebase Auth & Firestore**, and powered by an automated **OpenRouter AI** quiz generation pipeline running on **GitHub Actions**.
 
@@ -22,20 +23,27 @@ graph TD
 
 ## 🛠️ Tech Stack & Key Technologies
 
-### 📱 Frontend / Client
+### 📱 Frontend & Build Stack
 - **Framework & Language**: Flutter (Dart SDK `^3.9.2`).
-- **Visuals & UI**: Custom-built **Isometric Grid Render Engine** utilizing centered grid-to-offset coordinate translation to place building structures.
+- **Android Build Stack & Runtime**:
+  - **Java SDK**: **JDK 21** (Migrated from Java 17 for modern language features & performance).
+  - **Android Gradle Plugin (AGP)**: `9.0.0` (AGP 9.0+ ready).
+  - **Gradle Wrapper**: `9.1.0`.
+  - **Kotlin Plugin**: `2.2.0` (configured with `JvmTarget.JVM_21`).
+  - **Core Library Desugaring**: Enabled via `com.android.tools:desugar_jdk_libs:2.1.4`.
+  - **Firebase Android BoM**: `34.9.0`.
+- **Visuals & UI Engine**: Custom-built **Isometric Grid Render Engine** utilizing centered grid-to-offset coordinate translation to place building structures, enhanced with celebratory level-up popups and button micro-animations.
 - **State Management**: Centralized `GameManager` (built on Flutter's native `ChangeNotifier`), driving the 5-second tick game loop (day cycles, taxes, interest, passive income accumulation, and bankruptcy checks).
 - **Offline Persistence**: Local storage caching powered by `shared_preferences` to allow seamless offline play before syncing with the cloud.
-- **Local Notifications & Background Tasks**: Configured with `flutter_local_notifications` and `workmanager` for daily challenge reminders and streak notifications.
-- **Audio Engine**: Powered by `audioplayers` with dedicated `MusicManager` and `SfxManager` supporting independent volume sliders and a custom `SfxNavigatorObserver` to automatically trigger UI sounds on page transitions.
+- **Local Notifications & Background Tasks**: Powered by `flutter_local_notifications` (`^20.0.0`) and `workmanager` (`^0.6.0`) alongside a dedicated `FriendActivityMonitor` service for social activity notifications and background checks.
+- **Audio & Media Engine**: Powered by `audioplayers` (`^6.5.1`) with dedicated `MusicManager` and `SfxManager`, and `image_picker` (`^1.2.1`) for custom user profile pictures.
 
 ### ☁️ Cloud & Backend
 - **Firebase Authentication**: Email/Password signups and Google Sign-In integrations (`google_sign_in`).
 - **Cloud Firestore**:
   - **Progress Sync**: Stores user metrics, inventory, building coordinates, active disaster status, and streak configurations in the `players` collection. On login, the client performs a timestamp-comparison merge protocol (local vs. cloud `lastUpdated` timestamp) to prevent state overwriting.
   - **Daily Quiz Repository**: Serves daily challenges to users and maintains a history of past quizzes (last 30 days) to enable "Practice Mode" for players.
-  - **Social Graph**: Manages friendships, friend requests, cheer interactions, and activity feeds via dedicated Firestore collections with real-time stream listeners.
+  - **Social Graph & Security**: Manages friendships, friend requests, cheer interactions, and activity feeds via dedicated Firestore collections with real-time stream listeners and strict anti-enumeration security rules.
 
 ### 🤖 Quiz Generation Pipeline (OpenRouter AI & GitHub Actions)
 - **GitHub Workflow**: An automated cron job defined in `.github/workflows/daily-question.yml` runs daily at **18:30 UTC / 00:00 IST** (`30 18 * * *`).
@@ -45,37 +53,27 @@ graph TD
 
 ---
 
-## ✨ What's New in v2.0.0-beta
+## ✨ What's New & Key Platform Upgrades
 
-### 🤝 Friends System
-- **Friend Codes**: Each player is assigned a unique friend code. Share it with others to connect.
-- **Add Friends**: Search for players by name or friend code and send friend requests.
-- **Accept / Decline Requests**: Incoming friend requests appear in the Friends tab with one-tap accept or decline actions.
-- **Mute & Block**: Mute a friend's activity notifications or block them entirely.
+### ⚡ Modern Toolchain Upgrade (AGP 9.0+ & Java 21)
+- **Java 21 Migration**: Upgraded source and target compatibility from Java 17 to Java 21 (`JavaVersion.VERSION_21` and `JvmTarget.JVM_21`).
+- **AGP 9.0.0 & Gradle 9.1.0**: Updated project build scripts to Android Gradle Plugin 9.0+ and Gradle 9.1.0 with Foojay toolchain resolution.
+- **Java Desugaring**: Integrated `desugar_jdk_libs:2.1.4` to enable modern Java APIs across all supported Android versions.
 
-### 🏙️ City Sharing & Viewing
-- **Public City Snapshots**: Your city layout, career level, KP, streak, and title are published as a snapshot to Firestore so friends can view your city.
-- **Visit Friend Cities**: Tap on any accepted friend to open an interactive isometric view of their city, complete with pan and zoom controls.
+### 🔄 Background Execution & Social Monitoring
+- **Friend Activity Monitor**: Integrated `FriendActivityMonitor` background execution with `workmanager` and `flutter_local_notifications` for social interactions and streak checks.
+- **Organized Notification Channels**: Revamped Android notification channels for cleaner, targeted push reminders.
 
-### 📣 Cheering
-- **Send Cheers**: While viewing a friend's city, send them a cheer to encourage their progress. Cheers have a 24-hour cooldown.
-- **Toggle Cheers**: Remove a previously sent cheer if desired.
+### 🛡️ Enhanced Security & Privacy
+- **Firestore Anti-Enumeration Rules**: Hardened security rules to prevent unauthorized scraping of user databases while maintaining fast friend search capabilities.
 
-### 📢 Activity Feed
-- **Real-time Notifications**: A bell icon with an unseen-count badge shows new activity — friend requests, cheers, and other social interactions.
-- **Activity Feed Screen**: View a chronological feed of all social events from your friends.
+### 🎨 Visual & Audio Enhancements
+- **Level-Up Popup Celebrations**: Interactive celebration modal when advancing career levels.
+- **Micro-Animations & Audio Fixes**: Animated buttons and improved audio resource management across screen transitions.
+- **Profile Picture Support**: Custom avatar selection powered by `image_picker`.
 
-### 🏆 Leaderboard
-- **Friend Leaderboard**: Compare KP, streak, and title against all accepted friends in a ranked leaderboard view.
-
-### 🎓 Interactive Tutorial
-- **Spotlight Tutorial Overlay**: A guided, step-by-step tutorial highlights key UI elements (KP, Gems, Streak, Revivals, City tab, Friends segment, Add Friend button, Leaderboard, Activity Feed) with contextual explanations for new players.
-
-### 💬 Daily Financial Quotes
-- **Inspirational Quotes**: The home screen displays a daily financial quote with attribution, refreshed each day.
-
-### 🏰 City View Centering Fix
-- **Accurate Initial View**: The yellow palace/castle block now appears exactly centered on screen when opening the City tab for the first time, regardless of device or screen size.
+### 📦 Build & Release Pipeline
+- **Split-ABI Build Automation**: Support for ABI-split release builds (`flutter build apk --split-per-abi`) paired with custom `copyReleaseApks` Gradle task to automatically rename output binaries.
 
 ---
 
@@ -100,6 +98,7 @@ graph TD
 │   │   ├── auth_service.dart      # Interface for Firebase Auth and Google Sign-In
 │   │   ├── city_session_manager.dart # Publishes city snapshots to Firestore for sharing
 │   │   ├── firestore_service.dart # Handles cloud saves, progress loads, and quiz fetching
+│   │   ├── friend_activity_monitor.dart # Background worker monitoring social activity & notifications
 │   │   ├── friends_service.dart   # Friend requests, cheers, activity feeds, mute/block logic
 │   │   ├── music_manager.dart     # Handles background music loops
 │   │   ├── sfx_manager.dart       # Handles UI and event sound effects
@@ -134,7 +133,8 @@ graph TD
 ## 🚀 Getting Started (Developer Setup)
 
 ### Prerequisites
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) (v3.19+ recommended)
+- **JDK 21 (Java 21)** (Required for AGP 9.0+ build toolchain)
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (v3.29+ / Dart SDK `^3.9.2`)
 - [Node.js](https://nodejs.org/) (v20+ recommended, for executing utility/automation scripts)
 - Firebase CLI (for setting up new Firebase projects)
 
@@ -169,6 +169,13 @@ graph TD
      ```bash
      flutter run -d chrome
      ```
+
+5. **Build Release APKs**:
+   To build optimized split-per-ABI APKs:
+   ```bash
+   flutter build apk --split-per-abi
+   ```
+   *Note: The build pipeline automatically executes the `copyReleaseApks` task to populate `build/app/outputs/flutter-apk/` with renamed release binaries (`City of Wealth-arm64-v8a-release.apk`, etc.).*
 
 ---
 
@@ -261,8 +268,10 @@ Every 15-19 cycles, a random disaster strikes.
 - **Passive Income Disasters** (Droughts, Landslides, Crashes, Mass Emigration, Pandemics) reduce passive income yields by 60%-90% for 20 cycles, with a 20% chance to permanently deactivate a building.
 - *Lesson*: Simulates unexpected life emergencies, illustrating the need for insurance risk mitigation and asset diversification to avoid single points of failure.
 
-### 9. Friends & Social Features *(New in v2.0.0-beta)*
+### 9. Friends & Social Features
 - **Friend Codes & Requests**: Players connect via unique codes. The social graph is managed through Firestore with accept/decline/block workflows.
 - **City Visiting & Cheering**: View friends' isometric cities and send daily cheers to encourage progress.
 - **Activity Feed & Leaderboard**: Track social interactions in real-time and compete on a KP/streak leaderboard.
+- **Background Activity Service**: Automated background checks send timely reminders for friend requests, cheers, and social updates.
 - *Lesson*: Encourages accountability and healthy financial competition. Seeing peers' progress motivates consistent engagement with financial learning.
+

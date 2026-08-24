@@ -180,7 +180,7 @@ class ProfileAvatar extends StatelessWidget {
           // provided, keep showing the last good frame instead of
           // flashing back to the placeholder background while it loads.
           gaplessPlayback: true,
-          errorBuilder: (_, __, ___) => const Icon(Icons.person),
+          errorBuilder: (_, _, _) => const Icon(Icons.person),
         ),
       );
     } else if (preset != null) {

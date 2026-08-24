@@ -263,6 +263,41 @@ class FirestoreService {
     }
   }
 
+  Future<String> resolvePlayerName(String uid) async {
+    if (uid.isEmpty) return 'A player';
+    try {
+      final profileSnap = await _db.collection('public_profiles').doc(uid).get();
+      if (profileSnap.exists && profileSnap.data() != null) {
+        final name = profileSnap.data()?['playerName'] as String?;
+        if (name != null && name.trim().isNotEmpty && name != 'User') {
+          return name.trim();
+        }
+      }
+    } catch (_) {}
+
+    try {
+      final citySnap = await _db.collection('public_cities').doc(uid).get();
+      if (citySnap.exists && citySnap.data() != null) {
+        final name = citySnap.data()?['playerName'] as String?;
+        if (name != null && name.trim().isNotEmpty && name != 'User') {
+          return name.trim();
+        }
+      }
+    } catch (_) {}
+
+    try {
+      final playerSnap = await _db.collection('players').doc(uid).get();
+      if (playerSnap.exists && playerSnap.data() != null) {
+        final name = playerSnap.data()?['playerName'] as String?;
+        if (name != null && name.trim().isNotEmpty && name != 'User') {
+          return name.trim();
+        }
+      }
+    } catch (_) {}
+
+    return 'A player';
+  }
+
   String getFriendshipId(String uidA, String uidB) =>
       uidA.compareTo(uidB) < 0 ? '${uidA}_$uidB' : '${uidB}_$uidA';
 
@@ -278,9 +313,7 @@ class FirestoreService {
     }, SetOptions(merge: true));
 
     try {
-      final sourceSnap = await _db.collection('players').doc(sourceUid).get();
-      final sourceName =
-          sourceSnap.data()?['playerName'] as String? ?? 'A player';
+      final sourceName = await resolvePlayerName(sourceUid);
       await _db
           .collection('players')
           .doc(targetUid)
@@ -317,12 +350,7 @@ class FirestoreService {
         final acceptorUid = requestedBy == playerA ? playerB : playerA;
         final requestorUid = requestedBy;
 
-        final acceptorSnap = await _db
-            .collection('players')
-            .doc(acceptorUid)
-            .get();
-        final acceptorName =
-            acceptorSnap.data()?['playerName'] as String? ?? 'A player';
+        final acceptorName = await resolvePlayerName(acceptorUid);
 
         await _db
             .collection('players')
@@ -344,6 +372,38 @@ class FirestoreService {
   }
 
   Future<void> declineFriendRequest(String friendshipId) async {
+    try {
+      final docSnap = await _db.collection('friendships').doc(friendshipId).get();
+      if (docSnap.exists && docSnap.data() != null) {
+        final data = docSnap.data()!;
+        final playerA = data['playerA'] as String;
+        final playerB = data['playerB'] as String;
+        final requestedBy = data['requestedBy'] as String?;
+        if (requestedBy != null) {
+          final declinerUid = requestedBy == playerA ? playerB : playerA;
+          final requestorUid = requestedBy;
+
+          final declinerName = await resolvePlayerName(declinerUid);
+
+          await _db
+              .collection('players')
+              .doc(requestorUid)
+              .collection('activity_feed')
+              .add({
+                'sourcePlayerId': declinerUid,
+                'sourcePlayerName': declinerName,
+                'targetPlayerId': requestorUid,
+                'type': 'friend_request_denied',
+                'payload': {'text': 'denied your friend request'},
+                'createdAt': FieldValue.serverTimestamp(),
+                'seen': false,
+              });
+        }
+      }
+    } catch (e) {
+      debugPrint("Error logging friend denial activity: $e");
+    }
+
     await _db.collection('friendships').doc(friendshipId).delete();
   }
 

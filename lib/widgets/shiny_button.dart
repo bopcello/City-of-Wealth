@@ -5,12 +5,20 @@ import 'package:flutter/material.dart';
 class ShinyButton extends StatefulWidget {
   final Widget child;
   final VoidCallback? onPressed;
+  final VoidCallback? onLongPress;
+  final ButtonStyle? style;
   final Color? backgroundColor;
+  final Color? foregroundColor;
   final BorderRadius? borderRadius;
   final EdgeInsetsGeometry? padding;
+  final Size? minimumSize;
+  final Size? maximumSize;
+  final OutlinedBorder? shape;
+  final MaterialTapTargetSize? tapTargetSize;
   final Duration shineDuration;
   final Duration shineInterval;
-  final double elevation;
+  final Color? shineColor;
+  final double? elevation;
   final bool useStadiumShape;
   final bool isShiny;
 
@@ -18,12 +26,20 @@ class ShinyButton extends StatefulWidget {
     super.key,
     required this.child,
     this.onPressed,
+    this.onLongPress,
+    this.style,
     this.backgroundColor,
+    this.foregroundColor,
     this.borderRadius,
     this.padding,
+    this.minimumSize,
+    this.maximumSize,
+    this.shape,
+    this.tapTargetSize,
     this.shineDuration = const Duration(milliseconds: 2400),
     this.shineInterval = const Duration(milliseconds: 2200),
-    this.elevation = 4.0,
+    this.shineColor,
+    this.elevation,
     this.useStadiumShape = true,
     this.isShiny = true,
   });
@@ -68,11 +84,33 @@ class _ShinyButtonState extends State<ShinyButton>
   Widget build(BuildContext context) {
     final bgColor =
         widget.backgroundColor ?? Theme.of(context).colorScheme.primary;
-    final OutlinedBorder shape = widget.useStadiumShape
-        ? const StadiumBorder()
-        : RoundedRectangleBorder(
-            borderRadius: widget.borderRadius ?? BorderRadius.circular(16),
-          );
+    final fgColor = widget.foregroundColor ?? Colors.white;
+
+    final OutlinedBorder buttonShape = widget.shape ??
+        (widget.useStadiumShape
+            ? const StadiumBorder()
+            : RoundedRectangleBorder(
+                borderRadius: widget.borderRadius ?? BorderRadius.circular(16),
+              ));
+
+    final defaultStyle = ElevatedButton.styleFrom(
+      backgroundColor: bgColor,
+      foregroundColor: fgColor,
+      shape: buttonShape,
+      padding:
+          widget.padding ??
+          const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      elevation: widget.elevation ?? 4.0,
+      tapTargetSize:
+          widget.tapTargetSize ?? MaterialTapTargetSize.shrinkWrap,
+      minimumSize: widget.minimumSize,
+      maximumSize: widget.maximumSize,
+    );
+
+    final effectiveStyle =
+        widget.style != null ? defaultStyle.merge(widget.style) : defaultStyle;
+
+    final shineBaseColor = widget.shineColor ?? Colors.white;
 
     return AnimatedBuilder(
       animation: _shineAnimation,
@@ -80,27 +118,18 @@ class _ShinyButtonState extends State<ShinyButton>
         final double pos = _shineAnimation.value;
 
         return ClipPath(
-          clipper: ShapeBorderClipper(shape: shape),
+          clipper: ShapeBorderClipper(shape: buttonShape),
           child: Stack(
+            fit: StackFit.passthrough,
             children: [
               // Main Button Body
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: bgColor,
-                  foregroundColor: Colors.white,
-                  shape: shape,
-                  padding:
-                      widget.padding ??
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  elevation: widget.elevation,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  minimumSize: const Size(double.infinity, 0),
-                ),
+                style: effectiveStyle,
                 onPressed: widget.onPressed,
+                onLongPress: widget.onLongPress,
                 child: widget.child,
               ),
               // Tilted Double Stripe Shiny Sweep Overlay
-              // 2 separate parallel stripes, each with a 50% solid center at 75% opacity and 25% edge gradients
               if (widget.isShiny)
                 Positioned.fill(
                   child: IgnorePointer(
@@ -111,18 +140,18 @@ class _ShinyButtonState extends State<ShinyButton>
                           end: Alignment(pos + 0.9, 1.4),
                           colors: [
                             // Stripe 1
-                            Colors.white.withValues(alpha: 0.0),
-                            Colors.white.withValues(alpha: 0.75),
-                            Colors.white.withValues(alpha: 0.75),
-                            Colors.white.withValues(alpha: 0.0),
+                            shineBaseColor.withValues(alpha: 0.0),
+                            shineBaseColor.withValues(alpha: 0.75),
+                            shineBaseColor.withValues(alpha: 0.75),
+                            shineBaseColor.withValues(alpha: 0.0),
                             // Transparent Gap
-                            Colors.white.withValues(alpha: 0.0),
-                            Colors.white.withValues(alpha: 0.0),
+                            shineBaseColor.withValues(alpha: 0.0),
+                            shineBaseColor.withValues(alpha: 0.0),
                             // Stripe 2
-                            Colors.white.withValues(alpha: 0.0),
-                            Colors.white.withValues(alpha: 0.75),
-                            Colors.white.withValues(alpha: 0.75),
-                            Colors.white.withValues(alpha: 0.0),
+                            shineBaseColor.withValues(alpha: 0.0),
+                            shineBaseColor.withValues(alpha: 0.75),
+                            shineBaseColor.withValues(alpha: 0.75),
+                            shineBaseColor.withValues(alpha: 0.0),
                           ],
                           stops: const [
                             0.00, 0.08, 0.24, 0.32, // Stripe 1
@@ -207,6 +236,7 @@ class _ShinyWidgetWrapperState extends State<ShinyWidgetWrapper>
         return ClipRRect(
           borderRadius: radius,
           child: Stack(
+            fit: StackFit.passthrough,
             children: [
               widget.child,
               // Tilted Double Stripe Shiny Sweep Overlay

@@ -5462,7 +5462,7 @@ final List<QuizMetadata> _level4Quizzes = [
   QuizMetadata(
     id: 'l4_q9',
     title: 'Monetary Policy & The Fed',
-    subtitle: 'The trillion-dollar [GEM] levers of power',
+    subtitle: 'The trillion [GEM] levers of power',
     difficulty: QuizDifficulty.medium,
     requiredLevel: 4,
     questions: [
@@ -7672,7 +7672,7 @@ final List<QuizMetadata> _level5Quizzes = [
         wrongExplanation:
             'If a US company needs Euros and a German company needs [GEM], they "Swap" loans with each other. This can significantly lower the interest costs and Forex risk for both sides by matching their currency needs and borrowing strengths.',
         correctExplanation:
-            'Large global "Whales" use currency swaps to manage their [GEM] billion-dollar global debt portfolios efficiently. It allows them to convert debt into a different currency without having to go through the expensive and volatile spot markets.',
+            'Large global "Whales" use currency swaps to manage their billion-dollar global debt portfolios efficiently. It allows them to convert debt into a different currency without having to go through the expensive and volatile spot markets.',
       ),
       QuizQuestion(
         question: 'What is "Country Risk"?',

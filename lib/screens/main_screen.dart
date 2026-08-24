@@ -233,7 +233,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final game = widget.game;
     if (!game.loaded) {
-      return LoadingScreen(game: game, sfx: widget.sfx);
+      return const LoadingScreen();
     }
 
     final bool canPop = !game.isTutorialActive && game.selectedIndex == 0;
@@ -788,11 +788,9 @@ class DisasterReportDialog extends StatelessWidget {
 }
 
 class LoadingScreen extends StatefulWidget {
-  final GameManager? game;
-  final SfxManager? sfx;
   final double progress; // 0.0 to 1.0 (Kept for compatibility)
 
-  const LoadingScreen({super.key, this.game, this.sfx, this.progress = 1.0});
+  const LoadingScreen({super.key, this.progress = 1.0});
 
   @override
   State<LoadingScreen> createState() => _LoadingScreenState();
@@ -801,7 +799,6 @@ class LoadingScreen extends StatefulWidget {
 class _LoadingScreenState extends State<LoadingScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _rotationController;
-  bool _dismissedPopup = false;
 
   @override
   void initState() {
@@ -822,65 +819,51 @@ class _LoadingScreenState extends State<LoadingScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final gemColor = AppColors.of(context, 'gem');
-    final game = widget.game;
 
     return Scaffold(
       backgroundColor: AppColors.of(context, 'background'),
-      body: Stack(
-        children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Bigger Logo
-                Image.asset('lib/assets/app_icon.png', height: 120),
-                const SizedBox(height: 24),
-                // Bigger Title
-                Text(
-                  "City of Wealth",
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.of(context, 'onBackground'),
-                  ),
-                ),
-                const SizedBox(height: 80),
-                // Spinning Gem Indicator
-                RotationTransition(
-                  turns: _rotationController,
-                  child: Icon(
-                    Icons.diamond_outlined,
-                    color: gemColor,
-                    size: 80,
-                    shadows: [
-                      Shadow(
-                        color: gemColor.withValues(alpha: 0.5),
-                        blurRadius: 20,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 48),
-                // Subtext
-                Text(
-                  "Master your Money",
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: AppColors.of(context, 'onSurfaceVariant'),
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Bigger Logo
+            Image.asset('lib/assets/app_icon.png', height: 120),
+            const SizedBox(height: 24),
+            // Bigger Title
+            Text(
+              "City of Wealth",
+              style: theme.textTheme.headlineLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.of(context, 'onBackground'),
+              ),
             ),
-          ),
-          if (game != null &&
-              widget.sfx != null &&
-              game.canLevelUp &&
-              !_dismissedPopup)
-            LevelUpFlyupPopup(
-              game: game,
-              sfx: widget.sfx!,
-              onDismiss: () => setState(() => _dismissedPopup = true),
+            const SizedBox(height: 80),
+            // Spinning Gem Indicator
+            RotationTransition(
+              turns: _rotationController,
+              child: Icon(
+                Icons.diamond_outlined,
+                color: gemColor,
+                size: 80,
+                shadows: [
+                  Shadow(
+                    color: gemColor.withValues(alpha: 0.5),
+                    blurRadius: 20,
+                  ),
+                ],
+              ),
             ),
-        ],
+            const SizedBox(height: 48),
+            // Subtext
+            Text(
+              "Master your Money",
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: AppColors.of(context, 'onSurfaceVariant'),
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

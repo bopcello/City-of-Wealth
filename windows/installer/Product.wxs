@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="City of Wealth" Language="1033" Version="$(var.Version)" Manufacturer="City of Wealth" UpgradeCode="e3871928-86d1-4f12-a167-27a9e3381a99">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Application Icon & Control Panel Branding -->
+    <Icon Id="AppIcon.ico" SourceFile="windows\runner\resources\app_icon.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+
+    <!-- Setup Properties -->
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <Property Id="INSTALL_DESKTOP_SHORTCUT" Value="1" />
+    <Property Id="INSTALL_STARTMENU_SHORTCUT" Value="1" />
+
+    <!-- Launch Application on Exit Dialog -->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch City of Wealth" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <SetProperty Id="WixShellExecTarget" Value="[INSTALLFOLDER]city_of_wealth.exe" After="CostFinalize" />
+    <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+
+    <!-- Modern Folder Browser Custom Action -->
+    <Binary Id="BrowseCA" SourceFile="build\BrowseFolderCA.CA.dll" />
+    <CustomAction Id="InvokeBrowseForFolder" BinaryKey="BrowseCA" DllEntry="BrowseForFolder" Execute="immediate" Return="check" />
+
+    <!-- Custom Banner & Dialog Graphics -->
+    <WixVariable Id="WixUILicenseRtf" Value="windows\installer\License.rtf" />
+    <WixVariable Id="WixUIDialogBmp" Value="windows\installer\dlgbmp.bmp" />
+    <WixVariable Id="WixUIBannerBmp" Value="windows\installer\bannrbmp.bmp" />
+
+    <!-- Directories (Supports relocation to any drive/folder) -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="City of Wealth" />
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="City of Wealth"/>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop"/>
+    </Directory>
+
+    <!-- Shortcuts -->
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="b4a921d7-2f34-4a4b-9721-c41bf6367302">
+        <Condition>INSTALL_STARTMENU_SHORTCUT = 1</Condition>
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="City of Wealth"
+                  Description="City of Wealth Game Application"
+                  Target="[INSTALLFOLDER]city_of_wealth.exe"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="AppIcon.ico"/>
+        <RemoveFolder Id="CleanUpShortCut" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\CityOfWealth" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="DesktopFolder">
+      <Component Id="DesktopShortcut" Guid="c738e4a9-8321-4f32-bb91-149b8123efcd">
+        <Condition>INSTALL_DESKTOP_SHORTCUT = 1</Condition>
+        <Shortcut Id="ApplicationDesktopShortcut"
+                  Name="City of Wealth"
+                  Description="City of Wealth Game Application"
+                  Target="[INSTALLFOLDER]city_of_wealth.exe"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="AppIcon.ico"/>
+        <RegistryValue Root="HKCU" Key="Software\CityOfWealth" Name="desktop_shortcut" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Core Features -->
+    <Feature Id="MainProductFeature" Title="City of Wealth" Level="1">
+      <ComponentGroupRef Id="ReleaseFiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="DesktopShortcut" />
+    </Feature>
+
+    <!-- Installer UI Sequence -->
+    <UI Id="WixUI_CustomInstallDir">
+      <UIRef Id="WixUI_InstallDir" />
+
+      <!-- Override BrowseDlg with modern Windows shell folder picker -->
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Event="DoAction" Value="InvokeBrowseForFolder" Order="1">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Event="SetTargetPath" Value="[WIXUI_INSTALLDIR]" Order="2">1</Publish>
+
+      <!-- Launch Application on Exit Dialog -->
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+    </UI>
+  </Product>
+</Wix>

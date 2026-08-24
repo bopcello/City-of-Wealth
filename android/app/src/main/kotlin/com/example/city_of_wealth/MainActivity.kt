@@ -31,6 +31,9 @@ class MainActivity: FlutterActivity() {
                 } else {
                     result.error("INVALID_ARGUMENT", "Text cannot be null", null)
                 }
+            } else if (call.method == "requestIgnoreBatteryOptimizations") {
+                // Silently check or log battery optimization status without opening system popups
+                result.success(true)
             } else {
                 result.notImplemented()
             }

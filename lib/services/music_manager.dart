@@ -10,6 +10,7 @@ class MusicManager {
   double _volume;
 
   MusicManager({double initialVolume = 0.0}) : _volume = initialVolume {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) return;
     // Start muted; the real volume is applied after settings are loaded.
     _player.setVolume(_volume);
 
@@ -77,12 +78,14 @@ class MusicManager {
   /// Set music volume (0.0 to 1.0)
   void setVolume(double volume) {
     _volume = volume;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) return;
     _player.setVolume(volume);
   }
 
   /// Internal method to play a track with infinite loop
   Future<void> _playTrack(String assetPath) async {
     if (_isDisposed) return;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) return;
     if (_currentTrack == assetPath) return;
 
     debugPrint('[MUSIC_SYSTEM] Switching to track: $assetPath');
@@ -101,6 +104,7 @@ class MusicManager {
   /// Dispose of the audio player
   Future<void> dispose() async {
     _isDisposed = true;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) return;
     await _player.dispose();
   }
 }

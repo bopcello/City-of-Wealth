@@ -1,0 +1,15 @@
+# Gitleaks configuration file for City of Wealth
+title = "City of Wealth Gitleaks Configuration"
+
+[allowlist]
+description = "Global allowlist for build artifacts, generated code, and ignored credential files"
+paths = [
+  '''^\.dart_tool/''',
+  '''^build/''',
+  '''^android/\.gradle/''',
+  '''^android/app/build/''',
+  '''^ios/Pods/''',
+  '''^windows/flutter/ephemeral/''',
+  '''google-services\.json''',
+  '''GoogleService-Info\.plist''',
+]

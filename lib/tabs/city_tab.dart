@@ -6,6 +6,7 @@ import '../widgets/icon_text.dart';
 import '../theme/app_colors.dart';
 import '../services/sfx_manager.dart';
 import '../services/friends_service.dart';
+import '../services/firestore_service.dart';
 import '../game_state.dart';
 import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';
@@ -1358,37 +1359,30 @@ class PendingRequestCard extends StatefulWidget {
 
 class _PendingRequestCardState extends State<PendingRequestCard> {
   String _senderName = "Loading...";
+  String? _profilePic;
 
   @override
   void initState() {
     super.initState();
-    _loadSenderName();
+    _loadSenderInfo();
   }
 
-  void _loadSenderName() async {
+  void _loadSenderInfo() async {
     try {
-      final snap = await FirebaseFirestore.instance
-          .collection('public_profiles')
-          .doc(widget.friendship.requestedBy)
-          .get();
-      if (snap.exists && snap.data() != null) {
-        if (mounted) {
-          setState(() {
-            _senderName =
-                snap.data()?['playerName'] as String? ?? "Unknown User";
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _senderName = "New Player";
-          });
-        }
+      final name = await FirestoreService()
+          .resolvePlayerName(widget.friendship.requestedBy);
+      final snap = await FriendsService()
+          .getFriendSnapshot(widget.friendship.requestedBy);
+      if (mounted) {
+        setState(() {
+          _senderName = name;
+          _profilePic = snap?.profilePic;
+        });
       }
     } catch (_) {
       if (mounted) {
         setState(() {
-          _senderName = "Unknown User";
+          _senderName = "New Player";
         });
       }
     }
@@ -1404,12 +1398,10 @@ class _PendingRequestCardState extends State<PendingRequestCard> {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              child: Icon(
-                Icons.person,
-                color: AppColors.of(context, 'onSurface'),
-              ),
+            ProfileAvatar(
+              profilePic: _profilePic,
+              fallbackName: _senderName,
+              radius: 20,
             ),
             const SizedBox(width: 12),
             Expanded(

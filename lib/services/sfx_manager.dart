@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Manages sound effects (SFX) playback using dedicated players to prevent decoder churn.
@@ -13,6 +14,7 @@ class SfxManager {
   final Map<String, Source> _cachedSources = {};
 
   SfxManager._internal() {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) return;
     final sfxFiles = [
       'lib/assets/music/Click.mp3',
       'lib/assets/music/Back.mp3',
@@ -34,6 +36,7 @@ class SfxManager {
   }
 
   Future<void> _preloadSfx() async {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) return;
     final cache = AudioCache(prefix: '');
     for (final path in _players.keys) {
       try {
@@ -53,6 +56,7 @@ class SfxManager {
   /// Update SFX volume (0.0 to 1.0)
   void setVolume(double volume) {
     _volume = volume;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) return;
     for (final player in _players.values) {
       player.setVolume(volume);
     }
@@ -83,6 +87,7 @@ class SfxManager {
 
   Future<void> _playSound(String assetPath) async {
     if (_isDisposed) return;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) return;
     try {
       final player = _players[assetPath];
       if (player == null) return;
@@ -102,6 +107,7 @@ class SfxManager {
 
   void dispose() {
     _isDisposed = true;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) return;
     for (final player in _players.values) {
       player.dispose();
     }

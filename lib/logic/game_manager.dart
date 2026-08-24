@@ -329,6 +329,41 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
       final builtNames = cityLayout.map((pb) => pb.name).toList();
 
+      final int salaryEarned = dailyIncome(_career.track, _career.level);
+      int passiveIncomeTotal = 0;
+      activePassiveIncomes.forEach((assetType, investedCount) {
+        final info = passiveIncomeData.values.firstWhere(
+          (e) => e.assetType == assetType,
+          orElse: () => passiveIncomeData.values.first,
+        );
+        if (cityLayout.any((b) => b.name == info.buildingName)) {
+          final ownedCount = assets.count(assetType);
+          final eligibleCount = min(ownedCount, investedCount);
+          final multiplier = getPassiveIncomeMultiplier(assetType);
+          final streakRewards = getStreakRewards(dailyQuizStreak);
+          passiveIncomeTotal += (eligibleCount *
+                  info.incomePerAsset *
+                  multiplier *
+                  streakRewards.passiveIncomeMultiplier)
+              .round();
+        }
+      });
+      final int totalGemYield = salaryEarned + passiveIncomeTotal;
+
+      final int gemBoostNextLevel = _career.level < 5
+          ? (dailyIncome(_career.track, _career.level + 1) - salaryEarned).clamp(0, 999999)
+          : 0;
+
+      int gemYieldFromPassive = 0;
+      passiveIncomeData.forEach((type, info) {
+        final owned = assets.count(info.assetType);
+        final invested = activePassiveIncomes[info.assetType] ?? 0;
+        final uninvested = (owned - invested).clamp(0, 999999);
+        gemYieldFromPassive += uninvested * info.incomePerAsset;
+      });
+
+      final int debtVal = _gems < 0 ? _gems.abs() : 0;
+
       await NotificationService().rescheduleAllNotifications(
         playerName: playerName,
         dailyQuizStreak: dailyQuizStreak,
@@ -336,6 +371,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         lastDailyQuizDate: lastDailyQuizDate,
         wakeUpHour: wakeUpHour,
         wakeUpMinute: wakeUpMinute,
+        level: _career.level,
         kpMet: kpMet,
         assetsMet: assetsMet,
         quizzesMet: quizzesMet,
@@ -343,6 +379,10 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
         buildingsNeeded: missingBuildingsCount,
         quizzesNeeded: quizzesNeededStr,
         builtBuildings: builtNames,
+        gemYield: totalGemYield,
+        gemBoostNextLevel: gemBoostNextLevel,
+        gemYieldFromPassive: gemYieldFromPassive,
+        debt: debtVal,
       );
     } catch (e) {
       debugPrint("❌ Error rescheduling notifications: $e");
@@ -386,8 +426,44 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
     final builtNames = cityLayout.map((pb) => pb.name).toList();
 
+    final int salaryEarned = dailyIncome(_career.track, _career.level);
+    int passiveIncomeTotal = 0;
+    activePassiveIncomes.forEach((assetType, investedCount) {
+      final info = passiveIncomeData.values.firstWhere(
+        (e) => e.assetType == assetType,
+        orElse: () => passiveIncomeData.values.first,
+      );
+      if (cityLayout.any((b) => b.name == info.buildingName)) {
+        final ownedCount = assets.count(assetType);
+        final eligibleCount = min(ownedCount, investedCount);
+        final multiplier = getPassiveIncomeMultiplier(assetType);
+        final streakRewards = getStreakRewards(dailyQuizStreak);
+        passiveIncomeTotal += (eligibleCount *
+                info.incomePerAsset *
+                multiplier *
+                streakRewards.passiveIncomeMultiplier)
+            .round();
+      }
+    });
+    final int totalGemYield = salaryEarned + passiveIncomeTotal;
+
+    final int gemBoostNextLevel = _career.level < 5
+        ? (dailyIncome(_career.track, _career.level + 1) - salaryEarned).clamp(0, 999999)
+        : 0;
+
+    int gemYieldFromPassive = 0;
+    passiveIncomeData.forEach((type, info) {
+      final owned = assets.count(info.assetType);
+      final invested = activePassiveIncomes[info.assetType] ?? 0;
+      final uninvested = (owned - invested).clamp(0, 999999);
+      gemYieldFromPassive += uninvested * info.incomePerAsset;
+    });
+
+    final int debtVal = _gems < 0 ? _gems.abs() : 0;
+
     NotificationService().scheduleDailyNotifications(
       playerName,
+      level: _career.level,
       kpMet: kpMet,
       assetsMet: assetsMet,
       quizzesMet: quizzesMet,
@@ -395,6 +471,10 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       buildingsNeeded: missingBuildingsCount,
       quizzesNeeded: quizzesNeededStr,
       builtBuildings: builtNames,
+      gemYield: totalGemYield,
+      gemBoostNextLevel: gemBoostNextLevel,
+      gemYieldFromPassive: gemYieldFromPassive,
+      debt: debtVal,
     );
   }
 

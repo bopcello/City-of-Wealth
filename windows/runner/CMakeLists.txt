@@ -38,3 +38,12 @@ target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)
+
+# Automatically run build_msi.ps1 after building Windows release binaries
+add_custom_command(
+  TARGET ${BINARY_NAME} POST_BUILD
+  COMMAND powershell.exe -ExecutionPolicy Bypass -File "${CMAKE_SOURCE_DIR}/../scripts/build_msi.ps1"
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/.."
+  COMMENT "Packaging MSI Installer..."
+)
+

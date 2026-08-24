@@ -20,7 +20,51 @@ class NotificationService {
   static final ValueNotifier<String?> notificationPayloadNotifier =
       ValueNotifier<String?>(null);
 
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
+
+  Future<void> _safeCancel(int id) async {
+    if (!_isInitialized) return;
+    try {
+      await _notifications.cancel(id: id);
+    } catch (e) {
+      debugPrint("⚠️ Safe cancel notification $id error: $e");
+    }
+  }
+
+  Future<void> _safeCancelAll() async {
+    if (!_isInitialized) return;
+    try {
+      await _notifications.cancelAll();
+    } catch (e) {
+      debugPrint("⚠️ Safe cancel all notifications error: $e");
+    }
+  }
+
+  Future<void> _safeShow({
+    required int id,
+    required String title,
+    required String body,
+    required NotificationDetails notificationDetails,
+    String? payload,
+  }) async {
+    if (!_isInitialized) return;
+    try {
+      await _notifications.show(
+        id: id,
+        title: title,
+        body: body,
+        notificationDetails: notificationDetails,
+        payload: payload,
+      );
+    } catch (e) {
+      debugPrint("⚠️ Safe show notification error: $e");
+    }
+  }
+
   Future<void> initialize() async {
+    if (_isInitialized) return;
+
     tz.initializeTimeZones();
     try {
       final info = await FlutterTimezone.getLocalTimezone();
@@ -33,19 +77,40 @@ class NotificationService {
 
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
+    const LinuxInitializationSettings initializationSettingsLinux =
+        LinuxInitializationSettings(defaultActionName: 'Open notification');
+    const DarwinInitializationSettings initializationSettingsDarwin =
+        DarwinInitializationSettings();
+    const WindowsInitializationSettings initializationSettingsWindows =
+        WindowsInitializationSettings(
+      appName: 'City of Wealth',
+      appUserModelId: 'com.cityofwealth.app',
+      guid: '39078505-5286-43b6-901a-1b1000000000',
+    );
 
     const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-
-    await _notifications.initialize(
-      settings: initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        debugPrint("🔔 Notification clicked with payload: ${response.payload}");
-        if (response.payload != null) {
-          notificationPayloadNotifier.value = response.payload;
-        }
-      },
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      linux: initializationSettingsLinux,
+      iOS: initializationSettingsDarwin,
+      macOS: initializationSettingsDarwin,
+      windows: initializationSettingsWindows,
     );
+
+    try {
+      await _notifications.initialize(
+        settings: initializationSettings,
+        onDidReceiveNotificationResponse: (NotificationResponse response) {
+          debugPrint("🔔 Notification clicked with payload: ${response.payload}");
+          if (response.payload != null) {
+            notificationPayloadNotifier.value = response.payload;
+          }
+        },
+      );
+      _isInitialized = true;
+    } catch (e) {
+      debugPrint("⚠️ Notification plugin initialization error: $e");
+    }
 
     // Check if the app was launched via notification click when terminated
     try {
@@ -66,80 +131,121 @@ class NotificationService {
     }
 
     // Create Notification Channels for Android
-    const AndroidNotificationChannel gameChannel = AndroidNotificationChannel(
-      'game_events',
-      'Game Events',
-      description: 'Notifications for disasters and city events',
-      importance: Importance.max,
-    );
+    try {
+      const AndroidNotificationChannel gameChannel = AndroidNotificationChannel(
+        'game_events',
+        'Game Events',
+        description: 'Notifications for disasters and city events',
+        importance: Importance.max,
+      );
 
-    const AndroidNotificationChannel streakChannel = AndroidNotificationChannel(
-      'streak_warnings',
-      'Streak Warnings',
-      description: 'Notifications before you lose your streak',
-      importance: Importance.high,
-    );
+      const AndroidNotificationChannel streakChannel = AndroidNotificationChannel(
+        'streak_warnings',
+        'Streak Warnings',
+        description: 'Notifications before you lose your streak',
+        importance: Importance.high,
+      );
 
-    const AndroidNotificationChannel inactivityChannel =
-        AndroidNotificationChannel(
-          'inactivity',
-          'Reminders',
-          description: 'Reminders to check on your city',
-          importance: Importance.low,
-        );
+      const AndroidNotificationChannel inactivityChannel =
+          AndroidNotificationChannel(
+            'inactivity',
+            'Reminders',
+            description: 'Reminders to check on your city',
+            importance: Importance.low,
+          );
 
-    const AndroidNotificationChannel dailyRoutineChannel =
-        AndroidNotificationChannel(
-          'routine_updates',
-          'Routine Updates',
-          description: 'Daily reminders for quizzes and city management',
-          importance: Importance.high,
-        );
+      const AndroidNotificationChannel dailyRoutineChannel =
+          AndroidNotificationChannel(
+            'routine_updates',
+            'Routine Updates',
+            description: 'Daily reminders for quizzes and city management',
+            importance: Importance.high,
+          );
 
-    const AndroidNotificationChannel friendActivityChannel =
-        AndroidNotificationChannel(
-          'friend_city_activity',
-          'Friend Activity',
-          description: 'Level-ups, milestones, and activity from your friends',
-          importance: Importance.high,
-        );
+      const AndroidNotificationChannel friendActivityChannel =
+          AndroidNotificationChannel(
+            'friend_city_activity',
+            'Friend Activity',
+            description: 'Level-ups, milestones, and activity from your friends',
+            importance: Importance.high,
+          );
 
-    final androidPlugin = _notifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
+      const AndroidNotificationChannel debugStageChannel =
+          AndroidNotificationChannel(
+            'background_debug_stage',
+            'Background Debug Logs',
+            description: 'Stage notifications for background task stages',
+            importance: Importance.low,
+          );
 
-    await androidPlugin?.createNotificationChannel(gameChannel);
-    await androidPlugin?.createNotificationChannel(streakChannel);
-    await androidPlugin?.createNotificationChannel(inactivityChannel);
-    await androidPlugin?.createNotificationChannel(dailyRoutineChannel);
-    await androidPlugin?.createNotificationChannel(friendActivityChannel);
+      final androidPlugin = _notifications
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
 
-    // Delete obsolete notification channels from Android OS settings
-    await androidPlugin?.deleteNotificationChannel(channelId: 'daily_routine');
+      await androidPlugin?.createNotificationChannel(gameChannel);
+      await androidPlugin?.createNotificationChannel(streakChannel);
+      await androidPlugin?.createNotificationChannel(inactivityChannel);
+      await androidPlugin?.createNotificationChannel(dailyRoutineChannel);
+      await androidPlugin?.createNotificationChannel(friendActivityChannel);
+      await androidPlugin?.createNotificationChannel(debugStageChannel);
+
+      // Delete obsolete notification channels from Android OS settings
+      await androidPlugin?.deleteNotificationChannel(channelId: 'daily_routine');
+    } catch (e) {
+      debugPrint("⚠️ Error setting up Android notification channels: $e");
+    }
 
     // Clean up any lingering streak warning notifications from previous version
     final cancelFutures = <Future<void>>[];
     for (int i = 3000; i <= 3050; i++) {
-      cancelFutures.add(_notifications.cancel(id: i));
+      cancelFutures.add(_safeCancel(i));
     }
     await Future.wait(cancelFutures);
   }
 
-  Future<void> requestPermissions() async {
-    // Android 13+ requires explicit permission
-    final androidPlugin = _notifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
-    await androidPlugin?.requestNotificationsPermission();
+  /// Displays a status notification for each stage of the background task.
+  Future<void> showDebugStageNotification({
+    required String title,
+    required String body,
+    required int stageId,
+  }) async {
+    const details = AndroidNotificationDetails(
+      'background_debug_stage',
+      'Background Debug Logs',
+      channelDescription: 'Stage notifications for background task stages',
+      importance: Importance.low,
+      priority: Priority.low,
+      showWhen: true,
+    );
+    await _safeShow(
+      id: 9000 + stageId,
+      title: title,
+      body: body,
+      notificationDetails: const NotificationDetails(android: details),
+      payload: 'debug_stage',
+    );
+  }
 
-    // iOS requires explicit permission
-    final iosPlugin = _notifications
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >();
-    await iosPlugin?.requestPermissions(alert: true, badge: true, sound: true);
+  Future<void> requestPermissions() async {
+    if (!_isInitialized) return;
+    try {
+      // Android 13+ requires explicit permission
+      final androidPlugin = _notifications
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      await androidPlugin?.requestNotificationsPermission();
+
+      // iOS requires explicit permission
+      final iosPlugin = _notifications
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >();
+      await iosPlugin?.requestPermissions(alert: true, badge: true, sound: true);
+    } catch (e) {
+      debugPrint("⚠️ Error requesting notification permissions: $e");
+    }
   }
 
   Future<void> showFriendActivityNotification({
@@ -160,12 +266,36 @@ class NotificationService {
       importance: Importance.high,
       priority: Priority.high,
     );
-    await _notifications.show(
-      id: friendId.hashCode ^ event.hashCode,
+    await _safeShow(
+      id: (friendId.hashCode ^ event.hashCode) & 0x7FFFFFFF,
       title: notification.$1,
       body: notification.$2,
       notificationDetails: const NotificationDetails(android: details),
       payload: 'friend_activity:$friendId',
+    );
+  }
+
+  Future<void> showFriendRequestNotification({
+    required String friendName,
+    required String type,
+  }) async {
+    final notification = NotificationData.getRandomFriendRequestNotification(
+      friendName,
+      type,
+    );
+    const details = AndroidNotificationDetails(
+      'friend_city_activity',
+      'Friend Activity',
+      channelDescription: 'Updates and requests from your friends',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+    await _safeShow(
+      id: (friendName.hashCode ^ type.hashCode ^ DateTime.now().millisecondsSinceEpoch) & 0x7FFFFFFF,
+      title: notification.$1,
+      body: notification.$2,
+      notificationDetails: const NotificationDetails(android: details),
+      payload: 'friend_request',
     );
   }
 
@@ -178,6 +308,7 @@ class NotificationService {
     required String lastDailyQuizDate,
     required int wakeUpHour,
     required int wakeUpMinute,
+    int level = 1,
     bool kpMet = false,
     bool assetsMet = false,
     bool quizzesMet = false,
@@ -185,8 +316,12 @@ class NotificationService {
     int buildingsNeeded = 0,
     String quizzesNeeded = '',
     List<String>? builtBuildings,
+    int gemYield = 0,
+    int gemBoostNextLevel = 0,
+    int gemYieldFromPassive = 0,
+    int debt = 0,
   }) async {
-    await _notifications.cancelAll();
+    await _safeCancelAll();
 
     await scheduleDailyMorningNotification(
       playerName,
@@ -208,6 +343,7 @@ class NotificationService {
     await scheduleDailyNotifications(
       playerName,
       skipCancel: true,
+      level: level,
       kpMet: kpMet,
       assetsMet: assetsMet,
       quizzesMet: quizzesMet,
@@ -215,6 +351,10 @@ class NotificationService {
       buildingsNeeded: buildingsNeeded,
       quizzesNeeded: quizzesNeeded,
       builtBuildings: builtBuildings,
+      gemYield: gemYield,
+      gemBoostNextLevel: gemBoostNextLevel,
+      gemYieldFromPassive: gemYieldFromPassive,
+      debt: debt,
     );
   }
 
@@ -238,7 +378,7 @@ class NotificationService {
           priority: Priority.high,
         );
 
-    await _notifications.show(
+    await _safeShow(
       id: type.index,
       title: notification.$1,
       body: notification.$2,
@@ -258,7 +398,7 @@ class NotificationService {
           priority: Priority.high,
         );
 
-    await _notifications.show(
+    await _safeShow(
       id: 500,
       title: notification.$1,
       body: notification.$2,
@@ -284,7 +424,7 @@ class NotificationService {
           priority: Priority.high,
         );
 
-    await _notifications.show(
+    await _safeShow(
       id: 100 + buildingName.hashCode % 1000,
       title: notification.$1,
       body: notification.$2,
@@ -295,6 +435,7 @@ class NotificationService {
   Future<void> scheduleDailyNotifications(
     String playerName, {
     bool skipCancel = false,
+    int level = 1,
     bool kpMet = false,
     bool assetsMet = false,
     bool quizzesMet = false,
@@ -303,13 +444,16 @@ class NotificationService {
     String quizzesNeeded = '',
     String? buildingName,
     List<String>? builtBuildings,
-    int gemYield = 50,
+    int gemYield = 0,
+    int gemBoostNextLevel = 0,
+    int gemYieldFromPassive = 0,
+    int debt = 0,
   }) async {
     if (!skipCancel) {
       // Cancel previous daily notifications (IDs 1000-1100)
       final cancelFutures = <Future<void>>[];
       for (int i = 1000; i < 1100; i++) {
-        cancelFutures.add(_notifications.cancel(id: i));
+        cancelFutures.add(_safeCancel(i));
       }
       await Future.wait(cancelFutures);
     }
@@ -346,6 +490,7 @@ class NotificationService {
             NotificationData.getAlternatingRetentionNotification(
               cycleIndex: cycleIndex,
               name: playerName,
+              level: level,
               kpMet: kpMet,
               assetsMet: assetsMet,
               quizzesMet: quizzesMet,
@@ -355,6 +500,9 @@ class NotificationService {
               buildingName: buildingName,
               builtBuildings: builtBuildings,
               gemYield: gemYield,
+              gemBoostNextLevel: gemBoostNextLevel,
+              gemYieldFromPassive: gemYieldFromPassive,
+              debt: debt,
             );
 
         scheduleFutures.add(
@@ -380,7 +528,7 @@ class NotificationService {
     // Cancel previous inactivity notifications (IDs 2000-2010)
     final cancelFutures = <Future<void>>[];
     for (int i = 2000; i < 2010; i++) {
-      cancelFutures.add(_notifications.cancel(id: i));
+      cancelFutures.add(_safeCancel(i));
     }
     await Future.wait(cancelFutures);
 
@@ -441,7 +589,7 @@ class NotificationService {
           priority: Priority.high,
         );
 
-    await _notifications.show(
+    await _safeShow(
       id: 4000,
       title: notification.$1,
       body: notification.$2,
@@ -456,7 +604,7 @@ class NotificationService {
     bool insured,
   ) async {
     // Cancel existing disaster notifications (ID 5000)
-    await _notifications.cancel(id: 5000);
+    await _safeCancel(5000);
 
     final notification = NotificationData.getRandomDisasterNotification(
       playerName,
@@ -490,7 +638,7 @@ class NotificationService {
   }) async {
     if (!skipCancel) {
       // ID 6000 for daily morning quiz
-      await _notifications.cancel(id: 6000);
+      await _safeCancel(6000);
     }
 
     const AndroidNotificationDetails androidDetails =
@@ -541,7 +689,7 @@ class NotificationService {
       // Cancel previous challenge reminder notifications (IDs 3000 to 3050)
       final cancelFutures = <Future<void>>[];
       for (int i = 3000; i <= 3050; i++) {
-        cancelFutures.add(_notifications.cancel(id: i));
+        cancelFutures.add(_safeCancel(i));
       }
       await Future.wait(cancelFutures);
     }
@@ -646,6 +794,7 @@ class NotificationService {
     String? payload,
     DateTimeComponents? matchDateTimeComponents,
   }) async {
+    if (!_isInitialized) return;
     try {
       await _notifications.zonedSchedule(
         id: id,

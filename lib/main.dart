@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -12,6 +14,7 @@ import 'services/friend_activity_monitor.dart';
 import 'theme/app_colors.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'services/auth_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_screen.dart';
@@ -23,26 +26,20 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final initialIsDarkMode = prefs.getBool(isDarkModeKey) ?? false;
 
-  runApp(
-    CityOfWealthApp(
-      initialIsDarkMode: initialIsDarkMode,
-    ),
-  );
+  runApp(CityOfWealthApp(initialIsDarkMode: initialIsDarkMode));
 }
 
 class CityOfWealthApp extends StatefulWidget {
   final bool initialIsDarkMode;
 
-  const CityOfWealthApp({
-    super.key,
-    required this.initialIsDarkMode,
-  });
+  const CityOfWealthApp({super.key, required this.initialIsDarkMode});
 
   @override
   State<CityOfWealthApp> createState() => _CityOfWealthAppState();
 }
 
-class _CityOfWealthAppState extends State<CityOfWealthApp> {
+class _CityOfWealthAppState extends State<CityOfWealthApp>
+    with WidgetsBindingObserver {
   GameManager? _game;
   late final MusicManager _music;
   final SfxManager _sfx = SfxManager();
@@ -54,11 +51,36 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _setAppOpenState(true);
     _isDarkMode = widget.initialIsDarkMode;
 
     // Start audio managers muted; volumes are applied once game state loads.
     _music = MusicManager();
     _bootstrapApp();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _setAppOpenState(true);
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached) {
+      _setAppOpenState(false);
+    }
+  }
+
+  void _setAppOpenState(bool isOpen) {
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setBool('is_app_open', isOpen);
+      if (isOpen) {
+        prefs.setInt(
+          'last_app_open_timestamp',
+          DateTime.now().millisecondsSinceEpoch,
+        );
+      }
+    });
   }
 
   void _syncVolume() {
@@ -85,19 +107,48 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
     }
 
     try {
-      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      }
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) {
+        try {
+          FirebaseFirestore.instance.settings = Settings(
+            persistenceEnabled: false,
+          );
+        } catch (e) {
+          debugPrint("⚠️ Could not set Firestore settings on Windows: $e");
+        }
+      }
+      // Initialize Google Sign-In (required by google_sign_in v7+)
+      if (!kIsWeb &&
+          (Platform.isAndroid || Platform.isIOS)) {
+        await AuthService().initializeGoogleSignIn();
+      }
       await BackgroundTaskManager.initialize();
-
-      BackgroundTaskManager.scheduleTasks().ignore();
-      await NotificationService().initialize();
+      if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+        BackgroundTaskManager.scheduleTasks().ignore();
+      }
+      if (!kIsWeb) {
+        await NotificationService().initialize();
+      }
       final game = GameManager();
       game.attachMusicManager(_music);
       game.addListener(_syncVolume);
       game.addListener(_handleGameThemeChange);
       _authSubscription?.cancel();
-      _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
+      _authSubscription = FirebaseAuth.instance.authStateChanges().listen((
+        user,
+      ) {
         if (user != null) {
-          FriendActivityMonitor.instance.check(showAndroidNotifications: false).ignore();
+          SharedPreferences.getInstance().then((prefs) {
+            prefs.setString('current_logged_in_uid', user.uid);
+            prefs.setString('last_logged_in_uid', user.uid);
+          });
+          FriendActivityMonitor.instance
+              .check(showAndroidNotifications: false)
+              .ignore();
         }
       });
 
@@ -117,9 +168,13 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
       // before starting any audio playback.
       await game.loadFuture;
       _syncVolume();
-      _music.playHomeMusic();
-    } catch (error) {
+      if (kIsWeb || (defaultTargetPlatform != TargetPlatform.windows)) {
+        _music.playHomeMusic();
+      }
+    } catch (error, stack) {
       if (!mounted) return;
+      debugPrint('Bootstrap failed: $error');
+      debugPrint('Stack trace: $stack');
       setState(() {
         _bootstrapError = error;
       });
@@ -128,6 +183,8 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _setAppOpenState(false);
     _authSubscription?.cancel();
     _game?.removeListener(_syncVolume);
     _game?.removeListener(_handleGameThemeChange);
@@ -167,9 +224,6 @@ class _CityOfWealthAppState extends State<CityOfWealthApp> {
 // Merged Widgets (< 200 lines) from consolidated files
 // =============================================================================
 
-
-
-
 class AuthWrapper extends StatefulWidget {
   final GameManager game;
   final MusicManager music;
@@ -206,7 +260,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
     if (widget.game.loaded && _showLoader) {
       if (!_checkedFriendActivityAfterLoad) {
         _checkedFriendActivityAfterLoad = true;
-        FriendActivityMonitor.instance.check(showAndroidNotifications: false).ignore();
+        FriendActivityMonitor.instance
+            .check(showAndroidNotifications: false)
+            .ignore();
       }
       // Small delay to ensure the underlying UI has a frame to render with the correct theme
       Future.delayed(const Duration(milliseconds: 500), () {

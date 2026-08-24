@@ -6,7 +6,8 @@ import '../theme/app_colors.dart';
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
-  static const String _appVersion = '2.0.2';
+  static const String _appVersion = '3.2.0';
+
   static const String _privacyPolicyUrl =
       'https://sites.google.com/view/city-of-wealth/privacy-policy';
   static const String _developerName = 'bopcello';
@@ -81,7 +82,7 @@ class AboutScreen extends StatelessWidget {
                       height: 96,
                       width: 96,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorBuilder: (_, _, _) => Container(
                         height: 96,
                         width: 96,
                         decoration: BoxDecoration(

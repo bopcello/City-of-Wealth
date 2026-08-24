@@ -928,7 +928,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
             !widget.game.isTutorialPopupActive)
           AnimatedBuilder(
             animation: _arrowAnimation,
-            builder: (_, __) {
+            builder: (_, _) {
               final isTopHalf = rect.top < screenSize.height / 2;
               final top = isTopHalf
                   ? rect.bottom + 12 + _arrowAnimation.value

@@ -1,8 +1,1 @@
-{
-  "functions": {
-    "source": "functions"
-  },
-  "firestore": {
-    "rules": "firestore.rules"
-  }
-}
+{"functions":{"source":"functions"},"firestore":{"rules":"firestore.rules"},"flutter":{"platforms":{"android":{"default":{"projectId":"city-of-wealth","appId":"1:390785055286:android:55fc0d8ad5273a8f563697","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"city-of-wealth","configurations":{"android":"1:390785055286:android:55fc0d8ad5273a8f563697","ios":"1:390785055286:ios:baaad76735fba0d5563697","macos":"1:390785055286:ios:baaad76735fba0d5563697","web":"1:390785055286:web:61b4d74b0f4404b4563697","windows":"1:390785055286:web:61b4d74b0f4404b4563697"}}}}}}

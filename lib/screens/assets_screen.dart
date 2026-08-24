@@ -218,6 +218,7 @@ class AssetsScreen extends StatelessWidget {
                               backgroundColor: AppColors.of(context, 'success'),
                               useStadiumShape: true,
                               elevation: 0,
+                              minimumSize: Size.zero,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 14,
                                 vertical: 10,

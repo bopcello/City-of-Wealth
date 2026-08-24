@@ -93,6 +93,36 @@ class NotificationData {
     'session_summary': [('{friend} made moves', '{summary}')],
   };
 
+  static const Map<String, List<(String, String)>> friendRequestTemplates = {
+    'friend_request_sent': [
+      ('{name} sent a friend request', '{name} sent a friend request'),
+      ('New Friend Request', '{name} sent a friend request'),
+      ('Friend Request from {name}', '{name} sent a friend request'),
+    ],
+    'friend_request_denied': [
+      (
+        '{name} denied your friend request',
+        '{name} denied your friend request',
+      ),
+      ('Friend Request Declined', '{name} denied your friend request'),
+      ('Update on Friend Request', '{name} denied your friend request'),
+    ],
+    'friend_request_accepted': [
+      (
+        '{name} accepted your friend request',
+        '{name} accepted your friend request, you are now friends with {name}',
+      ),
+      (
+        'New Friend Connected!',
+        '{name} accepted your friend request, you are now friends with {name}',
+      ),
+      (
+        'Friend Request Accepted',
+        '{name} accepted your friend request, you are now friends with {name}',
+      ),
+    ],
+  };
+
   /// Source of truth for friend push copy. The Render worker reads this JSON
   /// during startup so closed-app notifications use the same copy as Flutter.
   static const String friendActivityNotificationTemplatesJson = r'''{
@@ -875,6 +905,18 @@ class NotificationData {
     return (_format(choice.$1, values), _format(choice.$2, values));
   }
 
+  static (String, String) getRandomFriendRequestNotification(
+    String friendName,
+    String type,
+  ) {
+    final list =
+        friendRequestTemplates[type] ??
+        friendRequestTemplates['friend_request_sent']!;
+    final choice = _randomElement(list);
+    final values = {'name': friendName};
+    return (_format(choice.$1, values), _format(choice.$2, values));
+  }
+
   static String formatFriendActivitySummary(
     String friendName,
     Map<String, dynamic> payload,
@@ -1130,11 +1172,11 @@ class NotificationData {
   ];
 
   // ---------------------------------------------------------------------------
-  // Retention Notifications (20 notifications with rich data)
+  // Retention Notifications (30 notifications with rich personalized data)
   // ---------------------------------------------------------------------------
 
   static const List<(String, String)> retentionNotifications = [
-    // --- Original retention notifications ---
+    // --- Original & updated retention notifications ---
     (
       "Think fast, you're in a room of investors",
       "How can you participate in the conversation if you haven't played City of Wealth?",
@@ -1149,7 +1191,7 @@ class NotificationData {
     ),
     (
       "Quiet day in your portfolio?",
-      "Log in to claim your yield and build {buildingCount} more {buildingName} for {gemYield} extra gems daily.",
+      "Turn your idle assets into {gemYieldFromPassive} extra gems daily with passive income.",
     ),
     (
       "Your city needs its mayor",
@@ -1157,27 +1199,27 @@ class NotificationData {
     ),
     (
       "Ready for today's board meeting?",
-      "Your assets are working hard — time to plan your next {gemYield} gem expansion.",
+      "Leveling up to level {nextLevel} will boost your daily income by {gemBoostNextLevel} gems!",
     ),
     (
       "Consistency compounds",
       "A quick 1-minute check-in keeps your {buildingName} yield compounding.",
     ),
     (
-      "Don't leave {gemYield} gems on the table",
-      "Your passive cash flow from your {buildingName} is waiting.",
+      "Don't leave {gemYieldFromPassive} gems on the table",
+      "Activate passive income on your assets and collect free daily gems.",
     ),
     (
       "Small decisions, massive returns",
       "Attempt today's quiz to unlock {buildingCount} more {buildingName}.",
     ),
     (
-      "Your financial empire is waiting",
-      "Check in now to optimise your building yields by {gemYield} gems/day.",
+      "Your financial empire is getting impatient for you to level up!",
+      "Check in now to boost your daily yield by {gemBoostNextLevel} gems at level {nextLevel}.",
     ),
     (
-      "Is your portfolio ready for level {level}?",
-      "You are just {kpNeeded} KP away. Open City of Wealth and see.",
+      "Is your portfolio ready for level {nextLevel}?",
+      "You are just {kpNeeded} KP away. Open City of Wealth and claim your promotion!",
     ),
     (
       "A quick financial sanity check?",
@@ -1185,7 +1227,7 @@ class NotificationData {
     ),
     (
       "Wealth isn't built overnight — it's built daily",
-      "Take 60 seconds to boost your yield by {gemYield} gems.",
+      "Level up to level {nextLevel} and add {gemBoostNextLevel} extra gems to your daily income.",
     ),
     (
       "Your assets don't sleep, {name}",
@@ -1193,19 +1235,19 @@ class NotificationData {
     ),
     (
       "Got 2 minutes to spare?",
-      "Turn idle time into {gemYield} gems per day with today's quick quiz.",
+      "Turn idle assets into {gemYieldFromPassive} extra gems per day with passive income.",
     ),
     (
       "Your competition is making moves",
-      "Other mayors are building {buildingName} — check your stats and keep pace.",
+      "Other players are building {buildingName} — check your stats and keep pace.",
     ),
     (
       "From rookie to real estate mogul",
-      "Every daily check-in brings you {gemYield} gems closer to top rank.",
+      "Level up to level {nextLevel} to earn {gemBoostNextLevel} more gems every single day.",
     ),
     (
       "Smart money moves start with daily practice",
-      "Test your knowledge, gain {kpNeeded} KP, and level up.",
+      "Test your knowledge, gain {kpNeeded} KP, and level up to level {nextLevel}.",
     ),
     (
       "Your city's economy is buzzing",
@@ -1218,11 +1260,11 @@ class NotificationData {
     // --- Merged from Set 5 (Motivational nudges) ---
     (
       "Your city would love someone with more KP to lead it",
-      "You're just {kpNeeded} KP away from proving your strategy. Attempt today's quiz!",
+      "You're just {kpNeeded} KP away from level {nextLevel}. Attempt today's quiz!",
     ),
     (
-      "Is {kpNeeded} KP really going to stand between you and level {level}?",
-      "Solve today's quiz and earn {gemYield} extra gems daily.",
+      "Is {kpNeeded} KP really going to stand between you and level {nextLevel}?",
+      "Solve today's quiz and boost your KP.",
     ),
     (
       "You could be building {buildingCount} more {buildingName} right now...",
@@ -1233,22 +1275,35 @@ class NotificationData {
       "Nothing a few correct answers and {kpNeeded} more KP can't fix.",
     ),
     (
-      "Other mayors are expanding while you rest",
-      "Take 2 minutes to claim your edge and add {gemYield} gems to your daily yield.",
+      "Other players are blazing through levels while you rest",
+      "Level up to level {nextLevel} and unlock {gemBoostNextLevel} extra gems daily.",
+    ),
+    // --- 5 New Debt Ragebait Notifications ---
+    (
+      "Your bank account is bleeding, {name}",
+      "Debt is at {debt} gems and accumulating interest. Pay it off before bankruptcy!",
+    ),
+    (
+      "Interest payments are eating your empire!",
+      "You owe {debt} gems. Log in now to stop your debt from spiraling.",
+    ),
+    (
+      "Financial emergency in your city!",
+      "Debt has reached {debt} gems. Play now to save yourself from bankruptcy!",
+    ),
+    (
+      "Are you really letting {debt} gems of debt destroy your city?",
+      "Take control, make smart money moves, and clear your balance!",
+    ),
+    (
+      "Your creditors are knocking, {name}",
+      "You have {debt} gems in active debt. Log in and recover your balance today.",
     ),
   ];
 
   // ---------------------------------------------------------------------------
   // Helper: random building name from player's actual city buildings
   // ---------------------------------------------------------------------------
-
-  static const List<String> _defaultFallbackBuildingNames = [
-    'Farms',
-    'IT Service Centers',
-    'Distribution Centers',
-    'Apartments',
-    'Factories',
-  ];
 
   /// Pluralizes a building name based on count or general plural format.
   static String _pluralizeBuildingName(String name, int count) {
@@ -1264,23 +1319,25 @@ class NotificationData {
 
   /// Helper: returns a random building name selected from the player's actually built city buildings.
   /// Counts the occurrences of each building type in the city (e.g. "3 Farms" or "1 Farm").
-  /// Falls back to default building names if [builtBuildings] is empty or null.
+  /// Derives building names dynamically without hardcoded fallback lists.
   static String getRandomBuildingFromCity(
     List<String>? builtBuildings, {
     bool includeCount = true,
   }) {
-    if (builtBuildings == null || builtBuildings.isEmpty) {
-      return _randomElement(_defaultFallbackBuildingNames);
-    }
-
     final Map<String, int> counts = {};
-    for (final name in builtBuildings) {
-      if (name.trim().isEmpty) continue;
-      counts[name] = (counts[name] ?? 0) + 1;
+    if (builtBuildings != null) {
+      for (final name in builtBuildings) {
+        if (name.trim().isEmpty) continue;
+        counts[name] = (counts[name] ?? 0) + 1;
+      }
     }
 
     if (counts.isEmpty) {
-      return _randomElement(_defaultFallbackBuildingNames);
+      final names = passiveIncomeData.values
+          .map((e) => e.buildingName)
+          .toList();
+      final selectedName = _randomElement(names);
+      return includeCount ? '1 $selectedName' : selectedName;
     }
 
     final uniqueNames = counts.keys.toList();
@@ -1355,30 +1412,66 @@ class NotificationData {
   // ---------------------------------------------------------------------------
 
   /// Returns a personalised retention notification.
-  ///
-  /// All placeholder values have sensible defaults so the template is always
-  /// safe to format even if the caller cannot supply every value.
+  /// All placeholder values are dynamically calculated. Templates with condition-dependent
+  /// placeholders (such as {gemBoostNextLevel}, {debt}, {gemYieldFromPassive}, {kpNeeded}, {buildingCount})
+  /// will be skipped and re-selected if their condition is not met (e.g. debt <= 0 or level 5).
   static (String, String) getRandomRetentionNotification({
     required String name,
-    int level = 2,
-    int kpNeeded = 100,
-    int buildingCount = 2,
+    int level = 1,
+    int kpNeeded = 0,
+    int buildingCount = 0,
     String? buildingName,
     List<String>? builtBuildings,
-    int gemYield = 50,
+    int gemYield = 0,
+    int gemBoostNextLevel = 0,
+    int gemYieldFromPassive = 0,
+    int debt = 0,
   }) {
     final effectiveBuildingName =
         buildingName ??
         getRandomBuildingFromCity(builtBuildings, includeCount: true);
-    final choice = _randomElement(retentionNotifications);
+    final nextLevel = level < 5 ? level + 1 : 5;
+
+    // Filter templates to ensure conditional placeholders are valid
+    final validCandidates = retentionNotifications.where((notification) {
+      final text = '${notification.$1} ${notification.$2}';
+      if (text.contains('{gemBoostNextLevel}') && gemBoostNextLevel <= 0) {
+        return false;
+      }
+      if (text.contains('{debt}') && debt <= 0) {
+        return false;
+      }
+      if (text.contains('{gemYieldFromPassive}') && gemYieldFromPassive <= 0) {
+        return false;
+      }
+      if (text.contains('{kpNeeded}') && kpNeeded <= 0) {
+        return false;
+      }
+      if ((text.contains('{buildingCount}') ||
+              text.contains('{buildingsNeeded}')) &&
+          buildingCount <= 0) {
+        return false;
+      }
+      return true;
+    }).toList();
+
+    final selectedPool = validCandidates.isNotEmpty
+        ? validCandidates
+        : retentionNotifications;
+    final choice = _randomElement(selectedPool);
 
     final placeholders = <String, String>{
       'name': name,
       'level': level.toString(),
+      'nextLevel': nextLevel.toString(),
       'kpNeeded': kpNeeded.toString(),
       'buildingCount': buildingCount.toString(),
+      'buildingsNeeded': buildingCount.toString(),
       'buildingName': effectiveBuildingName,
       'gemYield': gemYield.toString(),
+      'gemBoostNextLevel': gemBoostNextLevel.toString(),
+      'gemYieldFromPassive': gemYieldFromPassive.toString(),
+      'debt': debt.toString(),
     };
 
     return (_format(choice.$1, placeholders), _format(choice.$2, placeholders));
@@ -1396,6 +1489,7 @@ class NotificationData {
   static (String, String) getAlternatingRetentionNotification({
     required int cycleIndex,
     required String name,
+    int level = 1,
     bool kpMet = false,
     bool assetsMet = false,
     bool quizzesMet = false,
@@ -1404,7 +1498,10 @@ class NotificationData {
     String quizzesNeeded = '',
     String? buildingName,
     List<String>? builtBuildings,
-    int gemYield = 50,
+    int gemYield = 0,
+    int gemBoostNextLevel = 0,
+    int gemYieldFromPassive = 0,
+    int debt = 0,
   }) {
     if (cycleIndex.isEven) {
       // Personalised set turn (matching player's 3-bit state)
@@ -1424,11 +1521,15 @@ class NotificationData {
       // Retention set turn
       return getRandomRetentionNotification(
         name: name,
+        level: level,
         kpNeeded: kpNeeded,
         buildingCount: buildingsNeeded,
         buildingName: buildingName,
         builtBuildings: builtBuildings,
         gemYield: gemYield,
+        gemBoostNextLevel: gemBoostNextLevel,
+        gemYieldFromPassive: gemYieldFromPassive,
+        debt: debt,
       );
     }
   }
