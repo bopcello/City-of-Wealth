@@ -84,26 +84,39 @@ $caConfigPath = (Get-Item "windows\installer\CustomAction.config").FullName
 
 Write-Host "Compiling WiX XML with candle.exe..."
 & "$wixToolsDir\candle.exe" -arch x64 -dVersion="$wixVersion" -ext "$wixToolsDir\WixUIExtension.dll" -ext "$wixToolsDir\WixUtilExtension.dll" -out "build\Product.wixobj" "windows\installer\Product.wxs"
+if ($LASTEXITCODE -ne 0) {
+    throw "WiX failed to compile Product.wxs."
+}
 & "$wixToolsDir\candle.exe" -arch x64 -ext "$wixToolsDir\WixUIExtension.dll" -ext "$wixToolsDir\WixUtilExtension.dll" -out "build\ReleaseFiles.wixobj" "build\ReleaseFiles.wxs"
+if ($LASTEXITCODE -ne 0) {
+    throw "WiX failed to compile ReleaseFiles.wxs."
+}
 
 Write-Host "Linking MSI installer with light.exe..."
 & "$wixToolsDir\light.exe" -ext "$wixToolsDir\WixUIExtension.dll" -ext "$wixToolsDir\WixUtilExtension.dll" -loc "windows\installer\WixUI_en-us.wxl" -b "$releaseDir" -out "$outputMsi" "build\Product.wixobj" "build\ReleaseFiles.wixobj"
+if ($LASTEXITCODE -ne 0 -or -not (Test-Path $outputMsi)) {
+    throw "WiX failed to link the MSI; the installer was not produced."
+}
 
-Write-Host "Post-processing MSI to bypass stock BrowseDlg with modern Windows shell folder picker..."
+Write-Host "Post-processing MSI UI navigation..."
 $absMsiPath = (Get-Item "$outputMsi").FullName
 $comInstaller = New-Object -ComObject WindowsInstaller.Installer
 $msiDb = $comInstaller.GetType().InvokeMember("OpenDatabase", "InvokeMethod", $null, $comInstaller, @($absMsiPath, 1))
-$msiView = $msiDb.GetType().InvokeMember("OpenView", "InvokeMethod", $null, $msiDb, @("SELECT * FROM ControlEvent WHERE Dialog_='InstallDirDlg' AND Control_='ChangeFolder'"))
-$msiView.GetType().InvokeMember("Execute", "InvokeMethod", $null, $msiView, $null)
+$uiEventDeletes = @(
+    # The custom action supplies the modern folder picker, so the stock dialog
+    # must not be opened as well.
+    "DELETE FROM ``ControlEvent`` WHERE ``Dialog_``='InstallDirDlg' AND ``Control_``='ChangeFolder' AND ``Event``='SpawnDialog' AND ``Argument``='BrowseDlg'",
+    # WixUI_InstallDir normally routes this button to VerifyReadyDlg. Route
+    # fresh installs to CustomVerifyReadyDlg, which contains the shortcut
+    # choices, while leaving maintenance and uninstall on the stock dialog.
+    "DELETE FROM ``ControlEvent`` WHERE ``Dialog_``='InstallDirDlg' AND ``Control_``='Next' AND ``Event``='NewDialog' AND ``Argument``='VerifyReadyDlg'"
+)
 
-while ($record = $msiView.GetType().InvokeMember("Fetch", "InvokeMethod", $null, $msiView, $null)) {
-    $evtName = $record.GetType().InvokeMember("StringData", "GetProperty", $null, $record, @(3))
-    if ($evtName -eq "SpawnDialog") {
-        # msiViewModifyDelete = 6
-        $msiView.GetType().InvokeMember("Modify", "InvokeMethod", $null, $msiView, @(6, $record))
-    }
+foreach ($sql in $uiEventDeletes) {
+    $msiView = $msiDb.GetType().InvokeMember("OpenView", "InvokeMethod", $null, $msiDb, @($sql))
+    $msiView.GetType().InvokeMember("Execute", "InvokeMethod", $null, $msiView, $null)
+    $msiView.GetType().InvokeMember("Close", "InvokeMethod", $null, $msiView, $null)
 }
-$msiView.GetType().InvokeMember("Close", "InvokeMethod", $null, $msiView, $null)
 $msiDb.GetType().InvokeMember("Commit", "InvokeMethod", $null, $msiDb, $null)
 
 # Create Portable ZIP Package

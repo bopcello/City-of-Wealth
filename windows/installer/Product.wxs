@@ -11,9 +11,9 @@
     <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
 
     <!-- Setup Properties -->
-    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
-    <Property Id="INSTALL_DESKTOP_SHORTCUT" Value="1" />
-    <Property Id="INSTALL_STARTMENU_SHORTCUT" Value="1" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" Secure="yes" />
+    <Property Id="INSTALL_DESKTOP_SHORTCUT" Value="1" Secure="yes" />
+    <Property Id="INSTALL_STARTMENU_SHORTCUT" Value="1" Secure="yes" />
 
     <!-- Launch Application on Exit Dialog -->
     <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch City of Wealth" />
@@ -71,23 +71,73 @@
       </Component>
     </DirectoryRef>
 
+    <!--
+      MSI removes all files it owns automatically. This component also removes
+      the selected install directory once it is empty, while deliberately
+      preserving any unrelated files a user may have placed there.
+    -->
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="InstallFolderCleanup" Guid="e3871928-86d1-4f12-a167-27a9e3381a9a">
+        <RegistryValue Root="HKLM" Key="Software\CityOfWealth" Name="InstallFolderCleanup" Type="integer" Value="1" KeyPath="yes" />
+        <RemoveFolder Id="RemoveEmptyInstallFolder" On="uninstall" />
+      </Component>
+    </DirectoryRef>
+
     <!-- Core Features -->
     <Feature Id="MainProductFeature" Title="City of Wealth" Level="1">
       <ComponentGroupRef Id="ReleaseFiles" />
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="DesktopShortcut" />
+      <ComponentRef Id="InstallFolderCleanup" />
     </Feature>
 
     <!-- Installer UI Sequence -->
     <UI Id="WixUI_CustomInstallDir">
       <UIRef Id="WixUI_InstallDir" />
 
+      <!--
+        This is the normal-install ready screen. Maintenance and uninstall
+        continue to use WiX's stock VerifyReadyDlg, so their wording and
+        actions remain accurate.
+      -->
+      <Dialog Id="CustomVerifyReadyDlg" Width="370" Height="270" Title="[ProductName] Setup" NoMinimize="yes">
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Text="WixUI_Bmp_Banner" />
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="Title" Type="Text" X="15" Y="15" Width="300" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Ready to install [ProductName]" />
+        <Control Id="InstallText" Type="Text" X="25" Y="70" Width="320" Height="30" Text="Click Install to begin the installation. Click Back to review or change any of your installation settings. Click Cancel to exit the wizard." />
+
+        <Control Id="StartMenuShortcutCheckBox" Type="CheckBox" X="25" Y="115" Width="320" Height="18" Property="INSTALL_STARTMENU_SHORTCUT" CheckBoxValue="1" Text="Create a Start Menu shortcut" />
+        <Control Id="DesktopShortcutCheckBox" Type="CheckBox" X="25" Y="140" Width="320" Height="18" Property="INSTALL_DESKTOP_SHORTCUT" CheckBoxValue="1" Text="Create a desktop shortcut" />
+
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
+          <Publish Event="NewDialog" Value="InstallDirDlg">1</Publish>
+        </Control>
+        <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" ElevationShield="yes" Text="&amp;Install">
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+      </Dialog>
+
       <!-- Override BrowseDlg with modern Windows shell folder picker -->
       <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Event="DoAction" Value="InvokeBrowseForFolder" Order="1">1</Publish>
-      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Event="SetTargetPath" Value="[WIXUI_INSTALLDIR]" Order="2">1</Publish>
+      <!--
+        A property changed by DoAction is not observed by the open PathEdit.
+        Republishing the selected directory through a temporary property makes
+        MSI notify that control, so the displayed path updates immediately.
+      -->
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Property="INSTALLFOLDER_REFRESH" Value="[INSTALLFOLDER]" Order="2">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Property="INSTALLFOLDER" Value="[INSTALLFOLDER_REFRESH]" Order="3">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Event="SetTargetPath" Value="[WIXUI_INSTALLDIR]" Order="4">1</Publish>
+
+      <!-- Display shortcut choices on the normal-install ready screen. -->
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="CustomVerifyReadyDlg" Order="4">WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID=&quot;1&quot;</Publish>
 
       <!-- Launch Application on Exit Dialog -->
-      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+      <Publish Dialog="ExitDialog" Control="Finish" Property="WixShellExecTarget" Value="[INSTALLFOLDER]city_of_wealth.exe" Order="1">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication" Order="2">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
     </UI>
   </Product>
 </Wix>
