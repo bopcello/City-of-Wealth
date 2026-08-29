@@ -1,4 +1,4 @@
-# Script to package Flutter Windows release build into a professional MSI Installer & Portable ZIP
+# Script to package a Flutter Windows release build into a professional MSI installer.
 $ErrorActionPreference = "Stop"
 
 $releaseDir = "build\windows\x64\runner\Release"
@@ -119,23 +119,11 @@ foreach ($sql in $uiEventDeletes) {
 }
 $msiDb.GetType().InvokeMember("Commit", "InvokeMethod", $null, $msiDb, $null)
 
-# Create Portable ZIP Package
-$portableZipName = "CityOfWealth_v${appVersion}_Portable.zip"
-$portableZip = "$releaseDir\$portableZipName"
-if (Test-Path $portableZip) {
-    Remove-Item $portableZip -Force -ErrorAction SilentlyContinue
-}
-Write-Host "Packaging Portable ZIP release..."
-$filesToZip = Get-ChildItem -Path "$releaseDir\*" -Exclude "*.msi", "*.zip", "*.lib", "*.exp"
-Compress-Archive -Path $filesToZip.FullName -DestinationPath "$portableZip" -Force
-
 if (Test-Path "$outputMsi") {
     $msiFile = Get-Item "$outputMsi"
-    $zipFile = Get-Item "$portableZip"
     Write-Host "=========================================="
-    Write-Host "SUCCESS: Packages created successfully!"
-    Write-Host "1. MSI Installer: $($msiFile.FullName) ($([math]::Round($msiFile.Length / 1MB, 2)) MB)"
-    Write-Host "2. Portable ZIP:   $($zipFile.FullName) ($([math]::Round($zipFile.Length / 1MB, 2)) MB)"
+    Write-Host "SUCCESS: Installer created successfully!"
+    Write-Host "MSI Installer: $($msiFile.FullName) ($([math]::Round($msiFile.Length / 1MB, 2)) MB)"
     Write-Host "=========================================="
 } else {
     Write-Error "Failed to build MSI Installer."

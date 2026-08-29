@@ -7,6 +7,7 @@ import 'firebase_options.dart';
 import 'game_state.dart';
 import 'logic/game_manager.dart';
 import 'logic/background_tasks.dart';
+import 'services/app_check_service.dart';
 import 'services/music_manager.dart';
 import 'services/sfx_manager.dart';
 import 'services/notification_service.dart';
@@ -112,6 +113,7 @@ class _CityOfWealthAppState extends State<CityOfWealthApp>
           options: DefaultFirebaseOptions.currentPlatform,
         );
       }
+      await AppCheckService.activateForSupportedPlatforms();
       if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) {
         try {
           FirebaseFirestore.instance.settings = Settings(
