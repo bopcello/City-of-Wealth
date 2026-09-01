@@ -51,8 +51,10 @@ set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")
 add_subdirectory(${FLUTTER_MANAGED_DIR})
 
 # System-level dependencies.
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
+if(EXISTS "${FLUTTER_MANAGED_DIR}/ephemeral/generated_config.cmake")
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
+endif()
 
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")

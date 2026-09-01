@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 set(EPHEMERAL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ephemeral")
 
 # Configuration provided via flutter tool.
-include(${EPHEMERAL_DIR}/generated_config.cmake)
+include(${EPHEMERAL_DIR}/generated_config.cmake OPTIONAL)
 
 # TODO: Move the rest of this into files in ephemeral. See
 # https://github.com/flutter/flutter/issues/57146.
@@ -21,10 +21,12 @@ endfunction()
 
 # === Flutter Library ===
 # System-level dependencies.
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
-pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
-pkg_check_modules(GIO REQUIRED IMPORTED_TARGET gio-2.0)
+if(EXISTS "${EPHEMERAL_DIR}/generated_config.cmake")
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
+    pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
+    pkg_check_modules(GIO REQUIRED IMPORTED_TARGET gio-2.0)
+endif()
 
 set(FLUTTER_LIBRARY "${EPHEMERAL_DIR}/libflutter_linux_gtk.so")
 

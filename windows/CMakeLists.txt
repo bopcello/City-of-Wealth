@@ -104,3 +104,12 @@ install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
 install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release
   COMPONENT Runtime)
+
+# Package MSI Installer using build_msi.ps1 upon completing Release build install
+install(CODE "
+  execute_process(
+    COMMAND powershell.exe -ExecutionPolicy Bypass -File \"${CMAKE_CURRENT_SOURCE_DIR}/../scripts/build_msi.ps1\"
+    WORKING_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}/..\"
+  )
+" CONFIGURATIONS Release COMPONENT Runtime)
+
