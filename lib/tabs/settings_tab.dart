@@ -11,6 +11,8 @@ import '../logic/tutorial_keys.dart';
 import '../widgets/profile_avatar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../screens/about_screen.dart';
+import '../services/shortcut_manager_service.dart';
+import '../widgets/key_bindings_dialog.dart';
 
 class SettingsTab extends StatefulWidget {
   final bool isActive;
@@ -199,6 +201,10 @@ class _SettingsTabState extends State<SettingsTab> {
         ),
       ),
     );
+  }
+
+  void _showKeyBindingsModal(BuildContext context) {
+    KeyBindingsDialog.show(context);
   }
 
   void _showDeactivateAccountDialog(BuildContext context) {
@@ -568,6 +574,70 @@ class _SettingsTabState extends State<SettingsTab> {
               ),
             ),
             const SizedBox(height: 24),
+
+            // KEYBOARD & CONTROLS SECTION (Only if keyboard detected)
+            ListenableBuilder(
+              listenable: ShortcutManagerService.instance,
+              builder: (context, _) {
+                final service = ShortcutManagerService.instance;
+                if (!service.isKeyboardDetected) {
+                  return const SizedBox.shrink();
+                }
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSectionHeader(context, "CONTROLS & KEYBOARD"),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: surfaceVariant,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: outlineColor),
+                      ),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: Icon(Icons.keyboard, color: brandColor),
+                            title: const Text("Key Bindings"),
+                            subtitle: const Text("View and edit desktop shortcuts"),
+                            trailing: Icon(
+                              Icons.chevron_right,
+                              color: brandColor,
+                              size: 20,
+                            ),
+                            onTap: () {
+                              widget.sfx.playClick();
+                              _showKeyBindingsModal(context);
+                            },
+                          ),
+                          const Divider(height: 1, indent: 56),
+                          ListTile(
+                            leading: Icon(Icons.visibility, color: brandColor),
+                            title: const Text("Unhide All Hints"),
+                            subtitle: const Text("Restore shortcut overlay guides across all screens"),
+                            trailing: Icon(
+                              Icons.refresh_rounded,
+                              color: brandColor,
+                              size: 20,
+                            ),
+                            onTap: () {
+                              widget.sfx.playClick();
+                              service.unhideAllOverlays();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("All keyboard shortcut hints restored!"),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                );
+              },
+            ),
+
 
             // 3. HELP SECTION
             _buildSectionHeader(context, "HELP"),

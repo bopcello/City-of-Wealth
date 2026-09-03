@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../logic/game_manager.dart';
 import '../theme/app_colors.dart';
+import '../widgets/responsive_widescreen.dart';
+import '../widgets/shortcut_overlay_banner.dart';
 
 class StatsScreen extends StatefulWidget {
   final GameManager game;
@@ -14,6 +16,7 @@ class StatsScreen extends StatefulWidget {
 class _StatsScreenState extends State<StatsScreen> {
   static const _shareChannel = MethodChannel('com.city_of_wealth/share');
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   String _query = '';
 
   @override
@@ -27,8 +30,10 @@ class _StatsScreenState extends State<StatsScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
+
 
   // ── helpers ──────────────────────────────────────────────────────────────
   bool _matches(String label) =>
@@ -195,59 +200,63 @@ class _StatsScreenState extends State<StatsScreen> {
           const SizedBox(width: 4),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search stats…',
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: theme.colorScheme.onSurfaceVariant,
-                  size: 20,
-                ),
-                suffixIcon: _query.isNotEmpty
-                    ? IconButton(
-                        icon: Icon(
-                          Icons.clear,
-                          size: 18,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        onPressed: () => _searchController.clear(),
-                      )
-                    : null,
-                isDense: true,
-                filled: true,
-                fillColor: theme.colorScheme.surfaceContainerHighest,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: theme.colorScheme.outline),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: theme.colorScheme.outline.withValues(alpha: 0.5),
+          Column(
+            children: [
+              // Search bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: TextField(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  decoration: InputDecoration(
+                    hintText: 'Search stats… (press [S] or [Ctrl+F] to focus)',
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: theme.colorScheme.onSurfaceVariant,
+                      size: 20,
+                    ),
+                    suffixIcon: _query.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(
+                              Icons.clear,
+                              size: 18,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            onPressed: () => _searchController.clear(),
+                          )
+                        : null,
+                    isDense: true,
+                    filled: true,
+                    fillColor: theme.colorScheme.surfaceContainerHighest,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: theme.colorScheme.outline),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.outline.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: brandColor, width: 1.5),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 12,
+                    ),
                   ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: brandColor, width: 1.5),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 12,
+                  style: theme.textTheme.bodySmall?.copyWith(fontSize: 13),
                 ),
               ),
-              style: theme.textTheme.bodySmall?.copyWith(fontSize: 13),
-            ),
-          ),
 
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+
               children: [
                 // ── GEMS — ECONOMY ────────────────────────────────────────
                 _category(context, 'Gems — Economy', Icons.diamond_outlined, [
@@ -869,8 +878,19 @@ class _StatsScreenState extends State<StatsScreen> {
           ),
         ],
       ),
-    );
+      if (isWidescreenDesktop(context))
+        const ShortcutOverlayBanner(
+          screenId: 'stats_screen',
+          helpTip: "Search stats with [S] or [Ctrl+F]. Press [Esc] to go back.",
+          shortcuts: ["[S / Ctrl+F] Search", "[Esc] Back"],
+        ),
+    ],
+  ),
+);
       },
     );
   }
 }
+
+
+

@@ -6,6 +6,8 @@ import '../services/sfx_manager.dart';
 import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';
 import '../theme/app_colors.dart';
+import '../widgets/responsive_widescreen.dart';
+import '../widgets/shortcut_overlay_banner.dart';
 
 class AssetsScreen extends StatelessWidget {
   final AssetInventory assets;
@@ -81,182 +83,209 @@ class AssetsScreen extends StatelessWidget {
                 ),
               ],
             ),
-            body: ListView(
-              key: TutorialKeys.assetsBodyKey,
-              padding: const EdgeInsets.all(16),
+            body: Stack(
               children: [
-                if (discount > 0)
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 20),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.of(
-                        context,
-                        'gem',
-                      ).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: AppColors.of(
-                          context,
-                          'gem',
-                        ).withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.stars,
-                          color: AppColors.of(context, 'gem'),
-                          size: 28,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                rewards.label,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: AppColors.of(context, 'gem'),
-                                ),
-                              ),
-                              Text(
-                                "Enjoy a ${(discount * 100).toInt()}% discount on all assets and other benefits for your ${game.dailyQuizStreak}-day streak!",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
+                ListView(
+                  key: TutorialKeys.assetsBodyKey,
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    if (discount > 0)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.of(
+                            context,
+                            'gem',
+                          ).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: AppColors.of(
+                              context,
+                              'gem',
+                            ).withValues(alpha: 0.3),
+                            width: 1,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ...AssetType.values.map((type) {
-                  final originalCost = assetCosts[type]!;
-                  final discountedCost = (originalCost * (1 - discount))
-                      .round();
-                  final sellPrice = assetSellPrice(type);
-                  final canAfford = gems >= discountedCost;
-                  final ownedCount = game.assets.count(type);
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.outline.withValues(alpha: 0.3),
-                        width: 2,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
+                        child: Row(
                           children: [
+                            Icon(
+                              Icons.stars,
+                              color: AppColors.of(context, 'gem'),
+                              size: 28,
+                            ),
+                            const SizedBox(width: 16),
                             Expanded(
-                              child: Text(
-                                assetLabel(type),
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              "Owned: $ownedCount",
-                              style: TextStyle(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.of(
-                                  context,
-                                  'error',
-                                ).withValues(alpha: 0.1),
-                                foregroundColor: AppColors.of(context, 'error'),
-                                shape: const StadiumBorder(),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 10,
-                                ),
-                                elevation: 0,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                minimumSize: Size.zero,
-                              ),
-                              onPressed: ownedCount > 0
-                                  ? () {
-                                      sfx.playSell();
-                                      onSellAsset(type);
-                                    }
-                                  : null,
-                              child: IconText("Sell ($sellPrice [GEM])"),
-                            ),
-                            const SizedBox(width: 8),
-                            ShinyButton(
-                              isShiny: canAfford,
-                              backgroundColor: AppColors.of(context, 'success'),
-                              useStadiumShape: true,
-                              elevation: 0,
-                              minimumSize: Size.zero,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 10,
-                              ),
-                              onPressed: () {
-                                sfx.playBuy();
-                                onBuyAsset(type);
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(width: 6),
-                                  if (discount > 0) ...[
-                                    Text(
-                                      "$originalCost",
-                                      style: TextStyle(
-                                        decoration: TextDecoration.lineThrough,
-                                        fontSize: 12,
-                                        color: AppColors.of(
-                                          context,
-                                          'onSurfaceVariant',
-                                        ),
-                                      ),
+                                  Text(
+                                    rewards.label,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: AppColors.of(context, 'gem'),
                                     ),
-                                    const SizedBox(width: 4),
-                                  ],
-                                  IconText("Buy ($discountedCost [GEM])"),
+                                  ),
+                                  Text(
+                                    "Enjoy a ${(discount * 100).toInt()}% discount on all assets and other benefits for your ${game.dailyQuizStreak}-day streak!",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  );
-                }),
+                      ),
+                    ...AssetType.values.map((type) {
+                      final originalCost = assetCosts[type]!;
+                      final discountedCost = (originalCost * (1 - discount))
+                          .round();
+                      final sellPrice = assetSellPrice(type);
+                      final canAfford = gems >= discountedCost;
+                      final ownedCount = game.assets.count(type);
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.outline.withValues(alpha: 0.3),
+                            width: 2,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    assetLabel(type),
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  "Owned: $ownedCount",
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.of(
+                                      context,
+                                      'error',
+                                    ).withValues(alpha: 0.1),
+                                    foregroundColor: AppColors.of(context, 'error'),
+                                    shape: const StadiumBorder(),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 10,
+                                    ),
+                                    elevation: 0,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    minimumSize: Size.zero,
+                                  ),
+                                  onPressed: ownedCount > 0
+                                      ? () {
+                                          sfx.playSell();
+                                          onSellAsset(type);
+                                        }
+                                      : null,
+                                  child: IconText("Sell ($sellPrice [GEM])"),
+                                ),
+                                const SizedBox(width: 8),
+                                ShinyButton(
+                                  isShiny: canAfford,
+                                  backgroundColor: canAfford
+                                      ? AppColors.of(context, 'success')
+                                      : Colors.transparent,
+                                  foregroundColor: canAfford
+                                      ? Colors.white
+                                      : AppColors.of(context, 'success'),
+                                  shape: canAfford
+                                      ? const StadiumBorder()
+                                      : StadiumBorder(
+                                          side: BorderSide(
+                                            color: AppColors.of(
+                                              context,
+                                              'success',
+                                            ),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                  useStadiumShape: true,
+                                  elevation: 0,
+                                  minimumSize: Size.zero,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 10,
+                                  ),
+                                  onPressed: () {
+                                    sfx.playBuy();
+                                    onBuyAsset(type);
+                                  },
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const SizedBox(width: 6),
+                                      if (discount > 0) ...[
+                                        Text(
+                                          "$originalCost",
+                                          style: TextStyle(
+                                            decoration: TextDecoration.lineThrough,
+                                            fontSize: 12,
+                                            color: AppColors.of(
+                                              context,
+                                              'onSurfaceVariant',
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                      ],
+                                      IconText("Buy ($discountedCost [GEM])"),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+                if (isWidescreenDesktop(context))
+                  const ShortcutOverlayBanner(
+                    screenId: 'assets_screen',
+                    helpTip: "Buy and sell assets to grow your portfolio. Press [Esc] to go back.",
+                    shortcuts: ["[Enter] Confirm", "[Esc] Back"],
+                  ),
               ],
             ),
+
           ),
         );
       },

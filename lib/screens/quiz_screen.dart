@@ -9,6 +9,10 @@ import '../services/sfx_manager.dart';
 import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
+import '../widgets/focus_ring.dart';
+import '../widgets/responsive_widescreen.dart';
+import '../widgets/shortcut_overlay_banner.dart';
 
 class QuizMenuScreen extends StatelessWidget {
   final GameManager game;
@@ -901,132 +905,336 @@ class _QuizScreenState extends State<QuizScreen> {
     final q = widget.quiz.questions[current];
     final progress = (current + 1) / widget.quiz.questions.length;
 
-    return PopScope(
-      canPop: true,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) return;
-        widget.music.playHomeMusic();
+    Widget bodyWidget = isWidescreenDesktop(context)
+        ? _buildDesktopWidescreenQuiz(context, q, progress)
+        : _buildMobileQuiz(context, q, progress);
+
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.digit1): () => selectAnswer(0),
+        const SingleActivator(LogicalKeyboardKey.digit2): () => selectAnswer(1),
+        const SingleActivator(LogicalKeyboardKey.digit3): () => selectAnswer(2),
+        const SingleActivator(LogicalKeyboardKey.digit4): () => selectAnswer(3),
+        const SingleActivator(LogicalKeyboardKey.space): () {
+          if (selected != null) {
+            // Next question trigger
+          }
+        },
+        const SingleActivator(LogicalKeyboardKey.enter): () {
+          if (selected != null) {
+            // Next question trigger
+          }
+        },
       },
-      child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        appBar: AppBar(
-          title: Text(widget.quiz.title),
-          actions: [
-            if (widget.isDaily || widget.isPractice)
-              Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: Center(
-                  child: CounterChip(
-                    label: "[STREAK]",
-                    value: widget.game.dailyQuizStreak,
-                    prefix: "Streak",
+      child: Focus(
+        autofocus: true,
+        child: PopScope(
+          canPop: true,
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop) return;
+            widget.music.playHomeMusic();
+          },
+          child: Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            appBar: AppBar(
+              title: Text(widget.quiz.title),
+              actions: [
+                if (widget.isDaily || widget.isPractice)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: Center(
+                      child: CounterChip(
+                        label: "[STREAK]",
+                        value: widget.game.dailyQuizStreak,
+                        prefix: "Streak",
+                      ),
+                    ),
                   ),
-                ),
-              ),
-          ],
+              ],
+            ),
+            body: bodyWidget,
+          ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
+      ),
+    );
+  }
+
+  Widget _buildMobileQuiz(BuildContext context, QuizQuestion q, double progress) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 10,
+              color: AppColors.of(context, 'kp'),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Question ${current + 1}",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        IconText(
+                          q.question,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  ...List.generate(q.options.length, (uiIndex) {
+                    final originalIndex =
+                        _shuffledIndicesMap[current][uiIndex];
+                    Color bg = Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest;
+                    if (selected != null) {
+                      if (originalIndex == q.correctIndex) {
+                        bg = AppColors.of(
+                          context,
+                          'success',
+                        ).withValues(alpha: 0.3);
+                      } else if (uiIndex == selected) {
+                        bg = AppColors.of(
+                          context,
+                          'error',
+                        ).withValues(alpha: 0.3);
+                      }
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: InkWell(
+                        onTap: () => selectAnswer(uiIndex),
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: bg,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: IconText(
+                                  q.options[originalIndex],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopWidescreenQuiz(
+    BuildContext context,
+    QuizQuestion q,
+    double progress,
+  ) {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(24),
           child: Column(
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: LinearProgressIndicator(
                   value: progress,
-                  minHeight: 10,
+                  minHeight: 12,
                   color: AppColors.of(context, 'kp'),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(20),
+                child: SplitViewLayout(
+                  leftRatio: 0.45,
+                  leftChild: Container(
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "QUESTION ${current + 1} OF ${widget.quiz.questions.length}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.1,
+                            color: AppColors.of(context, 'kp'),
+                          ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Question ${current + 1}",
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            IconText(
+                        const SizedBox(height: 20),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: IconText(
                               q.question,
                               style: TextStyle(
-                                fontSize: 22,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
+                                height: 1.4,
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
-                          ],
+                          ),
                         ),
+                      ],
+                    ),
+                  ),
+                  rightChild: Padding(
+                    padding: const EdgeInsets.only(left: 24),
+                    child: GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 1.8,
                       ),
-                      const SizedBox(height: 24),
-                      ...List.generate(q.options.length, (uiIndex) {
+                      itemCount: q.options.length,
+                      itemBuilder: (context, uiIndex) {
                         final originalIndex =
                             _shuffledIndicesMap[current][uiIndex];
                         Color bg = Theme.of(
                           context,
                         ).colorScheme.surfaceContainerHighest;
+                        Color border = Theme.of(context).colorScheme.outline;
+
                         if (selected != null) {
                           if (originalIndex == q.correctIndex) {
                             bg = AppColors.of(
                               context,
                               'success',
-                            ).withValues(alpha: 0.3);
+                            ).withValues(alpha: 0.25);
+                            border = AppColors.of(context, 'success');
                           } else if (uiIndex == selected) {
                             bg = AppColors.of(
                               context,
                               'error',
-                            ).withValues(alpha: 0.3);
+                            ).withValues(alpha: 0.25);
+                            border = AppColors.of(context, 'error');
                           }
                         }
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: InkWell(
-                            onTap: () => selectAnswer(uiIndex),
+
+                        return FocusRing(
+                          onPressed: () => selectAnswer(uiIndex),
+                          child: Material(
+                            color: bg,
                             borderRadius: BorderRadius.circular(16),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: bg,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: IconText(
-                                q.options[originalIndex],
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface,
+                            child: InkWell(
+                              onTap: () => selectAnswer(uiIndex),
+                              borderRadius: BorderRadius.circular(16),
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: border, width: 1.5),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.of(context, 'kp')
+                                                .withValues(alpha: 0.2),
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: Text(
+                                            "Option ${String.fromCharCode(65 + uiIndex)}",
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.of(context, 'kp'),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    IconText(
+                                      q.options[originalIndex],
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
                         );
-                      }),
-                    ],
+                      },
+                    ),
                   ),
                 ),
               ),
             ],
           ),
         ),
-      ),
+        const ShortcutOverlayBanner(
+          screenId: 'quiz_screen',
+          helpTip: "Press keys [1], [2], [3], [4] on your keyboard to pick an option. Press [Space] or [Enter] to advance, and [Esc] to exit.",
+          shortcuts: ["[1-4] Pick Answer", "[Space/Enter] Advance", "[Esc] Exit"],
+        ),
+      ],
     );
   }
+
+
 }
 
 class QuizAnalysisScreen extends StatelessWidget {

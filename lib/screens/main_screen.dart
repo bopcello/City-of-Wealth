@@ -21,6 +21,9 @@ import 'passive_income_screen.dart';
 import 'city_viewer_screen.dart';
 import '../services/notification_service.dart';
 import '../services/firestore_service.dart';
+import '../widgets/desktop_keyboard_shortcuts.dart';
+import '../widgets/focus_ring.dart';
+import '../widgets/responsive_widescreen.dart';
 
 class MainScreen extends StatefulWidget {
   final GameManager game;
@@ -42,6 +45,8 @@ class _MainScreenState extends State<MainScreen> {
   bool _nameDialogShown = false;
   OverlayEntry? _tutorialOverlayEntry;
   bool _overlayInserted = false;
+  bool _isSidebarCollapsed = false;
+
 
   @override
   void initState() {
@@ -244,294 +249,654 @@ class _MainScreenState extends State<MainScreen> {
       ('Revivals', game.streakRevivals),
     ]);
 
-    return Stack(
-      children: [
-        PopScope(
-          canPop: canPop,
-          onPopInvokedWithResult: (didPop, result) {
-            if (didPop) return;
-            if (game.isTutorialActive) {
-              game.onBackGestureIntercepted?.call();
-              return;
-            }
-            widget.sfx.playBack();
-            if (game.selectedIndex != 0) {
-              game.selectedIndex = 0;
-            }
-          },
-          child: Scaffold(
-            appBar: AppBar(
-              title: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  KeyedSubtree(
-                    key: TutorialKeys.kpKey,
-                    child: CounterChip(
-                      label: "[KP]",
-                      value: game.kp,
-                      prefix: "KP",
-                      compact: compactCounters,
+    return DesktopKeyboardShortcuts(
+      game: game,
+      sfx: widget.sfx,
+      music: widget.music,
+      child: Stack(
+        children: [
+          PopScope(
+            canPop: canPop,
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) return;
+              if (game.isTutorialActive) {
+                game.onBackGestureIntercepted?.call();
+                return;
+              }
+              widget.sfx.playBack();
+              if (game.selectedIndex != 0) {
+                game.selectedIndex = 0;
+              }
+            },
+            child: isWidescreenDesktop(context)
+                ? _buildDesktopWidescreenLayout(context, game)
+                : _buildMobileLayout(context, game, compactCounters),
+          ),
+          if (game.canLevelUp && !_dismissedLevelUpPopup)
+            LevelUpFlyupPopup(
+              game: game,
+              sfx: widget.sfx,
+              onDismiss: () => setState(() => _dismissedLevelUpPopup = true),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout(
+    BuildContext context,
+    GameManager game,
+    bool compactCounters,
+  ) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            KeyedSubtree(
+              key: TutorialKeys.kpKey,
+              child: CounterChip(
+                label: "[KP]",
+                value: game.kp,
+                prefix: "KP",
+                compact: compactCounters,
+              ),
+            ),
+            KeyedSubtree(
+              key: TutorialKeys.gemsKey,
+              child: CounterChip(
+                label: "[GEM]",
+                value: game.gems,
+                prefix: "Gems",
+                compact: compactCounters,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: false,
+        actions: [
+          KeyedSubtree(
+            key: TutorialKeys.streakKey,
+            child: CounterChip(
+              label: "[STREAK]",
+              value: game.dailyQuizStreak,
+              prefix: "Streak",
+              compact: compactCounters,
+            ),
+          ),
+          KeyedSubtree(
+            key: TutorialKeys.revivalsKey,
+            child: CounterChip(
+              label: "[REVIVAL]",
+              value: game.streakRevivals,
+              prefix: "Revivals",
+              compact: compactCounters,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: _buildTabStack(game),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: game.selectedIndex,
+        onTap: (index) {
+          widget.sfx.playClick();
+          game.selectedIndex = index;
+        },
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(
+          context,
+        ).colorScheme.onSurfaceVariant,
+        items: [
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.location_city, key: TutorialKeys.tabCityKey),
+            label: "City",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.work, key: TutorialKeys.tabMoneyKey),
+            label: "Money",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings, key: TutorialKeys.tabSettingsKey),
+            label: "Settings",
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopWidescreenLayout(BuildContext context, GameManager game) {
+    final surfaceColor = AppColors.of(context, 'surface');
+    final outlineColor = AppColors.of(context, 'outline');
+    final textColor = AppColors.of(context, 'onSurface');
+    final primaryColor = AppColors.of(context, 'primary');
+
+    return Scaffold(
+      backgroundColor: AppColors.of(context, 'background'),
+      body: Row(
+        children: [
+
+          // Left Navigation Sidebar HUD (Collapsible)
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            width: _isSidebarCollapsed ? 72 : 240,
+            decoration: BoxDecoration(
+              color: surfaceColor,
+              border: Border(
+                right: BorderSide(
+                  color: outlineColor.withValues(alpha: 0.5),
+                  width: 1.5,
+                ),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header Logo & Collapse Toggle
+                SizedBox(
+                  height: 60,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: _isSidebarCollapsed ? 4 : 12,
+                    ),
+                    child: _isSidebarCollapsed
+                        ? Center(
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.chevron_right,
+                                size: 22,
+                                color: textColor.withValues(alpha: 0.7),
+                              ),
+                              tooltip: "Expand Sidebar",
+                              onPressed: () {
+                                widget.sfx.playClick();
+                                setState(() {
+                                  _isSidebarCollapsed = !_isSidebarCollapsed;
+                                });
+                              },
+                            ),
+                          )
+                        : Row(
+                            children: [
+                              Icon(Icons.location_city, color: primaryColor, size: 28),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  "City of Wealth",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: textColor,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.chevron_left,
+                                  size: 20,
+                                  color: textColor.withValues(alpha: 0.7),
+                                ),
+                                tooltip: "Collapse Sidebar",
+                                onPressed: () {
+                                  widget.sfx.playClick();
+                                  setState(() {
+                                    _isSidebarCollapsed = !_isSidebarCollapsed;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+                Divider(
+                  height: 1,
+                  thickness: 1.5,
+                  color: outlineColor.withValues(alpha: 0.5),
+                ),
+                const SizedBox(height: 16),
+                // Sidebar Navigation Items
+                _buildSidebarNavItem(
+                  context: context,
+                  index: 0,
+                  icon: Icons.home,
+                  label: "Home",
+                  hotkey: "F1",
+                  isSelected: game.selectedIndex == 0,
+                  isCollapsed: _isSidebarCollapsed,
+                ),
+                _buildSidebarNavItem(
+                  context: context,
+                  index: 1,
+                  icon: Icons.location_city,
+                  label: "City Viewer",
+                  hotkey: "F2",
+                  isSelected: game.selectedIndex == 1,
+                  isCollapsed: _isSidebarCollapsed,
+                ),
+                _buildSidebarNavItem(
+                  context: context,
+                  index: 2,
+                  icon: Icons.account_balance,
+                  label: "Money Hub",
+                  hotkey: "F3",
+                  isSelected: game.selectedIndex == 2,
+                  isCollapsed: _isSidebarCollapsed,
+                ),
+                _buildSidebarNavItem(
+                  context: context,
+                  index: 3,
+                  icon: Icons.settings,
+                  label: "Settings",
+                  hotkey: "F4",
+                  isSelected: game.selectedIndex == 3,
+                  isCollapsed: _isSidebarCollapsed,
+                ),
+                const Spacer(),
+                // Bottom Player Profile Card
+                Container(
+                  margin: EdgeInsets.all(_isSidebarCollapsed ? 8 : 16),
+                  padding: EdgeInsets.all(_isSidebarCollapsed ? 8 : 12),
+                  decoration: BoxDecoration(
+                    color: outlineColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: outlineColor.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: _isSidebarCollapsed
+                        ? MainAxisAlignment.center
+                        : MainAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: primaryColor,
+                        child: Text(
+                          game.playerName.isNotEmpty
+                              ? game.playerName[0].toUpperCase()
+                              : "U",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      if (!_isSidebarCollapsed) ...[
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                game.playerName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                "Level ${game.career.level}",
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.of(context, 'onSurfaceVariant'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Main Content Area
+          Expanded(
+            child: Column(
+              children: [
+                // Top Widescreen Resource HUD Banner
+                Container(
+                  height: 60,
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  decoration: BoxDecoration(
+                    color: surfaceColor,
+                    border: Border(
+                      bottom: BorderSide(color: outlineColor.withValues(alpha: 0.5), width: 1.5),
                     ),
                   ),
-                  KeyedSubtree(
-                    key: TutorialKeys.gemsKey,
-                    child: CounterChip(
-                      label: "[GEM]",
-                      value: game.gems,
-                      prefix: "Gems",
-                      compact: compactCounters,
+                  child: Row(
+                    children: [
+                      CounterChip(
+                        label: "[KP]",
+                        value: game.kp,
+                        prefix: "KP",
+                      ),
+                      const SizedBox(width: 12),
+                      CounterChip(
+                        label: "[GEM]",
+                        value: game.gems,
+                        prefix: "Gems",
+                      ),
+                      const SizedBox(width: 12),
+                      CounterChip(
+                        label: "[STREAK]",
+                        value: game.dailyQuizStreak,
+                        prefix: "Streak",
+                      ),
+                      const SizedBox(width: 12),
+                      CounterChip(
+                        label: "[REVIVAL]",
+                        value: game.streakRevivals,
+                        prefix: "Revivals",
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Active Screen Body
+                Expanded(child: _buildTabStack(game)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSidebarNavItem({
+    required BuildContext context,
+    required int index,
+    required IconData icon,
+    required String label,
+    required String hotkey,
+    required bool isSelected,
+    bool isCollapsed = false,
+  }) {
+    final primaryColor = AppColors.of(context, 'primary');
+    final textColor = AppColors.of(context, 'onSurface');
+
+    if (isCollapsed) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Tooltip(
+          message: "$label [$hotkey]",
+          child: FocusRing(
+            onPressed: () {
+              widget.sfx.playClick();
+              widget.game.selectedIndex = index;
+            },
+            child: Material(
+              color: isSelected
+                  ? primaryColor.withValues(alpha: 0.15)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () {
+                  widget.sfx.playClick();
+                  widget.game.selectedIndex = index;
+                },
+                child: Container(
+                  height: 44,
+                  alignment: Alignment.center,
+                  child: Icon(
+                    icon,
+                    color: isSelected
+                        ? primaryColor
+                        : textColor.withValues(alpha: 0.7),
+                    size: 22,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: FocusRing(
+        onPressed: () {
+          widget.sfx.playClick();
+          widget.game.selectedIndex = index;
+        },
+        child: Material(
+          color: isSelected
+              ? primaryColor.withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: () {
+              widget.sfx.playClick();
+              widget.game.selectedIndex = index;
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    icon,
+                    color: isSelected ? primaryColor : textColor.withValues(alpha: 0.7),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected ? primaryColor : textColor,
+                      fontSize: 14,
                     ),
                   ),
                 ],
               ),
-              centerTitle: false,
-              actions: [
-                KeyedSubtree(
-                  key: TutorialKeys.streakKey,
-                  child: CounterChip(
-                    label: "[STREAK]",
-                    value: game.dailyQuizStreak,
-                    prefix: "Streak",
-                    compact: compactCounters,
-                  ),
-                ),
-                KeyedSubtree(
-                  key: TutorialKeys.revivalsKey,
-                  child: CounterChip(
-                    label: "[REVIVAL]",
-                    value: game.streakRevivals,
-                    prefix: "Revivals",
-                    compact: compactCounters,
-                  ),
-                ),
-                const SizedBox(width: 8),
-              ],
-            ),
-            body: IndexedStack(
-              index: game.selectedIndex,
-              children: [
-                HomeTab(
-                  profilePic: game.profilePic,
-                  kp: game.kp,
-                  gems: game.gems,
-                  career: game.career,
-                  events: game.pendingEvents,
-                  rentChoice: game.rentChoice,
-                  foodChoice: game.foodChoice,
-                  transportChoice: game.transportChoice,
-                  assets: game.assets,
-                  onClearEvents: game.clearEvents,
-                  dailyQuizAvailable:
-                      game.lastDailyQuizDate !=
-                      DateFormat('yyyy-MM-dd').format(DateTime.now()),
-                  sfx: widget.sfx,
-                  recentVisitedMoneyTiles: game.recentVisitedMoneyTiles,
-                  playerName: game.playerName,
-                  dailyQuoteText: game.todayQuoteText,
-                  dailyQuoteAuthor: game.todayQuoteAuthor,
-                  onMoneyTileTap: (title) {
-                    if (title == "Quiz") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => QuizMenuScreen(
-                            game: game,
-                            music: widget.music,
-                            sfx: widget.sfx,
-                          ),
-                        ),
-                      );
-                    }
-                    if (title == "Career") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              CareerScreen(game: game, sfx: widget.sfx),
-                        ),
-                      );
-                    }
-                    if (title == "Assets") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => AssetsScreen(
-                            assets: game.assets,
-                            gems: game.gems,
-                            streak: game.dailyQuizStreak,
-                            onBuyAsset: (type) =>
-                                game.buyAsset(type, 1, context),
-                            onSellAsset: (type) => game.sellAsset(type),
-                            sfx: widget.sfx,
-                            game: game,
-                          ),
-                        ),
-                      );
-                    }
-                    if (title == "Liabilities") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => LiabilitiesScreen(
-                            game: game,
-                            currentRent: game.rentChoice,
-                            currentFood: game.foodChoice,
-                            currentTransport: game.transportChoice,
-                            onSelectionChanged: game.updateLiabilities,
-                            sfx: widget.sfx,
-                          ),
-                        ),
-                      );
-                    }
-                    if (title == "Passive Income") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              PassiveIncomeScreen(game: game, sfx: widget.sfx),
-                        ),
-                      );
-                    }
-                  },
-                ),
-                CityTab(
-                  key: TutorialKeys.cityTabKey,
-                  career: game.career,
-                  gems: game.gems,
-                  assets: game.assets,
-                  cityLayout: game.cityLayout,
-                  insurances: game.insurances,
-                  activePassiveIncomes: game.activePassiveIncomes,
-                  hasWall: game.hasWall,
-                  sfx: widget.sfx,
-                  onBuyAsset: (AssetType type, int amount) {
-                    game.buyAsset(type, amount, context);
-                  },
-                  onPlaceBuilding: game.placeBuilding,
-                  onRemoveBuilding: game.removeBuilding,
-                  onBuyWall: game.buyWall,
-                  game: game,
-                ),
-                MoneyTab(
-                  game: game,
-                  music: widget.music,
-                  sfx: widget.sfx,
-                  currentKp: game.kp,
-                  playerName: game.playerName,
-                  career: game.career,
-                  gems: game.gems,
-                  assets: game.assets,
-                  rent: game.rentChoice,
-                  food: game.foodChoice,
-                  transport: game.transportChoice,
-                  cityLayout: game.cityLayout,
-                  insurances: game.insurances,
-                  bankruptcyCount: game.bankruptcyCount,
-                  completedQuizzes: game.completedQuizzes,
-                  onKpChange: game.updateKp,
-                  onInsuranceToggle: game.toggleInsurance,
-                  onSellAsset: game.sellAsset,
-                  onBankruptcy: () => game.declareBankruptcy(context),
-                  onCareerChange: game.updateCareer,
-                  onBuyAsset: (type, amount) {
-                    game.buyAsset(type, amount, context);
-                  },
-                  onLiabilitiesChange: game.updateLiabilities,
-                  onQuizComplete: game.markQuizCompleted,
-                  isWorkingOvertime: game.isWorkingOvertime,
-                  onWorkOvertime: game.workOvertime,
-                  activePassiveIncomes: game.activePassiveIncomes,
-                  onInvestInPassiveIncome: game.investInPassiveIncome,
-                  gameListenable: game,
-                ),
-                SettingsTab(
-                  isActive: game.selectedIndex == 3,
-                  game: game,
-                  career: game.career,
-                  isDarkMode: game.isDarkMode,
-                  musicVolume: game.musicVolume,
-                  sfxVolume: game.sfxVolume,
-                  sfx: widget.sfx,
-                  onThemeToggle: game.toggleTheme,
-                  onMusicVolumeChanged: game.updateMusicVolume,
-                  onSfxVolumeChanged: game.updateSfxVolume,
-                  onCloudSync: () async {
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text("Restore data?"),
-                        content: const Text(
-                          "Do you want to reload your progress from the cloud? This will overwrite your current local data. Any unsaved progress you made while being offline will be lost.",
-                        ),
-                        actions: [
-                          TextButton(
-                            child: const Text("Cancel"),
-                            onPressed: () => Navigator.pop(context, false),
-                          ),
-                          TextButton(
-                            child: const Text("Reload from Cloud"),
-                            onPressed: () => Navigator.pop(context, true),
-                          ),
-                        ],
-                      ),
-                    );
-
-                    if (confirm == true) {
-                      await game.forceCloudLoad();
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Cloud progress loaded!"),
-                          ),
-                        );
-                      }
-                    }
-                  },
-                ),
-              ],
-            ),
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: game.selectedIndex,
-              onTap: (index) {
-                widget.sfx.playClick();
-                game.selectedIndex = index;
-              },
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              selectedItemColor: Theme.of(context).colorScheme.primary,
-              unselectedItemColor: Theme.of(
-                context,
-              ).colorScheme.onSurfaceVariant,
-              items: [
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: "Home",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.location_city, key: TutorialKeys.tabCityKey),
-                  label: "City",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.work, key: TutorialKeys.tabMoneyKey),
-                  label: "Money",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.settings, key: TutorialKeys.tabSettingsKey),
-                  label: "Settings",
-                ),
-              ],
             ),
           ),
         ),
-        if (game.canLevelUp && !_dismissedLevelUpPopup)
-          LevelUpFlyupPopup(
-            game: game,
-            sfx: widget.sfx,
-            onDismiss: () => setState(() => _dismissedLevelUpPopup = true),
-          ),
+      ),
+    );
+  }
+
+
+
+  Widget _buildTabStack(GameManager game) {
+    return IndexedStack(
+      index: game.selectedIndex,
+      children: [
+        HomeTab(
+          profilePic: game.profilePic,
+          kp: game.kp,
+          gems: game.gems,
+          career: game.career,
+          events: game.pendingEvents,
+          rentChoice: game.rentChoice,
+          foodChoice: game.foodChoice,
+          transportChoice: game.transportChoice,
+          assets: game.assets,
+          onClearEvents: game.clearEvents,
+          dailyQuizAvailable:
+              game.lastDailyQuizDate !=
+              DateFormat('yyyy-MM-dd').format(DateTime.now()),
+          sfx: widget.sfx,
+          recentVisitedMoneyTiles: game.recentVisitedMoneyTiles,
+          playerName: game.playerName,
+          dailyQuoteText: game.todayQuoteText,
+          dailyQuoteAuthor: game.todayQuoteAuthor,
+          onMoneyTileTap: (title) {
+            if (title == "Quiz") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => QuizMenuScreen(
+                    game: game,
+                    music: widget.music,
+                    sfx: widget.sfx,
+                  ),
+                ),
+              );
+            }
+            if (title == "Career") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      CareerScreen(game: game, sfx: widget.sfx),
+                ),
+              );
+            }
+            if (title == "Assets") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AssetsScreen(
+                    assets: game.assets,
+                    gems: game.gems,
+                    streak: game.dailyQuizStreak,
+                    onBuyAsset: (type) =>
+                        game.buyAsset(type, 1, context),
+                    onSellAsset: (type) => game.sellAsset(type),
+                    sfx: widget.sfx,
+                    game: game,
+                  ),
+                ),
+              );
+            }
+            if (title == "Liabilities") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => LiabilitiesScreen(
+                    game: game,
+                    currentRent: game.rentChoice,
+                    currentFood: game.foodChoice,
+                    currentTransport: game.transportChoice,
+                    onSelectionChanged: game.updateLiabilities,
+                    sfx: widget.sfx,
+                  ),
+                ),
+              );
+            }
+            if (title == "Passive Income") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      PassiveIncomeScreen(game: game, sfx: widget.sfx),
+                ),
+              );
+            }
+          },
+        ),
+        CityTab(
+          key: TutorialKeys.cityTabKey,
+          career: game.career,
+          gems: game.gems,
+          assets: game.assets,
+          cityLayout: game.cityLayout,
+          insurances: game.insurances,
+          activePassiveIncomes: game.activePassiveIncomes,
+          hasWall: game.hasWall,
+          sfx: widget.sfx,
+          onBuyAsset: (AssetType type, int amount) {
+            game.buyAsset(type, amount, context);
+          },
+          onPlaceBuilding: game.placeBuilding,
+          onRemoveBuilding: game.removeBuilding,
+          onBuyWall: game.buyWall,
+          game: game,
+        ),
+        MoneyTab(
+          game: game,
+          music: widget.music,
+          sfx: widget.sfx,
+          currentKp: game.kp,
+          playerName: game.playerName,
+          career: game.career,
+          gems: game.gems,
+          assets: game.assets,
+          rent: game.rentChoice,
+          food: game.foodChoice,
+          transport: game.transportChoice,
+          cityLayout: game.cityLayout,
+          insurances: game.insurances,
+          bankruptcyCount: game.bankruptcyCount,
+          completedQuizzes: game.completedQuizzes,
+          onKpChange: game.updateKp,
+          onInsuranceToggle: game.toggleInsurance,
+          onSellAsset: game.sellAsset,
+          onBankruptcy: () => game.declareBankruptcy(context),
+          onCareerChange: game.updateCareer,
+          onBuyAsset: (type, amount) {
+            game.buyAsset(type, amount, context);
+          },
+          onLiabilitiesChange: game.updateLiabilities,
+          onQuizComplete: game.markQuizCompleted,
+          isWorkingOvertime: game.isWorkingOvertime,
+          onWorkOvertime: game.workOvertime,
+          activePassiveIncomes: game.activePassiveIncomes,
+          onInvestInPassiveIncome: game.investInPassiveIncome,
+          gameListenable: game,
+        ),
+        SettingsTab(
+          isActive: game.selectedIndex == 3,
+          game: game,
+          career: game.career,
+          isDarkMode: game.isDarkMode,
+          musicVolume: game.musicVolume,
+          sfxVolume: game.sfxVolume,
+          sfx: widget.sfx,
+          onThemeToggle: game.toggleTheme,
+          onMusicVolumeChanged: game.updateMusicVolume,
+          onSfxVolumeChanged: game.updateSfxVolume,
+          onCloudSync: () async {
+            final confirm = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("Restore data?"),
+                content: const Text(
+                  "Do you want to reload your progress from the cloud? This will overwrite your current local data. Any unsaved progress you made while being offline will be lost.",
+                ),
+                actions: [
+                  TextButton(
+                    child: const Text("Cancel"),
+                    onPressed: () => Navigator.pop(context, false),
+                  ),
+                  TextButton(
+                    child: const Text("Reload from Cloud"),
+                    onPressed: () => Navigator.pop(context, true),
+                  ),
+                ],
+              ),
+            );
+
+            if (confirm == true) {
+              await game.forceCloudLoad();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Cloud progress loaded!"),
+                  ),
+                );
+              }
+            }
+          },
+        ),
       ],
     );
   }
+
 }
 
 // =============================================================================

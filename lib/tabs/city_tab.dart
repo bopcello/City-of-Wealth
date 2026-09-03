@@ -17,6 +17,9 @@ import '../screens/activity_feed_screen.dart';
 import '../screens/leaderboard_screen.dart';
 import '../services/friend_activity_monitor.dart';
 import '../widgets/profile_avatar.dart';
+import '../widgets/responsive_widescreen.dart';
+import '../services/shortcut_manager_service.dart';
+import '../widgets/shortcut_overlay_banner.dart';
 
 class CityTab extends StatefulWidget {
   final CareerState career;
@@ -60,6 +63,7 @@ class CityTabState extends State<CityTab> {
 
   // 0 = My City, 1 = Friends
   int _selectedSegment = 0;
+  bool _showDesktopBuildDock = false;
 
   List<Friendship> get friendships => _friendships;
   List<ActivityEntry> get activityFeed => _activityFeed;
@@ -90,6 +94,7 @@ class CityTabState extends State<CityTab> {
   void initState() {
     super.initState();
     _setupFriendStreams();
+    ShortcutManagerService.instance.lastTriggeredAction.addListener(_handleShortcutAction);
   }
 
   void _loadFriendSnapshots(List<Friendship> friendships) async {
@@ -129,8 +134,64 @@ class CityTabState extends State<CityTab> {
     });
   }
 
+  void _handleShortcutAction() {
+    final action = ShortcutManagerService.instance.lastTriggeredAction.value;
+    if (action == null || !mounted) return;
+    if (action == 'Build Menu') {
+      _openBuildMenu();
+    } else if (action == 'Reset Camera') {
+      setState(() {
+        _transformationController.value = Matrix4.identity();
+      });
+    }
+  }
+
+  void _openBuildMenu() {
+    if (widget.game.isEditMode) {
+      widget.game.toggleEditMode();
+    }
+    if (isWidescreenDesktop(context)) {
+      setState(() {
+        _showDesktopBuildDock = !_showDesktopBuildDock;
+      });
+      return;
+    }
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) {
+        return _BuildingsBottomSheet(
+          career: widget.career,
+          gems: widget.gems,
+          assets: widget.assets,
+          insurances: widget.insurances,
+          activePassiveIncomes: widget.activePassiveIncomes,
+          hasWall: widget.hasWall,
+          sfx: widget.sfx,
+          onSelect: (building) {
+            if (building.name == "The Keystone") {
+              widget.sfx.playBuy();
+              widget.onBuyWall();
+              Navigator.pop(context);
+            } else {
+              Navigator.pop(context);
+              setState(() {
+                widget.game.setBuildingSelection(building);
+              });
+            }
+          },
+          onClose: () => Navigator.pop(context),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
+    ShortcutManagerService.instance.lastTriggeredAction.removeListener(_handleShortcutAction);
     _transformationController.dispose();
     _friendsSub?.cancel();
     _activitySub?.cancel();
@@ -168,31 +229,59 @@ class CityTabState extends State<CityTab> {
           child: Row(
             children: [
               // Segmented control
-              Expanded(
-                child: SegmentedButton<int>(
-                  key: TutorialKeys.friendsSegmentKey,
-                  segments: const [
-                    ButtonSegment(
-                      value: 0,
-                      label: Text("My City"),
-                      icon: Icon(Icons.location_city),
+              isWidescreenDesktop(context)
+                  ? ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 320),
+                      child: SegmentedButton<int>(
+                        key: TutorialKeys.friendsSegmentKey,
+                        segments: const [
+                          ButtonSegment(
+                            value: 0,
+                            label: Text("My City"),
+                            icon: Icon(Icons.location_city),
+                          ),
+                          ButtonSegment(
+                            value: 1,
+                            label: Text("Friends"),
+                            icon: Icon(Icons.group),
+                          ),
+                        ],
+                        selected: {_selectedSegment},
+                        onSelectionChanged: (val) {
+                          widget.sfx.playClick();
+                          setState(() {
+                            _selectedSegment = val.first;
+                          });
+                        },
+                      ),
+                    )
+                  : Expanded(
+                      child: SegmentedButton<int>(
+                        key: TutorialKeys.friendsSegmentKey,
+                        segments: const [
+                          ButtonSegment(
+                            value: 0,
+                            label: Text("My City"),
+                            icon: Icon(Icons.location_city),
+                          ),
+                          ButtonSegment(
+                            value: 1,
+                            label: Text("Friends"),
+                            icon: Icon(Icons.group),
+                          ),
+                        ],
+                        selected: {_selectedSegment},
+                        onSelectionChanged: (val) {
+                          widget.sfx.playClick();
+                          setState(() {
+                            _selectedSegment = val.first;
+                          });
+                        },
+                      ),
                     ),
-                    ButtonSegment(
-                      value: 1,
-                      label: Text("Friends"),
-                      icon: Icon(Icons.group),
-                    ),
-                  ],
-                  selected: {_selectedSegment},
-                  onSelectionChanged: (val) {
-                    widget.sfx.playClick();
-                    setState(() {
-                      _selectedSegment = val.first;
-                    });
-                  },
-                ),
-              ),
+
               const SizedBox(width: 8),
+              if (isWidescreenDesktop(context)) const Spacer(),
               // Add friend button
               IconButton(
                 key: TutorialKeys.addFriendButtonKey,
@@ -317,7 +406,7 @@ class CityTabState extends State<CityTab> {
     };
     final int gridSize = (widget.career.level - 1) * 2 + 1;
 
-    return GestureDetector(
+    final Widget cityCanvas = GestureDetector(
       onTap: () {
         if (widget.game.selectedBuilding != null) {
           if (widget.game.isEditMode) {
@@ -332,18 +421,10 @@ class CityTabState extends State<CityTab> {
           if (_transformationController.value == Matrix4.identity()) {
             final double vw = constraints.maxWidth;
             final double vh = constraints.maxHeight;
-
-            final double side =
-                gridSize * 52.0 +
-                200.0; // Account for the padding of 100 on each side
+            final double side = gridSize * 52.0 + 200.0;
             final double tx = (vw - side) / 2;
             final double ty = (vh - side) / 2;
-
-            _transformationController.value = Matrix4.translationValues(
-              tx,
-              ty,
-              0.0,
-            );
+            _transformationController.value = Matrix4.translationValues(tx, ty, 0.0);
           }
 
           return Stack(
@@ -388,20 +469,14 @@ class CityTabState extends State<CityTab> {
                                 isEditMode: widget.game.isEditMode,
                                 onTileTap: (x, y) {
                                   final buildingKey = "$x,$y";
-                                  final hasBuilding = cityMap.containsKey(
-                                    buildingKey,
-                                  );
+                                  final hasBuilding = cityMap.containsKey(buildingKey);
 
                                   if (widget.game.selectedBuilding != null) {
                                     if (hasBuilding) {
                                       if (widget.game.isEditMode) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text(
-                                              "Cell is already occupied",
-                                            ),
+                                            content: Text("Cell is already occupied"),
                                             duration: Duration(seconds: 1),
                                           ),
                                         );
@@ -411,8 +486,7 @@ class CityTabState extends State<CityTab> {
                                     widget.sfx.playBuy();
                                     widget.onPlaceBuilding(
                                       PlacedBuilding(
-                                        name:
-                                            widget.game.selectedBuilding!.name,
+                                        name: widget.game.selectedBuilding!.name,
                                         x: x,
                                         y: y,
                                       ),
@@ -422,13 +496,10 @@ class CityTabState extends State<CityTab> {
                                     } else {
                                       _clearSelection();
                                     }
-                                  } else if (widget.game.isEditMode &&
-                                      hasBuilding) {
+                                  } else if (widget.game.isEditMode && hasBuilding) {
                                     final building = cityMap[buildingKey]!;
                                     widget.game.setBuildingSelection(
-                                      buildings.firstWhere(
-                                        (b) => b.name == building.name,
-                                      ),
+                                      buildings.firstWhere((b) => b.name == building.name),
                                     );
                                     widget.onRemoveBuilding(building);
                                   }
@@ -498,13 +569,17 @@ class CityTabState extends State<CityTab> {
                     if (widget.game.isEditMode) {
                       widget.game.toggleEditMode();
                     }
+                    if (isWidescreenDesktop(context)) {
+                      setState(() {
+                        _showDesktopBuildDock = !_showDesktopBuildDock;
+                      });
+                      return;
+                    }
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
                       shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(24),
-                        ),
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                       ),
                       builder: (_) {
                         return _BuildingsBottomSheet(
@@ -527,9 +602,7 @@ class CityTabState extends State<CityTab> {
                               });
                             }
                           },
-                          onClose: () {
-                            Navigator.pop(context);
-                          },
+                          onClose: () => Navigator.pop(context),
                         );
                       },
                     );
@@ -538,11 +611,90 @@ class CityTabState extends State<CityTab> {
                   icon: const Icon(Icons.add),
                 ),
               ),
+              const ShortcutOverlayBanner(
+                screenId: 'city_tab',
+                helpTip: "Press [B] to toggle the building list panel on the left.",
+                shortcuts: ["[Space] Pause", "[B] Build Panel", "[R] Reset Camera", "[Esc] Back"],
+              ),
             ],
           );
         },
       ),
     );
+
+    if (isWidescreenDesktop(context) && _showDesktopBuildDock) {
+      return Row(
+        children: [
+          Container(
+            width: 360,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              border: Border(
+                right: BorderSide(
+                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                  width: 1.5,
+                ),
+              ),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.apartment, color: Colors.amber, size: 22),
+                      const SizedBox(width: 10),
+                      const Text(
+                        "Available Buildings",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 20),
+                        tooltip: "Close",
+                        onPressed: () => setState(() => _showDesktopBuildDock = false),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: _BuildingsBottomSheet(
+                      career: widget.career,
+                      gems: widget.gems,
+                      assets: widget.assets,
+                      insurances: widget.insurances,
+                      activePassiveIncomes: widget.activePassiveIncomes,
+                      hasWall: widget.hasWall,
+                      sfx: widget.sfx,
+                      hideHeader: true,
+                      onSelect: (building) {
+                        if (building.name == "The Keystone") {
+                          widget.sfx.playBuy();
+                          widget.onBuyWall();
+                          setState(() => _showDesktopBuildDock = false);
+                        } else {
+                          setState(() {
+                            _showDesktopBuildDock = false;
+                            widget.game.setBuildingSelection(building);
+                          });
+                        }
+                      },
+                      onClose: () => setState(() => _showDesktopBuildDock = false),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(child: cityCanvas),
+        ],
+      );
+    }
+
+    return cityCanvas;
   }
 
   Widget _buildFriendsView(
@@ -983,6 +1135,7 @@ class _BuildingsBottomSheet extends StatelessWidget {
   final SfxManager sfx;
   final Function(Building) onSelect;
   final VoidCallback onClose;
+  final bool hideHeader;
 
   const _BuildingsBottomSheet({
     required this.career,
@@ -994,6 +1147,7 @@ class _BuildingsBottomSheet extends StatelessWidget {
     required this.sfx,
     required this.onSelect,
     required this.onClose,
+    this.hideHeader = false,
   });
 
   @override
@@ -1023,33 +1177,37 @@ class _BuildingsBottomSheet extends StatelessWidget {
     });
 
     return Container(
-      height: 360,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 20,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.black54
-                : Colors.black12,
-          ),
-        ],
-      ),
+      padding: hideHeader ? EdgeInsets.zero : const EdgeInsets.all(16),
+      decoration: hideHeader
+          ? null
+          : BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 20,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black54
+                      : Colors.black12,
+                ),
+              ],
+            ),
       child: Column(
         children: [
-          Row(
-            children: [
-              const Text(
-                "Available Buildings",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const Spacer(),
-              IconButton(icon: const Icon(Icons.close), onPressed: onClose),
-            ],
-          ),
-          const SizedBox(height: 12),
+          if (!hideHeader) ...[
+            Row(
+              children: [
+                const Text(
+                  "Available Buildings",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                IconButton(icon: const Icon(Icons.close), onPressed: onClose),
+              ],
+            ),
+            const SizedBox(height: 12),
+          ],
+
           Expanded(
             child: available.isEmpty
                 ? Center(

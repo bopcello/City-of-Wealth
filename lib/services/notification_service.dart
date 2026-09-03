@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -23,21 +24,37 @@ class NotificationService {
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
 
+  /// Whether the current platform is Windows.
+  static final bool _isWindows = !kIsWeb && Platform.isWindows;
+
+  /// Builds cross-platform NotificationDetails for both Android and Windows.
+  static NotificationDetails _buildDetails({
+    String androidChannelId = 'routine_updates',
+    String androidChannelName = 'Routine Updates',
+    String androidChannelDescription = 'Daily city updates and reminders',
+    Importance importance = Importance.defaultImportance,
+    Priority priority = Priority.defaultPriority,
+    bool showWhen = false,
+  }) {
+    return NotificationDetails(
+      android: AndroidNotificationDetails(
+        androidChannelId,
+        androidChannelName,
+        channelDescription: androidChannelDescription,
+        importance: importance,
+        priority: priority,
+        showWhen: showWhen,
+      ),
+      windows: const WindowsNotificationDetails(),
+    );
+  }
+
   Future<void> _safeCancel(int id) async {
     if (!_isInitialized) return;
     try {
       await _notifications.cancel(id: id);
     } catch (e) {
       debugPrint("⚠️ Safe cancel notification $id error: $e");
-    }
-  }
-
-  Future<void> _safeCancelAll() async {
-    if (!_isInitialized) return;
-    try {
-      await _notifications.cancelAll();
-    } catch (e) {
-      debugPrint("⚠️ Safe cancel all notifications error: $e");
     }
   }
 
@@ -67,10 +84,26 @@ class NotificationService {
 
     tz.initializeTimeZones();
     try {
-      final info = await FlutterTimezone.getLocalTimezone();
-      final String timeZoneName = info.identifier;
-      tz.setLocalLocation(tz.getLocation(timeZoneName));
-      debugPrint("📍 Timezone initialized: $timeZoneName");
+      // flutter_timezone is not supported on Windows, use DateTime directly
+      if (_isWindows) {
+        final offset = DateTime.now().timeZoneOffset;
+        // Try to find a timezone matching the system offset
+        String tzName = 'UTC';
+        for (final location in tz.timeZoneDatabase.locations.values) {
+          final now = tz.TZDateTime.now(location);
+          if (now.timeZoneOffset == offset) {
+            tzName = location.name;
+            break;
+          }
+        }
+        tz.setLocalLocation(tz.getLocation(tzName));
+        debugPrint("📍 Timezone initialized (Windows): $tzName");
+      } else {
+        final info = await FlutterTimezone.getLocalTimezone();
+        final String timeZoneName = info.identifier;
+        tz.setLocalLocation(tz.getLocation(timeZoneName));
+        debugPrint("📍 Timezone initialized: $timeZoneName");
+      }
     } catch (e) {
       debugPrint("⚠️ Could not get local timezone, defaulting to UTC: $e");
     }
@@ -196,12 +229,7 @@ class NotificationService {
       debugPrint("⚠️ Error setting up Android notification channels: $e");
     }
 
-    // Clean up any lingering streak warning notifications from previous version
-    final cancelFutures = <Future<void>>[];
-    for (int i = 3000; i <= 3050; i++) {
-      cancelFutures.add(_safeCancel(i));
-    }
-    await Future.wait(cancelFutures);
+    // obsolete notification channel cleanup complete
   }
 
   /// Displays a status notification for each stage of the background task.
@@ -210,19 +238,18 @@ class NotificationService {
     required String body,
     required int stageId,
   }) async {
-    const details = AndroidNotificationDetails(
-      'background_debug_stage',
-      'Background Debug Logs',
-      channelDescription: 'Stage notifications for background task stages',
-      importance: Importance.low,
-      priority: Priority.low,
-      showWhen: true,
-    );
     await _safeShow(
       id: 9000 + stageId,
       title: title,
       body: body,
-      notificationDetails: const NotificationDetails(android: details),
+      notificationDetails: _buildDetails(
+        androidChannelId: 'background_debug_stage',
+        androidChannelName: 'Background Debug Logs',
+        androidChannelDescription: 'Stage notifications for background task stages',
+        importance: Importance.low,
+        priority: Priority.low,
+        showWhen: true,
+      ),
       payload: 'debug_stage',
     );
   }
@@ -259,18 +286,17 @@ class NotificationService {
       event['type'] as String,
       event,
     );
-    const details = AndroidNotificationDetails(
-      'friend_city_activity',
-      'Friend Activity',
-      channelDescription: 'Updates from your friends',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
     await _safeShow(
       id: (friendId.hashCode ^ event.hashCode) & 0x7FFFFFFF,
       title: notification.$1,
       body: notification.$2,
-      notificationDetails: const NotificationDetails(android: details),
+      notificationDetails: _buildDetails(
+        androidChannelId: 'friend_city_activity',
+        androidChannelName: 'Friend Activity',
+        androidChannelDescription: 'Updates from your friends',
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
       payload: 'friend_activity:$friendId',
     );
   }
@@ -283,18 +309,17 @@ class NotificationService {
       friendName,
       type,
     );
-    const details = AndroidNotificationDetails(
-      'friend_city_activity',
-      'Friend Activity',
-      channelDescription: 'Updates and requests from your friends',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
     await _safeShow(
       id: (friendName.hashCode ^ type.hashCode ^ DateTime.now().millisecondsSinceEpoch) & 0x7FFFFFFF,
       title: notification.$1,
       body: notification.$2,
-      notificationDetails: const NotificationDetails(android: details),
+      notificationDetails: _buildDetails(
+        androidChannelId: 'friend_city_activity',
+        androidChannelName: 'Friend Activity',
+        androidChannelDescription: 'Updates and requests from your friends',
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
       payload: 'friend_request',
     );
   }
@@ -321,41 +346,38 @@ class NotificationService {
     int gemYieldFromPassive = 0,
     int debt = 0,
   }) async {
-    await _safeCancelAll();
-
-    await scheduleDailyMorningNotification(
-      playerName,
-      wakeUpHour,
-      wakeUpMinute,
-      skipCancel: true,
-    );
-
-    await Future.delayed(const Duration(milliseconds: 300));
-    await scheduleDailyChallengeReminders(
-      playerName: playerName,
-      dailyQuizStreak: dailyQuizStreak,
-      streakRevivals: streakRevivals,
-      lastDailyQuizDate: lastDailyQuizDate,
-      skipCancel: true,
-    );
-
-    await Future.delayed(const Duration(milliseconds: 300));
-    await scheduleDailyNotifications(
-      playerName,
-      skipCancel: true,
-      level: level,
-      kpMet: kpMet,
-      assetsMet: assetsMet,
-      quizzesMet: quizzesMet,
-      kpNeeded: kpNeeded,
-      buildingsNeeded: buildingsNeeded,
-      quizzesNeeded: quizzesNeeded,
-      builtBuildings: builtBuildings,
-      gemYield: gemYield,
-      gemBoostNextLevel: gemBoostNextLevel,
-      gemYieldFromPassive: gemYieldFromPassive,
-      debt: debt,
-    );
+    await Future.wait([
+      scheduleDailyMorningNotification(
+        playerName,
+        wakeUpHour,
+        wakeUpMinute,
+        skipCancel: true,
+      ),
+      scheduleDailyChallengeReminders(
+        playerName: playerName,
+        dailyQuizStreak: dailyQuizStreak,
+        streakRevivals: streakRevivals,
+        lastDailyQuizDate: lastDailyQuizDate,
+        skipCancel: true,
+      ),
+      scheduleDailyNotifications(
+        playerName,
+        skipCancel: true,
+        level: level,
+        kpMet: kpMet,
+        assetsMet: assetsMet,
+        quizzesMet: quizzesMet,
+        kpNeeded: kpNeeded,
+        buildingsNeeded: buildingsNeeded,
+        quizzesNeeded: quizzesNeeded,
+        builtBuildings: builtBuildings,
+        gemYield: gemYield,
+        gemBoostNextLevel: gemBoostNextLevel,
+        gemYieldFromPassive: gemYieldFromPassive,
+        debt: debt,
+        wakeUpHour: wakeUpHour,
+      ),
+    ]);
   }
 
   Future<void> showDisasterNotification(
@@ -369,40 +391,34 @@ class NotificationService {
       insured,
     );
 
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'game_events',
-          'Game Events',
-          channelDescription: 'Notifications for disasters and city events',
-          importance: Importance.max,
-          priority: Priority.high,
-        );
-
     await _safeShow(
       id: type.index,
       title: notification.$1,
       body: notification.$2,
-      notificationDetails: NotificationDetails(android: androidDetails),
+      notificationDetails: _buildDetails(
+        androidChannelId: 'game_events',
+        androidChannelName: 'Game Events',
+        androidChannelDescription: 'Notifications for disasters and city events',
+        importance: Importance.max,
+        priority: Priority.high,
+      ),
     );
   }
 
   Future<void> showDebtNotification(String playerName) async {
     final notification = NotificationData.getRandomDebtNotification(playerName);
 
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'game_events',
-          'Game Events',
-          channelDescription: 'Notifications for disasters and city events',
-          importance: Importance.high,
-          priority: Priority.high,
-        );
-
     await _safeShow(
       id: 500,
       title: notification.$1,
       body: notification.$2,
-      notificationDetails: NotificationDetails(android: androidDetails),
+      notificationDetails: _buildDetails(
+        androidChannelId: 'game_events',
+        androidChannelName: 'Game Events',
+        androidChannelDescription: 'Notifications for disasters and city events',
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
     );
   }
 
@@ -415,20 +431,17 @@ class NotificationService {
       buildingName,
     );
 
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'game_events',
-          'Game Events',
-          channelDescription: 'Notifications for disasters and city events',
-          importance: Importance.max,
-          priority: Priority.high,
-        );
-
     await _safeShow(
-      id: 100 + buildingName.hashCode % 1000,
+      id: 700 + (buildingName.hashCode.abs() % 200),
       title: notification.$1,
       body: notification.$2,
-      notificationDetails: NotificationDetails(android: androidDetails),
+      notificationDetails: _buildDetails(
+        androidChannelId: 'game_events',
+        androidChannelName: 'Game Events',
+        androidChannelDescription: 'Notifications for disasters and city events',
+        importance: Importance.max,
+        priority: Priority.high,
+      ),
     );
   }
 
@@ -448,6 +461,7 @@ class NotificationService {
     int gemBoostNextLevel = 0,
     int gemYieldFromPassive = 0,
     int debt = 0,
+    int wakeUpHour = 8,
   }) async {
     if (!skipCancel) {
       // Cancel previous daily notifications (IDs 1000-1100)
@@ -461,66 +475,67 @@ class NotificationService {
     int scheduledCount = 0;
     int cycleIndex = 0;
 
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'routine_updates',
-          'Routine Updates',
-          channelDescription: 'Daily city updates and reminders',
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
-        );
+    final notifDetails = _buildDetails(
+      androidChannelId: 'routine_updates',
+      androidChannelName: 'Routine Updates',
+      androidChannelDescription: 'Daily city updates and reminders',
+    );
 
     final now = tz.TZDateTime.now(tz.local);
+    final firstSchedule = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      now.hour + 1,
+    );
     final scheduleFutures = <Future<void>>[];
 
-    // Schedule every 6 hours for the next 7 days (0, 6, 12, 18)
-    for (int day = 0; day < 7; day++) {
-      for (int hour in [0, 6, 12, 18]) {
-        var scheduledDate = tz.TZDateTime(
-          tz.local,
-          now.year,
-          now.month,
-          now.day,
-          hour,
-        ).add(Duration(days: day));
+    // Schedule every 3 hours for the next 7 days (56 slots)
+    for (int i = 0; i < 56; i++) {
+      final scheduledDate = firstSchedule.add(Duration(hours: i * 3));
 
-        if (scheduledDate.isBefore(now)) continue;
+      if (scheduledDate.isBefore(now)) continue;
 
-        final notification =
-            NotificationData.getAlternatingRetentionNotification(
-              cycleIndex: cycleIndex,
-              name: playerName,
-              level: level,
-              kpMet: kpMet,
-              assetsMet: assetsMet,
-              quizzesMet: quizzesMet,
-              kpNeeded: kpNeeded,
-              buildingsNeeded: buildingsNeeded,
-              quizzesNeeded: quizzesNeeded,
-              buildingName: buildingName,
-              builtBuildings: builtBuildings,
-              gemYield: gemYield,
-              gemBoostNextLevel: gemBoostNextLevel,
-              gemYieldFromPassive: gemYieldFromPassive,
-              debt: debt,
-            );
-
-        scheduleFutures.add(
-          _safeZonedSchedule(
-            id: 1000 + scheduledCount,
-            title: notification.$1,
-            body: notification.$2,
-            scheduledDate: scheduledDate,
-            notificationDetails: NotificationDetails(android: androidDetails),
-          ),
-        );
-        scheduledCount++;
-        cycleIndex++;
+      // Skip quiet hours (between 12:00 AM and wakeUpHour)
+      if (wakeUpHour > 0 && scheduledDate.hour < wakeUpHour) {
+        continue;
       }
+
+      final notification =
+          NotificationData.getAlternatingRetentionNotification(
+            cycleIndex: cycleIndex,
+            name: playerName,
+            level: level,
+            kpMet: kpMet,
+            assetsMet: assetsMet,
+            quizzesMet: quizzesMet,
+            kpNeeded: kpNeeded,
+            buildingsNeeded: buildingsNeeded,
+            quizzesNeeded: quizzesNeeded,
+            buildingName: buildingName,
+            builtBuildings: builtBuildings,
+            gemYield: gemYield,
+            gemBoostNextLevel: gemBoostNextLevel,
+            gemYieldFromPassive: gemYieldFromPassive,
+            debt: debt,
+          );
+
+      scheduleFutures.add(
+        _safeZonedSchedule(
+          id: 1000 + scheduledCount,
+          title: notification.$1,
+          body: notification.$2,
+          scheduledDate: scheduledDate,
+          notificationDetails: notifDetails,
+        ),
+      );
+      scheduledCount++;
+      cycleIndex++;
     }
     await Future.wait(scheduleFutures);
     debugPrint(
-      "📅 Scheduled $scheduledCount alternating retention notifications for 1 week",
+      "📅 Scheduled $scheduledCount alternating retention notifications every 3h for 1 week starting from $firstSchedule",
     );
   }
 
@@ -532,14 +547,11 @@ class NotificationService {
     }
     await Future.wait(cancelFutures);
 
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'inactivity',
-          'Reminders',
-          channelDescription: 'Reminders to check on your city',
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
-        );
+    final notifDetails = _buildDetails(
+      androidChannelId: 'inactivity',
+      androidChannelName: 'Reminders',
+      androidChannelDescription: 'Reminders to check on your city',
+    );
 
     final intervals = {
       "2d": const Duration(days: 1),
@@ -566,7 +578,7 @@ class NotificationService {
           title: notification.$1,
           body: notification.$2,
           scheduledDate: tz.TZDateTime.now(tz.local).add(duration),
-          notificationDetails: NotificationDetails(android: androidDetails),
+          notificationDetails: notifDetails,
         ),
       );
       i++;
@@ -580,20 +592,17 @@ class NotificationService {
       playerName,
     );
 
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'routine_updates',
-          'Routine Updates',
-          channelDescription: 'Daily city updates and reminders',
-          importance: Importance.high,
-          priority: Priority.high,
-        );
-
     await _safeShow(
       id: 4000,
       title: notification.$1,
       body: notification.$2,
-      notificationDetails: NotificationDetails(android: androidDetails),
+      notificationDetails: _buildDetails(
+        androidChannelId: 'routine_updates',
+        androidChannelName: 'Routine Updates',
+        androidChannelDescription: 'Daily city updates and reminders',
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
     );
   }
 
@@ -612,21 +621,18 @@ class NotificationService {
       insured,
     );
 
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'game_events',
-          'Game Events',
-          channelDescription: 'Notifications for disasters and city events',
-          importance: Importance.max,
-          priority: Priority.high,
-        );
-
     await _safeZonedSchedule(
       id: 5000,
       title: notification.$1,
       body: notification.$2,
       scheduledDate: tz.TZDateTime.from(time, tz.local),
-      notificationDetails: NotificationDetails(android: androidDetails),
+      notificationDetails: _buildDetails(
+        androidChannelId: 'game_events',
+        androidChannelName: 'Game Events',
+        androidChannelDescription: 'Notifications for disasters and city events',
+        importance: Importance.max,
+        priority: Priority.high,
+      ),
     );
   }
 
@@ -640,15 +646,6 @@ class NotificationService {
       // ID 6000 for daily morning quiz
       await _safeCancel(6000);
     }
-
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'routine_updates',
-          'Routine Updates',
-          channelDescription: 'Daily reminders for quizzes and city management',
-          importance: Importance.high,
-          priority: Priority.high,
-        );
 
     final now = tz.TZDateTime.now(tz.local);
     var scheduledDate = tz.TZDateTime(
@@ -672,7 +669,13 @@ class NotificationService {
       title: notification.$1,
       body: notification.$2,
       scheduledDate: scheduledDate,
-      notificationDetails: NotificationDetails(android: androidDetails),
+      notificationDetails: _buildDetails(
+        androidChannelId: 'routine_updates',
+        androidChannelName: 'Routine Updates',
+        androidChannelDescription: 'Daily reminders for quizzes and city management',
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'quiz',
     );
@@ -694,15 +697,13 @@ class NotificationService {
       await Future.wait(cancelFutures);
     }
 
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'streak_warnings',
-          'Streak Warnings',
-          channelDescription:
-              'Notifications before you lose your streak or consume a revival',
-          importance: Importance.high,
-          priority: Priority.high,
-        );
+    final notifDetails = _buildDetails(
+      androidChannelId: 'streak_warnings',
+      androidChannelName: 'Streak Warnings',
+      androidChannelDescription: 'Notifications before you lose your streak or consume a revival',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
 
     final now = tz.TZDateTime.now(tz.local);
     final baseMidnight = tz.TZDateTime(
@@ -774,7 +775,7 @@ class NotificationService {
             title: notification.$1,
             body: notification.$2,
             scheduledDate: scheduledDate,
-            notificationDetails: NotificationDetails(android: androidDetails),
+            notificationDetails: notifDetails,
             payload: 'quiz',
           ),
         );

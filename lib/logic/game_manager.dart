@@ -475,6 +475,7 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
       gemBoostNextLevel: gemBoostNextLevel,
       gemYieldFromPassive: gemYieldFromPassive,
       debt: debtVal,
+      wakeUpHour: wakeUpHour,
     );
   }
 

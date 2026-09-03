@@ -10,6 +10,9 @@ import '../screens/passive_income_screen.dart';
 
 import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';
+import '../widgets/focus_ring.dart';
+import '../widgets/responsive_widescreen.dart';
+import '../widgets/shortcut_overlay_banner.dart';
 
 class MoneyTab extends StatelessWidget {
   final GameManager game;
@@ -76,12 +79,63 @@ class MoneyTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      _MoneyTileData("Career", Icons.badge),
-      _MoneyTileData("Passive Income", Icons.trending_up),
-      _MoneyTileData("Assets", Icons.account_balance),
-      _MoneyTileData("Liabilities", Icons.warning),
-      _MoneyTileData("Quiz", Icons.quiz),
+      _MoneyTileData("Career", Icons.badge, "1"),
+      _MoneyTileData("Assets", Icons.account_balance, "2"),
+      _MoneyTileData("Liabilities", Icons.warning, "3"),
+      _MoneyTileData("Passive Income", Icons.trending_up, "4"),
+      _MoneyTileData("Quiz", Icons.quiz, "5"),
     ];
+
+
+    if (isWidescreenDesktop(context)) {
+      return Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Money Hub Operations",
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 1.4,
+                    ),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return FocusRing(
+                        onPressed: () => _handleTileTap(context, item.title),
+                        child: _MoneyTile(
+                          data: item,
+                          onTap: () => _handleTileTap(context, item.title),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const ShortcutOverlayBanner(
+            screenId: 'money_tab',
+            helpTip: "Press keys [1-5] to instantly jump into Career, Assets, Liabilities, Passive Income, or Quiz.",
+            shortcuts: ["[1] Career", "[2] Assets", "[3] Liabilities", "[4] Passive Income", "[5] Quiz"],
+          ),
+
+        ],
+      );
+    }
+
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -111,103 +165,86 @@ class MoneyTab extends StatelessWidget {
           ),
           Expanded(
             child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 1.1,
-        ),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          Key? tileKey;
-          if (item.title == "Career") tileKey = TutorialKeys.careerTileKey;
-          if (item.title == "Passive Income") tileKey = TutorialKeys.passiveIncomeTileKey;
-          if (item.title == "Assets") tileKey = TutorialKeys.assetsTileKey;
-          if (item.title == "Liabilities") tileKey = TutorialKeys.liabilitiesTileKey;
-          if (item.title == "Quiz") tileKey = TutorialKeys.quizTileKey;
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 1.1,
+              ),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final item = items[index];
+                Key? tileKey;
+                if (item.title == "Career") tileKey = TutorialKeys.careerTileKey;
+                if (item.title == "Passive Income") tileKey = TutorialKeys.passiveIncomeTileKey;
+                if (item.title == "Assets") tileKey = TutorialKeys.assetsTileKey;
+                if (item.title == "Liabilities") tileKey = TutorialKeys.liabilitiesTileKey;
+                if (item.title == "Quiz") tileKey = TutorialKeys.quizTileKey;
 
-          return _MoneyTile(
-            key: tileKey,
-            data: item,
-            onTap: () {
-              sfx.playClick();
-              game.visitMoneyTile(item.title);
-              if (item.title == "Quiz") {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => QuizMenuScreen(
-                      game: game,
-                      music: music,
-                      sfx: sfx,
-                    ),
-                  ),
+                return _MoneyTile(
+                  key: tileKey,
+                  data: item,
+                  onTap: () => _handleTileTap(context, item.title),
                 );
-              }
-              if (item.title == "Career") {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => CareerScreen(game: game, sfx: sfx),
-                  ),
-                );
-              }
-              if (item.title == "Assets") {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AssetsScreen(
-                      assets: game.assets,
-                      gems: game.gems,
-                      streak: game.dailyQuizStreak,
-                      onBuyAsset: (type) => game.buyAsset(type, 1, context),
-                      onSellAsset: (type) => game.sellAsset(type),
-                      sfx: sfx,
-                      game: game,
-                    ),
-                  ),
-                );
-              }
-              if (item.title == "Liabilities") {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => LiabilitiesScreen(
-                      game: game,
-                      currentRent: rent,
-                      currentFood: food,
-                      currentTransport: transport,
-                      onSelectionChanged: onLiabilitiesChange,
-                      sfx: sfx,
-                    ),
-                  ),
-                );
-              }
-              if (item.title == "Passive Income") {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => PassiveIncomeScreen(game: game, sfx: sfx),
-                  ),
-                );
-              }
-            },
-          );
-        },
+              },
+            ),
+          ),
+        ],
       ),
-    ),
-  ],
-),
-);
-}
+    );
+  }
+
+  void _handleTileTap(BuildContext context, String title) {
+    sfx.playClick();
+    game.visitMoneyTile(title);
+    final nav = Navigator.of(context, rootNavigator: true);
+    final isPoppable = nav.canPop();
+    Widget? nextScreen;
+
+    if (title == "Quiz") {
+      nextScreen = QuizMenuScreen(game: game, music: music, sfx: sfx);
+    } else if (title == "Career") {
+      nextScreen = CareerScreen(game: game, sfx: sfx);
+    } else if (title == "Assets") {
+      nextScreen = AssetsScreen(
+        assets: game.assets,
+        gems: game.gems,
+        streak: game.dailyQuizStreak,
+        onBuyAsset: (type) => game.buyAsset(type, 1, context),
+        onSellAsset: (type) => game.sellAsset(type),
+        sfx: sfx,
+        game: game,
+      );
+    } else if (title == "Liabilities") {
+      nextScreen = LiabilitiesScreen(
+        game: game,
+        currentRent: rent,
+        currentFood: food,
+        currentTransport: transport,
+        onSelectionChanged: onLiabilitiesChange,
+        sfx: sfx,
+      );
+    } else if (title == "Passive Income") {
+      nextScreen = PassiveIncomeScreen(game: game, sfx: sfx);
+    }
+
+    if (nextScreen != null) {
+      if (isPoppable) {
+        nav.pushReplacement(MaterialPageRoute(builder: (_) => nextScreen!));
+      } else {
+        nav.push(MaterialPageRoute(builder: (_) => nextScreen!));
+      }
+    }
+  }
+
 }
 
 class _MoneyTileData {
   final String title;
   final IconData icon;
+  final String hotkey;
 
-  _MoneyTileData(this.title, this.icon);
+  _MoneyTileData(this.title, this.icon, [this.hotkey = ""]);
 }
 
 class _MoneyTile extends StatelessWidget {
@@ -222,6 +259,7 @@ class _MoneyTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
@@ -250,3 +288,4 @@ class _MoneyTile extends StatelessWidget {
     );
   }
 }
+

@@ -7,6 +7,8 @@ import '../services/sfx_manager.dart';
 
 import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';
+import '../widgets/responsive_widescreen.dart';
+import '../widgets/shortcut_overlay_banner.dart';
 
 class CareerScreen extends StatefulWidget {
   final GameManager game;
@@ -65,44 +67,139 @@ class _CareerScreenState extends State<CareerScreen> {
             },
           ),
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              KeyedSubtree(
-                key: TutorialKeys.careerHeroCardKey,
-                child: _CareerHeroCard(
-                  key: ValueKey(
-                    '${widget.game.career.track}-${widget.game.career.level}',
+        body: isWidescreenDesktop(context)
+            ? Stack(
+                children: [
+                  SplitViewLayout(
+                    leftRatio: 0.42,
+                    leftChild: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            "CURRENT LEVEL STATUS",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.1,
+                              color: Colors.amber,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          KeyedSubtree(
+                            key: TutorialKeys.careerHeroCardKey,
+                            child: _CareerHeroCard(
+                              key: ValueKey(
+                                '${widget.game.career.track}-${widget.game.career.level}',
+                              ),
+                              career: widget.game.career,
+                              sfx: widget.sfx,
+                              currentKp: widget.game.kp,
+                              cityLayout: widget.game.cityLayout,
+                              onCareerChange: widget.game.updateCareer,
+                              completedQuizzes: widget.game.completedQuizzes,
+                              isWorkingOvertime: widget.game.isWorkingOvertime,
+                              onWorkOvertime: widget.game.workOvertime,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          const Text(
+                            "NEXT LEVEL REQUIREMENTS",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.1,
+                              color: Colors.amber,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          if (widget.game.career.level < 5)
+                            _CareerCard(
+                              career: CareerState(
+                                track: widget.game.career.track,
+                                level: widget.game.career.level + 1,
+                              ),
+                            )
+                          else
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Text(
+                                "Top Career Tier Reached! You are a Mogul.",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    rightChild: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            "CAREER PROGRESSION TREE",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.1,
+                              color: Colors.amber,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          _CareerProgress(career: widget.game.career),
+                        ],
+                      ),
+                    ),
                   ),
-                  career: widget.game.career,
-                  sfx: widget.sfx,
-                  currentKp: widget.game.kp,
-                  cityLayout: widget.game.cityLayout,
-                  onCareerChange: widget.game.updateCareer,
-                  completedQuizzes: widget.game.completedQuizzes,
-                  isWorkingOvertime: widget.game.isWorkingOvertime,
-                  onWorkOvertime: widget.game.workOvertime,
+                  const ShortcutOverlayBanner(
+                    screenId: 'career_screen',
+                    helpTip: "Review current and next career level requirements on the left. Press [Esc] to go back.",
+                    shortcuts: ["[Enter] Confirm", "[Esc] Back"],
+                  ),
+                ],
+              )
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    KeyedSubtree(
+                      key: TutorialKeys.careerHeroCardKey,
+                      child: _CareerHeroCard(
+                        key: ValueKey(
+                          '${widget.game.career.track}-${widget.game.career.level}',
+                        ),
+                        career: widget.game.career,
+                        sfx: widget.sfx,
+                        currentKp: widget.game.kp,
+                        cityLayout: widget.game.cityLayout,
+                        onCareerChange: widget.game.updateCareer,
+                        completedQuizzes: widget.game.completedQuizzes,
+                        isWorkingOvertime: widget.game.isWorkingOvertime,
+                        onWorkOvertime: widget.game.workOvertime,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    _CareerProgress(career: widget.game.career),
+                    if (widget.game.career.level == 1) ...[
+                      const SizedBox(height: 32),
+                      _CareerHint(),
+                    ] else if (widget.game.career.level <= 4) ...[
+                      const SizedBox(height: 32),
+                      _CareerCard(
+                        career: CareerState(
+                          track: widget.game.career.track,
+                          level: widget.game.career.level + 1,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 32),
+                  ],
                 ),
               ),
-              const SizedBox(height: 24),
-              _CareerProgress(career: widget.game.career),
-              if (widget.game.career.level == 1) ...[
-                const SizedBox(height: 32),
-                _CareerHint(),
-              ] else if (widget.game.career.level <= 4) ...[
-                const SizedBox(height: 32),
-                _CareerCard(
-                  career: CareerState(
-                    track: widget.game.career.track,
-                    level: widget.game.career.level + 1,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
       ),
     );
   }
