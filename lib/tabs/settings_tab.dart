@@ -611,6 +611,36 @@ class _SettingsTabState extends State<SettingsTab> {
                           ),
                           const Divider(height: 1, indent: 56),
                           ListTile(
+                            leading: Icon(Icons.view_sidebar, color: brandColor),
+                            title: const Text("Autocollapse and autoexpand"),
+                            subtitle: const Text("Control sidebar hover and collapse behavior"),
+                            trailing: DropdownButton<SidebarAutoMode>(
+                              value: service.sidebarAutoMode,
+                              underline: const SizedBox.shrink(),
+                              onChanged: (SidebarAutoMode? newValue) {
+                                if (newValue != null) {
+                                  widget.sfx.playClick();
+                                  service.setSidebarAutoMode(newValue);
+                                }
+                              },
+                              items: const [
+                                DropdownMenuItem(
+                                  value: SidebarAutoMode.onHover,
+                                  child: Text("On hover"),
+                                ),
+                                DropdownMenuItem(
+                                  value: SidebarAutoMode.onHover2s,
+                                  child: Text("On hover after 2 secs"),
+                                ),
+                                DropdownMenuItem(
+                                  value: SidebarAutoMode.disabled,
+                                  child: Text("Disabled"),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Divider(height: 1, indent: 56),
+                          ListTile(
                             leading: Icon(Icons.visibility, color: brandColor),
                             title: const Text("Unhide All Hints"),
                             subtitle: const Text("Restore shortcut overlay guides across all screens"),

@@ -71,7 +71,7 @@ class _CareerScreenState extends State<CareerScreen> {
             ? Stack(
                 children: [
                   SplitViewLayout(
-                    leftRatio: 0.42,
+                    leftRatio: 0.45,
                     leftChild: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -102,7 +102,13 @@ class _CareerScreenState extends State<CareerScreen> {
                               onWorkOvertime: widget.game.workOvertime,
                             ),
                           ),
-                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                    rightChild: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
                           const Text(
                             "NEXT LEVEL REQUIREMENTS",
                             style: TextStyle(
@@ -132,13 +138,7 @@ class _CareerScreenState extends State<CareerScreen> {
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
-                        ],
-                      ),
-                    ),
-                    rightChild: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
+                          const SizedBox(height: 24),
                           const Text(
                             "CAREER PROGRESSION TREE",
                             style: TextStyle(

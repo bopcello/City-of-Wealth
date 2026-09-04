@@ -527,7 +527,7 @@ async function generateDailyQuiz() {
     // 4. Build the base prompt
     const pastQuestionsText = pastQuestions.length > 0
       ? 'AVOID these previous topics, questions, and answers to ensure uniqueness:\n' +
-        pastQuestions.map((q, i) => `${i + 1}. Topic: "${q.topic}" | Question: "${q.question}" | Answer: "${q.answer}"`).join('\n')
+      pastQuestions.map((q, i) => `${i + 1}. Topic: "${q.topic}" | Question: "${q.question}" | Answer: "${q.answer}"`).join('\n')
       : 'This is the first question, so you have full creative freedom!';
 
     const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });

@@ -4,9 +4,26 @@ import '../game_state.dart';
 import 'dart:math';
 import '../services/sfx_manager.dart';
 import '../theme/app_colors.dart';
-
 import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';
+import '../widgets/responsive_widescreen.dart';
+import '../widgets/shiny_button.dart';
+import '../widgets/shortcut_overlay_banner.dart';
+
+IconData getPassiveIncomeIcon(PassiveIncomeType type) {
+  switch (type) {
+    case PassiveIncomeType.farm:
+      return Icons.agriculture;
+    case PassiveIncomeType.factory:
+      return Icons.precision_manufacturing;
+    case PassiveIncomeType.apartment:
+      return Icons.apartment;
+    case PassiveIncomeType.goodsExchange:
+      return Icons.local_shipping;
+    case PassiveIncomeType.xeroxShop:
+      return Icons.computer;
+  }
+}
 
 class PassiveIncomeScreen extends StatelessWidget {
   final GameManager game;
@@ -52,58 +69,205 @@ class PassiveIncomeScreen extends StatelessWidget {
         ),
         body: ListenableBuilder(
           listenable: game,
-          builder: (context, _) => SingleChildScrollView(
-            key: TutorialKeys.passiveIncomeBodyKey,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Invest in passive income sources",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Each investment unlocks a building. Once built, it generates passive income based on your assets.",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ...passiveIncomeData.entries.map((entry) {
-                  final info = entry.value;
-                  final assetType = info.assetType;
-                  final investedCount =
-                      game.activePassiveIncomes[assetType] ?? 0;
-                  final hasBuilding = game.cityLayout.any(
-                    (b) => b.name == info.buildingName,
-                  );
-                  final ownedAssets = game.assets.count(assetType);
-                  final canInvest = investedCount < ownedAssets;
+          builder: (context, _) => Stack(
+            children: [
+              SingleChildScrollView(
+                key: TutorialKeys.passiveIncomeBodyKey,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Invest in passive income sources",
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Each investment unlocks a building. Once built, it generates passive income based on your assets.",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    if (isWidescreenDesktop(context))
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 5,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.9,
+                        ),
+                        itemCount: passiveIncomeData.entries.length,
+                        itemBuilder: (context, index) {
+                          final entry = passiveIncomeData.entries.elementAt(index);
+                          final info = entry.value;
+                          final assetType = info.assetType;
+                          final investedCount =
+                              game.activePassiveIncomes[assetType] ?? 0;
+                          final ownedAssets = game.assets.count(assetType);
+                          final canInvest = investedCount < ownedAssets;
+                          final rewards = getStreakRewards(game.dailyQuizStreak);
+                          final discountedCost = (info.investmentCost *
+                                  (1.0 - rewards.assetDiscount))
+                              .round();
+                          final canAfford = game.gems >= discountedCost;
 
-                  final multiplier = game.getPassiveIncomeMultiplier(assetType);
-                  final activeDisaster = game.getActiveDisasterForAsset(
-                    assetType,
-                  );
+                          return Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .outline
+                                    .withValues(alpha: 0.3),
+                                width: 2,
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Title & Logo below name
+                                Column(
+                                  children: [
+                                    FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        info.buildingName,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Icon(
+                                      getPassiveIncomeIcon(info.type),
+                                      size: 36,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ],
+                                ),
+                                // Stats Tag
+                                Column(
+                                  children: [
+                                    Text(
+                                      "Invested: $investedCount / $ownedAssets",
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ShinyButton(
+                                        isShiny: canAfford && canInvest,
+                                        backgroundColor: (canAfford && canInvest)
+                                            ? AppColors.of(context, 'success')
+                                            : Colors.transparent,
+                                        foregroundColor: (canAfford && canInvest)
+                                            ? Colors.white
+                                            : AppColors.of(context, 'success'),
+                                        shape: (canAfford && canInvest)
+                                            ? const StadiumBorder()
+                                            : StadiumBorder(
+                                                side: BorderSide(
+                                                  color: AppColors.of(
+                                                    context,
+                                                    'success',
+                                                  ),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                        useStadiumShape: true,
+                                        elevation: 0,
+                                        minimumSize: Size.zero,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 8,
+                                        ),
+                                        onPressed: canInvest
+                                            ? () {
+                                                sfx.playBuy();
+                                                game.investInPassiveIncome(
+                                                  assetType,
+                                                );
+                                              }
+                                            : null,
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: IconText(
+                                            canInvest
+                                                ? "Invest ($discountedCost [GEM])"
+                                                : "Max Assets",
+                                            style: const TextStyle(fontSize: 11),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      )
+                    else
+                      ...passiveIncomeData.entries.map((entry) {
+                        final info = entry.value;
+                        final assetType = info.assetType;
+                        final investedCount =
+                            game.activePassiveIncomes[assetType] ?? 0;
+                        final hasBuilding = game.cityLayout.any(
+                          (b) => b.name == info.buildingName,
+                        );
+                        final ownedAssets = game.assets.count(assetType);
+                        final canInvest = investedCount < ownedAssets;
 
-                  return _PassiveIncomeCard(
-                    info: info,
-                    ownedAssets: ownedAssets,
-                    investedCount: investedCount,
-                    hasBuilding: hasBuilding,
-                    canInvest: canInvest,
-                    multiplier: multiplier,
-                    activeDisaster: activeDisaster,
-                    gems: game.gems,
-                    game: game,
-                    onInvest: () {
-                      sfx.playBuy();
-                      game.investInPassiveIncome(assetType);
-                    },
-                  );
-                }),
-              ],
-            ),
+                        final multiplier = game.getPassiveIncomeMultiplier(
+                          assetType,
+                        );
+                        final activeDisaster = game.getActiveDisasterForAsset(
+                          assetType,
+                        );
+
+                        return _PassiveIncomeCard(
+                          info: info,
+                          ownedAssets: ownedAssets,
+                          investedCount: investedCount,
+                          hasBuilding: hasBuilding,
+                          canInvest: canInvest,
+                          multiplier: multiplier,
+                          activeDisaster: activeDisaster,
+                          gems: game.gems,
+                          game: game,
+                          onInvest: () {
+                            sfx.playBuy();
+                            game.investInPassiveIncome(assetType);
+                          },
+                        );
+                      }),
+                  ],
+                ),
+              ),
+              if (isWidescreenDesktop(context))
+                const ShortcutOverlayBanner(
+                  screenId: 'passive_income_screen',
+                  helpTip:
+                      "Invest in passive income sources to generate background cashflow. Press [Esc] to go back.",
+                  shortcuts: ["[Esc] Back"],
+                ),
+            ],
           ),
         ),
       ),

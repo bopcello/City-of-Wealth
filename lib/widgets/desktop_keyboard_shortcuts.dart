@@ -87,18 +87,31 @@ class _DesktopKeyboardShortcutsState extends State<DesktopKeyboardShortcuts> {
 
     // Check if focused element is a text input field (ignore other shortcuts when typing)
     final primaryFocus = FocusManager.instance.primaryFocus;
-    if (primaryFocus != null && primaryFocus.context != null) {
-      final widgetType = primaryFocus.context!.widget.runtimeType.toString();
+    final focusContext = primaryFocus?.context;
+    if (focusContext != null) {
+      final widgetType = focusContext.widget.runtimeType.toString();
       if (widgetType.contains('EditableText') || widgetType.contains('TextField')) {
         return false;
       }
     }
+
+    // Check if user is inside Quiz screen, analysis screen, or past challenges
+    final bool isInQuizContext = shortcuts.isQuizActive ||
+        (focusContext != null &&
+            (focusContext.findAncestorWidgetOfExactType<QuizScreen>() != null ||
+                focusContext.findAncestorWidgetOfExactType<QuizAnalysisScreen>() != null ||
+                focusContext.findAncestorWidgetOfExactType<PastQuizzesScreen>() != null));
 
     // Cheat Sheet
     if (shortcuts.isActionKey('Cheat Sheet', key) ||
         (isControlPressed && key == LogicalKeyboardKey.slash)) {
       _showCheatSheetModal(context);
       return true;
+    }
+
+    // If we are in Quiz context, disable global tile/tab/game shortcuts so local quiz shortcuts handle 1-4, Space, Enter
+    if (isInQuizContext) {
+      return false;
     }
 
     // Confirm / Close
@@ -115,21 +128,25 @@ class _DesktopKeyboardShortcutsState extends State<DesktopKeyboardShortcuts> {
     if (shortcuts.isActionKey('Home', key)) {
       widget.sfx.playClick();
       widget.game.selectedIndex = 0;
+      shortcuts.triggerAction('NavigateTab');
       return true;
     }
     if (shortcuts.isActionKey('City', key)) {
       widget.sfx.playClick();
       widget.game.selectedIndex = 1;
+      shortcuts.triggerAction('NavigateTab');
       return true;
     }
     if (shortcuts.isActionKey('Money', key)) {
       widget.sfx.playClick();
       widget.game.selectedIndex = 2;
+      shortcuts.triggerAction('NavigateTab');
       return true;
     }
     if (shortcuts.isActionKey('Settings', key)) {
       widget.sfx.playClick();
       widget.game.selectedIndex = 3;
+      shortcuts.triggerAction('NavigateTab');
       return true;
     }
 
@@ -186,13 +203,6 @@ class _DesktopKeyboardShortcutsState extends State<DesktopKeyboardShortcuts> {
     if (shortcuts.isActionKey('Reset Camera', key)) {
       widget.sfx.playClick();
       shortcuts.triggerAction('Reset Camera');
-      return true;
-    }
-
-    // Pause Time
-    if (shortcuts.isActionKey('Pause Time', key)) {
-      widget.sfx.playClick();
-      shortcuts.triggerAction('Pause Time');
       return true;
     }
 

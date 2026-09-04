@@ -2310,10 +2310,10 @@ final List<QuizMetadata> _level2Quizzes = [
       QuizQuestion(
         question: 'Why are "Payday Loans" considered very bad debt?',
         options: [
-          'They are approved very quickly with minimal checks',
+          'They are approved very quickly with minimal checks and given on your payday without needing repayment but can be availed only once',
+          'They combine very high interest, short repayment periods, and penalties that trap borrowers in repeated cycles of debt',
           'They charge extremely high interest rates',
           'They require repayment within a short time',
-          'They combine very high interest, short repayment periods, and penalties that trap borrowers in repeated cycles of debt',
         ],
         correctIndex: 1,
         wrongExplanation:

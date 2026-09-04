@@ -86,7 +86,6 @@ class MoneyTab extends StatelessWidget {
       _MoneyTileData("Quiz", Icons.quiz, "5"),
     ];
 
-
     if (isWidescreenDesktop(context)) {
       return Stack(
         children: [
@@ -96,20 +95,21 @@ class MoneyTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Money Hub Operations",
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  "Money",
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 Expanded(
                   child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 1.4,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 5,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 1.0,
+                        ),
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
@@ -128,14 +128,19 @@ class MoneyTab extends StatelessWidget {
           ),
           const ShortcutOverlayBanner(
             screenId: 'money_tab',
-            helpTip: "Press keys [1-5] to instantly jump into Career, Assets, Liabilities, Passive Income, or Quiz.",
-            shortcuts: ["[1] Career", "[2] Assets", "[3] Liabilities", "[4] Passive Income", "[5] Quiz"],
+            helpTip:
+                "Press keys [1-5] to instantly jump into Career, Assets, Liabilities, Passive Income, or Quiz.",
+            shortcuts: [
+              "[1] Career",
+              "[2] Assets",
+              "[3] Liabilities",
+              "[4] Passive Income",
+              "[5] Quiz",
+            ],
           ),
-
         ],
       );
     }
-
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -150,7 +155,9 @@ class MoneyTab extends StatelessWidget {
                 Text(
                   "Welcome back,",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
                 Text(
@@ -175,11 +182,21 @@ class MoneyTab extends StatelessWidget {
               itemBuilder: (context, index) {
                 final item = items[index];
                 Key? tileKey;
-                if (item.title == "Career") tileKey = TutorialKeys.careerTileKey;
-                if (item.title == "Passive Income") tileKey = TutorialKeys.passiveIncomeTileKey;
-                if (item.title == "Assets") tileKey = TutorialKeys.assetsTileKey;
-                if (item.title == "Liabilities") tileKey = TutorialKeys.liabilitiesTileKey;
-                if (item.title == "Quiz") tileKey = TutorialKeys.quizTileKey;
+                if (item.title == "Career") {
+                  tileKey = TutorialKeys.careerTileKey;
+                }
+                if (item.title == "Passive Income") {
+                  tileKey = TutorialKeys.passiveIncomeTileKey;
+                }
+                if (item.title == "Assets") {
+                  tileKey = TutorialKeys.assetsTileKey;
+                }
+                if (item.title == "Liabilities") {
+                  tileKey = TutorialKeys.liabilitiesTileKey;
+                }
+                if (item.title == "Quiz") {
+                  tileKey = TutorialKeys.quizTileKey;
+                }
 
                 return _MoneyTile(
                   key: tileKey,
@@ -236,7 +253,6 @@ class MoneyTab extends StatelessWidget {
       }
     }
   }
-
 }
 
 class _MoneyTileData {
@@ -259,7 +275,7 @@ class _MoneyTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
@@ -272,20 +288,31 @@ class _MoneyTile extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(data.icon, size: 42),
-            const SizedBox(height: 12),
-            Text(
-              data.title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final double iconSize = (constraints.maxHeight * 0.38).clamp(24.0, 48.0);
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(data.icon, size: iconSize),
+                const SizedBox(height: 8),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    data.title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 }
-

@@ -13,8 +13,9 @@ import 'package:flutter/services.dart';
 import '../widgets/focus_ring.dart';
 import '../widgets/responsive_widescreen.dart';
 import '../widgets/shortcut_overlay_banner.dart';
+import '../services/shortcut_manager_service.dart';
 
-class QuizMenuScreen extends StatelessWidget {
+class QuizMenuScreen extends StatefulWidget {
   final GameManager game;
   final MusicManager music;
   final SfxManager sfx;
@@ -25,6 +26,13 @@ class QuizMenuScreen extends StatelessWidget {
     required this.music,
     required this.sfx,
   });
+
+  @override
+  State<QuizMenuScreen> createState() => _QuizMenuScreenState();
+}
+
+class _QuizMenuScreenState extends State<QuizMenuScreen> {
+  bool _isGridView = true;
 
   Color _getDifficultyColor(BuildContext context, QuizDifficulty difficulty) {
     switch (difficulty) {
@@ -62,34 +70,31 @@ class QuizMenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: game,
+      listenable: widget.game,
       builder: (context, _) {
-        final currentLevel = game.career.level;
+        final currentLevel = widget.game.career.level;
         final quizzes = getQuizzesForLevel(currentLevel);
         // Align with IST (GTM+5:30) used by the generator script
         final istTime = DateTime.now().toUtc().add(
           const Duration(hours: 5, minutes: 30),
         );
         final today = DateFormat('yyyy-MM-dd').format(istTime);
-        debugPrint(
-          "🧩 QuizMenuScreen: today(IST)=$today, level=$currentLevel, quizCount=${quizzes.length}",
-        );
-        final isDailyCompleted = game.lastDailyQuizDate == today;
+        final isDailyCompleted = widget.game.lastDailyQuizDate == today;
 
         final bool isBackAllowed =
-            !game.isTutorialActive || game.isTutorialBackAllowed;
+            !widget.game.isTutorialActive || widget.game.isTutorialBackAllowed;
 
         return PopScope(
           canPop: isBackAllowed,
           onPopInvokedWithResult: (didPop, result) {
             if (didPop) {
-              if (game.isTutorialActive) {
-                game.onTutorialBackStepTriggered?.call();
+              if (widget.game.isTutorialActive) {
+                widget.game.onTutorialBackStepTriggered?.call();
               }
               return;
             }
-            if (game.isTutorialActive && !game.isTutorialBackAllowed) {
-              game.onBackGestureIntercepted?.call();
+            if (widget.game.isTutorialActive && !widget.game.isTutorialBackAllowed) {
+              widget.game.onBackGestureIntercepted?.call();
             }
           },
           child: Scaffold(
@@ -98,17 +103,30 @@ class QuizMenuScreen extends StatelessWidget {
               leading: BackButton(
                 key: TutorialKeys.quizBackKey,
                 onPressed: () {
-                  if (game.isTutorialActive) {
-                    if (game.isTutorialBackAllowed) {
+                  if (widget.game.isTutorialActive) {
+                    if (widget.game.isTutorialBackAllowed) {
                       // Let the tutorial advance
                     } else {
-                      game.onBackGestureIntercepted?.call();
+                      widget.game.onBackGestureIntercepted?.call();
                       return;
                     }
                   }
                   Navigator.pop(context);
                 },
               ),
+              actions: [
+                IconButton(
+                  icon: Icon(_isGridView ? Icons.view_list : Icons.grid_view),
+                  tooltip: _isGridView ? "List View" : "Grid View",
+                  onPressed: () {
+                    widget.sfx.playClick();
+                    setState(() {
+                      _isGridView = !_isGridView;
+                    });
+                  },
+                ),
+                const SizedBox(width: 8),
+              ],
             ),
             body: Column(
               children: [
@@ -118,102 +136,253 @@ class QuizMenuScreen extends StatelessWidget {
                 Expanded(
                   child: quizzes.isEmpty
                       ? _buildEmptyState(context)
-                      : ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: quizzes.length,
-                          itemBuilder: (context, index) {
-                            final quiz = quizzes[index];
-                            final scheme = quiz.markingScheme;
-                            final isCompleted = game.completedQuizzes.contains(
-                              quiz.id,
-                            );
+                      : _isGridView
+                          ? GridView.builder(
+                              padding: const EdgeInsets.all(16),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount:
+                                    isWidescreenDesktop(context) ? 5 : 2,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 1.0,
+                              ),
+                              itemCount: quizzes.length,
+                              itemBuilder: (context, index) {
+                                final quiz = quizzes[index];
+                                final scheme = quiz.markingScheme;
+                                final isCompleted = widget
+                                    .game
+                                    .completedQuizzes
+                                    .contains(quiz.id);
+                                final diffColor = _getDifficultyColor(
+                                  context,
+                                  quiz.difficulty,
+                                );
 
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: isCompleted
-                                        ? AppColors.of(context, 'success')
-                                        : _getDifficultyColor(
-                                            context,
-                                            quiz.difficulty,
-                                          ),
-                                    width: 3,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: isCompleted
-                                      ? AppColors.of(
-                                          context,
-                                          'success',
-                                        ).withValues(alpha: 0.1)
-                                      : Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainerHighest,
-                                ),
-                                child: ListTile(
-                                  leading: Icon(
-                                    isCompleted
-                                        ? Icons.check_circle
-                                        : Icons.quiz,
-                                    color: isCompleted
-                                        ? AppColors.of(context, 'success')
-                                        : _getDifficultyColor(
-                                            context,
-                                            quiz.difficulty,
-                                          ),
-                                  ),
-                                  title: IconText(
-                                    quiz.title,
-                                    style: TextStyle(
-                                      decoration: isCompleted
-                                          ? TextDecoration.lineThrough
-                                          : null,
-                                      color: isCompleted
-                                          ? Theme.of(context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withValues(alpha: 0.5)
-                                          : Theme.of(
-                                              context,
-                                            ).colorScheme.onSurface,
-                                    ),
-                                  ),
-                                  subtitle: IconText(
-                                    isCompleted
-                                        ? '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • Repeat Award: +${_getRepeatAward(quiz.difficulty)} KP'
-                                        : '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • +${scheme.correctPoints}/${scheme.wrongPoints} KP',
-                                    style: TextStyle(
-                                      color: isCompleted
-                                          ? Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant
-                                                .withValues(alpha: 0.7)
-                                          : null,
-                                    ),
-                                  ),
-                                  isThreeLine: true,
-                                  trailing: const Icon(Icons.arrow_forward),
+                                return InkWell(
                                   onTap: () {
-                                    sfx.playClick();
+                                    widget.sfx.playClick();
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => QuizScreen(
-                                          game: game,
-                                          music: music,
-                                          sfx: sfx,
+                                          game: widget.game,
+                                          music: widget.music,
+                                          sfx: widget.sfx,
                                           quiz: quiz,
                                           isCompleted: isCompleted,
                                         ),
                                       ),
                                     );
                                   },
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: isCompleted
+                                            ? AppColors.of(context, 'success')
+                                            : diffColor,
+                                        width: 2.5,
+                                      ),
+                                      borderRadius: BorderRadius.circular(16),
+                                      color: isCompleted
+                                          ? AppColors.of(
+                                              context,
+                                              'success',
+                                            ).withValues(alpha: 0.1)
+                                          : Theme.of(
+                                              context,
+                                            ).colorScheme.surfaceContainerHighest,
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 2,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: diffColor.withValues(
+                                                  alpha: 0.2,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Text(
+                                                _getDifficultyLabel(
+                                                  quiz.difficulty,
+                                                ),
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: diffColor,
+                                                ),
+                                              ),
+                                            ),
+                                            Icon(
+                                              isCompleted
+                                                  ? Icons.check_circle
+                                                  : Icons.help_outline,
+                                              size: 20,
+                                              color: isCompleted
+                                                  ? AppColors.of(
+                                                      context,
+                                                      'success',
+                                                    )
+                                                  : diffColor,
+                                            ),
+                                          ],
+                                        ),
+                                        Expanded(
+                                          child: Center(
+                                            child: Text(
+                                              quiz.title,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                decoration: isCompleted
+                                                    ? TextDecoration.lineThrough
+                                                    : null,
+                                                color: isCompleted
+                                                    ? Theme.of(context)
+                                                          .colorScheme
+                                                          .onSurface
+                                                          .withValues(alpha: 0.5)
+                                                    : null,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                              maxLines: 3,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                        FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            isCompleted
+                                                ? "Repeat: +${_getRepeatAward(quiz.difficulty)} KP"
+                                                : "+${scheme.correctPoints}/${scheme.wrongPoints} KP",
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : ListView.builder(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              itemCount: quizzes.length,
+                              itemBuilder: (context, index) {
+                                final quiz = quizzes[index];
+                                final scheme = quiz.markingScheme;
+                                final isCompleted = widget
+                                    .game
+                                    .completedQuizzes
+                                    .contains(quiz.id);
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: isCompleted
+                                            ? AppColors.of(context, 'success')
+                                            : _getDifficultyColor(
+                                                context,
+                                                quiz.difficulty,
+                                              ),
+                                        width: 3,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: isCompleted
+                                          ? AppColors.of(
+                                              context,
+                                              'success',
+                                            ).withValues(alpha: 0.1)
+                                          : Theme.of(
+                                              context,
+                                            ).colorScheme.surfaceContainerHighest,
+                                    ),
+                                    child: ListTile(
+                                      leading: Icon(
+                                        isCompleted
+                                            ? Icons.check_circle
+                                            : Icons.quiz,
+                                        color: isCompleted
+                                            ? AppColors.of(context, 'success')
+                                            : _getDifficultyColor(
+                                                context,
+                                                quiz.difficulty,
+                                              ),
+                                      ),
+                                      title: IconText(
+                                        quiz.title,
+                                        style: TextStyle(
+                                          decoration: isCompleted
+                                              ? TextDecoration.lineThrough
+                                              : null,
+                                          color: isCompleted
+                                              ? Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface
+                                                    .withValues(alpha: 0.5)
+                                              : Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurface,
+                                        ),
+                                      ),
+                                      subtitle: IconText(
+                                        isCompleted
+                                            ? '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • Repeat Award: +${_getRepeatAward(quiz.difficulty)} KP'
+                                            : '${quiz.subtitle}\n${_getDifficultyLabel(quiz.difficulty)} • +${scheme.correctPoints}/${scheme.wrongPoints} KP',
+                                        style: TextStyle(
+                                          color: isCompleted
+                                              ? Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurfaceVariant
+                                                    .withValues(alpha: 0.7)
+                                              : null,
+                                        ),
+                                      ),
+                                      isThreeLine: true,
+                                      trailing: const Icon(Icons.arrow_forward),
+                                      onTap: () {
+                                        widget.sfx.playClick();
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => QuizScreen(
+                                              game: widget.game,
+                                              music: widget.music,
+                                              sfx: widget.sfx,
+                                              quiz: quiz,
+                                              isCompleted: isCompleted,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                 ),
               ],
             ),
@@ -229,7 +398,7 @@ class QuizMenuScreen extends StatelessWidget {
     bool isCompleted,
   ) {
     return FutureBuilder<Map<String, dynamic>?>(
-      future: game.firestoreService.getDailyQuiz(today),
+      future: widget.game.firestoreService.getDailyQuiz(today),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           debugPrint("❌ Daily Quiz Error: ${snapshot.error}");
@@ -259,10 +428,16 @@ class QuizMenuScreen extends StatelessWidget {
                         color: AppColors.of(context, 'gem'),
                         width: 3,
                       ),
-                      color: AppColors.of(context, 'gem').withValues(alpha: 0.1),
+                      color: AppColors.of(
+                        context,
+                        'gem',
+                      ).withValues(alpha: 0.1),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.of(context, 'gem').withValues(alpha: 0.3),
+                          color: AppColors.of(
+                            context,
+                            'gem',
+                          ).withValues(alpha: 0.3),
                           blurRadius: 8,
                           spreadRadius: 2,
                         ),
@@ -270,7 +445,7 @@ class QuizMenuScreen extends StatelessWidget {
                     ),
                     child: InkWell(
                       onTap: () async {
-                        sfx.playClick();
+                        widget.sfx.playClick();
                         if (isCompleted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -303,10 +478,14 @@ class QuizMenuScreen extends StatelessWidget {
                               ? [
                                   QuizQuestion(
                                     question: dailyData['question'],
-                                    options: List<String>.from(dailyData['options']),
+                                    options: List<String>.from(
+                                      dailyData['options'],
+                                    ),
                                     correctIndex: dailyData['correctIndex'],
-                                    correctExplanation: dailyData['correctExplanation'],
-                                    wrongExplanation: dailyData['wrongExplanation'],
+                                    correctExplanation:
+                                        dailyData['correctExplanation'],
+                                    wrongExplanation:
+                                        dailyData['wrongExplanation'],
                                   ),
                                 ]
                               : [],
@@ -317,9 +496,9 @@ class QuizMenuScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (_) => QuizScreen(
-                                game: game,
-                                music: music,
-                                sfx: sfx,
+                                game: widget.game,
+                                music: widget.music,
+                                sfx: widget.sfx,
                                 quiz: dailyQuiz,
                                 isDaily: true,
                                 dailyDate: today,
@@ -333,10 +512,14 @@ class QuizMenuScreen extends StatelessWidget {
                         child: Row(
                           children: [
                             Icon(
-                              isCompleted ? Icons.event_available : Icons.auto_awesome,
+                              isCompleted
+                                  ? Icons.event_available
+                                  : Icons.auto_awesome,
                               size: 48,
                               color: isCompleted
-                                  ? Theme.of(context).colorScheme.onSurfaceVariant
+                                  ? Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant
                                   : AppColors.of(context, 'gem'),
                             ),
                             const SizedBox(width: 20),
@@ -353,27 +536,36 @@ class QuizMenuScreen extends StatelessWidget {
                                           fontWeight: FontWeight.bold,
                                           letterSpacing: 1.2,
                                           color: isCompleted
-                                              ? Theme.of(context).colorScheme.onSurfaceVariant
+                                              ? Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant
                                               : AppColors.of(context, 'gem'),
                                         ),
                                       ),
-                                      if (isAvailable && !isCompleted) ...[
+                                      if (isCompleted) ...[
                                         const SizedBox(width: 8),
                                         Container(
                                           padding: const EdgeInsets.symmetric(
-                                            horizontal: 6,
+                                            horizontal: 8,
                                             vertical: 2,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: AppColors.of(context, 'gem'),
-                                            borderRadius: BorderRadius.circular(4),
+                                            color: AppColors.of(
+                                              context,
+                                              'success',
+                                            ).withValues(alpha: 0.2),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                           ),
                                           child: Text(
-                                            "NEW",
+                                            "COMPLETED",
                                             style: TextStyle(
-                                              color: Theme.of(context).colorScheme.onPrimary,
-                                              fontSize: 8,
+                                              fontSize: 10,
                                               fontWeight: FontWeight.bold,
+                                              color: AppColors.of(
+                                                context,
+                                                'success',
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -387,8 +579,12 @@ class QuizMenuScreen extends StatelessWidget {
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,
                                       color: isCompleted
-                                          ? Theme.of(context).colorScheme.onSurfaceVariant
-                                          : Theme.of(context).colorScheme.onSurface,
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant
+                                          : Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -396,7 +592,10 @@ class QuizMenuScreen extends StatelessWidget {
                                     subtitle,
                                     style: TextStyle(
                                       fontSize: 14,
-                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(alpha: 0.7),
                                     ),
                                   ),
                                   const SizedBox(height: 12),
@@ -404,12 +603,12 @@ class QuizMenuScreen extends StatelessWidget {
                                     children: [
                                       CounterChip(
                                         label: "[STREAK]",
-                                        value: game.dailyQuizStreak,
+                                        value: widget.game.dailyQuizStreak,
                                         prefix: "Streak",
                                       ),
                                       CounterChip(
                                         label: "[REVIVAL]",
-                                        value: game.streakRevivals,
+                                        value: widget.game.streakRevivals,
                                         prefix: "Revivals",
                                       ),
                                     ],
@@ -417,14 +616,14 @@ class QuizMenuScreen extends StatelessWidget {
                                   const SizedBox(height: 12),
                                   OutlinedButton.icon(
                                     onPressed: () {
-                                      sfx.playClick();
+                                      widget.sfx.playClick();
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) => PastQuizzesScreen(
-                                            game: game,
-                                            music: music,
-                                            sfx: sfx,
+                                            game: widget.game,
+                                            music: widget.music,
+                                            sfx: widget.sfx,
                                           ),
                                         ),
                                       );
@@ -436,11 +635,15 @@ class QuizMenuScreen extends StatelessWidget {
                                     ),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: isCompleted
-                                          ? Theme.of(context).colorScheme.onSurfaceVariant
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant
                                           : AppColors.of(context, 'gem'),
                                       side: BorderSide(
                                         color: isCompleted
-                                            ? Theme.of(context).colorScheme.onSurfaceVariant
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.onSurfaceVariant
                                             : AppColors.of(context, 'gem'),
                                       ),
                                       padding: const EdgeInsets.symmetric(
@@ -452,12 +655,6 @@ class QuizMenuScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            if (!isCompleted && isAvailable)
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                size: 20,
-                                color: AppColors.of(context, 'gem'),
-                              ),
                           ],
                         ),
                       ),
@@ -469,14 +666,18 @@ class QuizMenuScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
-                      width: 1,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: 0.3),
+                      width: 2,
                     ),
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                   ),
                   child: InkWell(
                     onTap: () async {
-                      sfx.playClick();
+                      widget.sfx.playClick();
                       if (isCompleted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -509,10 +710,14 @@ class QuizMenuScreen extends StatelessWidget {
                             ? [
                                 QuizQuestion(
                                   question: dailyData['question'],
-                                  options: List<String>.from(dailyData['options']),
+                                  options: List<String>.from(
+                                    dailyData['options'],
+                                  ),
                                   correctIndex: dailyData['correctIndex'],
-                                  correctExplanation: dailyData['correctExplanation'],
-                                  wrongExplanation: dailyData['wrongExplanation'],
+                                  correctExplanation:
+                                      dailyData['correctExplanation'],
+                                  wrongExplanation:
+                                      dailyData['wrongExplanation'],
                                 ),
                               ]
                             : [],
@@ -523,9 +728,9 @@ class QuizMenuScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => QuizScreen(
-                              game: game,
-                              music: music,
-                              sfx: sfx,
+                              game: widget.game,
+                              music: widget.music,
+                              sfx: widget.sfx,
                               quiz: dailyQuiz,
                               isDaily: true,
                               dailyDate: today,
@@ -539,9 +744,13 @@ class QuizMenuScreen extends StatelessWidget {
                       child: Row(
                         children: [
                           Icon(
-                            isCompleted ? Icons.event_available : Icons.auto_awesome,
+                            isCompleted
+                                ? Icons.event_available
+                                : Icons.auto_awesome,
                             size: 48,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(width: 20),
                           Expanded(
@@ -554,7 +763,9 @@ class QuizMenuScreen extends StatelessWidget {
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 1.2,
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -563,7 +774,9 @@ class QuizMenuScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -571,7 +784,10 @@ class QuizMenuScreen extends StatelessWidget {
                                   subtitle,
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.7),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
@@ -579,12 +795,12 @@ class QuizMenuScreen extends StatelessWidget {
                                   children: [
                                     CounterChip(
                                       label: "[STREAK]",
-                                      value: game.dailyQuizStreak,
+                                      value: widget.game.dailyQuizStreak,
                                       prefix: "Streak",
                                     ),
                                     CounterChip(
                                       label: "[REVIVAL]",
-                                      value: game.streakRevivals,
+                                      value: widget.game.streakRevivals,
                                       prefix: "Revivals",
                                     ),
                                   ],
@@ -592,14 +808,14 @@ class QuizMenuScreen extends StatelessWidget {
                                 const SizedBox(height: 12),
                                 OutlinedButton.icon(
                                   onPressed: () {
-                                    sfx.playClick();
+                                    widget.sfx.playClick();
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => PastQuizzesScreen(
-                                          game: game,
-                                          music: music,
-                                          sfx: sfx,
+                                          game: widget.game,
+                                          music: widget.music,
+                                          sfx: widget.sfx,
                                         ),
                                       ),
                                     );
@@ -610,9 +826,13 @@ class QuizMenuScreen extends StatelessWidget {
                                     style: TextStyle(fontSize: 12),
                                   ),
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    foregroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                     side: BorderSide(
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 12,
@@ -709,8 +929,15 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
+    ShortcutManagerService.instance.setQuizActive(true);
     _initializeShuffledIndices();
     widget.music.playQuizMusic();
+  }
+
+  @override
+  void dispose() {
+    ShortcutManagerService.instance.setQuizActive(false);
+    super.dispose();
   }
 
   void _initializeShuffledIndices() {
@@ -721,7 +948,7 @@ class _QuizScreenState extends State<QuizScreen> {
     }).toList();
   }
 
-  void selectAnswer(int uiIndex) {
+  void selectAnswer(int uiIndex) async {
     if (selected != null) return;
     final question = widget.quiz.questions[current];
     final originalIndex = _shuffledIndicesMap[current][uiIndex];
@@ -735,10 +962,19 @@ class _QuizScreenState extends State<QuizScreen> {
     } else {
       widget.sfx.playIncorrect();
     }
-    _showExplanationDialog(correct, question);
+    await Future.delayed(const Duration(seconds: 1));
+    if (!mounted) return;
+    _showExplanationDialog(correct, question, originalIndex);
   }
 
-  void _showExplanationDialog(bool wasCorrect, QuizQuestion question) {
+  void _showExplanationDialog(
+    bool wasCorrect,
+    QuizQuestion question,
+    int selectedOriginalIndex,
+  ) {
+    final selectedOptionText = question.options[selectedOriginalIndex];
+    final correctOptionText = question.options[question.correctIndex];
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -758,6 +994,12 @@ class _QuizScreenState extends State<QuizScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (!wasCorrect) ...[
+                _buildPopupOptionBox(
+                  context,
+                  selectedOptionText,
+                  isCorrect: false,
+                ),
+                const SizedBox(height: 8),
                 const Text(
                   'Why Your Answer is Wrong',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -768,6 +1010,8 @@ class _QuizScreenState extends State<QuizScreen> {
                 const Divider(),
                 const SizedBox(height: 16),
               ],
+              _buildPopupOptionBox(context, correctOptionText, isCorrect: true),
+              const SizedBox(height: 8),
               const Text(
                 'Why This Answer is Correct',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -778,20 +1022,55 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              if (current < widget.quiz.questions.length - 1) {
-                nextQuestion();
-              } else {
-                if (!widget.isDaily && !widget.isPractice) {
-                  widget.game.markQuizCompleted(widget.quiz.id);
+          Focus(
+            autofocus: true,
+            child: TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                if (current < widget.quiz.questions.length - 1) {
+                  nextQuestion();
+                } else {
+                  if (!widget.isDaily && !widget.isPractice) {
+                    widget.game.markQuizCompleted(widget.quiz.id);
+                  }
+                  nextQuestion();
                 }
-                nextQuestion();
-              }
-            },
-            child: Text(
-              current < widget.quiz.questions.length - 1 ? 'Next' : 'Finish',
+              },
+              child: Text(
+                current < widget.quiz.questions.length - 1 ? 'Next' : 'Finish',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPopupOptionBox(
+    BuildContext context,
+    String text, {
+    required bool isCorrect,
+  }) {
+    final colorKey = isCorrect ? 'success' : 'error';
+    final mainColor = AppColors.of(context, colorKey);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: mainColor.withValues(alpha: 0.25),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: mainColor, width: 1.5),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: IconText(
+              text,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ),
         ],
@@ -959,7 +1238,11 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 
-  Widget _buildMobileQuiz(BuildContext context, QuizQuestion q, double progress) {
+  Widget _buildMobileQuiz(
+    BuildContext context,
+    QuizQuestion q,
+    double progress,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -1009,8 +1292,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                   const SizedBox(height: 24),
                   ...List.generate(q.options.length, (uiIndex) {
-                    final originalIndex =
-                        _shuffledIndicesMap[current][uiIndex];
+                    final originalIndex = _shuffledIndicesMap[current][uiIndex];
                     Color bg = Theme.of(
                       context,
                     ).colorScheme.surfaceContainerHighest;
@@ -1093,10 +1375,14 @@ class _QuizScreenState extends State<QuizScreen> {
                   leftChild: Container(
                     padding: const EdgeInsets.all(28),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.5),
                       ),
                     ),
                     child: Column(
@@ -1131,12 +1417,13 @@ class _QuizScreenState extends State<QuizScreen> {
                   rightChild: Padding(
                     padding: const EdgeInsets.only(left: 24),
                     child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: 1.8,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 1.8,
+                          ),
                       itemCount: q.options.length,
                       itemBuilder: (context, uiIndex) {
                         final originalIndex =
@@ -1178,7 +1465,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       children: [
@@ -1188,16 +1476,23 @@ class _QuizScreenState extends State<QuizScreen> {
                                             vertical: 4,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: AppColors.of(context, 'kp')
-                                                .withValues(alpha: 0.2),
-                                            borderRadius: BorderRadius.circular(6),
+                                            color: AppColors.of(
+                                              context,
+                                              'kp',
+                                            ).withValues(alpha: 0.2),
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
                                           ),
                                           child: Text(
-                                            "Option ${String.fromCharCode(65 + uiIndex)}",
+                                            "Option ${uiIndex + 1}",
                                             style: TextStyle(
                                               fontSize: 11,
                                               fontWeight: FontWeight.bold,
-                                              color: AppColors.of(context, 'kp'),
+                                              color: AppColors.of(
+                                                context,
+                                                'kp',
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -1208,7 +1503,9 @@ class _QuizScreenState extends State<QuizScreen> {
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
-                                        color: Theme.of(context).colorScheme.onSurface,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                       ),
                                     ),
                                   ],
@@ -1227,14 +1524,17 @@ class _QuizScreenState extends State<QuizScreen> {
         ),
         const ShortcutOverlayBanner(
           screenId: 'quiz_screen',
-          helpTip: "Press keys [1], [2], [3], [4] on your keyboard to pick an option. Press [Space] or [Enter] to advance, and [Esc] to exit.",
-          shortcuts: ["[1-4] Pick Answer", "[Space/Enter] Advance", "[Esc] Exit"],
+          helpTip:
+              "Press keys [1], [2], [3], [4] on your keyboard to pick an option. Press [Space] or [Enter] to advance, and [Esc] to exit.",
+          shortcuts: [
+            "[1-4] Pick Answer",
+            "[Space/Enter] Advance",
+            "[Esc] Exit",
+          ],
         ),
       ],
     );
   }
-
-
 }
 
 class QuizAnalysisScreen extends StatelessWidget {

@@ -1006,56 +1006,56 @@ class NotificationData {
   /// Set 2: KP✅ Assets❌ Quizzes❌ (kp_yes_assets_no_quizzes_no) — Has enough KP, missing buildings and quizzes.
   static const List<(String, String)> kp_yes_assets_no_quizzes_no = [
     (
-      "You have the KP needed, but you can't level up yet",
-      "That's because you don't have the infrastructure yet — can you build {buildingsNeeded} buildings before your friends?",
+      "KP ready, but structure needed",
+      "Can you construct {buildingsNeeded} before your competitors catch up?",
     ),
     (
       "Your KP is ready, {name}, but your city isn't",
-      "You still need {buildingsNeeded} buildings and {quizzesNeeded} to unlock your next level.",
+      "You still need {buildingsNeeded} and {quizzesNeeded} to unlock your next level.",
     ),
     (
       "Great KP, but missing foundation!",
-      "Build {buildingsNeeded} more buildings and complete {quizzesNeeded} to advance.",
+      "Construct {buildingsNeeded} and complete {quizzesNeeded} to advance.",
     ),
     (
       "Capital without structure, {name}",
-      "You've got the KP, but you need {buildingsNeeded} buildings and {quizzesNeeded} to level up.",
+      "You've got the KP, but you need {buildingsNeeded} and {quizzesNeeded} to level up.",
     ),
     (
       "KP is banked, but structure is missing",
-      "Construct {buildingsNeeded} buildings and finish {quizzesNeeded} to reach the next tier.",
+      "Construct {buildingsNeeded} and finish {quizzesNeeded} to reach the next tier.",
     ),
   ];
 
   /// Set 3: KP❌ Assets❌ Quizzes✅ (kp_no_assets_no_quizzes_yes) — Has completed required quizzes, missing KP and buildings.
   static const List<(String, String)> kp_no_assets_no_quizzes_yes = [
     (
-      "You've attempted the quizzes, but your performance wasn't enough.",
-      "Don't worry — it's part of the journey. You can still earn KP through good choices and daily quizzes.",
+      "Quizzes complete, but empire building remains",
+      "You still need {kpNeeded} more KP and {buildingsNeeded} to level up, {name}.",
     ),
     (
-      "Quizzes complete, but KP and city growth remain",
-      "You still need {kpNeeded} more KP and {buildingsNeeded} buildings to level up, {name}.",
+      "Quizzes checked off, {name}!",
+      "Now focus on earning {kpNeeded} more KP and constructing {buildingsNeeded} to level up.",
     ),
     (
       "Knowledge tested, now scale up!",
-      "Your quizzes are done. Earn {kpNeeded} more KP and construct {buildingsNeeded} buildings.",
+      "Your quizzes are done. Earn {kpNeeded} more KP and construct {buildingsNeeded} to advance.",
     ),
     (
       "The theory is done, {name}",
-      "Quizzes are checked off, but you need {kpNeeded} KP and {buildingsNeeded} buildings for your next title.",
+      "Quizzes are checked off, but you need {kpNeeded} KP and {buildingsNeeded} for your next title.",
     ),
     (
       "Smart moves take time",
-      "Quizzes completed! Focus now on gaining {kpNeeded} KP and expanding by {buildingsNeeded} buildings.",
+      "Quizzes completed! Focus now on gaining {kpNeeded} KP and expanding by {buildingsNeeded}.",
     ),
   ];
 
   /// Set 4: KP❌ Assets✅ Quizzes❌ (kp_no_assets_yes_quizzes_no) — Has enough buildings, missing KP and quizzes.
   static const List<(String, String)> kp_no_assets_yes_quizzes_no = [
     (
-      "You've acquired the assets, but what about the wisdom to handle them?",
-      "That's decided by your KP — complete your quizzes to earn the KP you need and unlock even more assets to expand your city!",
+      "Skyline built, wisdom needed",
+      "Complete your quizzes to earn the {kpNeeded} KP you need to expand your city!",
     ),
     (
       "Your skyline is built, {name}, but your knowledge isn't complete",
@@ -1071,31 +1071,31 @@ class NotificationData {
     ),
     (
       "Assets locked in!",
-      "Your buildings are built. Now tackle {quizzesNeeded} and gain {kpNeeded} KP.",
+      "Your buildings are built. Now tackle {quizzesNeeded} and gain {kpNeeded} KP to level up.",
     ),
   ];
 
   /// Set 5: KP✅ Assets❌ Quizzes✅ (kp_yes_assets_no_quizzes_yes) — Has KP and quizzes, missing buildings only.
   static const List<(String, String)> kp_yes_assets_no_quizzes_yes = [
     (
-      "Knowledge only turns to wealth when you apply it.",
-      "You need to build {buildingsNeeded} more buildings to turn knowledge into wealth.",
+      "Knowledge turns to wealth when applied",
+      "Construct {buildingsNeeded} to turn your knowledge into wealth.",
     ),
     (
       "So close to promotion, {name}!",
-      "KP and quizzes are done. Just construct {buildingsNeeded} more buildings to level up!",
+      "KP and quizzes are done. Just construct {buildingsNeeded} to level up!",
     ),
     (
       "Your mind is ready, but your city is waiting",
-      "Build {buildingsNeeded} more buildings to claim your next career milestone.",
+      "Build {buildingsNeeded} to claim your next career milestone.",
     ),
     (
       "Just one piece left!",
-      "KP and quizzes complete. Construct {buildingsNeeded} buildings to advance, {name}.",
+      "KP and quizzes complete. Construct {buildingsNeeded} to advance, {name}.",
     ),
     (
       "Infrastructure bottleneck!",
-      "You've got the wisdom and KP — now put up {buildingsNeeded} buildings to expand your empire.",
+      "You've got the wisdom and KP — now construct {buildingsNeeded} to expand your empire.",
     ),
   ];
 
@@ -1134,7 +1134,7 @@ class NotificationData {
       "You just need to complete {quizzesNeeded} to secure your promotion.",
     ),
     (
-      "Don't let the quizzes hold you back",
+      "Don't let quizzes hold you back",
       "You've built the assets and banked the KP. Finish {quizzesNeeded} to level up!",
     ),
     (
@@ -1151,23 +1151,23 @@ class NotificationData {
   static const List<(String, String)> kp_no_assets_no_quizzes_no = [
     (
       "Your financial journey is just beginning, {name}",
-      "Earn {kpNeeded} KP, build {buildingsNeeded} buildings, and complete {quizzesNeeded} to level up!",
+      "Earn {kpNeeded} KP, build {buildingsNeeded}, and complete {quizzesNeeded} to level up!",
     ),
     (
       "Every empire starts from scratch",
-      "Work towards {kpNeeded} KP, {buildingsNeeded} buildings, and {quizzesNeeded} for your next title.",
+      "Work towards {kpNeeded} KP, {buildingsNeeded}, and {quizzesNeeded} for your next title.",
     ),
     (
       "Time to make your mark!",
-      "You need {kpNeeded} KP, {buildingsNeeded} buildings, and {quizzesNeeded} to advance.",
+      "You need {kpNeeded} KP, {buildingsNeeded}, and {quizzesNeeded} to advance.",
     ),
     (
       "Build, learn, and earn, {name}",
-      "Gain {kpNeeded} KP, construct {buildingsNeeded} buildings, and complete {quizzesNeeded} to reach level up.",
+      "Gain {kpNeeded} KP, construct {buildingsNeeded}, and complete {quizzesNeeded} to level up.",
     ),
     (
       "Ready for the grind?",
-      "Target {kpNeeded} KP, {buildingsNeeded} buildings, and {quizzesNeeded} to expand your city!",
+      "Target {kpNeeded} KP, {buildingsNeeded}, and {quizzesNeeded} to expand your city!",
     ),
   ];
 
@@ -1178,16 +1178,16 @@ class NotificationData {
   static const List<(String, String)> retentionNotifications = [
     // --- Original & updated retention notifications ---
     (
-      "Think fast, you're in a room of investors",
-      "How can you participate in the conversation if you haven't played City of Wealth?",
+      "Pitching in the boardroom",
+      "Show off your financial empire — log in to City of Wealth today!",
     ),
     (
       "Your future self called",
-      "They wanted to see if you built your empire and claimed your {gemYield} gems today.",
+      "They wanted to see if you built your empire and put your {gemYield} gems to work today.",
     ),
     (
       "Markets move fast, {name}",
-      "Take 2 minutes to inspect your {buildingName} and keep your income growing.",
+      "Take 2 minutes to inspect your {rawBuildingName} and keep your income growing.",
     ),
     (
       "Quiet day in your portfolio?",
@@ -1195,7 +1195,7 @@ class NotificationData {
     ),
     (
       "Your city needs its mayor",
-      "Decisions don't make themselves — come back and manage your {buildingName}!",
+      "Decisions don't make themselves — come back and manage your {rawBuildingName}!",
     ),
     (
       "Ready for today's board meeting?",
@@ -1203,7 +1203,7 @@ class NotificationData {
     ),
     (
       "Consistency compounds",
-      "A quick 1-minute check-in keeps your {buildingName} yield compounding.",
+      "A quick 1-minute check-in keeps your {rawBuildingName} yield compounding.",
     ),
     (
       "Don't leave {gemYieldFromPassive} gems on the table",
@@ -1211,10 +1211,10 @@ class NotificationData {
     ),
     (
       "Small decisions, massive returns",
-      "Attempt today's quiz to unlock {buildingCount} more {buildingName}.",
+      "Attempt today's quiz to unlock {buildingCountFormatted} more {buildingNamePluralized}.",
     ),
     (
-      "Your financial empire is getting impatient for you to level up!",
+      "Your financial empire is waiting!",
       "Check in now to boost your daily yield by {gemBoostNextLevel} gems at level {nextLevel}.",
     ),
     (
@@ -1223,7 +1223,7 @@ class NotificationData {
     ),
     (
       "A quick financial sanity check?",
-      "See how your {buildingName} income stands against top players today.",
+      "See how your {rawBuildingName} income stands against top players today.",
     ),
     (
       "Wealth isn't built overnight — it's built daily",
@@ -1231,7 +1231,7 @@ class NotificationData {
     ),
     (
       "Your assets don't sleep, {name}",
-      "Make sure your {buildingName} strategy is set for maximum growth.",
+      "Make sure your {rawBuildingName} strategy is set for maximum growth.",
     ),
     (
       "Got 2 minutes to spare?",
@@ -1239,7 +1239,7 @@ class NotificationData {
     ),
     (
       "Your competition is making moves",
-      "Other players are building {buildingName} — check your stats and keep pace.",
+      "Other players are building {rawBuildingNamePlural} — check your stats and keep pace.",
     ),
     (
       "From rookie to real estate mogul",
@@ -1251,10 +1251,10 @@ class NotificationData {
     ),
     (
       "Your city's economy is buzzing",
-      "Come see how many gems your {buildingName} banked while you were away.",
+      "Come see how many gems your {rawBuildingName} banked while you were away.",
     ),
     (
-      "The best time to build your next {buildingName} was yesterday",
+      "The best time to build your next {rawBuildingName} was yesterday",
       "The second best time is right now!",
     ),
     // --- Merged from Set 5 (Motivational nudges) ---
@@ -1267,8 +1267,8 @@ class NotificationData {
       "Solve today's quiz and boost your KP.",
     ),
     (
-      "You could be building {buildingCount} more {buildingName} right now...",
-      "A quick quiz today gets you the KP to unlock them.",
+      "Expand your empire today",
+      "A quick quiz today gets you the KP needed for your next level.",
     ),
     (
       "Your city skyline is looking a bit modest...",
@@ -1315,6 +1315,18 @@ class NotificationData {
       return name;
     }
     return '${name}s';
+  }
+
+  /// Helper: returns a raw building name selected from the player's city buildings.
+  static String getRawBuildingFromCity(List<String>? builtBuildings) {
+    if (builtBuildings != null && builtBuildings.isNotEmpty) {
+      final valid = builtBuildings.where((b) => b.trim().isNotEmpty).toList();
+      if (valid.isNotEmpty) {
+        return _randomElement(valid);
+      }
+    }
+    final names = passiveIncomeData.values.map((e) => e.buildingName).toList();
+    return _randomElement(names);
   }
 
   /// Helper: returns a random building name selected from the player's actually built city buildings.
@@ -1369,7 +1381,7 @@ class NotificationData {
     String quizzesNeeded = '',
     String? buildingName,
     List<String>? builtBuildings,
-    int gemYield = 50,
+    int gemYield = 0,
   }) {
     List<(String, String)> selectedSet;
     if (kpMet && assetsMet && quizzesMet) {
@@ -1391,16 +1403,20 @@ class NotificationData {
     }
 
     final choice = _randomElement(selectedSet);
-    final effectiveBuildingName =
-        buildingName ??
-        getRandomBuildingFromCity(builtBuildings, includeCount: true);
+    final rawBuilding = getRawBuildingFromCity(builtBuildings);
+    final rawBuildingPlural = _pluralizeBuildingName(rawBuilding, 2);
+    final buildingsNeededStr = buildingsNeeded == 1
+        ? '1 building'
+        : '$buildingsNeeded buildings';
 
     final placeholders = <String, String>{
       'name': name,
       'kpNeeded': kpNeeded.toString(),
-      'buildingsNeeded': buildingsNeeded.toString(),
+      'buildingsNeeded': buildingsNeededStr,
       'quizzesNeeded': quizzesNeeded,
-      'buildingName': effectiveBuildingName,
+      'buildingName': buildingName ?? rawBuilding,
+      'rawBuildingName': rawBuilding,
+      'rawBuildingNamePlural': rawBuildingPlural,
       'gemYield': gemYield.toString(),
     };
 
@@ -1427,9 +1443,11 @@ class NotificationData {
     int gemYieldFromPassive = 0,
     int debt = 0,
   }) {
-    final effectiveBuildingName =
-        buildingName ??
-        getRandomBuildingFromCity(builtBuildings, includeCount: true);
+    final rawBuilding = getRawBuildingFromCity(builtBuildings);
+    final rawBuildingPlural = _pluralizeBuildingName(rawBuilding, 2);
+    final buildingNamePluralized = buildingCount == 1
+        ? rawBuilding
+        : rawBuildingPlural;
     final nextLevel = level < 5 ? level + 1 : 5;
 
     // Filter templates to ensure conditional placeholders are valid
@@ -1452,6 +1470,9 @@ class NotificationData {
           buildingCount <= 0) {
         return false;
       }
+      if (text.contains('{gemYield}') && gemYield <= 0) {
+        return false;
+      }
       return true;
     }).toList();
 
@@ -1466,8 +1487,14 @@ class NotificationData {
       'nextLevel': nextLevel.toString(),
       'kpNeeded': kpNeeded.toString(),
       'buildingCount': buildingCount.toString(),
-      'buildingsNeeded': buildingCount.toString(),
-      'buildingName': effectiveBuildingName,
+      'buildingCountFormatted': buildingCount.toString(),
+      'buildingNamePluralized': buildingNamePluralized,
+      'buildingsNeeded': buildingCount == 1
+          ? '1 building'
+          : '$buildingCount buildings',
+      'buildingName': buildingNamePluralized,
+      'rawBuildingName': rawBuilding,
+      'rawBuildingNamePlural': rawBuildingPlural,
       'gemYield': gemYield.toString(),
       'gemBoostNextLevel': gemBoostNextLevel.toString(),
       'gemYieldFromPassive': gemYieldFromPassive.toString(),

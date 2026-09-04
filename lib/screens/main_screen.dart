@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../game_state.dart';
@@ -5,6 +6,7 @@ import '../logic/game_manager.dart';
 import '../logic/tutorial_keys.dart';
 import '../services/music_manager.dart';
 import '../services/sfx_manager.dart';
+import '../services/shortcut_manager_service.dart';
 import '../widgets/icon_text.dart';
 import '../widgets/tutorial_overlay.dart';
 import '../widgets/shiny_button.dart';
@@ -46,7 +48,8 @@ class _MainScreenState extends State<MainScreen> {
   OverlayEntry? _tutorialOverlayEntry;
   bool _overlayInserted = false;
   bool _isSidebarCollapsed = false;
-
+  Timer? _sidebarHoverTimer;
+  bool _autoExpandedByHover = false;
 
   @override
   void initState() {
@@ -62,10 +65,18 @@ class _MainScreenState extends State<MainScreen> {
     );
     // Trigger initial check in case app launched via notification click
     _handleNotificationPayload();
+    ShortcutManagerService.instance.lastTriggeredAction.addListener(
+      _handleShortcutAction,
+    );
   }
 
   @override
   void dispose() {
+    _sidebarHoverTimer?.cancel();
+    _sidebarHoverTimer = null;
+    ShortcutManagerService.instance.lastTriggeredAction.removeListener(
+      _handleShortcutAction,
+    );
     widget.game.removeListener(_handleGameStateChange);
     NotificationService.notificationPayloadNotifier.removeListener(
       _handleNotificationPayload,
@@ -76,6 +87,63 @@ class _MainScreenState extends State<MainScreen> {
     _tutorialOverlayEntry = null;
     _overlayInserted = false;
     super.dispose();
+  }
+
+  void _handleShortcutAction() {
+    final action = ShortcutManagerService.instance.lastTriggeredAction.value;
+    if (action == 'NavigateTab') {
+      if (ShortcutManagerService.instance.sidebarAutoMode !=
+          SidebarAutoMode.disabled) {
+        _sidebarHoverTimer?.cancel();
+        _sidebarHoverTimer = null;
+        _autoExpandedByHover = false;
+        if (mounted && !_isSidebarCollapsed) {
+          setState(() {
+            _isSidebarCollapsed = true;
+          });
+        }
+      }
+    }
+  }
+
+  void _handleSidebarMouseEnter() {
+    final mode = ShortcutManagerService.instance.sidebarAutoMode;
+    if (mode == SidebarAutoMode.disabled) return;
+    if (!_isSidebarCollapsed) return;
+
+    _sidebarHoverTimer?.cancel();
+    if (mode == SidebarAutoMode.onHover) {
+      setState(() {
+        _isSidebarCollapsed = false;
+        _autoExpandedByHover = true;
+      });
+    } else if (mode == SidebarAutoMode.onHover2s) {
+      _sidebarHoverTimer = Timer(const Duration(seconds: 2), () {
+        if (mounted && _isSidebarCollapsed) {
+          setState(() {
+            _isSidebarCollapsed = false;
+            _autoExpandedByHover = true;
+          });
+        }
+      });
+    }
+  }
+
+  void _handleSidebarMouseExit() {
+    _sidebarHoverTimer?.cancel();
+    _sidebarHoverTimer = null;
+
+    final mode = ShortcutManagerService.instance.sidebarAutoMode;
+    if (mode == SidebarAutoMode.disabled) return;
+
+    if (_autoExpandedByHover) {
+      _autoExpandedByHover = false;
+      if (mounted && !_isSidebarCollapsed) {
+        setState(() {
+          _isSidebarCollapsed = true;
+        });
+      }
+    }
   }
 
   @override
@@ -346,14 +414,9 @@ class _MainScreenState extends State<MainScreen> {
         type: BottomNavigationBarType.fixed,
         backgroundColor: Theme.of(context).colorScheme.surface,
         selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(
-          context,
-        ).colorScheme.onSurfaceVariant,
+        unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
         items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
-          ),
+          const BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
             icon: Icon(Icons.location_city, key: TutorialKeys.tabCityKey),
             label: "City",
@@ -381,182 +444,200 @@ class _MainScreenState extends State<MainScreen> {
       backgroundColor: AppColors.of(context, 'background'),
       body: Row(
         children: [
-
           // Left Navigation Sidebar HUD (Collapsible)
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-            width: _isSidebarCollapsed ? 72 : 240,
-            decoration: BoxDecoration(
-              color: surfaceColor,
-              border: Border(
-                right: BorderSide(
-                  color: outlineColor.withValues(alpha: 0.5),
-                  width: 1.5,
+          MouseRegion(
+            onEnter: (_) => _handleSidebarMouseEnter(),
+            onExit: (_) => _handleSidebarMouseExit(),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              width: _isSidebarCollapsed ? 72 : 240,
+              decoration: BoxDecoration(
+                color: surfaceColor,
+                border: Border(
+                  right: BorderSide(
+                    color: outlineColor.withValues(alpha: 0.5),
+                    width: 1.5,
+                  ),
                 ),
               ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Header Logo & Collapse Toggle
-                SizedBox(
-                  height: 60,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: _isSidebarCollapsed ? 4 : 12,
-                    ),
-                    child: _isSidebarCollapsed
-                        ? Center(
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.chevron_right,
-                                size: 22,
-                                color: textColor.withValues(alpha: 0.7),
-                              ),
-                              tooltip: "Expand Sidebar",
-                              onPressed: () {
-                                widget.sfx.playClick();
-                                setState(() {
-                                  _isSidebarCollapsed = !_isSidebarCollapsed;
-                                });
-                              },
-                            ),
-                          )
-                        : Row(
-                            children: [
-                              Icon(Icons.location_city, color: primaryColor, size: 28),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  "City of Wealth",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: textColor,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              IconButton(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Header Logo & Collapse Toggle
+                  SizedBox(
+                    height: 60,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: _isSidebarCollapsed ? 4 : 12,
+                      ),
+                      child: _isSidebarCollapsed
+                          ? Center(
+                              child: IconButton(
                                 icon: Icon(
-                                  Icons.chevron_left,
-                                  size: 20,
+                                  Icons.chevron_right,
+                                  size: 22,
                                   color: textColor.withValues(alpha: 0.7),
                                 ),
-                                tooltip: "Collapse Sidebar",
+                                tooltip: "Expand Sidebar",
                                 onPressed: () {
                                   widget.sfx.playClick();
+                                  _sidebarHoverTimer?.cancel();
+                                  _sidebarHoverTimer = null;
+                                  _autoExpandedByHover = false;
                                   setState(() {
-                                    _isSidebarCollapsed = !_isSidebarCollapsed;
+                                    _isSidebarCollapsed = false;
                                   });
                                 },
                               ),
-                            ],
-                          ),
+                            )
+                          : Row(
+                              children: [
+                                Icon(
+                                  Icons.location_city,
+                                  color: primaryColor,
+                                  size: 28,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    "City of Wealth",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: textColor,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.chevron_left,
+                                    size: 20,
+                                    color: textColor.withValues(alpha: 0.7),
+                                  ),
+                                  tooltip: "Collapse Sidebar",
+                                  onPressed: () {
+                                    widget.sfx.playClick();
+                                    _sidebarHoverTimer?.cancel();
+                                    _sidebarHoverTimer = null;
+                                    _autoExpandedByHover = false;
+                                    setState(() {
+                                      _isSidebarCollapsed = true;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                    ),
                   ),
-                ),
-                Divider(
-                  height: 1,
-                  thickness: 1.5,
-                  color: outlineColor.withValues(alpha: 0.5),
-                ),
-                const SizedBox(height: 16),
-                // Sidebar Navigation Items
-                _buildSidebarNavItem(
-                  context: context,
-                  index: 0,
-                  icon: Icons.home,
-                  label: "Home",
-                  hotkey: "F1",
-                  isSelected: game.selectedIndex == 0,
-                  isCollapsed: _isSidebarCollapsed,
-                ),
-                _buildSidebarNavItem(
-                  context: context,
-                  index: 1,
-                  icon: Icons.location_city,
-                  label: "City Viewer",
-                  hotkey: "F2",
-                  isSelected: game.selectedIndex == 1,
-                  isCollapsed: _isSidebarCollapsed,
-                ),
-                _buildSidebarNavItem(
-                  context: context,
-                  index: 2,
-                  icon: Icons.account_balance,
-                  label: "Money Hub",
-                  hotkey: "F3",
-                  isSelected: game.selectedIndex == 2,
-                  isCollapsed: _isSidebarCollapsed,
-                ),
-                _buildSidebarNavItem(
-                  context: context,
-                  index: 3,
-                  icon: Icons.settings,
-                  label: "Settings",
-                  hotkey: "F4",
-                  isSelected: game.selectedIndex == 3,
-                  isCollapsed: _isSidebarCollapsed,
-                ),
-                const Spacer(),
-                // Bottom Player Profile Card
-                Container(
-                  margin: EdgeInsets.all(_isSidebarCollapsed ? 8 : 16),
-                  padding: EdgeInsets.all(_isSidebarCollapsed ? 8 : 12),
-                  decoration: BoxDecoration(
-                    color: outlineColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: outlineColor.withValues(alpha: 0.3)),
+                  Divider(
+                    height: 1,
+                    thickness: 1.5,
+                    color: outlineColor.withValues(alpha: 0.5),
                   ),
-                  child: Row(
-                    mainAxisAlignment: _isSidebarCollapsed
-                        ? MainAxisAlignment.center
-                        : MainAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: primaryColor,
-                        child: Text(
-                          game.playerName.isNotEmpty
-                              ? game.playerName[0].toUpperCase()
-                              : "U",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
+                  const SizedBox(height: 16),
+                  // Sidebar Navigation Items
+                  _buildSidebarNavItem(
+                    context: context,
+                    index: 0,
+                    icon: Icons.home,
+                    label: "Home",
+                    hotkey: "F1",
+                    isSelected: game.selectedIndex == 0,
+                    isCollapsed: _isSidebarCollapsed,
+                  ),
+                  _buildSidebarNavItem(
+                    context: context,
+                    index: 1,
+                    icon: Icons.location_city,
+                    label: "City",
+                    hotkey: "F2",
+                    isSelected: game.selectedIndex == 1,
+                    isCollapsed: _isSidebarCollapsed,
+                  ),
+                  _buildSidebarNavItem(
+                    context: context,
+                    index: 2,
+                    icon: Icons.account_balance,
+                    label: "Money",
+                    hotkey: "F3",
+                    isSelected: game.selectedIndex == 2,
+                    isCollapsed: _isSidebarCollapsed,
+                  ),
+                  _buildSidebarNavItem(
+                    context: context,
+                    index: 3,
+                    icon: Icons.settings,
+                    label: "Settings",
+                    hotkey: "F4",
+                    isSelected: game.selectedIndex == 3,
+                    isCollapsed: _isSidebarCollapsed,
+                  ),
+                  const Spacer(),
+                  // Bottom Player Profile Card
+                  Container(
+                    margin: EdgeInsets.all(_isSidebarCollapsed ? 8 : 16),
+                    padding: EdgeInsets.all(_isSidebarCollapsed ? 8 : 12),
+                    decoration: BoxDecoration(
+                      color: outlineColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: outlineColor.withValues(alpha: 0.3),
                       ),
-                      if (!_isSidebarCollapsed) ...[
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                game.playerName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                "Level ${game.career.level}",
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: AppColors.of(context, 'onSurfaceVariant'),
-                                ),
-                              ),
-                            ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: _isSidebarCollapsed
+                          ? MainAxisAlignment.center
+                          : MainAxisAlignment.start,
+                      children: [
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundColor: primaryColor,
+                          child: Text(
+                            game.playerName.isNotEmpty
+                                ? game.playerName[0].toUpperCase()
+                                : "U",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
+                        if (!_isSidebarCollapsed) ...[
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  game.playerName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  "Level ${game.career.level}",
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.of(
+                                      context,
+                                      'onSurfaceVariant',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
@@ -571,23 +652,22 @@ class _MainScreenState extends State<MainScreen> {
                   decoration: BoxDecoration(
                     color: surfaceColor,
                     border: Border(
-                      bottom: BorderSide(color: outlineColor.withValues(alpha: 0.5), width: 1.5),
+                      bottom: BorderSide(
+                        color: outlineColor.withValues(alpha: 0.5),
+                        width: 1.5,
+                      ),
                     ),
                   ),
                   child: Row(
                     children: [
-                      CounterChip(
-                        label: "[KP]",
-                        value: game.kp,
-                        prefix: "KP",
-                      ),
+                      CounterChip(label: "[KP]", value: game.kp, prefix: "KP"),
                       const SizedBox(width: 12),
                       CounterChip(
                         label: "[GEM]",
                         value: game.gems,
                         prefix: "Gems",
                       ),
-                      const SizedBox(width: 12),
+                      const Spacer(),
                       CounterChip(
                         label: "[STREAK]",
                         value: game.dailyQuizStreak,
@@ -688,14 +768,18 @@ class _MainScreenState extends State<MainScreen> {
                 children: [
                   Icon(
                     icon,
-                    color: isSelected ? primaryColor : textColor.withValues(alpha: 0.7),
+                    color: isSelected
+                        ? primaryColor
+                        : textColor.withValues(alpha: 0.7),
                     size: 20,
                   ),
                   const SizedBox(width: 12),
                   Text(
                     label,
                     style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                       color: isSelected ? primaryColor : textColor,
                       fontSize: 14,
                     ),
@@ -708,8 +792,6 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
-
-
 
   Widget _buildTabStack(GameManager game) {
     return IndexedStack(
@@ -751,8 +833,7 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      CareerScreen(game: game, sfx: widget.sfx),
+                  builder: (_) => CareerScreen(game: game, sfx: widget.sfx),
                 ),
               );
             }
@@ -764,8 +845,7 @@ class _MainScreenState extends State<MainScreen> {
                     assets: game.assets,
                     gems: game.gems,
                     streak: game.dailyQuizStreak,
-                    onBuyAsset: (type) =>
-                        game.buyAsset(type, 1, context),
+                    onBuyAsset: (type) => game.buyAsset(type, 1, context),
                     onSellAsset: (type) => game.sellAsset(type),
                     sfx: widget.sfx,
                     game: game,
@@ -885,9 +965,7 @@ class _MainScreenState extends State<MainScreen> {
               await game.forceCloudLoad();
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Cloud progress loaded!"),
-                  ),
+                  const SnackBar(content: Text("Cloud progress loaded!")),
                 );
               }
             }
@@ -896,7 +974,6 @@ class _MainScreenState extends State<MainScreen> {
       ],
     );
   }
-
 }
 
 // =============================================================================

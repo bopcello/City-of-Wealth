@@ -4,11 +4,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum SidebarAutoMode { onHover, onHover2s, disabled }
+
 class ShortcutManagerService extends ChangeNotifier {
   static final ShortcutManagerService instance = ShortcutManagerService._();
   ShortcutManagerService._();
 
   static const String _prefKey = 'custom_keybindings_v1';
+  static const String _overlayVisibilityPrefKey = 'shortcut_overlay_visibility_v1';
+  static const String _sidebarAutoModePrefKey = 'sidebar_auto_mode_v1';
+
+  SidebarAutoMode _sidebarAutoMode = SidebarAutoMode.onHover2s;
+  SidebarAutoMode get sidebarAutoMode => _sidebarAutoMode;
 
   bool _isKeyboardDetected = false;
   bool get isKeyboardDetected => _isKeyboardDetected;
@@ -18,6 +25,14 @@ class ShortcutManagerService extends ChangeNotifier {
 
   void setIsEditingKeybindings(bool value) {
     _isEditingKeybindings = value;
+    notifyListeners();
+  }
+
+  bool _isQuizActive = false;
+  bool get isQuizActive => _isQuizActive;
+
+  void setQuizActive(bool value) {
+    _isQuizActive = value;
     notifyListeners();
   }
 
@@ -37,7 +52,6 @@ class ShortcutManagerService extends ChangeNotifier {
     'Passive Income [Tile]': '4',
     'Quiz [Tile]': '5',
     'Build Menu': 'B',
-    'Pause Time': 'Space',
     'Reset Camera': 'R',
     'Quiz Options': '1, 2, 3, 4',
     'Cheat Sheet': 'Ctrl+?',
@@ -63,6 +77,37 @@ class ShortcutManagerService extends ChangeNotifier {
       }
     }
     loadKeybindings();
+    loadOverlayVisibility();
+    loadSidebarAutoMode();
+  }
+
+  Future<void> setSidebarAutoMode(SidebarAutoMode mode) async {
+    _sidebarAutoMode = mode;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_sidebarAutoModePrefKey, mode.name);
+    } catch (e) {
+      debugPrint("Error saving sidebar auto mode: $e");
+    }
+  }
+
+  Future<void> loadSidebarAutoMode() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final modeName = prefs.getString(_sidebarAutoModePrefKey);
+      if (modeName != null) {
+        for (final val in SidebarAutoMode.values) {
+          if (val.name == modeName) {
+            _sidebarAutoMode = val;
+            notifyListeners();
+            break;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint("Error loading sidebar auto mode: $e");
+    }
   }
 
   void triggerAction(String action) {
@@ -99,18 +144,53 @@ class ShortcutManagerService extends ChangeNotifier {
     }
   }
 
+  Future<void> loadOverlayVisibility() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonStr = prefs.getString(_overlayVisibilityPrefKey);
+      if (jsonStr != null) {
+        final decoded = jsonDecode(jsonStr) as Map<String, dynamic>;
+        _screenOverlayVisibility.clear();
+        decoded.forEach((key, value) {
+          if (value is bool) {
+            _screenOverlayVisibility[key] = value;
+          }
+        });
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("Error loading overlay visibility: $e");
+    }
+  }
+
+  Future<void> saveOverlayVisibility() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+        _overlayVisibilityPrefKey,
+        jsonEncode(_screenOverlayVisibility),
+      );
+    } catch (e) {
+      debugPrint("Error saving overlay visibility: $e");
+    }
+  }
+
   bool shouldShowOverlay(String screenId) {
     if (!_isKeyboardDetected) return false;
+    if (_screenOverlayVisibility['__all__'] == false) return false;
     return _screenOverlayVisibility[screenId] ?? true;
   }
 
   void hideOverlay(String screenId) {
     _screenOverlayVisibility[screenId] = false;
+    _screenOverlayVisibility['__all__'] = false;
+    saveOverlayVisibility();
     notifyListeners();
   }
 
   void unhideAllOverlays() {
     _screenOverlayVisibility.clear();
+    saveOverlayVisibility();
     notifyListeners();
   }
 
@@ -187,7 +267,6 @@ class ShortcutManagerService extends ChangeNotifier {
     // Default aliases
     if (action == 'Back / Pop' && boundLabel == 'Esc' && key == LogicalKeyboardKey.escape) return true;
     if (action == 'Confirm / Close' && boundLabel == 'Enter' && (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.numpadEnter)) return true;
-    if (action == 'Pause Time' && boundLabel == 'Space' && key == LogicalKeyboardKey.space) return true;
 
     return false;
   }

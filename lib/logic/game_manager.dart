@@ -415,7 +415,9 @@ class GameManager extends ChangeNotifier with WidgetsBindingObserver {
 
     String quizzesNeededStr = '';
     if (mediumNeeded > 0 && hardNeeded > 0) {
-      quizzesNeededStr = '$mediumNeeded Medium and $hardNeeded Hard quizzes';
+      final mStr = '$mediumNeeded Medium quiz${mediumNeeded > 1 ? "zes" : ""}';
+      final hStr = '$hardNeeded Hard quiz${hardNeeded > 1 ? "zes" : ""}';
+      quizzesNeededStr = '$mStr and $hStr';
     } else if (mediumNeeded > 0) {
       quizzesNeededStr = '$mediumNeeded Medium quiz${mediumNeeded > 1 ? "zes" : ""}';
     } else if (hardNeeded > 0) {
