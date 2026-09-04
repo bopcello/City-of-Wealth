@@ -226,124 +226,149 @@ class AssetsScreen extends StatelessWidget {
                                         ],
                                       ),
                                       const SizedBox(height: 8),
-                                      // Stacked Buttons: Buy on top, Sell on bottom
-                                      Column(
-                                        children: [
-                                          // BUY BUTTON (TOP)
-                                          SizedBox(
-                                            width: double.infinity,
-                                            child: ShinyButton(
-                                              isShiny: canAfford,
-                                              backgroundColor: canAfford
-                                                  ? AppColors.of(
-                                                      context,
-                                                      'success',
-                                                    )
-                                                  : Colors.transparent,
-                                              foregroundColor: canAfford
-                                                  ? Colors.white
-                                                  : AppColors.of(
-                                                      context,
-                                                      'success',
-                                                    ),
-                                              shape: canAfford
-                                                  ? const StadiumBorder()
-                                                  : StadiumBorder(
-                                                      side: BorderSide(
-                                                        color: AppColors.of(
+                                      Expanded(
+                                        child: Column(
+                                          children: [
+                                            // BUY BUTTON (TOP)
+                                            Expanded(
+                                              child: SizedBox(
+                                                width: double.infinity,
+                                                child: ShinyButton(
+                                                  isShiny: canAfford,
+                                                  backgroundColor: canAfford
+                                                      ? AppColors.of(
+                                                          context,
+                                                          'success',
+                                                        )
+                                                      : Colors.transparent,
+                                                  foregroundColor: canAfford
+                                                      ? Colors.white
+                                                      : AppColors.of(
                                                           context,
                                                           'success',
                                                         ),
-                                                        width: 1.5,
-                                                      ),
-                                                    ),
-                                              useStadiumShape: true,
-                                              elevation: 0,
-                                              minimumSize: Size.zero,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 8,
-                                                  ),
-                                              onPressed: () {
-                                                sfx.playBuy();
-                                                onBuyAsset(type);
-                                              },
-                                              child: FittedBox(
-                                                fit: BoxFit.scaleDown,
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    if (discount > 0) ...[
-                                                      Text(
-                                                        "$originalCost",
-                                                        style: TextStyle(
-                                                          decoration:
-                                                              TextDecoration
-                                                                  .lineThrough,
-                                                          fontSize: 10,
-                                                          color: AppColors.of(
-                                                            context,
-                                                            'onSurfaceVariant',
+                                                  shape: canAfford
+                                                      ? RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                  10),
+                                                        )
+                                                      : RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                  10),
+                                                          side: BorderSide(
+                                                            color: AppColors.of(
+                                                              context,
+                                                              'success',
+                                                            ),
+                                                            width: 1.5,
                                                           ),
                                                         ),
-                                                      ),
-                                                      const SizedBox(width: 4),
-                                                    ],
-                                                    IconText(
-                                                      "Buy ($discountedCost [GEM])",
-                                                      style: const TextStyle(
-                                                        fontSize: 12,
+                                                  useStadiumShape: false,
+                                                  elevation: 0,
+                                                  minimumSize: Size.zero,
+                                                  padding: const EdgeInsets.all(4),
+                                                  onPressed: () {
+                                                    sfx.playBuy();
+                                                    onBuyAsset(type);
+                                                  },
+                                                  child: Center(
+                                                    child: FittedBox(
+                                                      fit: BoxFit.scaleDown,
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          if (discount > 0) ...[
+                                                            Text(
+                                                              "$originalCost",
+                                                              style: TextStyle(
+                                                                decoration:
+                                                                    TextDecoration
+                                                                        .lineThrough,
+                                                                fontSize: 12,
+                                                                color: AppColors.of(
+                                                                  context,
+                                                                  'onSurfaceVariant',
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 4),
+                                                          ],
+                                                          IconText(
+                                                            "Buy ($discountedCost [GEM])",
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 6),
-                                          // SELL BUTTON (BOTTOM)
-                                          SizedBox(
-                                            width: double.infinity,
-                                            child: ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: AppColors.of(
-                                                  context,
-                                                  'error',
-                                                ).withValues(alpha: 0.1),
-                                                foregroundColor: AppColors.of(
-                                                  context,
-                                                  'error',
-                                                ),
-                                                shape: const StadiumBorder(),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      vertical: 8,
-                                                    ),
-                                                elevation: 0,
-                                                tapTargetSize:
-                                                    MaterialTapTargetSize
-                                                        .shrinkWrap,
-                                                minimumSize: Size.zero,
-                                              ),
-                                              onPressed: ownedCount > 0
-                                                  ? () {
-                                                      sfx.playSell();
-                                                      onSellAsset(type);
-                                                    }
-                                                  : null,
-                                              child: FittedBox(
-                                                fit: BoxFit.scaleDown,
-                                                child: IconText(
-                                                  "Sell ($sellPrice [GEM])",
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                            const SizedBox(height: 6),
+                                            // SELL BUTTON (BOTTOM)
+                                            Expanded(
+                                              child: SizedBox(
+                                                width: double.infinity,
+                                                child: ElevatedButton(
+                                                  style: ElevatedButton
+                                                      .styleFrom(
+                                                    backgroundColor:
+                                                        AppColors.of(
+                                                      context,
+                                                      'error',
+                                                    ).withValues(alpha: 0.1),
+                                                    foregroundColor:
+                                                        AppColors.of(
+                                                      context,
+                                                      'error',
+                                                    ),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    padding:
+                                                        const EdgeInsets.all(4),
+                                                    elevation: 0,
+                                                    tapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
+                                                    minimumSize: Size.zero,
+                                                  ),
+                                                  onPressed: ownedCount > 0
+                                                      ? () {
+                                                          sfx.playSell();
+                                                          onSellAsset(type);
+                                                        }
+                                                      : null,
+                                                  child: Center(
+                                                    child: FittedBox(
+                                                      fit: BoxFit.scaleDown,
+                                                      child: IconText(
+                                                        "Sell ($sellPrice [GEM])",
+                                                        style: const TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),

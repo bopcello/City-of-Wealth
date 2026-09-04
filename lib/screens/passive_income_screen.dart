@@ -131,31 +131,39 @@ class PassiveIncomeScreen extends StatelessWidget {
                               ),
                             ),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                // Title & Logo below name
-                                Column(
-                                  children: [
-                                    FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        info.buildingName,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        textAlign: TextAlign.center,
+                                // Title
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    info.buildingName,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                // Logo filling the whole empty middle space
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
+                                    child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: Icon(
+                                        getPassiveIncomeIcon(info.type),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                       ),
                                     ),
-                                    const SizedBox(height: 6),
-                                    Icon(
-                                      getPassiveIncomeIcon(info.type),
-                                      size: 36,
-                                      color: Theme.of(context).colorScheme.primary,
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                                // Stats Tag
+                                const SizedBox(height: 6),
+                                // Stats Tag & Invest Button
                                 Column(
                                   children: [
                                     Text(

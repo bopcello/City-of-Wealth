@@ -598,7 +598,9 @@ class _SettingsTabState extends State<SettingsTab> {
                           ListTile(
                             leading: Icon(Icons.keyboard, color: brandColor),
                             title: const Text("Key Bindings"),
-                            subtitle: const Text("View and edit desktop shortcuts"),
+                            subtitle: const Text(
+                              "View and edit desktop shortcuts",
+                            ),
                             trailing: Icon(
                               Icons.chevron_right,
                               color: brandColor,
@@ -611,16 +613,23 @@ class _SettingsTabState extends State<SettingsTab> {
                           ),
                           const Divider(height: 1, indent: 56),
                           ListTile(
-                            leading: Icon(Icons.view_sidebar, color: brandColor),
+                            leading: Icon(
+                              Icons.view_sidebar,
+                              color: brandColor,
+                            ),
                             title: const Text("Autocollapse and autoexpand"),
-                            subtitle: const Text("Control sidebar hover and collapse behavior"),
+                            subtitle: const Text(
+                              "Control sidebar hover and collapse behavior",
+                            ),
                             trailing: DropdownButton<SidebarAutoMode>(
                               value: service.sidebarAutoMode,
                               underline: const SizedBox.shrink(),
+                              focusColor: Colors.transparent,
                               onChanged: (SidebarAutoMode? newValue) {
                                 if (newValue != null) {
                                   widget.sfx.playClick();
                                   service.setSidebarAutoMode(newValue);
+                                  FocusManager.instance.primaryFocus?.unfocus();
                                 }
                               },
                               items: const [
@@ -630,7 +639,7 @@ class _SettingsTabState extends State<SettingsTab> {
                                 ),
                                 DropdownMenuItem(
                                   value: SidebarAutoMode.onHover2s,
-                                  child: Text("On hover after 2 secs"),
+                                  child: Text("On hover after 2 seconds"),
                                 ),
                                 DropdownMenuItem(
                                   value: SidebarAutoMode.disabled,
@@ -643,7 +652,9 @@ class _SettingsTabState extends State<SettingsTab> {
                           ListTile(
                             leading: Icon(Icons.visibility, color: brandColor),
                             title: const Text("Unhide All Hints"),
-                            subtitle: const Text("Restore shortcut overlay guides across all screens"),
+                            subtitle: const Text(
+                              "Restore shortcut overlay guides across all screens",
+                            ),
                             trailing: Icon(
                               Icons.refresh_rounded,
                               color: brandColor,
@@ -654,7 +665,9 @@ class _SettingsTabState extends State<SettingsTab> {
                               service.unhideAllOverlays();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text("All keyboard shortcut hints restored!"),
+                                  content: Text(
+                                    "All keyboard shortcut hints restored!",
+                                  ),
                                 ),
                               );
                             },
@@ -667,7 +680,6 @@ class _SettingsTabState extends State<SettingsTab> {
                 );
               },
             ),
-
 
             // 3. HELP SECTION
             _buildSectionHeader(context, "HELP"),
